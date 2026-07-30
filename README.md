@@ -1,2 +1,2 @@
 # Omega-pub
-Omega 
+Omega SRR 
