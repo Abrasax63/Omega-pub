@@ -11,11 +11,13 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+DATA_DIR = HERE.parent / "data" / "v19_c5"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 CYCLE_T = (1, 2, 3, 4, 0)
-PAIR_IN = HERE / "V19_PAIR_WITNESSES_C5O14_2026-10-15.csv"
-TRIPLE_IN = HERE / "V19_TRIPLE_WITNESSES_D5_13_2026-10-15.csv"
-CLASS_IN = HERE / "V19_ORIENTED14_CLASSES_2026-10-15.csv"
-U42_IN = HERE / "V19_UNIVERSAL10_U42_2026-10-15.json"
+PAIR_IN = DATA_DIR / "V19_PAIR_WITNESSES_C5O14_2026-10-15.csv"
+TRIPLE_IN = DATA_DIR / "V19_TRIPLE_WITNESSES_D5_13_2026-10-15.csv"
+CLASS_IN = DATA_DIR / "V19_ORIENTED14_CLASSES_2026-10-15.csv"
+U42_IN = DATA_DIR / "V19_UNIVERSAL10_U42_2026-10-15.json"
 
 def transform_mask(mask: int, k: int, reflection: bool = False) -> int:
     sign = -1 if reflection else 1
@@ -328,9 +330,9 @@ def main():
     def write_csv(path, rows, fields):
         with open(path, "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=fields); w.writeheader(); w.writerows(rows)
-    write_csv(HERE / "V19_PAIR_WITNESSES_C5O14_REPAIRED_2026-11-04.csv", pair_fixed, list(pair_fixed[0].keys()))
-    write_csv(HERE / "V19_TRIPLE_WITNESSES_D5_13_REPAIRED_2026-11-04.csv", triple_fixed, list(triple_fixed[0].keys()))
-    write_csv(HERE / "V19_TRIPLE_WITNESSES_C5O14_U42_2026-11-04.csv", oriented_triples,
+    write_csv(DATA_DIR / "V19_PAIR_WITNESSES_C5O14_REPAIRED_2026-11-04.csv", pair_fixed, list(pair_fixed[0].keys()))
+    write_csv(DATA_DIR / "V19_TRIPLE_WITNESSES_D5_13_REPAIRED_2026-11-04.csv", triple_fixed, list(triple_fixed[0].keys()))
+    write_csv(DATA_DIR / "V19_TRIPLE_WITNESSES_C5O14_U42_2026-11-04.csv", oriented_triples,
               ["class_a","class_b","class_c","n_states","T","pair_a","pair_b","pair_c"])
 
     report = {"date":"2026-11-04","local_catalogue":{"canonical_diagrams":len(diagrams),"proper_diagrams":len(proper),
