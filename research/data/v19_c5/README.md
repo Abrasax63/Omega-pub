@@ -39,3 +39,8 @@ Depuis la racine du dépôt :
 ```bash
 python research/code/audit_v19_c5_independent_2026-11-04.py
 ```
+
+
+## Contrôles structurels des exports GitHub — 4 novembre
+
+Lecture des six CSV depuis la branche après transfert : les en-têtes et comptes de lignes attendus sont présents ; les 14 classes sont uniques ; les 105 multisets de paires et 455 multisets de triples D5 sont uniques ; les 560 triples orientés U42 sont uniques ; les paires d'états sont distinctes dans les fichiers réparés ; les étiquettes de classes sont conservées entre fichiers historiques et fichiers réparés. Ces contrôles structurels ne remplacent pas une exécution Python du script depuis un clone propre.
