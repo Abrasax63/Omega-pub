@@ -133,3 +133,12 @@ La carte a été extraite directement de l'archive, puis comparée à l'enregist
 Les autres archives de preuves examinées contiennent principalement des rapports, scripts, données, certificats ou cartes déjà restaurées (affine, N11, transfert V19, Mealy-Helly). Ces éléments sont conservés comme provenance et preuve, mais ne sont pas comptés comme cartes individuelles supplémentaires. Les rapports de décomposition OpenAI exposent des énoncés complets pour certaines briques, mais restent des rapports sources : aucune nouvelle fiche individuelle n'en a été fabriquée.
 
 **Bilan corrigé : 10 cartes originales restaurées sur les 42 résultats du reliquat ; 32 restent à retrouver ou à établir comme indisponibles.** Aucune modification SQLite, aucune promotion scientifique, aucun recalcul ou test rejoué. La PR demeure en brouillon.
+
+
+## 9. Inventaire nominatif des 32 résultats restants
+
+Un inventaire séparé documente, pour chacun des 32 identifiants restants, les rapports, manuscrits, sources primaires, scripts et données effectivement retrouvés, en distinguant ces pièces des cartes individuelles. Il recense aussi les archives de preuves examinées et les limites de chaque source : `reviews/INVENTAIRE_SOURCES_32_CARTES_MANQUANTES_2026-11-04.md`.
+
+Le relevé confirme que plusieurs résultats ont une provenance technique accessible, mais que cette provenance ne constitue pas une carte individuelle. Aucune fiche n'a été fabriquée en découpant un rapport. L'inventaire paginé a couvert 1 440 fichiers de bibliothèque (huit pages). La carte `OBS-RESTRICT-MULTIMOMENT` a été confirmée comme original dans la racine de la bibliothèque et dans l'archive, copies identiques SHA-256 `48b9861443ad2864e836d7a3ab0b968bcd48e5a709e11d4d95cc7060862907f9` ; elle est maintenant restaurée.
+
+**Bilan : 10/42 cartes restaurées ; 32 restent à retrouver ou à déclarer indisponibles.**
