@@ -1,0 +1,566 @@
+EXTRACTION TEXTUELLE — NON ORIGINALE DU POINT DE VUE DU FORMAT.
+Document source : rapport_omega_ac_v1_audit_o41.pdf, 16 pages, daté du 18 juillet 2026.
+Le PDF binaire original reste dans la bibliothèque privée ChatGPT ; ce fichier contient le texte extrait, avec marqueurs de pages, sans prétendre être une copie binaire ou une reproduction de mise en page.
+
+<PARSED TEXT FOR PAGE: 1 / 16>
+PROGRAMME OMEGA - OMEGA-AC v1.1
+Protocole d'auto-correction
+mathématique
+audit contradictoire d'Omega-O4.1
+Gel, dérivation indépendante, réfutation adversariale,
+vérification exhaustive et correction versionnée
+VERDICT
+SURVÉCU_AUDIT
+Programme de recherche Omega
+Document de travail doctoral
+18 juillet 2026
+<PARSED TEXT FOR PAGE: 2 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 2
+Sommaire
+Statut et verdict 4
+Résumé exécutif 4
+1. Objet du protocole Ω-AC 5
+1.1 Problème épistémique . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.2 Registre des statuts . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.3 Classes d'évidence . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.4 Verrou sémantique compression/émergence . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+2. Procédure reproductible 6
+Étape A - énoncé figé . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+Étape B - dérivation indépendante . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+Étape C - réfutation adversariale . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+Étape D - calcul exact et exhaustivité finie . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+Étape E - correction versionnée . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+3. Cible figée : Ω-O4.1 version 1.0 7
+3.1 Revendication centrale . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+3.2 Hypothèses figées . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+3.3 Gel cryptographique . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4. Redérivation indépendante 8
+4.1 Concentration d'une coordonnée . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.2 Absence de fausse alarme en zone pure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.3 Détection après une rupture . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.4 Fermeture de la récurrence après reset . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.5 Corollaire de coût . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+5. Vérification exacte et exhaustive 9
+5.1 Instance réduite exhaustive . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+5.2 Constantes diagnostiques . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+5.3 Table des certificats . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+5.4 Audit de la décision logicielle . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+6. Campagne de réfutation 10
+6.1 F01 - non-monotonicité à grand horizon . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+6.2 F02 - simulation agrégée avec les contrôles exacts . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+6.3 Frontière stricte Δ_∞=2τ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+6.4 Alternance rapide malgré séparation maximale . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+6.5 Sonde aveugle et troisième régime . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+7. Journal des corrections 11
+8. Registre final des revendications 12
+<PARSED TEXT FOR PAGE: 3 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 3
+9. Ce que l'audit ne prouve pas 12
+9.1 Pas de vérification formelle . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+9.2 Pas de validation indépendante . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+9.3 Exhaustivité locale seulement . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+9.4 Hypothèses fortes du modèle . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+9.5 Certificat conservateur et non uniforme en horizon infini . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+9.6 Pas d'émergence démontrée dans Ω-O4.1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+10. Positionnement bibliographique 13
+11. Protocole Ω-AC à réutiliser 13
+Avant la preuve . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+Pendant la preuve . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+Après la preuve . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+Condition d'arrêt . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+12. Direction scientifique suivante 14
+13. Reproductibilité 14
+Conclusion 15
+Références 16
+<PARSED TEXT FOR PAGE: 4 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 4
+Statut et verdict
+Verdict final : SURVÉCU_AUDIT, après deux corrections méthodologiques et une correction
+sémantique.
+Le noyau mathématique d'Ω-O4.1 n'a pas été réfuté. Le lemme de concentration, la récurrence du
+théorème de détection et le corollaire de coût ont été redérivés sans appeler les fonctions de certificat
+ou de détection du programme cible. Un modèle réduit a ensuite permis d'énumérer exactement
+2^18=262144 flux diagnostiques : parmi les six flux appartenant à l'événement uniforme de
+concentration, aucun ne viole la conclusion du théorème.
+Deux énoncés périphériques de la version 1.0 ont en revanche été réfutés :
+1 « certifiée à partir de L=480 » suggérait à tort une validité monotone en
+L lorsque la fenêtre reste fixée;
+1 un contrôle Monte-Carlo intervenait dans un booléen nommé
+all_primary_criteria_pass, mélangeant preuve et simulation.
+Ces défauts n'invalident pas le théorème. Ils ont été corrigés dans Ω-O4.1 version 1.1, chacun avec un
+témoin minimal et un test de non-régression.
+Une omission supplémentaire a été signalée après cet audit : le protocole ne distinguait pas
+formellement compression, adaptation et émergence. Ω-AC v1.1 ajoute donc un verrou sémantique. Il
+classe désormais Ω-O4.1 comme ADAPTATION_ENTRE_COMPRESSIONS_FOURNIES; l'émergence y reste
+NON_TESTÉE.
+Le statut retenu est volontairement limité. SURVÉCU_AUDIT ne signifie ni VÉRIFIÉ_FORMELLEMENT, ni
+VALIDÉ_INDÉPENDAMMENT.
+Résumé exécutif
+Le protocole Ω-AC v1.1 impose la chaîne suivante :
+énoncé figé
+ -> dérivation indépendante
+ -> recherche active de réfutation
+ -> vérification exacte ou exhaustive
+ -> correction versionnée
+ -> nouvel audit complet
+ -> attribution d'un statut borné
+Son principe central est simple : une affirmation ne peut pas recevoir un statut plus fort que son type
+d'évidence. Une preuve traite une implication universelle; un calcul exact contrôle une instance; une
+simulation décrit un échantillon; une recherche bibliographique borne une revendication de
+nouveauté; un contre-exemple réfute un énoncé universel.
+L'application à Ω-O4.1 aboutit au bilan suivant.
+Élément audité Méthode Résultat
+seuil de Hoeffding redérivation algébrique conforme
+théorème de détection récurrence indépendante aucune étape invalide
+trouvée
+implication sur modèle réduit énumération de 262144 flux 0 violation sur l'événement
+constantes d_δ et séjour recalcul indépendant sept lignes conformes
+marges certifiées fractions exactes sept lignes conformes
+décision sans noyaux audit syntaxique ciblé aucun accès à P_A,P_B
+phrase « à partir de 480 » grand horizon adversarial réfutée puis corrigée
+agrégation preuve/simulation audit du schéma JSON réfutée puis corrigée
+<PARSED TEXT FOR PAGE: 5 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 5
+Élément audité Méthode Résultat
+confusion compression/émergence verrou sémantique Ω-O4.1 reclassé comme
+adaptation
+tests cumulés Ω-O3, Ω-O4.1, Ω-AC 40/40 réussis
+1. Objet du protocole Ω-AC
+1.1 Problème épistémique
+Une erreur mathématique produite par un système génératif peut être cohérente, bien rédigée et
+répétée à chaque reformulation. Demander seulement « vérifie ta réponse » risque donc de
+reproduire le même chemin fautif. Ω-AC oblige le nouvel examen à changer de représentation :
+énoncés numérotés, hypothèses figées, calcul indépendant, recherche de témoins adversariaux et
+tests de régression.
+Le protocole ne prétend pas supprimer toute erreur. Il rend les erreurs détectées traçables et
+empêche qu'une simulation favorable soit promue en preuve.
+1.2 Registre des statuts
+Statut Sens autorisé
+RÉFUTÉ un témoin satisfait les hypothèses mais contredit la conclusion
+CORRIGÉ l'énoncé ou l'artefact a été modifié et possède un test de régression
+NON_TESTÉ le protocole ne contient pas les objets nécessaires pour conclure
+SURVÉCU_AUDIT aucune réfutation trouvée dans la campagne documentée
+VÉRIFIÉ_FORMELLEMENT preuve contrôlée par un noyau formel explicite
+VALIDÉ_INDÉPENDAMMENT réplication par un tiers distinct et identifié
+SURVÉCU_AUDIT est un résultat de procédure, pas une vérité absolue. Les deux derniers statuts
+exigent des acteurs ou outils qui ne sont pas présents ici.
+1.3 Classes d'évidence
+Chaque entrée du registre de revendications reçoit exactement une classe principale :
+● preuve : dérivation universelle sous hypothèses;
+● calcul exact : égalité sur nombres rationnels ou objet fini;
+● vérification exhaustive : parcours complet d'un domaine fini déclaré;
+● simulation : estimation sur graines et taille d'échantillon déclarées;
+● audit logiciel : propriété du code dans un périmètre syntaxique ou
+dynamique explicite;
+● bibliographie : comparaison de portée avec les sources primaires;
+● limite : cas exclu, impossible ou non traité.
+Règle de promotion : une conclusion de type preuve ne peut dépendre d'une entrée classée
+simulation.
+1.4 Verrou sémantique compression/émergence
+Ω-AC v1.1 applique trois catégories disjointes :
+● COMPRESSION lorsque la représentation est plusieurs-vers-un ou lorsque
+l'information accessible décroît;
+<PARSED TEXT FOR PAGE: 6 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 6
+● ADAPTATION lorsque l'observateur change de représentation, notamment entre
+des candidats déjà fournis;
+● ÉMERGENCE_COMPUTATIONNELLE_RELATIVE seulement lorsqu'une propriété
+collective fixée à l'avance devient calculable à un niveau critique, sous un budget commun qui la rend
+inaccessible aux niveaux inférieurs.
+Une baisse d'entropie, une meilleure perte moyenne ou un changement de partition ne suffisent donc
+jamais, isolément, à établir une émergence.
+2. Procédure reproductible
+Étape A - énoncé figé
+Avant toute critique, Ω-AC enregistre :
+1 la formulation exacte des revendications;
+2 la liste des hypothèses;
+3 les constantes et conventions temporelles;
+4 les fichiers sources et leurs empreintes SHA-256;
+5 la version et la date.
+Toute modification ultérieure crée une nouvelle version. Elle ne remplace pas rétroactivement l'objet
+audité.
+Étape B - dérivation indépendante
+La conclusion est redérivée depuis les hypothèses dans un autre chemin de code et, si possible, dans
+une autre représentation. Pour Ω-O4.1, le module omega_autocorrection.py n'importe ni
+AdjacentWindowDetector, ni detector_certificate, ni probe_sup_gap.
+Cette indépendance est architecturale, pas humaine : le même projet et le même auteur automatisé
+restent impliqués. Elle réduit les erreurs corrélées de code, mais ne justifie pas le statut
+VALIDÉ_INDÉPENDAMMENT.
+Étape C - réfutation adversariale
+Pour chaque hypothèse, le protocole teste : égalité à la frontière, valeur nulle, très grand horizon,
+séjour trop court, alternance maximale, sonde aveugle et régime hors classe. Un succès signifie
+trouver un contre-exemple, pas accumuler des exemples favorables.
+Étape D - calcul exact et exhaustivité finie
+Les fractions rationnelles sont préférées aux flottants. Lorsqu'un domaine fini réduit conserve la
+logique du théorème, toutes ses réalisations sont énumérées. L'exhaustivité n'est revendiquée que
+pour ce domaine déclaré.
+Étape E - correction versionnée
+Une correction complète contient :
+1 un témoin minimal;
+2 la première phrase ou étape invalide;
+3 la modification la plus locale possible;
+4 un test qui échoue avant et réussit après;
+5 les nouvelles empreintes;
+<PARSED TEXT FOR PAGE: 7 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 7
+6 un nouvel audit depuis le début.
+3. Cible figée : Ω-O4.1 version 1.0
+3.1 Revendication centrale
+Soit une suite déterministe de régimes binaires, constante par morceaux, et des diagnostics
+indépendants
+Y_t∼ P_r_t, | A|=d.
+Deux fenêtres adjacentes de taille w produisent
+D_t=|| P_t^R- P_t^L||_∞.
+Avec
+τ=√((log(2dT/δ))/(w)),
+Δ_∞=|| P_A-P_B||_∞,
+et
+d_δ=
+⌊(2τ w)/(Δ_∞)⌋+1,
+le théorème affirme que, si Δ_∞>2τ et si chaque séjour vérifie Γ≥2w+d_δ, alors, avec probabilité au
+moins 1-δ,
+N=S, N_false=0, M≤ S d_δ.
+3.2 Hypothèses figées
+ID Hypothèse
+H1 horizon fini T connu pour calibrer le seuil
+H2 calendrier des régimes déterministe
+H3 diagnostics indépendants conditionnellement au calendrier
+H4 distributions stationnaires à l'intérieur de chaque segment
+H5 deux régimes seulement, alternant à chaque rupture
+H6 mode initial fourni
+H7 Δ_∞>2τ
+H8 chaque segment dure au moins 2w+d_δ
+Les deux architectures candidates, leurs têtes prédictives et la règle de bascule restent elles aussi
+fournies. Le théorème retire l'oracle des noyaux diagnostiques au moment de la décision, pas l'oracle
+de la classe structurelle.
+3.3 Gel cryptographique
+Les sept empreintes complètes de la version 1.0 sont conservées dans omega_ac_o41_audit.json.
+Elles ont été comparées aux fichiers avant la première correction. Extraits :
+Artefact v1.0 SHA-256 abrégé
+code Ω-O4.1 87416c85b5ccede6…a70b4d1
+tests Ω-O4.1 e56032f1b444562b…382342
+rapport Markdown 5046b7289e116a52…a07c72
+résultats JSON ef93ffa92977aef7…6a26
+métriques CSV 8dd14dbeb2958ea8…18a72
+rapport PDF f7d6f164f1a5774…ab5c7
+<PARSED TEXT FOR PAGE: 8 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 8
+La version 1.1 possède de nouvelles empreintes; le CSV, dont les données numériques n'ont pas
+changé, conserve logiquement son empreinte.
+4. Redérivation indépendante
+4.1 Concentration d'une coordonnée
+Pour une date t et un symbole a, posons
+X_t,a=
+( P_t^R(a)- P_t^L(a))
+- E( P_t^R(a)- P_t^L(a)).
+X_{t,a} est une somme de 2w variables indépendantes. Les w coefficients de droite sont 1/w, ceux de
+gauche -1/w. Chaque terme a donc une longueur d'intervalle 1/w, et
+Σ_i=1^2w(b_i-a_i)^2
+=2w1/(w^2)=(2)/(w).
+L'inégalité de Hoeffding donne alors
+Pr(|X_t,a|>x)≤ 2exp(-wx^2).
+Il existe au plus dT couples date-coordonnée. Une union finie donne
+Pr(max_t,a|X_t,a|>x)
+≤2dTexp(-wx^2).
+Pour x=τ, le membre de droite vaut exactement δ. Le recalcul numérique sur les sept horizons publiés
+ferme cette identité avec un résidu flottant maximal inférieur à 10^-14.
+Cette étape est une application de l'inégalité classique de Hoeffding (1963), pas une nouvelle
+inégalité.
+4.2 Absence de fausse alarme en zone pure
+Sur l'événement uniforme précédent, deux fenêtres entièrement contenues dans le même régime ont
+une différence moyenne nulle. Par conséquent,
+D_t≤τ.
+Comme le test déclenche seulement pour D_t>τ, aucune alarme ne survient dans une zone
+stationnaire pure.
+4.3 Détection après une rupture
+Après k≤w observations du nouveau régime Q, la fenêtre gauche suit encore P et la fenêtre droite
+contient w-k lois P et k lois Q. Pour une coordonnée réalisant Δ_∞,
+| E( P_t^R- P_t^L)|
+=(kΔ_∞)/(w).
+L'événement uniforme implique
+D_t≥(kΔ_∞)/(w)-τ.
+À k=d_δ, la définition par partie entière donne
+(kΔ_∞)/(w)>2τ,
+donc D_t>τ. Une alarme a eu lieu au plus tard après d_δ observations du nouveau régime.
+4.4 Fermeture de la récurrence après reset
+L'alarme vide les fenêtres. Comme
+Γ-d_δ≥2w,
+<PARSED TEXT FOR PAGE: 9 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 9
+au moins deux fenêtres pures sont reconstruites avant la rupture suivante. L'événement de
+concentration a été défini sur toutes les fenêtres canoniques du flux, y compris celles sélectionnées
+après un temps de reset aléatoire. La récurrence n'introduit donc pas de conditionnement manquant.
+Chaque rupture provoque exactement une alarme, aucune autre alarme ne survient entre les
+ruptures, et le mode reste erroné au plus d_δ tours par rupture. Ainsi N=S et M≤Sd_δ.
+4.5 Corollaire de coût
+L'identité trajectorielle est
+J_D=T L*+2λ T+cN+ρ M.
+Sur l'événement du théorème,
+J_D≤ T L*+2λ T+cS+ρ S d_δ.
+Puisque J_U^oracle=T L^star+5λT,
+J_U^oracle-J_D
+≥3λ T-cS-ρ S d_δ.
+Aucune erreur de signe ou de décalage temporel n'a été trouvée dans cette substitution.
+5. Vérification exacte et exhaustive
+5.1 Instance réduite exhaustive
+Le domaine réduit est binaire :
+w=3, τ=1/5,
+P_A(1)=1/4, P_B(1)=3/4.
+Alors
+Δ_∞=1/2>2/5=2τ,
+d_δ=3,
+2w+d_δ=9.
+Le calendrier contient neuf tours en A, puis neuf tours en B. Les 2^18=262144 suites binaires ont
+toutes été générées. Pour chacune, Ω-AC a :
+1 évalué exactement l'événement uniforme avec Fraction;
+2 exécuté un détecteur à reset écrit séparément;
+3 contrôlé N=1, l'absence de fausse alarme et M≤3.
+Résultat : six suites appartiennent à l'événement uniforme. Leurs alarmes arrivent aux indices 9 ou 10
+en indexation zéro. Aucune des six ne viole la conclusion.
+Cette vérification est exhaustive pour ce modèle réduit. Elle ne parcourt pas les 8^T flux de
+l'instance complète et ne remplace pas la preuve générale.
+5.2 Constantes diagnostiques
+Le recalcul indépendant des huit probabilités confirme
+Σ_aP_A(a)=Σ_aP_B(a)=1,
+Δ_∞=29/40.
+<PARSED TEXT FOR PAGE: 10 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 10
+5.3 Table des certificats
+L T=8L d_δ recalculé séjour min. marge certifiée exacte
+256 2048 128 448 -15907/40
+480 3840 131 451 -13009/40
+512 4096 131 451 -12529/40
+768 6144 133 453 -8997/40
+1024 8192 135 455 -1093/8
+1536 12288 136 456 2061/40
+2048 16384 138 458 9433/40
+Chaque valeur coïncide avec le résultat publié. L=256 satisfait la séparation, mais pas la durée de
+séjour. La première longueur testée admissible est 480; la première marge certifiée positive testée
+est 1536.
+5.4 Audit de la décision logicielle
+L'arbre syntaxique de AdjacentWindowDetector.observe a été inspecté. Aucun des identifiants
+interdits system, worlds, probe_distribution, joint_outcome_probability, P_A ou P_B n'apparaît
+dans la fonction de décision. Le comparateur strict et l'appel de reset sont présents.
+Portée exacte : cet audit couvre la décision d'alarme. Le programme expérimental consulte
+volontairement les lois vraies dans detector_certificate pour déclarer a posteriori si le théorème
+s'applique. Il ne s'agit pas d'une preuve formelle de non-interférence de tout le programme.
+6. Campagne de réfutation
+6.1 F01 - non-monotonicité à grand horizon
+La version 1.0 disait que la détection était « certifiée à partir de L=480 ». Or, avec w fixe,
+τ(T)=√((log(2dT/δ))/(w))
+croît avec T. Pour huit segments de longueur L=600000,
+T=4800000,
+2τ ≈ 0,727194,
+Δ_∞=0,725.
+La condition stricte échoue. L'horizon critique est environ 4225630, soit une longueur égale d'environ
+528204. Le théorème reste correct; c'est la formulation monotone qui est fausse.
+Correction : « L=480 est la première longueur parmi celles testées qui satisfait le certificat. »
+6.2 F02 - simulation agrégée avec les contrôles exacts
+La version 1.0 calculait certified_rows_respect_empirical_failure_budget puis l'incluait dans
+all_primary_criteria_pass. Même un taux observé 0/300 ne démontre pas une borne probabiliste
+universelle. Il est compatible avec le théorème et utile pour déceler une erreur de code, mais son
+statut est celui d'une simulation.
+Correction : le JSON 1.1 contient deux espaces disjoints :
+● deterministic_and_exact;
+● simulation_sanity_only.
+Le booléen ambigu all_primary_criteria_pass a été supprimé.
+<PARSED TEXT FOR PAGE: 11 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 11
+6.3 Frontière stricte Δ_∞=2τ
+Prenons w=10, τ=1/5, des fréquences de population 0,7 et 0,3, puis des fenêtres empiriques
+contenant respectivement six et quatre occurrences du symbole 1. Alors
+Δ_∞=2/5=2τ,
+|X|=τ,
+D=τ.
+L'événement de concentration autorise ce témoin, mais le test strict ne déclenche pas. L'inégalité
+Δ_∞>2τ, déjà stricte dans Ω-O4.1, ne doit pas être affaiblie.
+6.4 Alternance rapide malgré séparation maximale
+Deux régimes déterministes produisent alternativement 0 et 1. Leur écart est Δ_∞=1. Pour toute
+fenêtre paire, chaque fenêtre contient exactement autant de zéros que de uns; ainsi D_t=0 à toutes les
+dates testables. Avec w=160 et 1600 tours, on obtient 1599 vraies ruptures et aucune alarme.
+La séparation statistique ne remplace donc pas une hypothèse temporelle.
+6.5 Sonde aveugle et troisième régime
+Une sonde telle que P_A=P_B a Δ_∞=0; aucun test fondé uniquement sur ce flux ne peut identifier
+uniformément le régime. Par ailleurs, la bascule binaire d'Ω-O4.1 ne sait ni reconnaître ni construire
+une architecture C inconnue. Ces cas restent explicitement hors théorème.
+7. Journal des corrections
+ID Version 1.0 Témoin Version 1.1 Régression
+F01 formulation monotone L=600000 portée limitée aux
+longueurs testées test grand horizon
+F02 Monte-Carlo dans verdict
+primaire dépendance du booléen classes d'évidence séparées test du schéma JSON
+F03 « le programme » sans
+nuance
+certificat lit les lois portée réduite à la décision audit AST
+F07 compression et émergence
+non séparées
+aucun seuil collectif dans
+Ω-O4.1
+classement sémantique
+explicite test du verrou Ω-AC
+Pour F01, aucune ligne de la preuve n'est invalide : la première unité fautive est une phrase du
+résumé. Pour F02, la première unité fautive est l'agrégation logicielle des critères, non le calcul du
+taux. Pour F03, il s'agit d'une ambiguïté de portée.
+Pour F07, aucune proposition probabiliste n'est fausse. L'erreur aurait consisté à interpréter la
+commutation entre deux partitions fournies comme l'apparition d'une propriété collective nouvelle.
+Après correction, l'expérience complète de 300 trajectoires par calendrier a été rejouée avec les
+mêmes graines. Les résultats numériques sont inchangés; seule leur classification épistémique et le
+texte du rapport changent.
+<PARSED TEXT FOR PAGE: 12 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 12
+8. Registre final des revendications
+ID Revendication Évidence Statut
+C01 seuil de concentration simultané preuve redérivée SURVÉCU_AUDIT
+C02 N=S, zéro fausse alarme, M≤Sd_δ preuve + exhaustivité réduite SURVÉCU_AUDIT
+C03 borne de coût algèbre rationnelle SURVÉCU_AUDIT
+C04 décision sans noyaux vrais audit AST ciblé SURVÉCU_AUDIT
+C05 nombres publiés reproductibles recalcul + graines SURVÉCU_AUDIT
+C06 validité pour tout L≥480 grand horizon RÉFUTÉ, puis CORRIGÉ
+C07 Monte-Carlo admissible dans verdict
+de preuve analyse méthodologique RÉFUTÉ, puis CORRIGÉ
+C08 Ω-O4.1 démontre une émergence verrou sémantique NON_TESTÉ; affirmation positive
+réfutée
+Le statut global est déterminé par le noyau corrigé et les limites déclarées :
+Ω-O4.1 v1.1 : SURVÉCU_AUDIT.
+9. Ce que l'audit ne prouve pas
+9.1 Pas de vérification formelle
+La preuve n'a pas été encodée dans Lean, Coq ou Isabelle. Les tests ne contrôlent pas
+automatiquement tous les quantificateurs du théorème général.
+9.2 Pas de validation indépendante
+Le deuxième chemin de calcul est distinct dans le code, mais il appartient au même projet. Une
+validation indépendante demanderait une équipe tierce, idéalement avec sa propre formalisation et
+ses propres tests.
+9.3 Exhaustivité locale seulement
+Les 262144 flux constituent le domaine complet d'une instance binaire de 18 tours. Cette exhaustivité
+sonde la structure de la preuve; elle ne mesure pas le risque réel de l'instance à huit symboles et
+grand horizon.
+9.4 Hypothèses fortes du modèle
+Le calendrier est exogène, les diagnostics sont indépendants, les ruptures sont abruptes, le mode
+initial est connu, les deux architectures existent déjà et le coût de calcul n'est pas facturé. Des
+données dépendantes, une dérive progressive ou un changement adaptatif peuvent invalider
+l'argument.
+9.5 Certificat conservateur et non uniforme en horizon infini
+L'union sur dT comparaisons est prudente. Avec w fixe, le seuil augmente avec l'horizon. Une
+extension anytime demanderait une autre calibration, par exemple une séquence de confiance ou une
+dépense de risque sommable.
+9.6 Pas d'émergence démontrée dans Ω-O4.1
+Le détecteur choisit entre deux architectures connues. Il ne fixe aucune propriété collective
+indépendante, aucun niveau critique et aucune classe de calcul commune aux niveaux. Son résultat
+relève donc de la détection et de l'adaptation entre compressions, non de l'émergence.
+<PARSED TEXT FOR PAGE: 13 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 13
+10. Positionnement bibliographique
+Le noyau probabiliste relève de l'inégalité de Hoeffding pour des sommes de variables bornées
+indépendantes. La détection séquentielle classique précède largement Ω-O4.1 : le schéma CUSUM
+remonte à Page (1954), et les critères de délai sous contrainte de fausse alarme sont développés par
+Lorden (1971). Les fenêtres adaptatives avec garanties de faux positifs et faux négatifs sont
+notamment représentées par ADWIN, Bifet et Gavaldà (2007).
+La contribution défendable d'Ω-O4.1 est donc interne au programme Ω : relier un détecteur
+empirique fini, son délai et un objectif de coût structurel précis. L'audit ne soutient aucune
+revendication de nouveauté générale en détection de ruptures, ni d'optimalité minimax.
+11. Protocole Ω-AC à réutiliser
+Pour toute nouvelle proposition Ω-O4.2 ou ultérieure, la checklist minimale est la suivante.
+Avant la preuve
+● numéroter chaque revendication et chaque hypothèse;
+● préciser tous les quantificateurs et conventions temporelles;
+● enregistrer les empreintes des artefacts;
+● distinguer le résultat visé des observations exploratoires.
+Pendant la preuve
+● reconstruire les constantes dans un second module;
+● chercher l'égalité aux frontières et les cas nuls;
+● tester les changements d'échelle et grands horizons;
+● identifier la première étape qui emploie chaque hypothèse;
+● générer un domaine fini exhaustif lorsque cela est possible.
+Après la preuve
+● lancer les tests de régression et les simulations séparément;
+● publier le témoin minimal de toute réfutation;
+● créer un erratum versionné, sans effacer l'ancienne version;
+● refaire tout l'audit après correction;
+● ne jamais dépasser le statut réellement acquis.
+Condition d'arrêt
+Une version peut être transmise pour examen universitaire si :
+1 tous les contrôles déterministes et exacts réussissent;
+2 aucune réfutation du noyau ne reste ouverte;
+3 chaque correction possède un test;
+4 les simulations sont isolées des preuves;
+5 les limites et la bibliographie sont explicites;
+6 le statut final n'est pas surévalué.
+<PARSED TEXT FOR PAGE: 14 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 14
+12. Direction scientifique suivante
+La suite la plus rigoureuse n'est pas d'élargir immédiatement le théorème, mais de consolider son
+statut :
+1 formaliser le lemme et la récurrence dans Lean;
+2 faire réimplémenter le détecteur réduit par un tiers;
+3 remplacer l'horizon fixé par une garantie anytime;
+4 traiter des diagnostics dépendants ou mélangeants;
+5 retirer l'oracle des deux architectures candidates;
+6 facturer stockage, calcul et exploration diagnostique;
+7 définir un test explicite d'arrivée d'un troisième régime.
+Le premier objectif réellement nouveau devrait être une borne où l'observateur apprend parmi une
+classe finie de partitions, sans connaître le nombre de ruptures ni l'horizon, tout en conservant un
+registre Ω-AC complet.
+13. Reproductibilité
+Artefacts de l'audit :
+● omega_autocorrection.py : recalculs, témoins et audit exhaustif;
+● test_omega_autocorrection.py : dix tests Ω-AC;
+● output/omega_ac/omega_ac_o41_audit.json : registre complet et empreintes;
+● output/omega_ac/omega_ac_o41_findings.csv : journal tabulaire;
+● rapport_omega_ac_v1_audit_o41.md : présent rapport;
+● output/pdf/rapport_omega_ac_v1_audit_o41.pdf : version paginée.
+Commandes :
+python3 omega_observer_learned_detection.py --trials 300
+python3 omega_autocorrection.py
+python3 -m unittest -v \
+ test_omega_observer_dynamic.py \
+ test_omega_observer_learned_detection.py \
+ test_omega_autocorrection.py
+python3 build_omega_ac_report.py
+Résultats reproduits le 18 juillet 2026 :
+● 40/40 tests réussis;
+● 262144/262144 flux réduits examinés;
+● 6 flux sur l'événement uniforme;
+● 0/6 violation de l'implication;
+● 0/300 violation observée sur chaque calendrier admissible simulé;
+● sept certificats numériques conformes;
+● deux défauts périphériques réfutés et corrigés;
+● Ω-O4.1 reclassé explicitement hors émergence.
+<PARSED TEXT FOR PAGE: 15 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 15
+Conclusion
+Ω-AC v1.1 transforme l'auto-correction en une procédure falsifiable. Il ne se contente pas de relire
+une preuve : il fige l'objet, change de chemin de calcul, cherche activement des témoins, énumère un
+modèle fini, corrige sans effacer l'historique et limite le verdict à ce qui a réellement été établi.
+Appliqué à Ω-O4.1, ce protocole n'a trouvé aucune faille dans le noyau du théorème. Il a néanmoins
+découvert deux erreurs de niveau scientifique : une formulation monotone fausse et une agrégation
+ambiguë entre simulation et preuve. Son verrou sémantique corrige en outre la confusion possible
+entre compression et émergence. Après correction et nouvel audit, la conclusion exacte est :
+le théorème spécialisé d'Ω-O4.1 reste défendable sous ses huit hypothèses; sa version 1.1 a
+survécu à la campagne Ω-AC v1.1 comme théorème de détection et d'adaptation, mais ne
+démontre aucune émergence et attend encore une formalisation et une validation humaine
+indépendantes.
+<PARSED TEXT FOR PAGE: 16 / 16>
+Programme Omega - Protocole Omega-AC v1.1 18 juillet 2026
+Audit contradictoire, exact et versionne de Omega-O4.1 16
+Références
+1 W. Hoeffding (1963), Probability Inequalities for Sums of Bounded Random Variables, Journal of the
+American Statistical Association 58(301), 13-30. DOI.
+2 E. S. Page (1954), Continuous Inspection Schemes, Biometrika 41(1/2), 100-115. Article.
+3 G. Lorden (1971), Procedures for Reacting to a Change in Distribution, Annals of Mathematical
+Statistics 42(6), 1897-1908. Article.
+4 A. Bifet et R. Gavaldà (2007), Learning from Time-Changing Data with Adaptive Windowing, SIAM
+International Conference on Data Mining, 443-448. DOI.
