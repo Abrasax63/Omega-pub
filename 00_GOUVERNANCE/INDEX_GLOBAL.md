@@ -4,6 +4,11 @@
 **Dernière mise à jour :** 2026-11-04  
 **Rôle :** inventaire des résultats effectivement documentés dans Omega-pub.
 
+## Navigation
+
+- [Guide de lecture](GUIDE_LECTURE.md) — parcours lecteur, vérificateur et contributeur.
+- [Référentiel des statuts](STATUTS.md) — définitions des statuts.
+
 ## Règle de lecture
 
 Une ligne n'est ajoutée que lorsqu'une fiche dédiée existe dans le dépôt. Le statut scientifique est repris de la fiche source ; le statut de publication décrit la complétude du dossier public. Ces deux statuts ne sont pas interchangeables.
