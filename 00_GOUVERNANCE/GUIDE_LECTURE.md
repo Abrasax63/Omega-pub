@@ -5,6 +5,7 @@ Ce guide indique où commencer selon ce que vous cherchez. L'index global reste 
 ## Accès rapides
 
 - [Index global des résultats](INDEX_GLOBAL.md) — fiches présentes, statuts et liens directs.
+- [Registre transversal](REGISTRE_TRANSVERSAL.md) — retrouver une brique par mots-clés, domaine, statut ou dépendances.
 - [Référentiel des statuts](STATUTS.md) — sens des statuts scientifiques et éditoriaux.
 - [Architecture du dépôt](../ARCHITECTURE.md) — rôle des modules et règles communes.
 - [Protocole de revue](../REVIEW_PROTOCOL.md) — examiner ou contester un résultat.
