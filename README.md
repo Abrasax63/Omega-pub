@@ -146,9 +146,9 @@ Les dossiers seront ajoutés après vérification de leur provenance, de leur co
 
 ## État actuel du dépôt
 
-Le dépôt public contient actuellement sa présentation générale et son protocole de contribution et de revue. **Les dossiers scientifiques détaillés et leurs preuves ne sont pas encore intégralement publiés ici.**
+Une première migration documentaire est proposée dans la branche `migration/ravi2-ccs-public-2026-11-04` : 51 fichiers de briques/cartes, 5 documents méthodologiques, 31 audits/revues et 43 artefacts de reproductibilité RAVI-2/CCS. La base SQLite v33 et les mémoires de conversation ne sont pas incluses. Voir `MIGRATION_RAVI2_CCS_2026-11-04.md`.
 
-Cette distinction est volontaire : le dépôt doit permettre au public de savoir précisément ce qui est déjà accessible et ce qui reste à publier. Les prochaines publications seront ajoutées progressivement, avec leurs statuts et leurs limites.
+Cette branche est soumise à revue avant toute intégration dans `main`. Le transfert ne vaut pas validation scientifique ; les statuts d'origine et les limites de réconciliation sont conservés.
 
 ---
 
