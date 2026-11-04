@@ -1,0 +1,227 @@
+{
+  "status": "PASS",
+  "date": "2026-10-16",
+  "q_range": [
+    3,
+    8
+  ],
+  "cases": [
+    {
+      "q": 3,
+      "k": 2,
+      "states": 5,
+      "reachable_knowledge": 12,
+      "max_min_nonface": 2,
+      "root_core_sizes": [
+        2
+      ]
+    },
+    {
+      "q": 4,
+      "k": 2,
+      "states": 5,
+      "reachable_knowledge": 12,
+      "max_min_nonface": 2,
+      "root_core_sizes": [
+        2
+      ]
+    },
+    {
+      "q": 4,
+      "k": 3,
+      "states": 7,
+      "reachable_knowledge": 20,
+      "max_min_nonface": 3,
+      "root_core_sizes": [
+        3
+      ]
+    },
+    {
+      "q": 5,
+      "k": 2,
+      "states": 5,
+      "reachable_knowledge": 12,
+      "max_min_nonface": 2,
+      "root_core_sizes": [
+        2
+      ]
+    },
+    {
+      "q": 5,
+      "k": 3,
+      "states": 7,
+      "reachable_knowledge": 20,
+      "max_min_nonface": 3,
+      "root_core_sizes": [
+        3
+      ]
+    },
+    {
+      "q": 5,
+      "k": 4,
+      "states": 9,
+      "reachable_knowledge": 26,
+      "max_min_nonface": 4,
+      "root_core_sizes": [
+        4
+      ]
+    },
+    {
+      "q": 6,
+      "k": 2,
+      "states": 5,
+      "reachable_knowledge": 12,
+      "max_min_nonface": 2,
+      "root_core_sizes": [
+        2
+      ]
+    },
+    {
+      "q": 6,
+      "k": 3,
+      "states": 7,
+      "reachable_knowledge": 20,
+      "max_min_nonface": 3,
+      "root_core_sizes": [
+        3
+      ]
+    },
+    {
+      "q": 6,
+      "k": 4,
+      "states": 9,
+      "reachable_knowledge": 26,
+      "max_min_nonface": 4,
+      "root_core_sizes": [
+        4
+      ]
+    },
+    {
+      "q": 6,
+      "k": 5,
+      "states": 11,
+      "reachable_knowledge": 32,
+      "max_min_nonface": 5,
+      "root_core_sizes": [
+        5
+      ]
+    },
+    {
+      "q": 7,
+      "k": 2,
+      "states": 5,
+      "reachable_knowledge": 12,
+      "max_min_nonface": 2,
+      "root_core_sizes": [
+        2
+      ]
+    },
+    {
+      "q": 7,
+      "k": 3,
+      "states": 7,
+      "reachable_knowledge": 20,
+      "max_min_nonface": 3,
+      "root_core_sizes": [
+        3
+      ]
+    },
+    {
+      "q": 7,
+      "k": 4,
+      "states": 9,
+      "reachable_knowledge": 26,
+      "max_min_nonface": 4,
+      "root_core_sizes": [
+        4
+      ]
+    },
+    {
+      "q": 7,
+      "k": 5,
+      "states": 11,
+      "reachable_knowledge": 32,
+      "max_min_nonface": 5,
+      "root_core_sizes": [
+        5
+      ]
+    },
+    {
+      "q": 7,
+      "k": 6,
+      "states": 13,
+      "reachable_knowledge": 38,
+      "max_min_nonface": 6,
+      "root_core_sizes": [
+        6
+      ]
+    },
+    {
+      "q": 8,
+      "k": 2,
+      "states": 5,
+      "reachable_knowledge": 12,
+      "max_min_nonface": 2,
+      "root_core_sizes": [
+        2
+      ]
+    },
+    {
+      "q": 8,
+      "k": 3,
+      "states": 7,
+      "reachable_knowledge": 20,
+      "max_min_nonface": 3,
+      "root_core_sizes": [
+        3
+      ]
+    },
+    {
+      "q": 8,
+      "k": 4,
+      "states": 9,
+      "reachable_knowledge": 26,
+      "max_min_nonface": 4,
+      "root_core_sizes": [
+        4
+      ]
+    },
+    {
+      "q": 8,
+      "k": 5,
+      "states": 11,
+      "reachable_knowledge": 32,
+      "max_min_nonface": 5,
+      "root_core_sizes": [
+        5
+      ]
+    },
+    {
+      "q": 8,
+      "k": 6,
+      "states": 13,
+      "reachable_knowledge": 38,
+      "max_min_nonface": 6,
+      "root_core_sizes": [
+        6
+      ]
+    },
+    {
+      "q": 8,
+      "k": 7,
+      "states": 15,
+      "reachable_knowledge": 44,
+      "max_min_nonface": 7,
+      "root_core_sizes": [
+        7
+      ]
+    }
+  ],
+  "case_count": 21,
+  "reachable_knowledge_total": 492,
+  "nerve_nodes_checked": 1337,
+  "max_min_nonface_seen": 7,
+  "universal_claim_checked_by_proof": "minimal nonface essential branches are fertile; OBS-M27-FERTILE gives <=q-1",
+  "sharpness": "C(q,q-1) has root minimal nonface q-1 for every tested q",
+  "violations": 0
+}
