@@ -136,6 +136,7 @@ L'[index global](00_GOUVERNANCE/INDEX_GLOBAL.md) ne déclare aucun résultat sci
 ## Accès rapide
 
 - **Consulter les résultats :** [index global](00_GOUVERNANCE/INDEX_GLOBAL.md).
+- **Rechercher une brique :** [registre transversal](00_GOUVERNANCE/REGISTRE_TRANSVERSAL.md).
 - **Comprendre les statuts :** [référentiel](00_GOUVERNANCE/STATUTS.md).
 - **Vérifier ou contribuer :** [protocole de revue](REVIEW_PROTOCOL.md).
 - **Ajouter une fiche :** [modèle de résultat](templates/RESULTAT.md).
