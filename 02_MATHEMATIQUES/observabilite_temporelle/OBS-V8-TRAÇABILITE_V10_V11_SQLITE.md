@@ -47,3 +47,20 @@ V11 maintient le statut mathématique DÉMONTRÉ interne, mais l'originalité de
 - NOTE_RECHERCHE_V7_POLYNOME_TEMPOREL.md ;
 - NOTE_RECHERCHE_V8_FACTORIZATION_INFINITY.md ;
 - AUDIT_V11_V8_PREUVE_ET_NOUVEAUTE.md.
+
+## 5. Sources originales et artefacts restaurés — 4 novembre 2026
+
+Les documents V7, V8, V10 et V11 ont été retrouvés dans la bibliothèque privée puis copiés dans [le dossier sources](sources/README.md), sans réécriture scientifique :
+
+- [Note V7 — polynôme temporel](sources/NOTE_RECHERCHE_V7_POLYNOME_TEMPOREL.md)
+- [Note V8 — factorisation à horizon infini](sources/NOTE_RECHERCHE_V8_FACTORIZATION_INFINITY.md)
+- [Audit V10 — preuves et bibliographie](sources/AUDIT_V10.md)
+- [Audit V11 — preuve alternative et nouveauté](sources/AUDIT_V11_V8_PREUVE_ET_NOUVEAUTE.md)
+- [Script indépendant V8/V9](sources/audit_independant_v8_v9.py)
+- [Références de l'audit V10](sources/REFERENCES_AUDIT_V10.md)
+- [Correspondance du cas unaire](sources/correspondance_cas_unaire_connu.csv)
+- [Contrôle symbolique de la spécialisation unaire](sources/verification_specialisation_unaire.py)
+
+Les manifestes d'origine sont conservés dans le même dossier. Les deux fichiers Markdown V10 et V11 ont été comparés aux membres correspondants de leurs archives ZIP : leurs SHA-256 concordent exactement. Les archives binaires restent dans la bibliothèque privée ; elles ne sont pas présentées comme transférées dans GitHub.
+
+**Limite d'exécution :** les scripts restaurés sont des sources historiques. Ils n'ont pas été exécutés pendant cette opération. Leur présence ne vaut ni rejeu des résultats, ni certification Lean, ni validation externe.
