@@ -1,0 +1,43 @@
+{
+  "commit": "COMMIT-RAVI2-2026-10-19-TIME-PREDICTIVE-21",
+  "timestamp": "2026-10-19T14:45:55.117465+00:00",
+  "before": {
+    "results": 83,
+    "admissible": 79,
+    "dep": 44,
+    "versions": 93
+  },
+  "after": {
+    "results": 85,
+    "admissible": 81,
+    "dep": 47,
+    "versions": 95
+  },
+  "integrity": "ok",
+  "foreign_key_errors": 0,
+  "causal_cycles": 0,
+  "forbidden_targets": 0,
+  "main_sha256": "4b517701c498b481f822a6690e60275509963b2371ff9c2b7a4d01c1c6162ff0",
+  "backup_sha256": "087e1ef5be0f2768d9685062b26430928b832822fa400ac259d8184f559baf85",
+  "new_results": [
+    "BR-TIME-FACTOR-COMPLEX-01",
+    "BR-TIME-FINDET-BRIDGE-01"
+  ],
+  "new_dependencies": [
+    [
+      "BR-TIME-FACTOR-COMPLEX-01",
+      "BR-TIME-01",
+      "La formule de complexité utilise la construction et la borne de résolution de BR-TIME-01."
+    ],
+    [
+      "BR-TIME-FINDET-BRIDGE-01",
+      "BR-TIME-FACTOR-COMPLEX-01",
+      "Le raccordement utilise le profil exact p_m et son corollaire p_m(3m)=4m."
+    ],
+    [
+      "BR-TIME-FINDET-BRIDGE-01",
+      "DET-FIN-01",
+      "La perte de sensibilité tardive est obtenue par application de DET-FIN-01 après vérification du plancher eta=1/T."
+    ]
+  ]
+}
