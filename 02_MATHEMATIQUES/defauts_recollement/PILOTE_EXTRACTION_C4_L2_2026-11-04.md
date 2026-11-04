@@ -1,9 +1,9 @@
 # PILOTE-EXT-C4-L2 — Extraction d'instruments et audit reproductible
 
 - **Identifiant :** PILOTE-EXT-C4-L2-2026-11-04
-- **Version :** 0.1
+- **Version :** 0.2
 - **Domaine :** systèmes dynamiques finis / observation binaire / V19
-- **Statut scientifique :** CALCUL EXACT sous spécification opérationnelle ; équivalence à la définition primaire V19 : À RÉEXAMINER
+- **Statut scientifique :** CALCUL EXACT sous la définition primaire V19(2) pour le problème C4, L=2 et le catalogue C4O-00…07
 - **Statut de publication :** EXPÉRIMENTAL — branche pilote, non fusionnée
 - **Date :** 2026-11-04
 
@@ -11,50 +11,47 @@
 
 Peut-on extraire d'un dossier de recherche antérieur une méthode reproductible, l'isoler comme instrument, la vérifier par une seconde implémentation et conserver clairement les limites de portée ?
 
-Le cas choisi est le dossier C4, L=2 : réalisation des huit classes d'ombres C4O-00 à C4O-07 dans une même dynamique finie, puis vérification de la borne inférieure de taille sous la spécification opérationnelle documentée.
+Le cas choisi est le dossier C4, L=2 : réalisation des huit classes d'ombres C4O-00 à C4O-07 dans une même dynamique finie, puis vérification de la borne inférieure de taille.
 
 ## 2. Sources historiques récupérées
 
-- RESULTATS_C4_L2_CLASSES_2026-10-27.md : catalogue local de huit classes.
-- AUDIT_V19_C4_L2_REPRISE_2026-10-28.md : témoin à neuf états et énumération exhaustive jusqu'à huit états.
-- CERTIFICAT_CONDITIONNEL_V19_C4_L2_2026-10-28.md : spécification opérationnelle et portée conditionnelle.
-- audit_v19_c4_l2_equalites.py : vérificateur global principal.
-- certificat_v19_c4_l2_global.py : seconde implémentation globale.
+- `RESULTATS_C4_L2_CLASSES_2026-10-27.md` : catalogue local de huit classes.
+- `AUDIT_V19_C4_L2_REPRISE_2026-10-28.md` : témoin à neuf états et énumération exhaustive jusqu'à huit états.
+- `CERTIFICAT_CONDITIONNEL_V19_C4_L2_2026-10-28.md` : spécification opérationnelle et portée conditionnelle.
+- `NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE(2).md` : source primaire interne du critère singleton, du graphe forcé P1–P4 et du théorème de petit modèle L+2. Fichier de 359 lignes, récupéré intégralement et relu le 2026-11-04.
+- `verify_c4_l2_9state.py` : vérificateur indépendant utilisant les préfixes jusqu'au temps 4.
 
-Le dossier historique distingue explicitement le résultat opérationnel de l'équivalence avec la définition primaire V19. Cette distinction est conservée.
+L'audit du 14 octobre indiquait déjà une lecture partielle (lignes 1–120) de la note V19(2). La reprise du 4 novembre a retrouvé le fichier complet et fermé explicitement le raccord C4, L=2. Voir `RACCORD_PRIMAIRE_V19_C4_L2_2026-11-04.md`.
 
 ## 3. Instrument extrait
 
-### EXT-FINITE-PROJECTION-COLORING v0.1
+### EXT-FINITE-PROJECTION-COLORING v0.2
 
-**Principe :** pour une endofonction totale finie T et un ensemble de contraintes binaires forcées, calculer exactement l'ensemble des colorations projetées sur un cycle distingué en énumérant les colorations globales admissibles.
+**Principe :** pour une endofonction totale finie T, une observation binaire et les contraintes forcées V19, calculer exactement l'ensemble des colorations projetées sur un cycle distingué.
 
-**Entrées :**
-- une fonction totale T sur un ensemble fini X ;
-- un cycle distingué C4 ;
-- les paires d'états soumises à une inégalité forcée ;
-- les paires de trajectoires soumises à une égalité de couleur aux temps t=0,1.
+**Définition des contraintes forcées (V19(2), section 2) :** pour u≠v, imposer c(u)≠c(v) si et seulement si T(u)=T(v) ou {T(u),T(v)}={u,v}.
 
-**Sortie :** l'ensemble exact des masques binaires projetés sur les quatre états du cycle.
+**Mauvais événement à horizon L=2 :** imposer c(x)=c(y) et c(Tx)=c(Ty), en omettant les comparaisons diagonales.
 
-**Préconditions du pilote :**
+**Projection :** ensemble des motifs binaires sur les quatre états du cycle C4 qui admettent une extension globale satisfaisant les contraintes forcées et les deux égalités de trajectoire.
+
+**Préconditions :**
+- endofonction totale finie ;
 - observation binaire ;
-- totalité de T ;
-- taille maximale des fibres égale à 2 ;
-- graphe des inégalités forcées biparti ;
-- égalités de trajectoire appliquées seulement lorsque les états comparés sont distincts.
+- cohérence globale des contraintes forcées ;
+- cycle distingué C4 ;
+- horizon L=2.
 
-**Limite :** l'instrument vérifie la spécification opérationnelle écrite ci-dessus. Il ne démontre pas que celle-ci est identique à toute formulation primaire antérieure de V19.
+**Réduction locale justifiée :** V19(2), section 4, prouve que l'ombre est déterminée par le cycle et les préfixes jusqu'au temps L+2, donc jusqu'à t=4 inclus ici.
 
 ## 4. Témoin global
 
-La dynamique testée est :
+Dynamique :
+`T = (1,2,3,0,8,7,6,2,0)`
 
-T = (1,2,3,0,8,7,6,2,0)
+Cycle distingué : 0 → 1 → 2 → 3 → 0.
 
-Le cycle distingué est 0 → 1 → 2 → 3 → 0.
-
-Les huit paires historiques sont :
+Les huit paires historiques :
 - C4O-00 : (0,1)
 - C4O-01 : (0,2)
 - C4O-02 : (1,8)
@@ -64,18 +61,20 @@ Les huit paires historiques sont :
 - C4O-06 : (1,4)
 - C4O-07 : (0,4)
 
-Les deux vérificateurs recalculent les ombres brutes sur les colorations globales des neuf états. Les huit ensembles correspondent exactement aux masques cibles archivés.
+Les ombres brutes recalculées sont :
+- C4O-00 : {0,7,8,15}
+- C4O-01 : {0,5,10,15}
+- C4O-02 : {2,7,8,13}
+- C4O-03 : {1,6,9,14}
+- C4O-04 : {0,3,4,7,8,11,12,15}
+- C4O-05 : {0,1,4,5,10,11,14,15}
+- C4O-06 : {4,5,6,7,8,9,10,11}
+- C4O-07 : {2,3,6,7,8,9,12,13}
 
 ## 5. Résultats des exécutions du 2026-11-04
 
-### Vérificateur A — [audit_v19_c4_l2_equalites.py](code/audit_v19_c4_l2_equalites.py)
+### Vérificateur A — `code/audit_v19_c4_l2_equalites.py`
 
-Commande exécutée : python audit_v19_c4_l2_equalites.py
-
-SHA-256 :
-94998806131e05c74946f14ea3b4ee5a8e8bc83e0e65bed1a67d2139667ab027
-
-Sorties observées :
 - témoin : PASS, 8/8 ombres brutes ;
 - variante avec inégalités de trajectoire : 1/8 ombre brute identique ;
 - N=4 : 1 fonction examinée, 1 cohérente, aucun témoin ;
@@ -84,51 +83,49 @@ Sorties observées :
 - N=7 : 343 fonctions examinées, 263 cohérentes, aucun témoin ;
 - N=8 : 4096 fonctions examinées, 2695 cohérentes, aucun témoin.
 
-### Vérificateur B — [certificat_v19_c4_l2_global.py](code/certificat_v19_c4_l2_global.py)
+### Vérificateur B — `code/certificat_v19_c4_l2_global.py`
 
-Commande exécutée : python certificat_v19_c4_l2_global.py
-
-SHA-256 :
-72b3f1aa6882af44ea4a8d4cb537a85269a668eaef3c80cf0d86f20b2e207529
-
-Les empreintes SHA-256 ci-dessus portent sur les fichiers locaux matérialisés et exécutés. Le dépôt Git normalise les fins de ligne ; l'empreinte du blob Git peut donc différer sans modification du contenu Python.
-
-Sorties observées :
 - témoin global : PASS, les huit masques bruts correspondent ;
 - énumération N=4 à N=8 : mêmes totaux, mêmes nombres de fonctions cohérentes, aucun témoin.
 
-### Concordance
+### Vérificateur indépendant local — `verify_c4_l2_9state.py`
 
-Les deux implémentations donnent les mêmes résultats pour le témoin à neuf états et pour les tailles N=4,…,8. Elles constituent deux implémentations distinctes du même contrat opérationnel ; elles ne sont pas deux définitions mathématiques indépendantes.
+Matérialisé et exécuté le 2026-11-04. Il reconstruit les deux préfixes de trajectoire jusqu'à t=4, applique le critère V19 exact sur le petit modèle, puis énumère les colorations projetées du C4. Sortie : PASS pour les huit classes.
 
-## 6. Contre-test décisif
+Les deux programmes globaux calculent directement sur tous les états. Le vérificateur local teste séparément le théorème de petit modèle L+2.
 
-La variante où les trajectoires imposent des inégalités de couleur au lieu des égalités ne reproduit qu'une seule des huit ombres brutes. Cette variante est donc réfutée comme interprétation du certificat opérationnel sous les autres hypothèses conservées.
+### Concordance et portée
 
-Attention : ce contre-test ne prouve pas que toutes les formulations alternatives de V19 sont fausses ; il ne vise que cette substitution précise.
+Les trois vérifications concordent sur les huit ombres du témoin. Les deux programmes globaux sont des implémentations distinctes du même contrat ; le vérificateur local apporte une vérification séparée de la réduction temporelle.
 
-## 7. Résultat et portée
+## 6. Contre-test
 
-- **DÉMONTRÉ par vérification finie du témoin :** le T fourni réalise les huit ensembles de masques sous le contrat opérationnel encodé.
-- **CALCUL EXACT :** absence de témoin pour N=4,…,8 dans l'espace exhaustivement énuméré sous ce même contrat.
-- **INDÉTERMINÉ / À RÉEXAMINER :** équivalence complète entre ce contrat et la définition primaire V19.
-- **Non établi :** minimalité inconditionnelle V19, originalité bibliographique, généralisation à d'autres cycles ou horizons.
+La variante où les trajectoires imposent des inégalités au lieu des égalités ne reproduit qu'une seule des huit ombres brutes. Cette variante est réfutée comme interprétation du mauvais événement V19 dans ce dossier.
 
-Aucune promotion en résultat certifié inconditionnel n'est autorisée par ce pilote.
+## 7. Verdict RAVI-2
+
+- Critère singleton V19 : **DÉMONTRÉ dans la source primaire interne**.
+- Structure P1–P4 : **DÉMONTRÉ dans la source primaire interne**.
+- Localité temporelle L+2 : **DÉMONTRÉ dans la source primaire interne**.
+- Témoin simultané à 9 états : **CALCUL EXACT**, reproduit par deux vérificateurs globaux et un vérificateur local.
+- Absence de témoin pour N=4,…,8 : **CALCUL EXACT**, énumération exhaustive.
+- Minimalité N=9 pour le catalogue C4O-00…07 : **CALCUL EXACT** sous la définition primaire V19(2).
+- Originalité bibliographique : **INDÉTERMINÉE**.
+- Certification Lean : **NON RÉALISÉE**.
+
+Le verrou sémantique entre définition primaire et contrat opérationnel est fermé pour ce périmètre. Aucune généralisation à d'autres q ou L n'est revendiquée.
 
 ## 8. Dépendances et provenance
 
-Dépendances :
-- catalogue C4 L=2 du 2026-10-27 ;
-- spécification opérationnelle du certificat conditionnel du 2026-10-28 ;
-- deux scripts cités ci-dessus.
+- Catalogue C4, L=2 du 27 octobre.
+- Note primaire V19(2), sections 2–4.
+- Audit de reprise C4 du 28 octobre.
+- Deux vérificateurs globaux et un vérificateur local.
 
-Provenance : fichiers historiques récupérés depuis la bibliothèque de recherche, puis matérialisés et exécutés dans l'environnement de travail le 2026-11-04.
+Les fichiers ont été récupérés depuis la bibliothèque de recherche et les programmes mentionnés ont été réellement matérialisés puis exécutés le 4 novembre 2026.
 
 ## 9. Verdict du pilote d'architecture
 
-**PILOTE RÉUSSI pour la chaîne documentaire :** extraction d'un instrument, séparation des hypothèses, reproduction, seconde implémentation, contre-test et conservation explicite des limites.
+**PILOTE RÉUSSI pour la chaîne documentaire et le raccord scientifique dans le périmètre testé.**
 
-**PILOTE NON CONCLUANT pour la certification mathématique inconditionnelle :** l'équivalence avec la définition primaire reste à réexaminer.
-
-Le résultat utile de cette expérience est méthodologique : la bibliothèque peut conserver un instrument réutilisable sans surclasser le résultat scientifique dont il provient.
+La méthode d'extraction conserve les définitions primaires, distingue les calculs de leurs preuves, compare des implémentations différentes et ne promeut pas l'originalité bibliographique ni la formalisation Lean sans preuve.
