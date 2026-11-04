@@ -64,3 +64,8 @@ Les autres membres de ces archives sont des rapports, scripts, données, certifi
 - SQLite v33 reste inchangée ; PR #2 reste en brouillon et non fusionnée.
 
 La prochaine action admissible est de retrouver une carte originale non encore identifiée, ou de documenter explicitement l'indisponibilité de sa carte individuelle. Une extraction d'énoncé depuis un rapport ne sera pas présentée comme restauration d'un original.
+
+
+## Complément — recherche élargie du 4 novembre 2026
+
+Une recherche récursive complémentaire de 1 501 éléments de la Library, avec recherches exactes par identifiant et recherches sémantiques ciblées, n'a retrouvé aucune carte originale supplémentaire au-delà des dix déjà restaurées. Le rapport détaillé est [RECHERCHE_ELARGIE_CARTES_ORIGINALES_2026-11-04.md](RECHERCHE_ELARGIE_CARTES_ORIGINALES_2026-11-04.md). Les 32 reconstitutions restent explicitement distinctes des originaux.
