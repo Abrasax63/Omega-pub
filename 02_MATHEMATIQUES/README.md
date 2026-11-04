@@ -7,6 +7,7 @@
 - [Fiches mathématiques présentes dans le dépôt](../00_GOUVERNANCE/INDEX_GLOBAL.md)
 - [État de migration des résultats mathématiques](MIGRATION_ETAT.md)
 - [Modèle commun de fiche](../templates/RESULTAT.md)
+- [Bibliothèque des instruments mathématiques](instruments/README.md) — registre distinct des méthodes intermédiaires, actuellement vide.
 
 ## Dossiers disponibles
 
@@ -21,7 +22,7 @@ Ces deux fiches sont actuellement publiées avec le statut **EXPÉRIMENTAL** : l
 
 Les résultats CL-DYN-01/02/03/04 et les briques d'observation listées dans [MIGRATION_ETAT.md](MIGRATION_ETAT.md) ne sont pas encore présentés comme fiches publiques complètes. Leur migration attend la récupération et le contrôle des sources primaires.
 
-Les dossiers C4 et les travaux SAT ne sont pas déclarés ici comme résultats certifiés.
+Les dossiers C4 et les travaux SAT ne sont pas déclarés ici comme résultats certifiés. Le [pilote documentaire C4](instruments/PILOTE_C4_ETAT.md) expose les sources manquantes et le verrou prioritaire ; il ne contient aucune nouvelle preuve ni reproduction de calcul.
 
 ## Règles du module
 
