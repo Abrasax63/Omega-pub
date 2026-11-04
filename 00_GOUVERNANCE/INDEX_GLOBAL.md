@@ -7,6 +7,7 @@
 ## Navigation
 
 - [Guide de lecture](GUIDE_LECTURE.md) — parcours lecteur, vérificateur et contributeur.
+- [Registre transversal](REGISTRE_TRANSVERSAL.md) — recherche par identifiant, domaine, mots-clés, statut, preuve et dépendances.
 - [Référentiel des statuts](STATUTS.md) — définitions des statuts.
 
 ## Règle de lecture
