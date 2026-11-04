@@ -3,7 +3,7 @@ from itertools import combinations
 import json, hashlib
 from pathlib import Path
 
-OUT=Path('/mnt/data/ravi13_discovery2/MEALY_HELLY_RESULTS_2026-10-16.json')
+OUT=Path(__file__).resolve().parent.parent / 'data' / 'mealy_helly' / 'MEALY_HELLY_RESULTS_2026-10-16.json'
 
 def build_C(q,k):
     assert q>=3 and 2<=k<=q-1
@@ -137,6 +137,7 @@ def run(qmax=8):
       'sharpness':'C(q,q-1) has root minimal nonface q-1 for every tested q',
       'violations':0
     }
+    OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out,indent=2,ensure_ascii=False),encoding='utf-8')
     print(json.dumps({k:v for k,v in out.items() if k!='cases'},indent=2,ensure_ascii=False))
     print('sha256',hashlib.sha256(OUT.read_bytes()).hexdigest())
