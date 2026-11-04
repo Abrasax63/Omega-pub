@@ -2,9 +2,13 @@
 
 Périmètre : méthode de recherche adversariale, protocoles de vérification, audits et certifications.
 
-Le protocole général de revue est publié à la racine dans [REVIEW_PROTOCOL.md](../REVIEW_PROTOCOL.md). Les documents spécifiques à RAVI-2 seront ajoutés ici après vérification de leur version et de leur provenance.
+Le protocole général de revue est publié à la racine dans [REVIEW_PROTOCOL.md](../REVIEW_PROTOCOL.md).
 
-Aucun certificat n'est déclaré par la seule création de ce module.
+## Extraction de méthodes mathématiques
+
+- [Protocole d'extraction et d'audit](PROTOCOLE_EXTRACTION_METHODES.md) — provenance, extraction, contre-tests, formalisation Lean et transfert.
+
+Ce protocole est expérimental. Il ne certifie aucun résultat ni instrument par sa seule création.
 
 ## Navigation commune
 
