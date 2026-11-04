@@ -181,3 +181,12 @@ Les correspondances de titre, d'énoncé, de domaine et de statut ont été comp
 | ID | Version | Statut source | Carte |
 |---|---:|---|---|
 | BR-OBS-REVEAL-KERNEL | 1 | DÉMONTRÉ interne | `BR-OBS-REVEAL-KERNEL_BRIQUE.md` |
+
+
+## Carte restaurée depuis une archive de preuves — 4 novembre 2026
+
+La carte `OBS-RESTRICT-MULTIMOMENT` a été extraite comme fichier original de `PREUVES_V19_TROISIEME_ORDRE_2026-10-15.zip`, lue intégralement et comparée au résultat SQLite v33 (énoncé, domaine, hypothèses, statut, originalité et version). Le texte est copié sans réécriture ; restauration documentaire uniquement.
+
+| ID | Version | Statut source | Carte |
+|---|---:|---|---|
+| OBS-RESTRICT-MULTIMOMENT | 1 | DÉMONTRÉ interne | `OBS-RESTRICT-MULTIMOMENT_BRIQUE.md` |
