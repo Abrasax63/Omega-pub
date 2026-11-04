@@ -132,6 +132,17 @@ L'architecture modulaire et ses documents de gouvernance sont désormais en plac
 
 L'[index global](00_GOUVERNANCE/INDEX_GLOBAL.md) ne déclare aucun résultat scientifique détaillé publié à ce stade. Cette prudence évite de présenter comme accessible un travail qui ne l'est pas encore dans ce dépôt.
 
+
+## Accès rapide
+
+- **Consulter les résultats :** [index global](00_GOUVERNANCE/INDEX_GLOBAL.md).
+- **Comprendre les statuts :** [référentiel](00_GOUVERNANCE/STATUTS.md).
+- **Vérifier ou contribuer :** [protocole de revue](REVIEW_PROTOCOL.md).
+- **Ajouter une fiche :** [modèle de résultat](templates/RESULTAT.md).
+- **Naviguer dans le dépôt :** [guide de lecture](00_GOUVERNANCE/GUIDE_LECTURE.md).
+
+Le guide de lecture propose un parcours distinct pour les lecteurs, les personnes qui souhaitent vérifier un résultat et les contributeurs.
+
 ---
 
 **Bienvenue sur Omega-pub. L'objectif est simple : rendre les travaux examinables, faciliter leur reproduction et accepter leur réfutation lorsqu'elle est justifiée.**
