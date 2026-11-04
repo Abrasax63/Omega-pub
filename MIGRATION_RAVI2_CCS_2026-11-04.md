@@ -37,3 +37,10 @@ Les scripts et certificats n'ont pas tous été rejoués pendant cette opératio
 Cette branche est proposée sous forme de Pull Request en brouillon afin de permettre une revue avant intégration dans `main`. Les fichiers sont à contrôler sur la branche cible. La branche privée source n'est pas modifiée.
 
 Aucune affirmation de migration intégrale de la bibliothèque privée n'est faite.
+
+
+## Complément C5–L=3 — synchronisation partielle du 4 novembre 2026
+
+Le rapport C5 et son script indépendant sont présents dans la branche. Le script a été réorganisé pour utiliser `research/data/v19_c5/`. L'exécution locale sur l'archive C5 a retrouvé les comptes annoncés (3 341 diagrammes, 510 ombres propres, 13 classes D5, 14 classes C5, 105 paires, 455 triples D5 et 560 triples orientés U42).
+
+**Synchronisation des données inachevée :** les quatre entrées historiques et les quatre sorties de l'audit doivent encore être publiées dans `research/data/v19_c5/`. En conséquence, la reproductibilité depuis un clone du dépôt n'est pas encore vérifiée. Cette limite est explicitement conservée ; aucun statut scientifique n'est promu et SQLite v33 reste hors dépôt.
