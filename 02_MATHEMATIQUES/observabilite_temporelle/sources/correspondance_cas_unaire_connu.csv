@@ -1,0 +1,3 @@
+﻿structure,queue,cycle,facteur_V8,statut
+cycle seul,0,n,Q_n(k),connu
+queue + cycle,i>=1,n-i,(k-1) k^(i-1) Q_(n-i)(k),connu
