@@ -46,3 +46,10 @@ Le rapport C5 et son script indépendant sont présents dans la branche. Le scri
 **Synchronisation des données :** les quatre entrées historiques et les quatre sorties attendues sont maintenant présentes dans `research/data/v19_c5/`. Les six CSV ont été contrôlés sur GitHub : 14 classes, 105 paires, 455 triples D5, 105 paires réparées, 455 triples D5 réparés et 560 triples orientés U42. Le JSON de résultats est également présent. Les CSV ont été transférés comme exports textuels structurés ; leur identité binaire avec les originaux n'est pas revendiquée. Les Git blob SHA-1 sont consignés dans le README du dossier de données.
 
 Le script a été exécuté avec succès sur l'archive source de la Library et a reproduit les comptes annoncés. **L'exécution depuis un clone propre de la branche GitHub n'a pas encore été réalisée** : la reproductibilité indépendante depuis le dépôt reste à confirmer. Aucun statut scientifique n'est promu et SQLite v33 reste hors dépôt.
+
+
+## Restauration de sources référencées par SQLite v33 — 4 novembre 2026
+
+Le contrôle en lecture seule de SQLite v33 a isolé 12 chemins distincts sous `02_PROGRAMMES_ACTIFS` et `05_BIBLIOGRAPHIE`. Les 12 fichiers correspondants ont été retrouvés dans la Library. Onze sources Markdown ont été transférées sous `research/programs/` et `research/bibliography/`. Le douzième document, un DOCX (`Adaptivity boundary - Mealy machines.docx`), est représenté par une extraction textuelle explicitement marquée `EXTRACTED.md` : l'original binaire reste dans la Library et n'est pas présenté comme copié. Le manifeste des correspondances et limites est `research/programs/README.md`.
+
+Les contenus transférés n'ont pas été utilisés pour promouvoir les statuts des résultats. La restauration documentaire ne remplace pas l'audit de chaque preuve et ne rend pas la base SQLite publique.
