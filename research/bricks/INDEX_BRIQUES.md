@@ -190,3 +190,47 @@ La carte `OBS-RESTRICT-MULTIMOMENT` a été extraite comme fichier original de `
 | ID | Version | Statut source | Carte |
 |---|---:|---|---|
 | OBS-RESTRICT-MULTIMOMENT | 1 | DÉMONTRÉ interne | `OBS-RESTRICT-MULTIMOMENT_BRIQUE.md` |
+
+
+## 32 fiches reconstituées depuis SQLite v33 — 4 novembre 2026
+
+Les fichiers Markdown individuels d'origine n'ont pas été retrouvés. Les 32 documents ci-dessous sont donc des **reconstitutions documentaires**, explicitement marquées comme telles. Ils reprennent les enregistrements SQLite (énoncés, domaines, hypothèses, statuts, preuves référencées, audits, tests et versions) sans revendiquer de nouvelle validation. Les tests historiques ne sont pas réputés rejoués. Voir aussi le [rapport de récupération historique](../reviews/RECUPERATION_HISTORIQUE_32_RESULTATS_2026-11-04.md).
+
+Dossier : [research/bricks/reconstructed/](reconstructed/)
+
+| Identifiant | Fiche reconstituée |
+|---|---|
+| APP-OBS-SPARSE-DISJOINT | [fiche](reconstructed/APP-OBS-SPARSE-DISJOINT_RECONSTITUTION.md) |
+| DELTA-P3-N5 | [fiche](reconstructed/DELTA-P3-N5_RECONSTITUTION.md) |
+| DELTA-SPECTRUM-CLASS | [fiche](reconstructed/DELTA-SPECTRUM-CLASS_RECONSTITUTION.md) |
+| DESC-SUM-01 | [fiche](reconstructed/DESC-SUM-01_RECONSTITUTION.md) |
+| EXT-OAI-MARG-REPAIR | [fiche](reconstructed/EXT-OAI-MARG-REPAIR_RECONSTITUTION.md) |
+| EXT-OAI-MATCH-CORNER | [fiche](reconstructed/EXT-OAI-MATCH-CORNER_RECONSTITUTION.md) |
+| EXT-OAI-MATCH-RANK | [fiche](reconstructed/EXT-OAI-MATCH-RANK_RECONSTITUTION.md) |
+| EXT-OAI-REL-CORNER | [fiche](reconstructed/EXT-OAI-REL-CORNER_RECONSTITUTION.md) |
+| EXT-OAI-REL-SELECT | [fiche](reconstructed/EXT-OAI-REL-SELECT_RECONSTITUTION.md) |
+| EXT-OAI-UNIT-LIFT | [fiche](reconstructed/EXT-OAI-UNIT-LIFT_RECONSTITUTION.md) |
+| OBS-M27-BINARY | [fiche](reconstructed/OBS-M27-BINARY_RECONSTITUTION.md) |
+| OBS-M27-CONFLICT | [fiche](reconstructed/OBS-M27-CONFLICT_RECONSTITUTION.md) |
+| OBS-M27-FERTILE | [fiche](reconstructed/OBS-M27-FERTILE_RECONSTITUTION.md) |
+| OBS-M27-SPECTRUM | [fiche](reconstructed/OBS-M27-SPECTRUM_RECONSTITUTION.md) |
+| OBS-RESTRICT-COUNT | [fiche](reconstructed/OBS-RESTRICT-COUNT_RECONSTITUTION.md) |
+| OBS-RESTRICT-GREEDY | [fiche](reconstructed/OBS-RESTRICT-GREEDY_RECONSTITUTION.md) |
+| OBS-RESTRICT-OVERLAP | [fiche](reconstructed/OBS-RESTRICT-OVERLAP_RECONSTITUTION.md) |
+| OBS-RESTRICT-PROFILE | [fiche](reconstructed/OBS-RESTRICT-PROFILE_RECONSTITUTION.md) |
+| OBS-V19-C5-13 | [fiche](reconstructed/OBS-V19-C5-13_RECONSTITUTION.md) |
+| OBS-V19-C5-ORIENTED14 | [fiche](reconstructed/OBS-V19-C5-ORIENTED14_RECONSTITUTION.md) |
+| OBS-V19-FORCED-P4 | [fiche](reconstructed/OBS-V19-FORCED-P4_RECONSTITUTION.md) |
+| OBS-V19-GAMMA-CONNECTED | [fiche](reconstructed/OBS-V19-GAMMA-CONNECTED_RECONSTITUTION.md) |
+| OBS-V19-LOCAL-L2 | [fiche](reconstructed/OBS-V19-LOCAL-L2_RECONSTITUTION.md) |
+| OBS-V19-PAIR-COMPLETE14 | [fiche](reconstructed/OBS-V19-PAIR-COMPLETE14_RECONSTITUTION.md) |
+| OBS-V19-TRIPLE-COMPLETE13 | [fiche](reconstructed/OBS-V19-TRIPLE-COMPLETE13_RECONSTITUTION.md) |
+| OBS-V19-UNIVERSAL10 | [fiche](reconstructed/OBS-V19-UNIVERSAL10_RECONSTITUTION.md) |
+| OBS-V8-FACT-INF | [fiche](reconstructed/OBS-V8-FACT-INF_RECONSTITUTION.md) |
+| OBS-V9-RANK | [fiche](reconstructed/OBS-V9-RANK_RECONSTITUTION.md) |
+| OBS-V9-STAB-N1 | [fiche](reconstructed/OBS-V9-STAB-N1_RECONSTITUTION.md) |
+| OMEGA-O41-DET-V11 | [fiche](reconstructed/OMEGA-O41-DET-V11_RECONSTITUTION.md) |
+| Q-RQ4-COMMON-RANK | [fiche](reconstructed/Q-RQ4-COMMON-RANK_RECONSTITUTION.md) |
+| Q-RQ4-PAULI-ROBUST | [fiche](reconstructed/Q-RQ4-PAULI-ROBUST_RECONSTITUTION.md) |
+
+Aucune fiche reconstituée ne remplace un original qui serait retrouvé ultérieurement. Une récupération de l'original devra être conservée séparément et comparée avant toute substitution.
