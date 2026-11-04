@@ -72,7 +72,7 @@ La version (2) de la note primaire n'a pas été récupérée intégralement dan
 ## 8. Reproductibilité
 
 Script ajouté : `code/audit_quotients_temoins9.py`  
-SHA-256 du script exécuté : `8291be72aa41ee148b3db5e4ec9a7e766bdb76e130c8a6195ba677ffc5078ff9`
+SHA-256 du script GitHub récupéré puis exécuté localement : `55c669577f085f90583b137334169295942d2d56135745ea8467eada883a4b78`
 
 Commande : `python audit_quotients_temoins9.py`
 
