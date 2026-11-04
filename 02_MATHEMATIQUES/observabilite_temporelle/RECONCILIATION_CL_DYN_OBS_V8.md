@@ -11,6 +11,7 @@ Le manifeste actif RAVI-2 du 4 novembre 2026 contient `OBS-V8-FACT-INF`, `OBS-V9
 Les sources documentaires retrouvées pour la factorisation sont :
 - `NOTE_RECHERCHE_V7_POLYNOME_TEMPOREL.md` : polynôme temporel, factorisation à horizon infini, preuve et contrôle exhaustif historique à N≤5 ;
 - `NOTE_RECHERCHE_V8_FACTORIZATION_INFINITY.md` : énoncé détaillé et preuve de comptage ;
+- `AUDIT_V10.md` : reconstruction indépendante, contrôles finis et première revue bibliographique ;
 - `AUDIT_V11_V8_PREUVE_ET_NOUVEAUTE.md` : seconde preuve indépendante et audit bibliographique.
 
 La correspondance certaine est donc : ces trois documents étayent `OBS-V8-FACT-INF`. Ils ne suffisent pas à établir que cette carte est identique à l'une des cartes historiques `CL-DYN-01..04`.
@@ -20,7 +21,7 @@ La correspondance certaine est donc : ces trois documents étayent `OBS-V8-FACT-
 1. `OBS-V8-FACT-INF` est migrée dans sa propre fiche, avec statut scientifique source DÉMONTRÉ, originalité externe INDÉTERMINÉE et publication EXPÉRIMENTAL.
 2. Aucun identifiant CL-DYN n'est renommé, fusionné ou remplacé.
 3. La correction historique de CL-DYN-03 (formulation relative à l'unique cycle finalement atteint) reste à préserver, mais la fiche source correspondante doit être retrouvée avant toute transcription.
-4. Le script historique de vérification de V8 n'a pas été retrouvé dans les éléments consultés et n'est pas déclaré transféré ou réexécuté.
+4. Le script historique `audit_independant_v8_v9.py` a été retrouvé dans l'archive V10 et copié sous `sources/`. Il n'a pas été réexécuté pendant cette migration.
 5. Les autres cartes V9 ne sont pas fusionnées avec V8 : leurs identifiants et leurs énoncés restent distincts dans le manifeste RAVI-2.
 
 ## Sources consultées
