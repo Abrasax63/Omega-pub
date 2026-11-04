@@ -68,7 +68,7 @@ Les deux vérificateurs recalculent les ombres brutes sur les colorations global
 
 ## 5. Résultats des exécutions du 2026-11-04
 
-### Vérificateur A — audit_v19_c4_l2_equalites.py
+### Vérificateur A — [audit_v19_c4_l2_equalites.py](code/audit_v19_c4_l2_equalites.py)
 
 Commande exécutée : python audit_v19_c4_l2_equalites.py
 
@@ -84,12 +84,14 @@ Sorties observées :
 - N=7 : 343 fonctions examinées, 263 cohérentes, aucun témoin ;
 - N=8 : 4096 fonctions examinées, 2695 cohérentes, aucun témoin.
 
-### Vérificateur B — certificat_v19_c4_l2_global.py
+### Vérificateur B — [certificat_v19_c4_l2_global.py](code/certificat_v19_c4_l2_global.py)
 
 Commande exécutée : python certificat_v19_c4_l2_global.py
 
 SHA-256 :
 72b3f1aa6882af44ea4a8d4cb537a85269a668eaef3c80cf0d86f20b2e207529
+
+Les empreintes SHA-256 ci-dessus portent sur les fichiers locaux matérialisés et exécutés. Le dépôt Git normalise les fins de ligne ; l'empreinte du blob Git peut donc différer sans modification du contenu Python.
 
 Sorties observées :
 - témoin global : PASS, les huit masques bruts correspondent ;
