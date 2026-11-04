@@ -1,0 +1,115 @@
+{
+  "all_pass": true,
+  "audit_row": [
+    "AUD-STG-V19-MIN-OBS-SPECTRUM-20261019",
+    "REDUNDANT_AS_STANDALONE_BRICK"
+  ],
+  "bibliographic_verdict": {
+    "abstract_structure": "KNOWN_OR_CLASSICAL",
+    "exact_V19_application": "INDETERMINATE_EXTERNAL_NOVELTY",
+    "standalone_promotion": "NO__REDUNDANT_DERIVED_COROLLARY"
+  },
+  "date": "2026-10-19",
+  "foreign_key_errors_after": 0,
+  "foreign_key_errors_before": 0,
+  "generic_box_exhaustive": {
+    "boxes_checked": 340,
+    "failures": [],
+    "pass": true,
+    "vectors_checked": 41370
+  },
+  "graph_sha256_after": "0bb264c5b92586adb18cc7c83a9cb73dd0f14003ee31672b5fa3dbe51832b20a",
+  "graph_sha256_before": "ef5e909c14e64b23f01db9d519421ea5debe782167708cdc50bd599aab67f42d",
+  "integrity_after": "ok",
+  "integrity_before": "ok",
+  "scientific_db_sha256_after": "087e1ef5be0f2768d9685062b26430928b832822fa400ac259d8184f559baf85",
+  "scientific_db_sha256_before": "087e1ef5be0f2768d9685062b26430928b832822fa400ac259d8184f559baf85",
+  "scientific_db_unchanged": true,
+  "staging_after": [
+    "DEMONSTRATED_STAGING",
+    "ABSTRACT_CLASSICAL__DERIVED_FROM_OBS-V19-COEX-REGION__EXTERNAL_APPLICATION_NOVELTY_INDETERMINATE",
+    0
+  ],
+  "staging_before": [
+    "STG-V19-MIN-OBSTRUCTION-SPECTRUM-01",
+    "DEMONSTRATED_STAGING",
+    "NOT_AUDITED",
+    0
+  ],
+  "staging_id": "STG-V19-MIN-OBSTRUCTION-SPECTRUM-01",
+  "v19_direct": {
+    "all_14_labels_accounted_for": true,
+    "expected_spectrum": [
+      11,
+      21,
+      41,
+      61,
+      81,
+      161
+    ],
+    "families": [
+      {
+        "capacity": 10,
+        "label": "C5O-00",
+        "minimal_forbidden_multiplicity": 11
+      },
+      {
+        "capacity": 10,
+        "label": "C5O-01",
+        "minimal_forbidden_multiplicity": 11
+      },
+      {
+        "capacity": 10,
+        "label": "C5O-02",
+        "minimal_forbidden_multiplicity": 11
+      },
+      {
+        "capacity": 10,
+        "label": "C5O-03",
+        "minimal_forbidden_multiplicity": 11
+      },
+      {
+        "capacity": 40,
+        "label": "C5O-04",
+        "minimal_forbidden_multiplicity": 41
+      },
+      {
+        "capacity": 20,
+        "label": "C5O-05",
+        "minimal_forbidden_multiplicity": 21
+      },
+      {
+        "capacity": 40,
+        "label": "C5O-07",
+        "minimal_forbidden_multiplicity": 41
+      },
+      {
+        "capacity": 60,
+        "label": "C5O-09",
+        "minimal_forbidden_multiplicity": 61
+      },
+      {
+        "capacity": 80,
+        "label": "C5O-11",
+        "minimal_forbidden_multiplicity": 81
+      },
+      {
+        "capacity": 160,
+        "label": "C5O-13",
+        "minimal_forbidden_multiplicity": 161
+      }
+    ],
+    "finite_labels": 10,
+    "pass": true,
+    "spectrum": [
+      11,
+      21,
+      41,
+      61,
+      81,
+      161
+    ],
+    "unbounded_labels": 4
+  },
+  "verdict": "REDUNDANT_AS_STANDALONE_BRICK"
+}
