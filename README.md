@@ -162,3 +162,12 @@ En complément des 61 cartes/fichiers annoncés ci-dessus, la branche contient m
 ### Complément C4–L=2 (conditionnel)
 
 Une fiche dédiée documente le témoin à 9 états et l'énumération exhaustive jusqu'à 8 états pour la coexistence des huit classes C4O. L'audit sémantique du 4 novembre a rapproché les contraintes du texte primaire V19 : le mauvais événement impose l'égalité des couleurs aux temps 0 et 1. Le résultat est **CALCUL EXACT sous la définition primaire** pour les huit classes cataloguées et leur minimum à 9 états. La preuve du lemme de localité L+2 a été reconstruite à partir de la structure P1–P4 et contrôlée exhaustivement sur 38 systèmes C4, 536 paires et 173 composantes sans divergence. La certification RAVI-2 finale reste à réexaminer pour la formalisation supplémentaire et la revue tierce. Voir [la fiche C4–L=2](research/bricks/C4-L2-COEXISTENCE-MINIMUM-9-CONDITIONAL.md), [le rapport d'audit](reviews/AUDIT_SEMANTIQUE_C4_L2_2026-11-04.md) et [le script indépendant](research/code/c4_l2_independent_local_audit_2026-11-04.py).
+
+
+### Sources documentaires restaurées — 4 novembre 2026
+
+Douze chemins de sources référencés dans SQLite v33 ont été retrouvés dans la Library : onze documents Markdown ont été transférés et un document DOCX est représenté par une extraction textuelle explicitement identifiée. Voir le [manifeste des sources](research/programs/README.md). La base SQLite elle-même reste privée et n'est pas incluse.
+
+### Reproductibilité V19 C5–L=3
+
+Les quatre entrées et les quatre sorties du contrôle C5–L=3 sont présentes sous [research/data/v19_c5/](research/data/v19_c5/README.md). Le script indépendant a été rejoué sur l'archive source et les exports de la branche ont passé les contrôles structurels de lignes, classes et témoins. L'exécution depuis un clone propre reste à confirmer ; les CSV transférés sont des exports textuels et ne revendiquent pas l'identité binaire des fichiers originaux.
