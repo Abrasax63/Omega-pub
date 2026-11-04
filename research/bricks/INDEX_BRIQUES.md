@@ -253,3 +253,12 @@ Statut : **CALCUL EXACT sous la définition primaire V19** pour la coexistence d
 La convention de trajectoire a été rapprochée de la note primaire V19 : pour L=2, le mauvais événement impose l'égalité des couleurs aux temps 0 et 1. Les formulations en inégalité de deux documents archivés sont supersédées. Le catalogue local a été reproduit indépendamment (1 515 diagrammes, 172 ombres propres, 8 classes) ; le témoin à 9 états et l'énumération globale N=4,…,8 ont été rejoués. Voir [le rapport d'audit sémantique](../../reviews/AUDIT_SEMANTIQUE_C4_L2_2026-11-04.md) et [le script indépendant](../code/c4_l2_independent_local_audit_2026-11-04.py).
 
 Statut : **CALCUL EXACT** pour la coexistence des huit classes cataloguées et le minimum 9 sous la définition primaire V19. La certification RAVI-2 finale reste à réexaminer pour la preuve indépendante du lemme de localité L+2, la formalisation et la revue tierce.
+
+
+## V19 — C5 orienté, horizon L=3 — audit indépendant du 4 novembre 2026
+
+| ID | Version | Statut documentaire | Intitulé | Artefacts publics |
+|---|---:|---|---|---|
+| `OBS-V19-C5-ORIENTED14` | audit 2026-11-04 | CALCUL EXACT reproduit sous le lemme L+2 | Reproduction indépendante du catalogue local : 13 classes D5 / 14 classes C5 orientées ; témoin universel U42 pour les 560 triples orientés | `reviews/AUDIT_INDEPENDANT_V19_C5_L3_2026-11-04.md`, `research/code/audit_v19_c5_independent_2026-11-04.py`, données prévues sous `research/data/v19_c5/` |
+
+**Réserve :** l'audit C5 reproduit le catalogue fini local mais ne re-prouve pas ligne par ligne le lemme général L+2. L'optimalité des capacités propres à chaque classe reste À RÉEXAMINER ; l'originalité bibliographique reste INDÉTERMINÉE. Cette entrée est une mise à jour de traçabilité, pas une promotion de statut dans SQLite v33.
