@@ -39,3 +39,9 @@ Le canal de migration utilisé ne permet pas de transférer les octets du DOCX c
 ## Source complémentaire liée depuis le protocole quantique
 
 Le document `AUDIT_CALIBRATION_MEMOIRE_QUANTIQUE_2026-09-30.md` est une source supplémentaire citée directement par `PROTOCOLE_CASSURE_JAUGE_QUANTIQUE_2026-09-30.md`. Il ne faisait pas partie des 12 locateurs distincts relevés dans le périmètre initial de la table `evidence`, mais son absence cassait un lien relatif du protocole. Il a été retrouvé dans la Library et restauré à l'emplacement attendu dans ce dépôt.
+
+## Sources Mealy restaurées pour rendre le raccordement vérifiable
+
+Le rapport `MEALY_HELLY_BRIDGE_2026-10-16.md` et la carte `BR-MEALY-HELLY-01_BRIQUE.md` sont présents dans le dépôt. Le script de calcul, son résultat JSON et son manifeste de hachage sont publiés sous `research/code/` et `research/data/mealy_helly/`. Le script public utilise un chemin de sortie relatif au dépôt ; son empreinte est distinguée de celle du script historique de la Library.
+
+Le manuscrit original `Adaptivity boundary - Mealy machines.docx` reste dans la Library ; le dépôt ne contient que l'extraction textuelle déclarée plus haut. Le certificat `mealy_boundary_certificate.py` est désormais publié séparément dans `research/code/`. Le fichier supplémentaire `conflict_nerve_certificate.py`, mentionné dans le DOCX, n'a pas été retrouvé lors de cette recherche.
