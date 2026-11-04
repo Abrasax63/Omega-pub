@@ -1,0 +1,85 @@
+{
+  "source": {
+    "domain": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "quantifier": "forall",
+    "hypothesis": [
+      "gt",
+      "x",
+      0
+    ],
+    "conclusion": [
+      "eq",
+      [
+        "mod",
+        "x",
+        2
+      ],
+      0
+    ]
+  },
+  "target": {
+    "domain": [
+      10,
+      11,
+      12,
+      13
+    ],
+    "quantifier": "forall",
+    "hypothesis": [
+      "gt",
+      "x",
+      10
+    ],
+    "conclusion": [
+      "eq",
+      [
+        "mod",
+        "x",
+        2
+      ],
+      0
+    ]
+  },
+  "pairs": [
+    [
+      0,
+      10
+    ],
+    [
+      1,
+      11
+    ],
+    [
+      2,
+      12
+    ],
+    [
+      3,
+      13
+    ]
+  ],
+  "provenance": {
+    "file": "ccs_extrait_source_v08.txt",
+    "sha256": "26b83b0508feca0319bfcb3d99f8557a2d2f60083b9701b8376200c32766f074",
+    "bindings": [
+      {
+        "statement": "source",
+        "line": 1
+      },
+      {
+        "statement": "target",
+        "line": 2
+      },
+      {
+        "statement": "mapping",
+        "line": 3
+      }
+    ],
+    "review_status": "MANUAL_REVIEW_REQUIRED"
+  }
+}
