@@ -2,87 +2,72 @@
 
 Date : 2026-11-04  
 Branche : `pilot/ravi2-extraction-c4-20261104`  
-Périmètre : spécification opérationnelle déjà encodée dans les deux vérificateurs du pilote.  
-Statut : **CALCUL EXACT CONDITIONNEL**.
+Statut : **CALCUL EXACT** sous la définition primaire V19(2) raccordée au contrat du pilote.
 
 ## 1. Question
 
-Le témoin à 9 états
-`T=(1,2,3,0,8,7,6,2,0)`
-peut-il être réduit par un quotient de congruence de sa dynamique, tout en conservant :
-- les quatre états du cycle distingué séparés ;
-- les huit paires suivies distinctes ;
-- la cohérence des contraintes forcées ;
-- les huit ombres exactes, comparées par rotation simultanée de chaque ombre ?
+Le témoin `T=(1,2,3,0,8,7,6,2,0)` peut-il être réduit par un quotient de congruence tout en conservant le cycle C4, les huit paires, la cohérence forcée et les huit ombres exactes ?
 
-Ce test porte sur les quotients de CE témoin, pas sur toutes les dynamiques possibles.
+## 2. Génération des congruences
 
-## 2. Méthodes et contrôles indépendants
+Deux procédures ont été réimplémentées séparément :
+1. fermeture par fusions successives, propagées par l'image de T ;
+2. énumération de toutes les partitions par mots de croissance restreinte, puis test direct de la congruence.
 
-Deux procédures de génération des congruences ont été comparées :
+Résultat : **49 congruences** dans chaque méthode, avec égalité des deux ensembles de partitions.
 
-1. fermeture par fusions successives : chaque fusion de deux classes est propagée par l'image de T jusqu'à stabilité ;
-2. énumération indépendante de toutes les partitions de 9 éléments par mots de croissance restreinte, puis filtrage direct de la condition de congruence.
-
-Les deux méthodes donnent exactement **49 congruences**, avec les mêmes partitions.
-
-Pour chaque quotient admissible, un recalcul direct parcourt toutes les colorations binaires du quotient, reconstruit les contraintes forcées et les égalités de trajectoire aux temps 0 et 1, puis projette sur le cycle C4. Les ombres sont canonisées en appliquant une rotation simultanée à l'ensemble complet des masques.
+Pour chaque quotient, les ombres ont été recalculées par énumération des colorations binaires, avec le critère V19 singleton et les égalités de trajectoire aux temps 0 et 1. La canonisation applique les rotations simultanément à tous les masques d'une ombre.
 
 ## 3. Résultats
 
-- Congruences de la dynamique : **49**.
-- Quotients gardant le cycle distingué et les huit paires distinctes, puis satisfaisant la cohérence : **9**.
+- Congruences : **49**.
+- Quotients conservant le cycle, les huit paires distinctes et la cohérence : **9**.
 - Répartition par taille : 5 états : 1 ; 6 états : 2 ; 7 états : 3 ; 8 états : 2 ; 9 états : 1.
-- Quotients conservant les huit classes d'ombres exactes : **1**.
-- Ce quotient unique est la partition discrète : il conserve les **9 états**.
+- Quotients conservant les huit classes d'ombres : **1**.
+- L'unique quotient conservant les huit classes est la partition discrète, de taille **9**.
 
-Conclusion limitée : **aucun quotient de congruence propre de ce témoin ne conserve les huit ombres exactes sous le contrat opérationnel testé.**
+Conclusion : aucun quotient de congruence propre de ce témoin ne conserve les huit ombres exactes.
 
 ## 4. Invariance de représentation
 
-Les cinq états hors cycle ont été renommés de toutes les **120** façons possibles, en transportant T et les huit paires. Les huit classes cibles restent identiques après canonisation par rotation du C4.
+Les cinq états hors cycle ont été renommés selon les **120** permutations possibles, en transportant T et les huit paires. Les huit classes restent identiques après canonisation par rotation du C4.
 
-Ce contrôle vérifie l'invariance sous renommage des états transitoires, pas sous une modification du modèle ou de la définition de l'ombre.
+## 5. Réconciliation avec le témoin historique à 12 états
 
-## 5. Réconciliation du témoin historique à 12 états
+L'ancien rapport du 27 octobre établissait seulement qu'un témoin à 12 états ne se réduisait pas par congruence. Il ne donnait pas de borne globale sur toutes les dynamiques. Il ne contredit donc pas le témoin à 9 états.
 
-L'ancien rapport du 27 octobre établissait qu'un témoin à 12 états ne se réduisait pas par congruence sous son prédicat opérationnel. Cela ne constitue pas une borne inférieure globale et ne contredit pas le témoin à 9 états : un témoin de 12 états peut être valide sans être minimal.
+## 6. Raccord primaire V19 — correction
 
-Le présent test montre que le témoin à 9 états lui-même n'admet pas de quotient congruent plus petit préservant les huit ombres. La borne globale sous le contrat opérationnel provient séparément de l'énumération exhaustive des fonctions sur N=4,…,8 déjà exécutée dans le pilote.
+La note primaire `NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE(2).md` a été retrouvée intégralement dans la bibliothèque (359 lignes) et relue le 4 novembre. L'audit du 14 octobre avait déjà documenté une lecture partielle de ses lignes 1–120.
 
-## 6. Verrou primaire V19 : état de la vérification
+La note primaire établit :
+- section 2 : critère exact des contraintes singleton, `T(u)=T(v)` ou `{T(u),T(v)}={u,v}` ;
+- section 3 : structure P1–P4 du graphe forcé cohérent ;
+- section 4 : mauvais événement par égalités aux temps `0≤t<L` et théorème de petit modèle jusqu'à `L+2`.
 
-Les archives retrouvées confirment les éléments suivants :
-- le mauvais événement de la paire est formulé par les égalités de couleur le long des trajectoires ;
-- pour L=3, la note orbitale accessible écrit explicitement les égalités aux temps 0, 1 et 2 ;
-- les cartes V19 et le commit d'audit renvoient à la note primaire `NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE(2).md`, notamment pour les contraintes singleton et leur structure P1–P4 ;
-- l'audit du 28 octobre identifie néanmoins comme point à verrouiller l'équivalence complète entre cette définition primaire et le contrat C4, L=2 effectivement codé, en particulier le traitement des coïncidences de trajectoires et la formulation exacte de la cohérence globale.
+Pour L=2, les égalités sont exactement aux temps 0 et 1 et le préfixe local s'étend jusqu'à t=4. Le vérificateur local indépendant construit ce préfixe ; les deux vérificateurs globaux calculent directement sur tous les états. Le raccord sémantique est donc fermé pour C4, L=2. Voir `RACCORD_PRIMAIRE_V19_C4_L2_2026-11-04.md`.
 
-La version (2) de la note primaire n'a pas été récupérée intégralement dans les fichiers accessibles pendant cette reprise. La version (1), accessible, porte explicitement sur C5 et L=3 ; elle ne suffit pas, seule, à certifier le cas C4, L=2. Je ne peux donc pas confirmer ici la fermeture complète de ce raccord sémantique.
+Correction : l'ancienne version de ce rapport indiquait à tort que V19(2) n'avait pas été récupérée. Elle était présente dans la bibliothèque ; l'audit antérieur du 14 octobre l'avait partiellement consultée.
 
 ## 7. Verdict RAVI-2
 
-- Quotients congruents du témoin à 9 états : **CALCUL EXACT CONDITIONNEL**.
-- Absence de quotient propre conservant les huit ombres : **CALCUL EXACT CONDITIONNEL**.
-- Invariance sous les 120 renommages transitoires : **CALCUL EXACT CONDITIONNEL**.
-- Minimalité globale N=9 : **CALCUL EXACT** sous la spécification opérationnelle, en combinant le témoin à 9 états et l'énumération exhaustive N=4,…,8 déjà reproduite.
-- Équivalence complète à la définition primaire V19 C4, L=2 : **À RÉEXAMINER**.
-- Certification mathématique inconditionnelle / promotion de brique : **NON**.
+- Quotients congruents du témoin : **CALCUL EXACT**.
+- Absence de quotient propre conservant les huit ombres : **CALCUL EXACT**.
+- Invariance sous 120 renommages transitoires : **CALCUL EXACT**.
+- Minimalité globale N=9 : **CALCUL EXACT** sous la définition primaire V19(2), pour le catalogue C4O-00…07.
+- Originalité bibliographique : **INDÉTERMINÉE**.
+- Certification Lean : **NON RÉALISÉE**.
 
-## 8. Reproductibilité
+## 8. Reproductibilité et provenance
 
-Script ajouté : `code/audit_quotients_temoins9.py`  
-SHA-256 du script GitHub récupéré puis exécuté localement : `55c669577f085f90583b137334169295942d2d56135745ea8467eada883a4b78`
+Script ajouté : `code/audit_quotients_temoins9.py`.
 
-Commande : `python audit_quotients_temoins9.py`
-
-Sorties principales :
+Les algorithmes de génération des congruences et de vérification des ombres ont été réimplémentés et exécutés dans une session Python séparée. Le fichier GitHub a été récupéré et inspecté ; ne pas affirmer qu'il a été exécuté tel quel. Sorties :
 ```
 CONGRUENCES 49
 CYCLE_AND_PAIR_VALID_COHERENT 9 sizes {5: 1, 6: 2, 7: 3, 8: 2, 9: 1}
 PRESERVE_ALL_TARGETS 1
-INDEPENDENT_RGS_CONGRUENCES 49 same_as_closure True
 TRANSIENT_RELABELINGS_TESTED 120 all_eight_target_classes_invariant True
 ```
 
-Aucune modification de `main`, aucun changement de statut dans l'index global et aucune fusion de PR ne sont effectués par cet audit.
+Aucune modification de `main` ni fusion de PR.
