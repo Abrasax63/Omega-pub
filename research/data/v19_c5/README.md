@@ -32,7 +32,7 @@ L'archive source et les originaux restent conservés séparément dans la Librar
 
 Le programme a été exécuté avec succès sur l'archive source récupérée dans la Library. Résultats : 3 341 diagrammes locaux, 510 ombres propres, 13 classes D5, 14 classes C5 orientées, 105 paires réparées, 455 triples D5 réparés et 560 triples orientés U42 vérifiés.
 
-Les données nécessaires sont maintenant présentes dans le dépôt. **L'exécution depuis un checkout GitHub propre a réussi** via GitHub Actions : [run pull_request #41855315734](https://github.com/Abrasax63/Omega-pub/actions/runs/41855315734). Le job a installé Python 3.12, récupéré la branche et exécuté le script sans erreur. Le workflow relance ce contrôle lors des modifications pertinentes.
+Les données nécessaires sont maintenant présentes dans le dépôt. **L'exécution depuis un checkout GitHub propre a réussi** via GitHub Actions : [run pull_request #41855503795](https://github.com/Abrasax63/Omega-pub/actions/runs/41855503795). Le job a installé Python 3.12, récupéré la branche et exécuté le script sans erreur. Le workflow relance ce contrôle lors des modifications pertinentes.
 
 Depuis la racine du dépôt :
 
