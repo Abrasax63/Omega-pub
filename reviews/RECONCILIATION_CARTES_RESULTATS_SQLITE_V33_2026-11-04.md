@@ -55,3 +55,10 @@ Cette revue ne crée pas de lien de carte dans SQLite v33 : les 17 restent donc 
 - 42 résultats sans carte individuelle identifiée.
 
 Aucune écriture SQLite, aucun changement de statut ou de dépendance n'a été effectué. La réconciliation demeure partielle et ne vaut pas validation mathématique externe.
+
+
+## Complément de revue sémantique — 4 novembre 2026
+
+Les 17 correspondances précédemment classées « par nom seulement » ont été relues contre les enregistrements SQLite v33 : titre, noyau d'énoncé, hypothèses, statut et version. **17/17 correspondent sémantiquement** à une fiche de résultat. Le rapport détaillé est [REVUE_SEMANTIQUE_17_CARTES_CANDIDATES_2026-11-04.md](REVUE_SEMANTIQUE_17_CARTES_CANDIDATES_2026-11-04.md).
+
+La réserve reste documentaire : SQLite ne contient pas de liaison d'évidence explicite vers ces 17 fichiers Markdown. Aucune liaison, source, version ou statut n'a été modifié. Le classement devient donc « carte correspondante confirmée, liaison SQLite explicite non réparée », et non « preuve de provenance SQLite restaurée ».
