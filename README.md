@@ -146,10 +146,28 @@ Les dossiers seront ajoutés après vérification de leur provenance, de leur co
 
 ## État actuel du dépôt
 
-Le dépôt public contient actuellement sa présentation générale et son protocole de contribution et de revue. **Les dossiers scientifiques détaillés et leurs preuves ne sont pas encore intégralement publiés ici.**
+Une première migration documentaire est proposée dans la branche `migration/ravi2-ccs-public-2026-11-04` : 94 fichiers dans `research/bricks/` (dont 32 fiches explicitement reconstituées), 5 documents méthodologiques, 42 fichiers de revue/audit et 44 fichiers RAVI-2/CCS sous `reproducibility/`. Les sources de programme restaurées, le code et les données sont inventoriés séparément dans `research/`. La base SQLite v33 et les mémoires de conversation ne sont pas incluses. Voir `MIGRATION_RAVI2_CCS_2026-11-04.md`.
 
-Cette distinction est volontaire : le dépôt doit permettre au public de savoir précisément ce qui est déjà accessible et ce qui reste à publier. Les prochaines publications seront ajoutées progressivement, avec leurs statuts et leurs limites.
+Cette branche est soumise à revue avant toute intégration dans `main`. Le transfert ne vaut pas validation scientifique ; les statuts d'origine et les limites de réconciliation sont conservés.
 
 ---
 
 **Bienvenue sur Omega-pub. L'objectif est simple : rendre les travaux examinables, faciliter leur reproduction et accepter leur réfutation lorsqu'elle est justifiée.**
+
+### Reconstitutions documentaires — 4 novembre 2026
+
+En complément des 61 cartes/fichiers annoncés ci-dessus, la branche contient maintenant **32 fiches reconstituées** sous `research/bricks/reconstructed/`, à partir des enregistrements scientifiques structurés de SQLite v33. Elles ne sont pas les fichiers Markdown originaux et sont explicitement marquées comme reconstitutions. Elles ne constituent ni une nouvelle certification ni une promotion des statuts. L'index détaillé est dans [research/bricks/INDEX_BRIQUES.md](research/bricks/INDEX_BRIQUES.md).
+
+
+### Complément C4–L=2 (conditionnel)
+
+Une fiche dédiée documente le témoin à 9 états et l'énumération exhaustive jusqu'à 8 états pour la coexistence des huit classes C4O. L'audit sémantique du 4 novembre a rapproché les contraintes du texte primaire V19 : le mauvais événement impose l'égalité des couleurs aux temps 0 et 1. Le résultat est **CALCUL EXACT sous la définition primaire** pour les huit classes cataloguées et leur minimum à 9 états. La preuve du lemme de localité L+2 a été reconstruite à partir de la structure P1–P4 et contrôlée exhaustivement sur 38 systèmes C4, 536 paires et 173 composantes sans divergence. La certification RAVI-2 finale reste à réexaminer pour la formalisation supplémentaire et la revue tierce. Voir [la fiche C4–L=2](research/bricks/C4-L2-COEXISTENCE-MINIMUM-9-CONDITIONAL.md), [le rapport d'audit](reviews/AUDIT_SEMANTIQUE_C4_L2_2026-11-04.md) et [le script indépendant](research/code/c4_l2_independent_local_audit_2026-11-04.py).
+
+
+### Sources documentaires restaurées — 4 novembre 2026
+
+Douze chemins de sources référencés dans SQLite v33 ont été retrouvés dans la Library : onze documents Markdown ont été transférés et un document DOCX est représenté par une extraction textuelle explicitement identifiée. Voir le [manifeste des sources](research/programs/README.md). La base SQLite elle-même reste privée et n'est pas incluse.
+
+### Reproductibilité V19 C5–L=3
+
+Les quatre entrées et les quatre sorties du contrôle C5–L=3 sont présentes sous [research/data/v19_c5/](research/data/v19_c5/README.md). Le script indépendant a été rejoué sur l'archive source et les exports de la branche ont passé les contrôles structurels de lignes, classes et témoins. L'exécution depuis un checkout GitHub propre a réussi via [GitHub Actions](https://github.com/Abrasax63/Omega-pub/actions/runs/41855503795). Les CSV transférés sont des exports textuels et ne revendiquent pas l'identité binaire des fichiers originaux.

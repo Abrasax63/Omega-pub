@@ -1,0 +1,396 @@
+{
+  "commit": "COMMIT-RAVI2-2026-10-20-Q-PRED-HIDDEN-24",
+  "timestamp": "2026-10-20T11:28:53.876478+00:00",
+  "before": {
+    "results": 87,
+    "admissible": 83,
+    "dep": 49,
+    "relations": 81,
+    "versions": 97
+  },
+  "after": {
+    "results": 88,
+    "admissible": 84,
+    "dep": 49,
+    "relations": 83,
+    "versions": 98
+  },
+  "integrity": "ok",
+  "foreign_key_errors": 0,
+  "causal_cycles": 0,
+  "new_result": "BR-Q-PRED-HIDDEN-01",
+  "new_depend_de": 0,
+  "informative_relations": [
+    "GENERALISE -> BR-Q-SWAP-MEM-01",
+    "ILLUSTRE -> BR-STATE-01"
+  ],
+  "originality": "CONNU_OU_CLASSIQUE",
+  "checks": {
+    "date": "2026-10-20",
+    "experiment_1_product_and_correlated_perfect_predictive_labels": {
+      "dimensions_checked": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "cases": [
+        {
+          "d": 2,
+          "bell_states": 4,
+          "product_labels": 2,
+          "orthogonality_error": 2.220446049250313e-16,
+          "same_reduced_state_error": 1.1102230246251565e-16,
+          "decoder_error": 2.220446049250313e-16,
+          "product_swap_error": 0.0,
+          "ambient_upper_bound": 4,
+          "product_environment_upper_bound": 2
+        },
+        {
+          "d": 3,
+          "bell_states": 9,
+          "product_labels": 3,
+          "orthogonality_error": 2.5344527829436707e-16,
+          "same_reduced_state_error": 1.111053031313447e-16,
+          "decoder_error": 2.5344527829436707e-16,
+          "product_swap_error": 0.0,
+          "ambient_upper_bound": 9,
+          "product_environment_upper_bound": 3
+        },
+        {
+          "d": 4,
+          "bell_states": 16,
+          "product_labels": 4,
+          "orthogonality_error": 1.1704836984704332e-16,
+          "same_reduced_state_error": 0.0,
+          "decoder_error": 1.1704836984704332e-16,
+          "product_swap_error": 0.0,
+          "ambient_upper_bound": 16,
+          "product_environment_upper_bound": 4
+        },
+        {
+          "d": 5,
+          "bell_states": 25,
+          "product_labels": 5,
+          "orthogonality_error": 4.441878995606901e-16,
+          "same_reduced_state_error": 1.9430414996443508e-16,
+          "decoder_error": 4.441878995606901e-16,
+          "product_swap_error": 0.0,
+          "ambient_upper_bound": 25,
+          "product_environment_upper_bound": 5
+        },
+        {
+          "d": 6,
+          "bell_states": 36,
+          "product_labels": 6,
+          "orthogonality_error": 1.1102230246251565e-15,
+          "same_reduced_state_error": 3.0535869614443107e-16,
+          "decoder_error": 1.1102230246251565e-15,
+          "product_swap_error": 0.0,
+          "ambient_upper_bound": 36,
+          "product_environment_upper_bound": 6
+        },
+        {
+          "d": 7,
+          "bell_states": 49,
+          "product_labels": 7,
+          "orthogonality_error": 1.7763568394002505e-15,
+          "same_reduced_state_error": 5.27356080595983e-16,
+          "decoder_error": 1.7763568394002505e-15,
+          "product_swap_error": 0.0,
+          "ambient_upper_bound": 49,
+          "product_environment_upper_bound": 7
+        },
+        {
+          "d": 8,
+          "bell_states": 64,
+          "product_labels": 8,
+          "orthogonality_error": 1.0257193740502483e-15,
+          "same_reduced_state_error": 2.7755575615628914e-17,
+          "decoder_error": 1.0257193740502483e-15,
+          "product_swap_error": 0.0,
+          "ambient_upper_bound": 64,
+          "product_environment_upper_bound": 8
+        },
+        {
+          "d": 9,
+          "bell_states": 81,
+          "product_labels": 9,
+          "orthogonality_error": 3.885780586188048e-15,
+          "same_reduced_state_error": 9.02056934936254e-16,
+          "decoder_error": 3.885780586188048e-15,
+          "product_swap_error": 0.0,
+          "ambient_upper_bound": 81,
+          "product_environment_upper_bound": 9
+        },
+        {
+          "d": 10,
+          "bell_states": 100,
+          "product_labels": 10,
+          "orthogonality_error": 3.9968028886505635e-15,
+          "same_reduced_state_error": 7.910356569349788e-16,
+          "decoder_error": 3.9968028886505635e-15,
+          "product_swap_error": 0.0,
+          "ambient_upper_bound": 100,
+          "product_environment_upper_bound": 10
+        }
+      ],
+      "max_numerical_error": 3.9968028886505635e-15,
+      "pass": true,
+      "analytic_bounds": {
+        "product_cut": "N_perfect <= d_E because perfect discrimination requires pairwise orthogonal hidden environment supports; achieved by |0>_S|n>_E and SWAP when d_S=d_E=d.",
+        "correlated_equal_dimension": "N_perfect <= d^2 by ambient Hilbert dimension; achieved by the d^2 generalized Bell states with common reduced I/d and one common Bell-decoder + system measurement/reset + SWAP + system measurement continuation."
+      }
+    },
+    "experiment_2_raw_predictive_class_count_is_not_dimension_bounded": {
+      "dimension": 2,
+      "family": "|0>_S tensor (cos(theta)|0>+sin(theta)|1>)_E, theta in [0,pi/2]",
+      "continuation": "SWAP then computational-basis measurement on S",
+      "response": "P(0|theta)=cos(theta)^2",
+      "sample_points": 1001,
+      "sample_unique_probabilities": 1001,
+      "strictly_monotone_sample": true,
+      "analytic_conclusion": "Uncountably many predictive equivalence classes already with d_E=2; therefore cardinality of predictive classes is not a finite-memory dimension measure. Perfect distinguishability number is the operational finite-dimensional invariant used instead.",
+      "pass": true
+    },
+    "verdict": {
+      "construction": "PASS",
+      "original_G_cardinality_metric": "REFUTED_AS_DIMENSION_MEASURE",
+      "corrected_operational_invariant": "N_perfect = maximum pairwise perfectly future-distinguishable histories sharing the same instantaneous reduced state",
+      "product_exact": "d for d_S=d_E=d",
+      "correlation_assisted_exact": "d^2 for d_S=d_E=d and local reduced I/d",
+      "novelty_hint": "Components are classical/known (generalized Bell basis/dense coding, temporal dimension witnesses, process tensors); candidate value is as an internal bridge and exact specialization, not a new general quantum-memory principle."
+    }
+  },
+  "main_sha256": "de7b2306ce09524f064d5c92f7cc14151ee9c3a5a14891d39b28653dc6e89c54",
+  "backup_sha256": "8167f6181bf17fa4cff8fbaf019b53181a0cdf121ce54954c9d25795170f27fb",
+  "card_sha256": "f516894e7f80fd92a86f5b16cccdde174c1de2b9a894479966d2456d9d574c4f",
+  "audit_sha256": "aa848477bd2a2bacba340d96febeaa5370760fec5629b54cc1980f9be32f2706",
+  "sync": {
+    "commit_id": "COMMIT-RAVI2-2026-10-20-Q-PRED-HIDDEN-24",
+    "main_sha256": "de7b2306ce09524f064d5c92f7cc14151ee9c3a5a14891d39b28653dc6e89c54",
+    "experimental_sha256": "10a9cdb53ef86e15f863f638cbcf70fa79953c7eb71b78c37b5fe58a3e4d9373",
+    "main": {
+      "results": 88,
+      "admissible": 84,
+      "depend_de": 49,
+      "relations": 83,
+      "versions": 98,
+      "integrity": "ok",
+      "foreign_key_errors": 0
+    },
+    "experimental": {
+      "results": 88,
+      "admissible": 84,
+      "depend_de": 49,
+      "strict_contracts": 51,
+      "strict_reviews": 49,
+      "certified_dependency_interfaces": 49,
+      "certified_compositions": 42,
+      "certified_definition_references": 4,
+      "integrity": "ok",
+      "foreign_key_errors": 0
+    },
+    "new_result": "BR-Q-PRED-HIDDEN-01",
+    "new_dependency_interfaces": 0,
+    "cross_interface_auto_sync": "not_configured",
+    "common_tables": {
+      "count": 25,
+      "identical": 25,
+      "mismatches": []
+    },
+    "structural_graph": {
+      "version": "0.2",
+      "mode": "typed_non_certifying_structural_graph",
+      "source_db": "RESEARCH_MEMORY.sqlite",
+      "source_sha256_before": "de7b2306ce09524f064d5c92f7cc14151ee9c3a5a14891d39b28653dc6e89c54",
+      "source_sha256_after": "de7b2306ce09524f064d5c92f7cc14151ee9c3a5a14891d39b28653dc6e89c54",
+      "source_unchanged": true,
+      "certified_active_results": 84,
+      "atom_count": 44,
+      "result_atom_links": 764,
+      "structural_edges": 571,
+      "attractors": 95,
+      "benchmark": {
+        "targets": [
+          "DELTA-SPECTRUM-CLASS",
+          "BR-MEALY-HELLY-01",
+          "OBS-V19-FIRST-OBSTRUCTION11"
+        ],
+        "common_atoms": [
+          "classification_boundary",
+          "exact_claim",
+          "finite_discrete_system",
+          "observation_or_quotient",
+          "observe_project",
+          "obstruction_failure",
+          "theorem_proof"
+        ],
+        "common_structural_atoms": [
+          "classification_boundary",
+          "observe_project",
+          "obstruction_failure"
+        ],
+        "covering_attractors": [
+          {
+            "attractor_id": "AT-ea13ee159c900dc2",
+            "atoms": [
+              "classification_boundary",
+              "obstruction_failure"
+            ],
+            "support": 11,
+            "projects": 3,
+            "score": 7.660488
+          },
+          {
+            "attractor_id": "AT-54ccdec6e82407fe",
+            "atoms": [
+              "observe_project",
+              "obstruction_failure"
+            ],
+            "support": 13,
+            "projects": 2,
+            "score": 6.183091
+          },
+          {
+            "attractor_id": "AT-f8866abed8348858",
+            "atoms": [
+              "classification_boundary",
+              "observe_project"
+            ],
+            "support": 10,
+            "projects": 2,
+            "score": 5.618069
+          },
+          {
+            "attractor_id": "AT-e40b968abb69c4f2",
+            "atoms": [
+              "classification_boundary",
+              "observe_project",
+              "obstruction_failure"
+            ],
+            "support": 7,
+            "projects": 2,
+            "score": 4.941377
+          }
+        ],
+        "passed": true
+      },
+      "design_guards": [
+        "source opened SQLite mode=ro",
+        "no result/project special-cases in extractor",
+        "no writes to scientific DB",
+        "no status changes",
+        "no DEPEND_DE creation",
+        "TRIAGE_ONLY: structural tag/edge/attractor is not a theorem, dependency, novelty claim, or scientific premise."
+      ]
+    },
+    "discovery_v02": {
+      "candidates": 40,
+      "verdict_registry_closed_entries": 2
+    }
+  },
+  "reinjection": {
+    "structural": {
+      "version": "0.2",
+      "mode": "typed_non_certifying_structural_graph",
+      "source_db": "RESEARCH_MEMORY.sqlite",
+      "source_sha256_before": "de7b2306ce09524f064d5c92f7cc14151ee9c3a5a14891d39b28653dc6e89c54",
+      "source_sha256_after": "de7b2306ce09524f064d5c92f7cc14151ee9c3a5a14891d39b28653dc6e89c54",
+      "source_unchanged": true,
+      "certified_active_results": 84,
+      "atom_count": 44,
+      "result_atom_links": 764,
+      "structural_edges": 571,
+      "attractors": 95,
+      "benchmark": {
+        "targets": [
+          "DELTA-SPECTRUM-CLASS",
+          "BR-MEALY-HELLY-01",
+          "OBS-V19-FIRST-OBSTRUCTION11"
+        ],
+        "common_atoms": [
+          "classification_boundary",
+          "exact_claim",
+          "finite_discrete_system",
+          "observation_or_quotient",
+          "observe_project",
+          "obstruction_failure",
+          "theorem_proof"
+        ],
+        "common_structural_atoms": [
+          "classification_boundary",
+          "observe_project",
+          "obstruction_failure"
+        ],
+        "covering_attractors": [
+          {
+            "attractor_id": "AT-ea13ee159c900dc2",
+            "atoms": [
+              "classification_boundary",
+              "obstruction_failure"
+            ],
+            "support": 11,
+            "projects": 3,
+            "score": 7.660488
+          },
+          {
+            "attractor_id": "AT-54ccdec6e82407fe",
+            "atoms": [
+              "observe_project",
+              "obstruction_failure"
+            ],
+            "support": 13,
+            "projects": 2,
+            "score": 6.183091
+          },
+          {
+            "attractor_id": "AT-f8866abed8348858",
+            "atoms": [
+              "classification_boundary",
+              "observe_project"
+            ],
+            "support": 10,
+            "projects": 2,
+            "score": 5.618069
+          },
+          {
+            "attractor_id": "AT-e40b968abb69c4f2",
+            "atoms": [
+              "classification_boundary",
+              "observe_project",
+              "obstruction_failure"
+            ],
+            "support": 7,
+            "projects": 2,
+            "score": 4.941377
+          }
+        ],
+        "passed": true
+      },
+      "design_guards": [
+        "source opened SQLite mode=ro",
+        "no result/project special-cases in extractor",
+        "no writes to scientific DB",
+        "no status changes",
+        "no DEPEND_DE creation",
+        "TRIAGE_ONLY: structural tag/edge/attractor is not a theorem, dependency, novelty claim, or scientific premise."
+      ]
+    },
+    "discovery_candidates": 40,
+    "closed_discovery_verdicts": 2
+  },
+  "final_artifact_hashes": {
+    "main": "de7b2306ce09524f064d5c92f7cc14151ee9c3a5a14891d39b28653dc6e89c54",
+    "experimental": "10a9cdb53ef86e15f863f638cbcf70fa79953c7eb71b78c37b5fe58a3e4d9373",
+    "strict_registry_phase8": "54432481f2ed64540ab055a9502d9375ecab6b918f8ce33c85eca920ce1276bf",
+    "audit": "aa848477bd2a2bacba340d96febeaa5370760fec5629b54cc1980f9be32f2706",
+    "card": "f516894e7f80fd92a86f5b16cccdde174c1de2b9a894479966d2456d9d574c4f",
+    "checks": "6e5efe4f1d6b6a2dc8639810a32fc3b6207cb40b242ef06295239a887f1fc111"
+  }
+}

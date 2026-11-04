@@ -1,0 +1,29 @@
+{
+  "theorem": "single-exceptional-gap cyclic binary factor complexity",
+  "formula": "p(L)=1+min(L,h-1)+min(max(L-g,0),(k-1)g)",
+  "domain": "integers k>=2, g>=1, h>g, 1<=L<=T=(k-1)g+h",
+  "experiment_1_formula_exhaustive": {
+    "families": 3773,
+    "length_cases": 253330,
+    "failures": [],
+    "pass": true
+  },
+  "experiment_2_right_special_classification": {
+    "families": 1674,
+    "length_cases": 75375,
+    "right_special_instances": 73701,
+    "failures": [],
+    "pass": true
+  },
+  "specialization_BR_TIME_FACTOR_COMPLEX_01": {
+    "cases": 232,
+    "failures": [],
+    "pass": true
+  },
+  "all_pass": true,
+  "elapsed_seconds": 10.749,
+  "guards": [
+    "two decisive experiments only",
+    "specialization check is algebraic regression, not a third research lock experiment"
+  ]
+}

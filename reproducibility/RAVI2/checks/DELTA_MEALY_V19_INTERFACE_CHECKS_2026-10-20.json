@@ -1,0 +1,121 @@
+{
+  "experiment_1_hereditary_obstruction_existence": {
+    "subset_downsets_checked": 193,
+    "downsets_by_ground_size": {
+      "1": 2,
+      "2": 5,
+      "3": 19,
+      "4": 167
+    },
+    "violations": 0,
+    "pass": true,
+    "multiset_box_ideals_checked": 152,
+    "box_violations": 0,
+    "box_pass": true,
+    "theorem_checked": "For a downward-closed compatibility family, existence of an incompatible configuration is upward-closed in size whenever extensions of that size exist."
+  },
+  "target_interfaces": {
+    "delta_defect_spectrum_to_12": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "delta_has_2_not_3": true,
+    "v19_first_obstruction_size": 11,
+    "v19_obstruction_exists_all_sizes_11_to_200": true,
+    "mealy_note": "A nerve is downward-closed under subsets; therefore non-face existence is upward-closed up to the number of available vertices. Minimal-nonface size spectrum is a different invariant and is not claimed monotone."
+  },
+  "experiment_2_finite_summary_too_weak": {
+    "unary_parity_example": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "threshold_examples": {
+      "1": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "2": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "3": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "4": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "5": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "6": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    "pass": true,
+    "conclusion": "Finite-summary/automaton representation alone permits both gapped spectra and upper-tail spectra, so it cannot transfer the Mealy/V19 hereditary monotonicity or their numerical obstruction bounds to Delta_h."
+  },
+  "verdict": {
+    "strong_index_preserving_unification": "REFUTED",
+    "scope": "Refutes only an interface identifying Delta_h nonemptiness at horizon h with existence of an incompatible configuration of cardinality h in a hereditary set/multiset compatibility system, preserving extension and exact index.",
+    "does_not_refute": "Mappings to minimal-obstruction spectra, enriched witness automata, non-index-preserving transforms, or other abstractions.",
+    "next_route": "Separate Delta_h from the hereditary compatibility branch; continue Mealy<->V19 via order ideals/minimal forbidden configurations if a non-tautological transferred bound can be found."
+  },
+  "all_pass": true
+}

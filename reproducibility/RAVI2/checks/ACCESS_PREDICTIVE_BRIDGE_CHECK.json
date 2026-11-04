@@ -1,0 +1,6 @@
+{
+  "theorem": "accessible closure commutes with canonical predictive quotient",
+  "exhaustive_cases_n_le_3_two_actions_binary_obs": 41018,
+  "random_cases_n_4_to_8": 20000,
+  "all_pass": true
+}

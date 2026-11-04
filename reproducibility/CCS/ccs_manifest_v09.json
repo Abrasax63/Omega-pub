@@ -1,0 +1,13 @@
+{
+  "source_sha256": "26b83b0508feca0319bfcb3d99f8557a2d2f60083b9701b8376200c32766f074",
+  "source_file": "ccs_extrait_source_v08.txt",
+  "line_bindings": {
+    "source": 1,
+    "target": 2,
+    "mapping": 3
+  },
+  "formal_file": "CCS_v09.lean",
+  "formal_sha256": "72c84a064cf0812581b6eec3637fb5f1261c2bd52ac48d8767c0e5a664af62b9",
+  "human_semantic_review": "PENDING",
+  "lean_execution": "NOT_RUN"
+}

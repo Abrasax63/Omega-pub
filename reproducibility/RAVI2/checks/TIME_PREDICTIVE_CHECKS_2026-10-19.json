@@ -1,0 +1,130 @@
+{
+  "all_pass": true,
+  "factor_profile_exhaustive": {
+    "pass": true,
+    "m_values": [
+      5,
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+      19,
+      21,
+      23,
+      25,
+      27,
+      29,
+      31
+    ],
+    "cases": 5446
+  },
+  "factor_profile_boundary_adversarial": {
+    "pass": true,
+    "m_values": [
+      5,
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+      19,
+      21,
+      23,
+      25,
+      27,
+      29,
+      31,
+      33,
+      35,
+      37,
+      39,
+      41,
+      43,
+      45,
+      47,
+      49,
+      51,
+      53,
+      55,
+      57,
+      59,
+      61
+    ],
+    "cases": 489,
+    "seed": 20261019
+  },
+  "random_phase_eta_interface": {
+    "pass": true,
+    "conditional_probabilities_checked": 280941,
+    "global_min": 0.022675736961451247,
+    "witnesses": [
+      {
+        "m": 5,
+        "T": 25,
+        "min_positive_conditional_probability": 0.08,
+        "required_floor": 0.04
+      },
+      {
+        "m": 7,
+        "T": 49,
+        "min_positive_conditional_probability": 0.061224489795918366,
+        "required_floor": 0.02040816326530612
+      },
+      {
+        "m": 9,
+        "T": 81,
+        "min_positive_conditional_probability": 0.04938271604938271,
+        "required_floor": 0.012345679012345678
+      },
+      {
+        "m": 11,
+        "T": 121,
+        "min_positive_conditional_probability": 0.04132231404958678,
+        "required_floor": 0.008264462809917356
+      },
+      {
+        "m": 13,
+        "T": 169,
+        "min_positive_conditional_probability": 0.03550295857988166,
+        "required_floor": 0.005917159763313609
+      },
+      {
+        "m": 15,
+        "T": 225,
+        "min_positive_conditional_probability": 0.03111111111111111,
+        "required_floor": 0.0044444444444444444
+      },
+      {
+        "m": 17,
+        "T": 289,
+        "min_positive_conditional_probability": 0.02768166089965398,
+        "required_floor": 0.0034602076124567475
+      },
+      {
+        "m": 19,
+        "T": 361,
+        "min_positive_conditional_probability": 0.024930747922437674,
+        "required_floor": 0.002770083102493075
+      },
+      {
+        "m": 21,
+        "T": 441,
+        "min_positive_conditional_probability": 0.022675736961451247,
+        "required_floor": 0.0022675736961451248
+      }
+    ]
+  },
+  "phase_switch_prefix_identity": {
+    "pass": true,
+    "cases": 70440
+  },
+  "key_values": {
+    "p_3m": "4m",
+    "T": "m^2",
+    "memory_scale_at_3m": "4*sqrt(T)"
+  },
+  "note": "DET-FIN-01 is treated as an already-certified premise and is not re-audited here."
+}

@@ -1,0 +1,47 @@
+{
+  "result_id": "BR-WORD-TWO-EQUAL-GAPS-COMPLEX-01",
+  "commit_id": "COMMIT-RAVI2-2026-10-20-TWO-EQUAL-GAPS-25",
+  "version": 1,
+  "validity": "DEMONSTRATED_INTERNAL",
+  "originality": "INDETERMINEE",
+  "scope": "Mots binaires cycliques W=P^a0^delta P^b0^delta avec deux gaps exceptionnels identiques et separations inegales.",
+  "assumptions": [
+    "g et delta entiers >=1",
+    "a,b entiers avec 1<=a<b",
+    "P=10^(g-1)",
+    "T=(a+b)g+2delta",
+    "facteurs cycliques de W ou facteurs de W infini periodique",
+    "1<=L<=T"
+  ],
+  "proof": "/Recherche/02_PROGRAMMES_ACTIFS/Observabilite/REPRISE_MULTI_GAP_2026-10-20.md",
+  "proof_review": "EXHAUSTIVE_SUFFIX_CASE_ANALYSIS_INTERNAL",
+  "independence": {
+    "two_algorithmic_checks": true,
+    "different_human_or_model_reviewer": false,
+    "formal_proof_assistant": false
+  },
+  "checks": "/Recherche/04_CODE_DONNEES/TWO_EQUAL_GAPS_CHECKS_2026-10-20.json",
+  "budget": {
+    "experiments": 2,
+    "reproduction_is_not_new_experiment": true
+  },
+  "procedure_nonconformity": "Targeted bibliography was completed after formula development; not retroactively described as an initial audit.",
+  "nonconformity_disposition": "Explicitly retained; certification concerns internal mathematical validity, not novelty or external validation.",
+  "bibliography_sources": [
+    "https://www.maths.tcd.ie/EMIS/journals/BBMS/Bulletin/bul971/cassaigne.pdf",
+    "https://arxiv.org/pdf/math/0512256",
+    "https://www.numdam.org/article/ITA_2013__47_2_195_0.pdf"
+  ],
+  "redundancy": {
+    "case_g_eq_delta_eq_1": "Existing single-gap theorem after complementation, no novelty claimed",
+    "general_case": "Not found among consulted internal cards; no exhaustive claim about all conversations"
+  },
+  "limits": [
+    "a=b excluded; repeated shorter period",
+    "no physical arrow of time",
+    "no arbitrary multiple-gap theorem",
+    "no scientific priority established"
+  ],
+  "new_depend_de": 0,
+  "created_at": "2026-10-20T15:43:33.370732+00:00"
+}

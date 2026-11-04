@@ -1,0 +1,155 @@
+{
+  "V19": {
+    "models": 50069,
+    "coherent": 29742,
+    "path_violations": 0,
+    "sampled_coherent_systems": 2590,
+    "shadow_color_checks": 82880,
+    "scope": "P1..P4 exhaustive n<=6; locality random L=2..4, C5, n<=18"
+  },
+  "RQ4": {
+    "exact_rank_and_sharpness_checks": 21,
+    "t_zero_rank_loss": true,
+    "scope": "Pauli preparation matrices; scalar sharpness, not CPTP realization"
+  },
+  "MEALY27": {
+    "cases": [
+      {
+        "q": 3,
+        "k": 2,
+        "n": 5,
+        "local_states": 9,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 4,
+        "k": 2,
+        "n": 5,
+        "local_states": 9,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 4,
+        "k": 3,
+        "n": 7,
+        "local_states": 13,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 5,
+        "k": 2,
+        "n": 5,
+        "local_states": 9,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 5,
+        "k": 3,
+        "n": 7,
+        "local_states": 13,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 5,
+        "k": 4,
+        "n": 9,
+        "local_states": 17,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 6,
+        "k": 2,
+        "n": 5,
+        "local_states": 9,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 6,
+        "k": 3,
+        "n": 7,
+        "local_states": 13,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 6,
+        "k": 4,
+        "n": 9,
+        "local_states": 17,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 6,
+        "k": 5,
+        "n": 11,
+        "local_states": 21,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 7,
+        "k": 2,
+        "n": 5,
+        "local_states": 9,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 7,
+        "k": 3,
+        "n": 7,
+        "local_states": 13,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 7,
+        "k": 4,
+        "n": 9,
+        "local_states": 17,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 7,
+        "k": 5,
+        "n": 11,
+        "local_states": 21,
+        "ADS_depth": 2,
+        "PDS": false
+      },
+      {
+        "q": 7,
+        "k": 6,
+        "n": 13,
+        "local_states": 25,
+        "ADS_depth": 2,
+        "PDS": false
+      }
+    ],
+    "resolution_subfamilies": 228,
+    "scope": "C(q,k) exact full-language and PDS searches q=3..7; general proofs audited separately"
+  },
+  "SUM": {
+    "threshold": 7382,
+    "budget_valid": true,
+    "register_bits": [
+      227,
+      313
+    ],
+    "exact_sum_inequalities": 289,
+    "strict_dominance_witness": [
+      7381,
+      7381
+    ],
+    "scope": "Static exact arithmetic; no power simulation or calibration certification"
+  }
+}

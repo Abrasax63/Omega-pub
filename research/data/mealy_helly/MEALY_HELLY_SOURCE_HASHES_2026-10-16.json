@@ -1,0 +1,23 @@
+{
+  "historical_library_source": {
+    "file": "mealy_helly_bridge.py",
+    "sha256": "48cb2d571b59aa9aa7de23faeb7bf0f6f27af20b467ff610bbbf06bfe06eacf2"
+  },
+  "public_portable_source": {
+    "file": "research/code/mealy_helly_bridge.py",
+    "sha256": "b725b9a2c7f36fa67d13f483153ed2435c6d861e66238979942b50eef9c7956b"
+  },
+  "historical_result": {
+    "file": "MEALY_HELLY_RESULTS_2026-10-16.json",
+    "sha256": "fc24611629a1835a86e61dd8f2aaf3b71f15abf1215fe5fe77eb3ccf3b06f73a"
+  },
+  "proof_report": {
+    "file": "MEALY_HELLY_BRIDGE_2026-10-16.md",
+    "sha256": "0f4c07ace351c1c95a63e6786b141dded1bc09b3ccf5b690c21852e55eed2324"
+  },
+  "result_card": {
+    "file": "BR-MEALY-HELLY-01_BRIQUE.md",
+    "sha256": "0e9791f07398606dd6a03c9b2cebb7b0f8fe6747a3dddacb35cf7f0ef6049ceb"
+  },
+  "note": "The public script is a path-portable adaptation of the historical Library source; the original source hash is retained separately. The result is reproduced by the portable script and written beside the public data."
+}

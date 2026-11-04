@@ -1,0 +1,74 @@
+{
+  "source": {
+    "quantifier": "forall",
+    "domain": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "values": {
+      "0": {
+        "hypothesis": false,
+        "conclusion": true
+      },
+      "1": {
+        "hypothesis": true,
+        "conclusion": false
+      },
+      "2": {
+        "hypothesis": true,
+        "conclusion": true
+      },
+      "3": {
+        "hypothesis": true,
+        "conclusion": false
+      }
+    }
+  },
+  "target": {
+    "quantifier": "forall",
+    "domain": [
+      10,
+      11,
+      12,
+      13
+    ],
+    "values": {
+      "10": {
+        "hypothesis": false,
+        "conclusion": true
+      },
+      "11": {
+        "hypothesis": true,
+        "conclusion": false
+      },
+      "12": {
+        "hypothesis": true,
+        "conclusion": true
+      },
+      "13": {
+        "hypothesis": true,
+        "conclusion": false
+      }
+    }
+  },
+  "pairs": [
+    [
+      0,
+      10
+    ],
+    [
+      1,
+      11
+    ],
+    [
+      2,
+      12
+    ],
+    [
+      3,
+      13
+    ]
+  ]
+}

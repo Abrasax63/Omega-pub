@@ -1,0 +1,31 @@
+name: V19 C5 L3 reproducibility
+
+on:
+  push:
+    branches:
+      - migration/ravi2-ccs-public-2026-11-04
+    paths:
+      - "research/code/audit_v19_c5_independent_2026-11-04.py"
+      - "research/data/v19_c5/**"
+      - ".github/workflows/v19-c5-repro.yml"
+  pull_request:
+    paths:
+      - "research/code/audit_v19_c5_independent_2026-11-04.py"
+      - "research/data/v19_c5/**"
+      - ".github/workflows/v19-c5-repro.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run independent V19 C5 audit
+        run: python research/code/audit_v19_c5_independent_2026-11-04.py
