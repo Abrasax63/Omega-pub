@@ -1,0 +1,66 @@
+{
+  "source": {
+    "domain": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "quantifier": "forall",
+    "hypothesis": [
+      "gt",
+      "x",
+      0
+    ],
+    "conclusion": [
+      "eq",
+      [
+        "mod",
+        "x",
+        2
+      ],
+      0
+    ]
+  },
+  "target": {
+    "domain": [
+      10,
+      11,
+      12,
+      13
+    ],
+    "quantifier": "forall",
+    "hypothesis": [
+      "gt",
+      "x",
+      10
+    ],
+    "conclusion": [
+      "eq",
+      [
+        "mod",
+        "x",
+        2
+      ],
+      0
+    ]
+  },
+  "pairs": [
+    [
+      0,
+      10
+    ],
+    [
+      1,
+      11
+    ],
+    [
+      2,
+      12
+    ],
+    [
+      3,
+      13
+    ]
+  ]
+}
