@@ -29,3 +29,7 @@ Sources internes : NOTE_RECHERCHE_V7_POLYNOME_TEMPOREL.md ; NOTE_RECHERCHE_V8_FA
 Références de l'audit : Jungers & Blondel (2011), Laschov, Margaliot & Even (2013), Nicaud (1999), Domaratzki, Kisman & Shallit (2002), Vieira & Budroni (2022).
 
 Portée : endofonctions finies déterministes, observation symbolique sans bruit, horizon infini. Ne certifie ni formule générale à horizon fini, ni extension stochastique, ni nouveauté externe, ni formalisation Lean. Aucune correspondance CL-DYN-01..04 n'est revendiquée. Aucune dépendance causale n'est déclarée.
+
+## Sources historiques consultables
+
+Les notes et audits originaux V7/V8/V10/V11 sont maintenant regroupés sous [le dossier sources](sources/README.md). Voir en particulier [l'audit V10](sources/AUDIT_V10.md) et [l'audit V11](sources/AUDIT_V11_V8_PREUVE_ET_NOUVEAUTE.md), ainsi que le [script de contrôle indépendant V8/V9](sources/audit_independant_v8_v9.py). Leur restauration documentaire ne signifie pas que les scripts ont été rejoués lors de cette migration.
