@@ -32,7 +32,7 @@ L'archive source et les originaux restent conservés séparément dans la Librar
 
 Le programme a été exécuté avec succès sur l'archive source récupérée dans la Library. Résultats : 3 341 diagrammes locaux, 510 ombres propres, 13 classes D5, 14 classes C5 orientées, 105 paires réparées, 455 triples D5 réparés et 560 triples orientés U42 vérifiés.
 
-Les données nécessaires sont maintenant présentes dans le dépôt. **L'exécution depuis un clone propre de cette branche n'a pas encore été effectuée** ; la reproductibilité indépendante depuis GitHub reste donc à confirmer.
+Les données nécessaires sont maintenant présentes dans le dépôt. **L'exécution depuis un checkout GitHub propre a réussi** via GitHub Actions : [run pull_request #41854918883](https://github.com/Abrasax63/Omega-pub/actions/runs/41854918883). Le job a installé Python 3.12, récupéré la branche et exécuté le script sans erreur. Le workflow relance ce contrôle lors des modifications pertinentes.
 
 Depuis la racine du dépôt :
 
@@ -44,3 +44,6 @@ python research/code/audit_v19_c5_independent_2026-11-04.py
 ## Contrôles structurels des exports GitHub — 4 novembre
 
 Lecture des six CSV depuis la branche après transfert : les en-têtes et comptes de lignes attendus sont présents ; les 14 classes sont uniques ; les 105 multisets de paires et 455 multisets de triples D5 sont uniques ; les 560 triples orientés U42 sont uniques ; les paires d'états sont distinctes dans les fichiers réparés ; les étiquettes de classes sont conservées entre fichiers historiques et fichiers réparés. Ces contrôles structurels ne remplacent pas une exécution Python du script depuis un clone propre.
+
+
+Le job vérifie les assertions et régénère les trois CSV de sortie ainsi que le rapport JSON dans son environnement éphémère. Il ne compare pas encore octet par octet ces sorties régénérées aux exports textuels versionnés ; cette égalité de sérialisation n'est pas revendiquée.
