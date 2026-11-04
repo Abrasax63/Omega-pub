@@ -43,3 +43,15 @@ L'absence de carte individuelle ne signifie pas que ces résultats sont faux ou 
 ## Verdict
 
 **RÉCONCILIATION PARTIELLE, NON CERTIFIÉE.** Les 47 fichiers sont présents dans l'arbre de la branche ; 26 liaisons directes sont explicites, 17 correspondances restent nominales seulement, 42 résultats actifs restent sans carte individuelle correspondante, et 4 fichiers ne sont pas associés à un identifiant de résultat. Aucun statut scientifique n'a été changé.
+
+
+## Mise à jour après revue sémantique — 4 novembre 2026
+
+Les 17 correspondances précédemment classées « nom seulement » ont été relues individuellement contre les lignes SQLite (`result_id`, titre, énoncé, domaine) et contre leurs locateurs d'audit/code/source. **Les 17 correspondances de contenu sont confirmées.** Le détail des cartes, identifiants de blob Git et locateurs recoupés figure dans `ADDENDUM_REVUE_17_CARTES_CANDIDATES_2026-11-04.md`.
+
+Cette revue ne crée pas de lien de carte dans SQLite v33 : les 17 restent donc distinctes des 26 liens explicites préexistants. Le décompte documentaire mis à jour est :
+- 26 liaisons explicites dans SQLite ;
+- 17 cartes correspondantes confirmées par revue de contenu, mais non reliées explicitement à leur résultat dans SQLite ;
+- 42 résultats sans carte individuelle identifiée.
+
+Aucune écriture SQLite, aucun changement de statut ou de dépendance n'a été effectué. La réconciliation demeure partielle et ne vaut pas validation mathématique externe.
