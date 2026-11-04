@@ -1,0 +1,17 @@
+{
+  "commit_id": "COMMIT-RAVI2-2026-10-20-TWO-EQUAL-GAPS-25",
+  "results": 89,
+  "admissible": 85,
+  "depend_de": 49,
+  "common_tables_identical": 25,
+  "strict_contracts": 52,
+  "integrity": "ok",
+  "foreign_key_errors": 0,
+  "causal_cycles": 0,
+  "all_old_non_meta_rows_preserved": true,
+  "originality": "INDETERMINEE",
+  "independence": "two algorithms; no separate human/model reviewer",
+  "bibliography_sequence_deviation_recorded": true,
+  "main_sha256": "66b3f870ebc2fceec9b477adc8daf6be995dcf7ee95b62b8ff8e90d7057eb1db",
+  "experimental_sha256": "26849cdbd1b43d3b6c091d030dcc69a2ebe7cd11250119c8366281f5757fd0fd"
+}
