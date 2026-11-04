@@ -146,7 +146,7 @@ Les dossiers seront ajoutés après vérification de leur provenance, de leur co
 
 ## État actuel du dépôt
 
-Une première migration documentaire est proposée dans la branche `migration/ravi2-ccs-public-2026-11-04` : 61 fichiers de briques/cartes, 5 documents méthodologiques, 31 audits/revues et 43 artefacts de reproductibilité RAVI-2/CCS. La base SQLite v33 et les mémoires de conversation ne sont pas incluses. Voir `MIGRATION_RAVI2_CCS_2026-11-04.md`.
+Une première migration documentaire est proposée dans la branche `migration/ravi2-ccs-public-2026-11-04` : 94 fichiers dans `research/bricks/` (dont 32 fiches explicitement reconstituées), 5 documents méthodologiques, 42 fichiers de revue/audit et 43 artefacts RAVI-2/CCS sous `reproducibility/`. Les sources de programme restaurées, le code et les données sont inventoriés séparément dans `research/`. La base SQLite v33 et les mémoires de conversation ne sont pas incluses. Voir `MIGRATION_RAVI2_CCS_2026-11-04.md`.
 
 Cette branche est soumise à revue avant toute intégration dans `main`. Le transfert ne vaut pas validation scientifique ; les statuts d'origine et les limites de réconciliation sont conservés.
 
