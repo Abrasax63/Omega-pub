@@ -122,3 +122,14 @@ Une recherche par identifiants et noms de fichiers a été complétée par un in
 Le contenu intégral a été lu. Son identifiant, son titre, son statut, son domaine, ses hypothèses et ses renvois de preuve concordent avec l'entrée SQLite et l'index historique. La carte a été copiée sans réécriture dans `research/bricks/BR-OBS-REVEAL-KERNEL_BRIQUE.md` sur la branche de migration. L'index public a été complété.
 
 **État actualisé du reliquat initial : 9 cartes restaurées sur 42 ; 33 restent sans carte individuelle retrouvée.** Les autres résultats repérés dans les index, snapshots, audits, scripts ou données ne sont pas comptés comme cartes individuelles. Aucun document manquant n'a été reconstitué à partir d'un résumé. Aucun statut scientifique n'a été modifié, aucun calcul ni test n'a été rejoué, SQLite n'a pas été modifiée et la PR reste en brouillon.
+
+
+## 8. Recherche des archives de preuves et restauration supplémentaire — 4 novembre 2026
+
+Les archives de preuves conservées dans la bibliothèque ont été ouvertes et leurs listes de membres examinées. Une carte originale supplémentaire, absente du dossier de briques habituel et non encore transférée dans la PR, a été trouvée dans `PREUVES_V19_TROISIEME_ORDRE_2026-10-15.zip` : `OBS-RESTRICT-MULTIMOMENT_BRIQUE.md`.
+
+La carte a été extraite directement de l'archive, puis comparée à l'enregistrement SQLite v33. L'identifiant, le titre, l'énoncé, le domaine, les six hypothèses, le statut `DÉMONTRÉ`, l'originalité `APPLICATION_CONNUE` et la version 1 concordent. Le fichier original a été restauré sans réécriture dans `research/bricks/OBS-RESTRICT-MULTIMOMENT_BRIQUE.md` ; l'index a été complété.
+
+Les autres archives de preuves examinées contiennent principalement des rapports, scripts, données, certificats ou cartes déjà restaurées (affine, N11, transfert V19, Mealy-Helly). Ces éléments sont conservés comme provenance et preuve, mais ne sont pas comptés comme cartes individuelles supplémentaires. Les rapports de décomposition OpenAI exposent des énoncés complets pour certaines briques, mais restent des rapports sources : aucune nouvelle fiche individuelle n'en a été fabriquée.
+
+**Bilan corrigé : 10 cartes originales restaurées sur les 42 résultats du reliquat ; 32 restent à retrouver ou à établir comme indisponibles.** Aucune modification SQLite, aucune promotion scientifique, aucun recalcul ou test rejoué. La PR demeure en brouillon.
