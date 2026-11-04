@@ -70,7 +70,7 @@ Exécution : toutes les assertions passent. Sortie :
 - profondeur ADS optimale L_A = 3, sur 13 croyances accessibles ;
 - aucun PDS, après fermeture d'un graphe de 6 configurations preset.
 
-Le script vérifie séparément la fermeture locale exacte, la profondeur ADS par programmation dynamique et l'absence de PDS par BFS sur les paires d'identités encore non distinguées.
+Le script vérifie séparément la fermeture locale exacte, la profondeur ADS par programmation dynamique et l'absence de PDS par BFS sur les paires d'identités encore non distinguées. Il est désormais présent dans la branche publique sous `research/code/mealy_boundary_certificate.py` et a été rejoué après sa publication ; toutes les assertions passent.
 
 **Verdict du rejeu : CALCUL EXACT reproduit pour le témoin fini (5,2,3).**
 
@@ -89,7 +89,7 @@ Rejeu réussi :
 - maximum observé : 7 pour q=8 ;
 - la non-face minimale racine attendue de taille k est retrouvée pour chaque cas.
 
-Le JSON de sortie reproduit a le SHA-256 `fc24611629a1835a86e61dd8f2aaf3b71f15abf1215fe5fe77eb3ccf3b06f73a`.
+Le script public a été rejoué depuis une arborescence temporaire propre, avec son chemin relatif ; il restitue les 21 cas et écrit un JSON de SHA-256 `fc24611629a1835a86e61dd8f2aaf3b71f15abf1215fe5fe77eb3ccf3b06f73a`, identique au résultat archivé. Le script, le résultat JSON et le manifeste des empreintes sont maintenant dans la branche publique.
 
 ### Limite essentielle
 
@@ -118,7 +118,7 @@ Contrôles ciblés :
 
 Ce contrôle est un triage de chemins et de configuration, pas un audit exhaustif du contenu des fichiers ni un scan de secrets certifié.
 
-Après les rejeux, la tête `265aa3201d2da92a7b5e1aecb3f5bfbf7f1ed267` a déclenché le run `41861838491`, encore `queued` lors de la dernière consultation. Il ne doit pas être présenté comme un succès tant que GitHub ne donne pas une conclusion `success`.
+Après les corrections documentaires et la publication des certificats Mealy, la tête courante observée est `f62ea9cdfe33594c832c49670f9057cfc336b2f0`. Son run GitHub Actions `41863520007` est encore `queued` ; l'état du commit est `pending`. Il ne doit pas être présenté comme un succès tant que GitHub ne donne pas une conclusion `success`.
 
 ## 4. Décision et limites restantes
 
