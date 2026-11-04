@@ -1,0 +1,83 @@
+{
+  "exact": {
+    "mode": "exhaustif",
+    "univers_taille": 100,
+    "evaluations": 100,
+    "ecarts": 15,
+    "taux_ecart": 0.15,
+    "categories": {
+      "domaine_ou_hypothese": 10,
+      "conclusion": 5
+    },
+    "temoins": {
+      "domaine_ou_hypothese": {
+        "entree": 0,
+        "reference": [
+          true,
+          true
+        ],
+        "traduction": [
+          false,
+          true
+        ]
+      },
+      "conclusion": {
+        "entree": 90,
+        "reference": [
+          true,
+          true
+        ],
+        "traduction": [
+          true,
+          false
+        ]
+      }
+    },
+    "intervalle_wilson_95": null,
+    "verdict": "NON_EQUIVALENT_TEMOIN",
+    "portee": "Équivalence des paires (admissibilité, conclusion) sur l'univers indiqué ; non une équivalence PDF-Lean.",
+    "hypotheses_statistiques": null
+  },
+  "estime": {
+    "mode": "sondage",
+    "univers_taille": 100,
+    "evaluations": 1000,
+    "ecarts": 149,
+    "taux_ecart": 0.149,
+    "categories": {
+      "domaine_ou_hypothese": 94,
+      "conclusion": 55
+    },
+    "temoins": {
+      "domaine_ou_hypothese": {
+        "entree": 3,
+        "reference": [
+          true,
+          false
+        ],
+        "traduction": [
+          false,
+          false
+        ]
+      },
+      "conclusion": {
+        "entree": 94,
+        "reference": [
+          true,
+          true
+        ],
+        "traduction": [
+          true,
+          false
+        ]
+      }
+    },
+    "intervalle_wilson_95": [
+      0.12827436093693598,
+      0.1724120235199237
+    ],
+    "verdict": "NON_EQUIVALENT_TEMOIN",
+    "portee": "Équivalence des paires (admissibilité, conclusion) sur l'univers indiqué ; non une équivalence PDF-Lean.",
+    "hypotheses_statistiques": "Tirages uniformes indépendants avec remise ; intervalle approximatif Wilson."
+  }
+}
