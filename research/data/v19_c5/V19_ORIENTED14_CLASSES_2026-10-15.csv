@@ -1,5 +1,3 @@
-<PARSED TEXT FOR SHEET: 1 / 1 TABS
-TAB NAME: V19_ORIENTED14_CLASSES_2026-10-15.csv>
 index,c5_class_id,codimension,boundary_assignments_count,canonical_shadow_bitset_hex,canonical_equations,d5_class_id,d5_split_size,is_chiral_split_member
 0,C5O-00,3,4,c0000003,x1+x4=0; x1+x3=0; x1+x2=0,D5-00,1,no
 1,C5O-01,3,4,84000021,x1+x4=0; x1+x3=0; x0+x2=0,D5-01,1,no
