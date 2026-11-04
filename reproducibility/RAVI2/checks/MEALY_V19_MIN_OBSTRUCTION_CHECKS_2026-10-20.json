@@ -1,0 +1,218 @@
+{
+  "date": "2026-10-20",
+  "mealy_source_sha256": "fc24611629a1835a86e61dd8f2aaf3b71f15abf1215fe5fe77eb3ccf3b06f73a",
+  "v19_source_sha256": "60f5e2f4ad092ea0871c8add2cf42c4880a94bc63e8c0e11317d19d9e6a2e641",
+  "experiment_1_common_monomial_interface": {
+    "interface": "minimal forbidden configurations -> minimal monomial generators; polarization -> squarefree generators",
+    "mealy_cases_checked": 21,
+    "mealy_nerve_nodes_previously_checked": 1337,
+    "mealy_max_obstruction_degree_in_dataset": 7,
+    "v19_finite_label_generators_checked": 10,
+    "v19_unbounded_labels": [
+      "C5O-06",
+      "C5O-08",
+      "C5O-10",
+      "C5O-12"
+    ],
+    "v19_polarized_obstruction_degree": 161,
+    "degree_preserved_under_constructed_polarization": true,
+    "failures": [],
+    "pass": true,
+    "interpretation": "Both systems admit the same algebraic carrier: an upward-closed monomial obstruction ideal. Mealy is squarefree; V19 is non-squarefree but polarizes canonically. Total degree of each minimal generator equals obstruction cardinality and is preserved by polarization."
+  },
+  "experiment_2_bound_transfer": {
+    "v19_total_label_types": 14,
+    "v19_bounded_label_types": 10,
+    "v19_H_pol": 161,
+    "candidate_transfer_claims": {
+      "H_le_total_types_minus_1": false,
+      "H_le_bounded_types_minus_1": false,
+      "support_controls_degree_as_in_squarefree_case": false
+    },
+    "fixed_dimension_counterfamily": [
+      {
+        "d": 1,
+        "capacity_M": 1,
+        "support_size": 1,
+        "minimal_generator_degree": 2
+      },
+      {
+        "d": 1,
+        "capacity_M": 2,
+        "support_size": 1,
+        "minimal_generator_degree": 3
+      },
+      {
+        "d": 1,
+        "capacity_M": 5,
+        "support_size": 1,
+        "minimal_generator_degree": 6
+      },
+      {
+        "d": 1,
+        "capacity_M": 10,
+        "support_size": 1,
+        "minimal_generator_degree": 11
+      },
+      {
+        "d": 1,
+        "capacity_M": 40,
+        "support_size": 1,
+        "minimal_generator_degree": 41
+      },
+      {
+        "d": 1,
+        "capacity_M": 160,
+        "support_size": 1,
+        "minimal_generator_degree": 161
+      },
+      {
+        "d": 1,
+        "capacity_M": 1000,
+        "support_size": 1,
+        "minimal_generator_degree": 1001
+      },
+      {
+        "d": 2,
+        "capacity_M": 1,
+        "support_size": 1,
+        "minimal_generator_degree": 2
+      },
+      {
+        "d": 2,
+        "capacity_M": 2,
+        "support_size": 1,
+        "minimal_generator_degree": 3
+      },
+      {
+        "d": 2,
+        "capacity_M": 5,
+        "support_size": 1,
+        "minimal_generator_degree": 6
+      },
+      {
+        "d": 2,
+        "capacity_M": 10,
+        "support_size": 1,
+        "minimal_generator_degree": 11
+      },
+      {
+        "d": 2,
+        "capacity_M": 40,
+        "support_size": 1,
+        "minimal_generator_degree": 41
+      },
+      {
+        "d": 2,
+        "capacity_M": 160,
+        "support_size": 1,
+        "minimal_generator_degree": 161
+      },
+      {
+        "d": 2,
+        "capacity_M": 1000,
+        "support_size": 1,
+        "minimal_generator_degree": 1001
+      },
+      {
+        "d": 3,
+        "capacity_M": 1,
+        "support_size": 1,
+        "minimal_generator_degree": 2
+      },
+      {
+        "d": 3,
+        "capacity_M": 2,
+        "support_size": 1,
+        "minimal_generator_degree": 3
+      },
+      {
+        "d": 3,
+        "capacity_M": 5,
+        "support_size": 1,
+        "minimal_generator_degree": 6
+      },
+      {
+        "d": 3,
+        "capacity_M": 10,
+        "support_size": 1,
+        "minimal_generator_degree": 11
+      },
+      {
+        "d": 3,
+        "capacity_M": 40,
+        "support_size": 1,
+        "minimal_generator_degree": 41
+      },
+      {
+        "d": 3,
+        "capacity_M": 160,
+        "support_size": 1,
+        "minimal_generator_degree": 161
+      },
+      {
+        "d": 3,
+        "capacity_M": 1000,
+        "support_size": 1,
+        "minimal_generator_degree": 1001
+      },
+      {
+        "d": 14,
+        "capacity_M": 1,
+        "support_size": 1,
+        "minimal_generator_degree": 2
+      },
+      {
+        "d": 14,
+        "capacity_M": 2,
+        "support_size": 1,
+        "minimal_generator_degree": 3
+      },
+      {
+        "d": 14,
+        "capacity_M": 5,
+        "support_size": 1,
+        "minimal_generator_degree": 6
+      },
+      {
+        "d": 14,
+        "capacity_M": 10,
+        "support_size": 1,
+        "minimal_generator_degree": 11
+      },
+      {
+        "d": 14,
+        "capacity_M": 40,
+        "support_size": 1,
+        "minimal_generator_degree": 41
+      },
+      {
+        "d": 14,
+        "capacity_M": 160,
+        "support_size": 1,
+        "minimal_generator_degree": 161
+      },
+      {
+        "d": 14,
+        "capacity_M": 1000,
+        "support_size": 1,
+        "minimal_generator_degree": 1001
+      }
+    ],
+    "proof_note": "For every fixed d>=1 and every M>=0, the downset [0,M] x N^(d-1) has obstruction ideal generated minimally by x_1^(M+1). Hence its polarized minimal nonface has cardinality M+1 although the number of types d and original support size 1 remain fixed. Therefore no finite bound depending only on number of types or support size can transfer the Mealy q-1 bound to general multicomplexes such as V19. If the capacity vector is supplied, H=max_i(c_i+1), but this merely restates the V19 capacity theorem.",
+    "transfer_without_capacity_data": "REFUTED",
+    "transfer_with_capacity_vector": "TRUE_BUT_REDUNDANT",
+    "pass": true
+  },
+  "verdict": {
+    "common_representation": "PROVED_INTERNAL__KNOWN_CLASSICAL",
+    "common_invariant": "MAX_TOTAL_DEGREE_OF_MINIMAL_MONOMIAL_GENERATORS_AFTER_POLARIZATION",
+    "mealy_value_rule": "H <= q-1 because generators are squarefree and every essential branch is fertile; sharp",
+    "v19_value": "H=161 at class-label level",
+    "bound_transfer_from_type_count_or_support": "REFUTED",
+    "bound_transfer_from_full_capacity_vector": "REDUNDANT_WITH_OBS-V19-COEX-REGION",
+    "scientific_commit_recommendation": "NO_NEW_BRICK",
+    "lock_status": "CLOSED_REFUTED_FOR_NONTRIVIAL_BOUND_TRANSFER",
+    "surviving_use": "Use monomial-ideal/polarization language only as a classical comparison interface; do not infer Mealy numerical bounds for V19."
+  }
+}
