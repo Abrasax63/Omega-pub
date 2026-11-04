@@ -10,9 +10,31 @@ L'objectif n'est pas de faire approuver des idées par principe. Il est de perme
 
 Ce dépôt est un projet de recherche ouvert porté par ses contributeurs. Sa présence sur GitHub ne signifie ni qu'il est affilié à une université ou à un laboratoire institutionnel, ni que ses travaux ont fait l'objet d'une évaluation scientifique par les pairs. Toute validation doit être documentée dossier par dossier.
 
-## Les trois axes présentés
+## Architecture modulaire
 
-### 1. RAVI-2 — Méthode de recherche et de vérification adversariale
+Le dépôt est organisé en modules scientifiques séparés, reliés par un socle commun de gouvernance documentaire.
+
+- [Architecture générale](ARCHITECTURE.md) — principes, modules, dépendances, versions et reproductibilité.
+- [Index global des résultats](00_GOUVERNANCE/INDEX_GLOBAL.md) — inventaire des résultats effectivement documentés.
+- [Référentiel des statuts](00_GOUVERNANCE/STATUTS.md) — statuts scientifiques et statuts de publication.
+- [Modèle de fiche de résultat](templates/RESULTAT.md) — structure commune des dossiers scientifiques.
+
+### Modules
+
+| Module | Périmètre |
+|---|---|
+| [01_RAVI2](01_RAVI2/) | Méthode, protocoles, certifications et audits |
+| [02_MATHEMATIQUES](02_MATHEMATIQUES/) | Systèmes dynamiques, observation et invariants |
+| [03_INFORMATIQUE_THEORIQUE](03_INFORMATIQUE_THEORIQUE/) | SAT, complexité, réductions et P/NP |
+| [04_CCS](04_CCS/) | Définitions, structures et résultats CCS |
+| [05_OMEGA_SRR](05_OMEGA_SRR/) | Littérature, définitions et recherches Omega-SRR |
+| [06_CALCUL_SCIENTIFIQUE](06_CALCUL_SCIENTIFIQUE/) | Programmes, simulations, données et reproductions |
+| [07_REVUES_INDEPENDANTES](07_REVUES_INDEPENDANTES/) | Critiques, contre-exemples et réponses |
+| [08_ARCHIVES](08_ARCHIVES/) | Versions et dossiers conservés pour traçabilité |
+
+La création d'un module ne certifie aucun résultat. Les dossiers sont alimentés progressivement après vérification de leur contenu, de leur provenance et de leur statut.
+
+## RAVI-2 — Méthode de recherche et de vérification adversariale
 
 RAVI-2 est le cadre méthodologique utilisé pour examiner les résultats. Il vise à réduire les erreurs de raisonnement, les conclusions prématurées et les confirmations circulaires.
 
@@ -28,7 +50,7 @@ Sa démarche consiste notamment à :
 
 RAVI-2 n'est pas une garantie automatique de vérité. C'est un protocole de travail dont l'application et les conclusions doivent elles-mêmes pouvoir être examinées.
 
-### 2. CCS — Corpus de structures et de résultats associés
+## CCS — Corpus de structures et de résultats associés
 
 CCS désigne ici un axe de travaux et un corpus de structures mathématiques étudiées dans le cadre du projet.
 
@@ -42,7 +64,7 @@ Les dossiers publics devront préciser, pour chaque structure :
 
 L'acronyme CCS ne doit pas être interprété comme une équivalence avec une théorie extérieure : son périmètre et ses définitions seront explicités dans les dossiers concernés. Aucun résultat ne sera présenté comme démontré sans justification consultable.
 
-### 3. Omega-SRR — Axe de recherche distinct
+## Omega-SRR — Axe de recherche distinct
 
 Omega-SRR est un autre axe de travail conservé dans le projet. Il sera présenté selon ses propres définitions, sources et critères de validation.
 
@@ -52,29 +74,13 @@ Aucun lien mathématique entre Omega-SRR, CCS et RAVI-2 ne doit être supposé. 
 - une hypothèse testable ;
 - un résultat effectivement démontré.
 
-## Quels sujets peut-on examiner ?
-
-Les dossiers seront publiés progressivement. Les travaux mathématiques déjà étudiés comprennent notamment des questions autour des systèmes dynamiques finis déterministes, de l'observation et de la perte d'information lors du passage d'une description microscopique à une description macroscopique.
-
-Parmi les objets employés dans ces travaux figurent des espaces d'états observés, des relations macroscopiques et des comparaisons entre itérations d'une dynamique observée et observation de l'évolution microscopique. Les définitions précises, les domaines de validité et les résultats correspondants devront toujours être lus dans leurs fiches dédiées.
-
-D'autres sujets exploratoires peuvent être présentés, mais ils seront séparés des résultats établis. Une question ouverte, y compris un problème majeur de mathématiques ou d'informatique théorique, ne sera jamais présentée comme résolue en l'absence d'une preuve vérifiable.
-
 ## Comment lire un résultat publié ici ?
 
-Chaque résultat doit, dans la mesure du possible, être accompagné d'une fiche contenant :
+Chaque résultat doit, dans la mesure du possible, être accompagné d'une fiche contenant un identifiant et une version, un énoncé exact, un statut scientifique, un statut de publication, son périmètre, ses hypothèses, une preuve ou un certificat, des contre-tests, ses dépendances, les éléments de reproductibilité et sa provenance.
 
-- **Identifiant et version** : pour retrouver précisément l'énoncé examiné.
-- **Énoncé** : ce qui est affirmé, sans ambiguïté.
-- **Statut** : niveau réel de validation.
-- **Périmètre** : ce qui est couvert et ce qui ne l'est pas.
-- **Hypothèses** : conditions nécessaires.
-- **Preuve ou certificat** : démonstration, calcul ou protocole reproductible.
-- **Contre-tests** : cas limites et tentatives de réfutation.
-- **Dépendances** : résultats utilisés par cet énoncé.
-- **Provenance** : données, code, références et historique des modifications.
+Le modèle commun est disponible dans [templates/RESULTAT.md](templates/RESULTAT.md). Les statuts sont définis dans [00_GOUVERNANCE/STATUTS.md](00_GOUVERNANCE/STATUTS.md).
 
-### Statuts épistémiques
+### Statuts scientifiques
 
 | Statut | Sens |
 |---|---|
@@ -87,21 +93,13 @@ Chaque résultat doit, dans la mesure du possible, être accompagné d'une fiche
 | **INDÉTERMINÉ** | Les éléments disponibles ne permettent pas de conclure. |
 | **À RÉEXAMINER** | Un résultat antérieur nécessite un nouvel examen ou une clarification. |
 
-Ces statuts ne sont pas des décorations : ils indiquent ce que le lecteur est en droit de conclure. Un calcul sur un nombre fini de cas ne démontre pas automatiquement une propriété générale. Une simulation n'est pas une démonstration. Une conjecture n'est pas un théorème.
+Le statut scientifique est distinct du statut de publication. Un résultat peut être démontré mais pas encore publié ; un document public peut présenter une conjecture.
 
 ## Vous souhaitez participer ?
 
 Les contributions extérieures sont recherchées, qu'elles viennent de chercheurs, d'étudiants, de développeurs, de mathématiciens ou de lecteurs curieux.
 
-Vous pouvez notamment :
-
-- demander une définition ou une clarification ;
-- signaler une erreur dans un raisonnement ;
-- proposer un contre-exemple ;
-- reproduire un calcul ou une simulation ;
-- signaler un résultat déjà connu dans la littérature ;
-- proposer une autre démonstration ;
-- identifier une hypothèse oubliée ou une limite de validité.
+Vous pouvez notamment demander une définition ou une clarification, signaler une erreur, proposer un contre-exemple, reproduire un calcul, signaler un résultat antérieur dans la littérature, proposer une autre démonstration ou identifier une hypothèse oubliée.
 
 **Pour commencer :**
 1. Consultez le [protocole de revue](REVIEW_PROTOCOL.md).
@@ -113,25 +111,9 @@ Les contributions peuvent être rédigées en français ou en anglais. Les écha
 
 ## Comment les critiques seront-elles traitées ?
 
-Une critique extérieure ne sera ni acceptée ni rejetée sur la seule autorité de son auteur. Elle sera examinée à partir de son contenu.
+Une critique extérieure ne sera ni acceptée ni rejetée sur la seule autorité de son auteur. Elle sera examinée à partir de son contenu : identification de l'affirmation, reproduction indépendante, contre-tests, examen des conséquences sur les dépendances et réponse motivée. Les auteurs d'un résultat peuvent répondre, mais leur réponse ne constitue pas à elle seule une validation indépendante.
 
-Lorsqu'une critique est pertinente, le traitement attendu est :
-1. Identifier exactement l'affirmation contestée.
-2. Reproduire indépendamment le raisonnement ou le calcul, si possible.
-3. Tester le contre-exemple ou l'objection.
-4. Déterminer si la conclusion est confirmée, limitée, corrigée ou réfutée.
-5. Publier une réponse motivée et conserver l'historique.
-
-Les auteurs d'un résultat peuvent répondre, mais leur réponse ne constitue pas à elle seule une validation indépendante. Le nombre d'étoiles, de commentaires ou de contributeurs ne constitue jamais une preuve.
-
-## Organisation du dépôt
-
-- `research/` — dossiers scientifiques et fiches de résultats.
-- `reviews/` — rapports de vérification, critiques et réponses.
-- `reproducibility/` — code, données partageables et instructions de reproduction.
-- `templates/` — modèles de fiches et de rapports.
-
-Les dossiers seront ajoutés après vérification de leur provenance, de leur contenu et de leur statut. Les archives privées ne sont pas automatiquement publiques : seules les pièces sélectionnées et autorisées seront transférées.
+Le [protocole de revue](REVIEW_PROTOCOL.md) détaille cette procédure. Le nombre d'étoiles, de commentaires ou de contributeurs ne constitue jamais une preuve.
 
 ## Limites et engagements
 
@@ -146,9 +128,9 @@ Les dossiers seront ajoutés après vérification de leur provenance, de leur co
 
 ## État actuel du dépôt
 
-Le dépôt public contient actuellement sa présentation générale et son protocole de contribution et de revue. **Les dossiers scientifiques détaillés et leurs preuves ne sont pas encore intégralement publiés ici.**
+L'architecture modulaire et ses documents de gouvernance sont désormais en place. **Les modules scientifiques sont initialisés, mais les résultats détaillés et leurs preuves restent à inventorier, vérifier et publier progressivement.**
 
-Cette distinction est volontaire : le dépôt doit permettre au public de savoir précisément ce qui est déjà accessible et ce qui reste à publier. Les prochaines publications seront ajoutées progressivement, avec leurs statuts et leurs limites.
+L'[index global](00_GOUVERNANCE/INDEX_GLOBAL.md) ne déclare aucun résultat scientifique détaillé publié à ce stade. Cette prudence évite de présenter comme accessible un travail qui ne l'est pas encore dans ce dépôt.
 
 ---
 
