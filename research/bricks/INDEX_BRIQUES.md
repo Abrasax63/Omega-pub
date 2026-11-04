@@ -1,0 +1,159 @@
+> **Note de migration — 2026-11-03 :** le fichier source ci-dessous conserve son contenu historique. La base SQLite version 33, interrogée sur sa vue `certified_active_results`, retourne 85 résultats actifs admissibles (74 DÉMONTRÉ, 11 CALCUL EXACT), alors que ce texte mentionne 83 cartes admissibles. Cette divergence de comptage n'a pas été réconciliée carte par carte ; utiliser SQLite comme référence et ne pas traiter le nombre 83 ci-dessous comme le compte courant.
+
+---
+
+# Index consolidé des briques réutilisables
+
+## Commit actif TWO-EQUAL-GAPS-25 — 20 octobre 2026
+
+BR-WORD-TWO-EQUAL-GAPS-COMPLEX-01 v1 : **DÉMONTRÉ interne**, originalité **INDÉTERMINÉE**. Pour g,delta>=1 et 1<=a<b entiers, P=10^(g-1), W=P^a0^delta P^b0^delta, T=(a+b)g+2delta, la complexite cyclique vaut p(L)=2+min(L-1,g+delta-2)+min(max(L-g,0),(b-1)g)+min(max(L-(a+1)g,0),ag+delta), 1<=L<=T. Les facteurs speciaux sont exactement Z_L pour 1<=L<=g+delta-2, B_L pour g<=L<=bg-1, C_L pour (a+1)g<=L<=(2a+1)g+delta-1. W est primitif et le premier horizon distinguant toutes les phases est max(bg,(2a+1)g+delta).
+
+Preuve autonome; aucun nouveau DEPEND_DE. Deux contrôles archivés reproduits : 288 familles/6720 longueurs et 1080 familles/40500 longueurs, zéro échec. Revue interne par le même assistant, pas de validation externe. Audit bibliographique ciblé rétrospectif : déviation de séquence explicitement conservée. Certificat : /Recherche/03_AUDITS_CERTIFICATS/TWO_EQUAL_GAPS_RAVI2_CERTIFICATE_2026-10-20.json. Carte : /Recherche/01_BRIQUES_REUTILISABLES/BR-WORD-TWO-EQUAL-GAPS-COMPLEX-01_BRIQUE.md. Preuve : /Recherche/02_PROGRAMMES_ACTIFS/Observabilite/REPRISE_MULTI_GAP_2026-10-20.md.
+
+État courant après ce commit : **89 cartes / 85 admissibles / 49 DEPEND_DE** ; miroir identique sur les **25 tables communes**, **52 contrats stricts**. Les paragraphes datés antérieurs décrivent des états historiques. Discovery/Structural Graph non régénérés pour ce commit ; leurs compteurs demeurent ceux du précédent état, à 84 résultats admissibles. Aucun automatisme interinterfaces configuré.
+
+
+Mise à jour de synchronisation : 20 octobre 2026. **Source de vérité :** `/Recherche/00_INDEX_ET_METHODES/RESEARCH_MEMORY.sqlite`, vue `certified_active_results`.
+
+Cet index est une interface de navigation. Il **ne crée, ne promeut, ne fusionne et ne généralise aucun résultat**. Les hypothèses, domaines, preuves et limites restent ceux de la base et des artefacts cités.
+
+**Noyau admissible courant : 83 cartes** (`DÉMONTRÉ` ou `CALCUL EXACT`, actives, `premise_allowed=1`).
+
+## Delta_h / Fermeture
+
+| ID | v | Statut | Originalité | Intitulé | Interface / preuve |
+|---|---:|---|---|---|---|
+| `BR-ACC-01` | 1 | DÉMONTRÉ | NON_EVALUE | Clôture accessible et défaut d'accès | `/Recherche/01_BRIQUES_REUTILISABLES/BR-ACC-01_CLOTURE_ACCESSIBLE.md` |
+| `BR-ACC-STATE-COMMUTE-01` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Commutation clôture accessible / quotient prédictif | `/Recherche/01_BRIQUES_REUTILISABLES/BR-ACC-STATE-COMMUTE-01_BRIQUE.md` |
+| `BR-CTRL-01` | 1 | DÉMONTRÉ | REFORMULATION_SPECIALISEE | Certificat cyclique de mémoire locale infinie | `/Recherche/01_BRIQUES_REUTILISABLES/BR-CTRL-01_CERTIFICAT_MEMOIRE_INFINIE.md` |
+| `DELTA-P3-N5` | 1 | CALCUL EXACT | NON_EVALUE | Séparation minimale P3 sans P2 à n=5 | `SRC-HIST-DELTA-SPECTRUM` |
+| `DELTA-SPECTRUM-CLASS` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Classification complète des spectres de défauts Δ_h | `SRC-HIST-DELTA-SPECTRUM` |
+
+
+## Fermeture différentielle / Schrödinger
+
+| ID | v | Statut | Originalité | Intitulé | Interface / preuve |
+|---|---:|---|---|---|---|
+| `SCH-POLY-CLOSURE-01` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Fermeture polynomiale d’un opérateur d’ordre deux | `/Recherche/01_BRIQUES_REUTILISABLES/SCH-POLY-CLOSURE-01_BRIQUE.md` |
+| `SCH-SEXTIC-PARITY-01` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Secteur polynomial régulier du potentiel sextique | `/Recherche/01_BRIQUES_REUTILISABLES/SCH-SEXTIC-PARITY-01_BRIQUE.md` |
+
+## Navier–Stokes — briques réutilisables
+
+| ID | v | Statut | Originalité | Intitulé | Interface / preuve |
+|---|---:|---|---|---|---|
+| `NS-CERT-E-10` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Stabilité quantitative d’une contrainte admissible sous perturbation relative | `/Recherche/03_AUDITS_CERTIFICATS/NAVIER_STOKES_BRIQUES_CERT_E_VERROUILLEES_2026-10-15.md` |
+| `NS-CERT-E-11` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Sommation diagonale contrôlée dans C∞ | `/Recherche/03_AUDITS_CERTIFICATS/NS_CERT_E_11_SOMMATION_DIAGONALE_2026-10-15.md` |
+| `NS-CERT-E-12` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Localisation solénoïdale par potentiel | `/Recherche/03_AUDITS_CERTIFICATS/NS_CERT_E_12_13_2026-10-15.md` |
+| `NS-CERT-E-13` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Extension lisse par platitude quantitative | `/Recherche/03_AUDITS_CERTIFICATS/NS_CERT_E_12_13_2026-10-15.md` |
+| `NS-CERT-E-14` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Inverse radial compact à moment nul | `/Recherche/03_AUDITS_CERTIFICATS/CERTIFICATS_NS_X34_X41_2026-10-15.md` |
+| `NS-CERT-E-15` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Primitive périodique et obstruction de moyenne | `/Recherche/03_AUDITS_CERTIFICATS/CERTIFICATS_NS_X34_X41_2026-10-15.md` |
+
+## Observabilité
+
+| ID | v | Statut | Originalité | Intitulé | Interface / preuve |
+|---|---:|---|---|---|---|
+| `APP-OBS-SPARSE-DISJOINT` | 1 | DÉMONTRÉ | APPLICATION_CONNUE | Sparsification disjointe des contraintes globales d’observabilité | `/DECOMPOSITION_BRIQUES_LOT2_2026-10-15.md` |
+| `BR-AFFINE-GAUGE-GLUE` | 1 | DÉMONTRÉ | APPLICATION_CONNUE | Raccordements affines par paires et obstruction collective | `/V19_TROISIEME_ORDRE_2026-10-15.md` |
+| `BR-AFFINE-GAUGE-CORE` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Diagnostic de translation commune ou noyau minimal d’étiquettes | `/GAUGE_CORE_BRIDGE_2026-10-16.md` |
+| `BR-AFFINE-GROUP-CORE` | 1 | DÉMONTRÉ | CLASSIQUE / APPLICATION INTERNE | Noyau incompatible affine par groupes et certificat de minimalité | `/AFFINE_GROUP_CORE_2026-10-15.md` |
+| `BR-AFFINE-TREE-CORE` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Diagnostic complet sur arbre : composition ou noyau incompatible minimal | `/AFFINE_TREE_CORE_BRIDGE_2026-10-16.md` |
+| `BR-AFFINE-TREE-GLUE` | 1 | DÉMONTRÉ | CLASSIQUE / APPLICATION INTERNE | Composition affine sur arbre et comptage par interfaces | `/COMPOSITION_AFFINE_2026-10-15.md` |
+| `BR-MEALY-HELLY-01` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Borne de Helly du nerf de compatibilité des résolveurs Mealy | `/MEALY_HELLY_BRIDGE_2026-10-16.md` |
+| `BR-OBS-01` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Expérience adaptative finie, expérience prédéfinie impossible | `/Recherche/01_BRIQUES_REUTILISABLES/BR-OBS-01_ADAPTATIF_VS_PREDEFINI.md` |
+| `BR-OBS-BAD-01` | 1 | DÉMONTRÉ | CONNU_PRINCIPE_GENERAL | Signature affine canonique des mauvais objets | `/Recherche/03_AUDITS_CERTIFICATS/V19_BADOBJECT_N11_2026-10-15.md` |
+| `BR-OBS-CAP-01` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Capacité dynamique d’un motif local | `/Recherche/04_CODE_DONNEES/V19_GEOMETRIC_CAPACITY_85_AUDIT_2026-10-15.csv` |
+| `BR-OBS-CAP-02` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Capacité de support et poids des circuits | `/Recherche/04_CODE_DONNEES/V19_GEOMETRIC_CAPACITY_85_AUDIT_2026-10-15.csv` |
+| `BR-OBS-CAP-03` | 1 | DÉMONTRÉ | CONNU_PRINCIPE_GENERAL | Fibres disjointes, boîte de coexistence et matrice TU | `/Recherche/03_AUDITS_CERTIFICATS/V19_REGION_COEXISTENCE_2026-10-15.md` |
+| `BR-OBS-CIRCUIT-01` | 1 | DÉMONTRÉ | CONNU_PRINCIPE_GENERAL | 2-recouvrement exact et bipartition du graphe de chevauchement | `/Recherche/03_AUDITS_CERTIFICATS/V19_BADOBJECT_N11_2026-10-15.md` |
+| `BR-OBS-KRYLOV-01` | 1 | DÉMONTRÉ | CONNU_PRINCIPE_GENERAL | Récupération du générateur d’un sous-espace de Krylov | `/Recherche/01_BRIQUES_REUTILISABLES/BR-OBS-KRYLOV-01_GENERATOR_RECOVERY.md` |
+| `BR-OBS-REVEAL-KERNEL` | 1 | DÉMONTRÉ | APPLICATION_CONNUE | Noyau des covariances et couvertures exactes conservés sous révélation | `/V19_N11_MOMENTS_ET_NOYAU_2026-10-15.md` |
+| `OBS-AFFINE-GROUP-CORE-VALIDATION` | 1 | CALCUL EXACT | VALIDATION INTERNE / AUCUNE PRIORITÉ REVENDIQUÉE | Validation exacte du détecteur et essais de blocages collectifs | `/AFFINE_GROUP_CORE_2026-10-15.md` |
+| `OBS-M27-BINARY` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Mealy27 — collapse binaire | `/Recherche/03_AUDITS_CERTIFICATS/COMMIT_AUDIT_RAVI2_2026-10-14.md` |
+| `OBS-M27-CONFLICT` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Mealy27 — noyaux de conflit bornés | `/Recherche/03_AUDITS_CERTIFICATS/COMMIT_AUDIT_RAVI2_2026-10-14.md` |
+| `OBS-M27-FERTILE` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Mealy27 — largeur fertile q−1 | `/Recherche/03_AUDITS_CERTIFICATS/COMMIT_AUDIT_RAVI2_2026-10-14.md` |
+| `OBS-M27-SPECTRUM` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Mealy27 — spectre aigu des conflits | `/Recherche/03_AUDITS_CERTIFICATS/COMMIT_AUDIT_RAVI2_2026-10-14.md` |
+| `OBS-RESTRICT-AFFINE` | 1 | DÉMONTRÉ | APPLICATION_CONNUE | Moments conjoints de restrictions affines : phase relative et poids de révélation | `/TRANSFERT_AFFINE_V19_2026-10-15.md` |
+| `OBS-RESTRICT-COUNT` | 1 | DÉMONTRÉ | APPLICATION_CONNUE | Précoloration : comptage exact des collisions et CNF des traces | `/CYCLE_MULTIAGENT_OBSERVABILITE_2026-10-15.md` |
+| `OBS-RESTRICT-FORCED-QUOTIENT` | 1 | DÉMONTRÉ | APPLICATION_CONNUE | Révélation sous oppositions forcées : quotient affine pondéré et transfert V19 | `/TRANSFERT_AFFINE_V19_2026-10-15.md` |
+| `OBS-RESTRICT-GREEDY` | 1 | DÉMONTRÉ | APPLICATION_CONNUE | Construction de coloration par espérance conditionnelle des collisions | `/CYCLE_MULTIAGENT_OBSERVABILITE_2026-10-15.md` |
+| `OBS-RESTRICT-MULTIMOMENT` | 1 | DÉMONTRÉ | APPLICATION_CONNUE | Moments conjoints affines à tout ordre sous révélation | `/V19_TROISIEME_ORDRE_2026-10-15.md` |
+| `OBS-RESTRICT-OVERLAP` | 1 | DÉMONTRÉ | APPLICATION_CONNUE | Invariant de recouvrement : covariance, Fourier–Walsh et Tutte | `/TEST_SYNTHESE_INVERSE_2026-10-15.md` |
+| `OBS-RESTRICT-PROFILE` | 1 | DÉMONTRÉ | NON_EVALUE | Loi exacte et reconstruction du profil des composantes sous restriction | `/TEST_SYNTHESE_INVERSE_2026-10-15.md` |
+| `OBS-V19-BAD-FIBER2` | 1 | DÉMONTRÉ | INDÉTERMINÉ | V19 — fibre paire vers mauvais objet de taille au plus 2 | `/Recherche/03_AUDITS_CERTIFICATS/V19_BADOBJECT_FIBER2_2026-10-15.md` |
+| `OBS-V19-C5-13` | 3 | CALCUL EXACT | INDÉTERMINÉ | V19 corrigé — 13 types orbitaux locaux sur C5 | `/Recherche/03_AUDITS_CERTIFICATS/COMMIT_AUDIT_RAVI2_2026-10-14.md` |
+| `OBS-V19-C5-CAPACITY` | 2 | DÉMONTRÉ | INDÉTERMINÉ | V19 — spectre exact des capacités géométriques orientées sur C5 | `/Recherche/03_AUDITS_CERTIFICATS/V19_MULTIPLICITE_CAPACITE_2026-10-15.md` |
+| `OBS-V19-C5-ORIENTED14` | 1 | CALCUL EXACT | INDÉTERMINÉ | V19 — raffinement orienté C5 : 14 classes | `/Recherche/03_AUDITS_CERTIFICATS/V19_ASSEMBLAGE_ORIENTE_2026-10-15.md` |
+| `OBS-V19-COEX-REGION` | 1 | DÉMONTRÉ | INDÉTERMINÉ | V19 — région exacte de coexistence des 70 ombres orientées | `/Recherche/03_AUDITS_CERTIFICATS/V19_REGION_COEXISTENCE_2026-10-15.md` |
+| `OBS-V19-COEX-SMALLMODEL` | 2 | DÉMONTRÉ | INDÉTERMINÉ | V19 — petit modèle pour la coexistence de k ombres | `/Recherche/03_AUDITS_CERTIFICATS/V19_ASSEMBLAGE_ORIENTE_2026-10-15.md` |
+| `OBS-V19-FIRST-OBSTRUCTION11` | 2 | DÉMONTRÉ | INDÉTERMINÉ | V19 — premier ordre d’obstruction de multiplicité : k*=11 (classification complète) | `/Recherche/03_AUDITS_CERTIFICATS/V19_MULTIPLICITE_CAPACITE_2026-10-15.md` |
+| `OBS-V19-FORCED-P4` | 1 | DÉMONTRÉ | INDÉTERMINÉ | V19 — composantes forcées P1 à P4 | `/Recherche/03_AUDITS_CERTIFICATS/COMMIT_AUDIT_RAVI2_2026-10-14.md` |
+| `OBS-V19-GAMMA-CONNECTED` | 1 | DÉMONTRÉ | INDÉTERMINÉ | V19 — grammaire Γ des ombres dans un bassin connecté vers Cq | `SRC-HIST-OBS-V19-24` |
+| `OBS-V19-LOCAL-L2` | 1 | DÉMONTRÉ | INDÉTERMINÉ | V19 — petit modèle temporel L+2 | `/Recherche/03_AUDITS_CERTIFICATS/COMMIT_AUDIT_RAVI2_2026-10-14.md` |
+| `OBS-V19-N11-BADOBJECT` | 2 | CALCUL EXACT | INDÉTERMINÉ | V19 — reconstruction exacte des cinq premières ruptures N=11 au niveau des mauvais objets | `/Recherche/03_AUDITS_CERTIFICATS/V19_BADOBJECT_N11_2026-10-15.md` |
+| `OBS-V19-N11-MOMENT-GRAM` | 1 | CALCUL EXACT | APPLICATION_CONNUE | N11 : matrices exactes des moments et conservation des cinq circuits de 2-recouvrement | `/V19_N11_MOMENTS_ET_NOYAU_2026-10-15.md` |
+| `OBS-V19-N11-THIRD-ORDER` | 1 | CALCUL EXACT | NON_EVALUE | N11 : lois par paires identiques, intersections triples différentes | `/V19_TROISIEME_ORDRE_2026-10-15.md` |
+| `OBS-V19-PAIR-COMPLETE14` | 2 | CALCUL EXACT | INDÉTERMINÉ | V19 — compatibilité paire complète des 14 classes orientées | `/Recherche/03_AUDITS_CERTIFICATS/V19_ASSEMBLAGE_ORIENTE_2026-10-15.md` |
+| `OBS-V19-TRIPLE-COMPLETE13` | 2 | CALCUL EXACT | INDÉTERMINÉ | V19 — compatibilité ternaire complète des 13 classes D5 | `/Recherche/03_AUDITS_CERTIFICATS/V19_ASSEMBLAGE_ORIENTE_2026-10-15.md` |
+| `OBS-V19-UNIVERSAL10` | 1 | CALCUL EXACT | INDÉTERMINÉ | V19 — témoin universel U42 jusqu’à multiplicité 10 | `/Recherche/03_AUDITS_CERTIFICATS/V19_MULTIPLICITE_CAPACITE_2026-10-15.md` |
+| `OBS-V8-FACT-INF` | 1 | DÉMONTRÉ | INDÉTERMINÉ | V8 — factorisation exacte du polynôme d’observabilité à horizon infini | `SRC-HIST-OBS-V10` |
+| `OBS-V9-RANK` | 1 | DÉMONTRÉ | INDÉTERMINÉ | V9 — rang des orbites de paires | `SRC-HIST-OBS-V10` |
+| `OBS-V9-STAB-N1` | 1 | DÉMONTRÉ | REDONDANT | V9 — stabilisation universelle à N−1 | `SRC-HIST-OBS-V10` |
+
+## Ω — Observateurs adaptatifs
+
+| ID | v | Statut | Originalité | Intitulé | Interface / preuve |
+|---|---:|---|---|---|---|
+| `OMEGA-O41-DET-V11` | 1 | DÉMONTRÉ | NON_EVALUE | Ω-O4.1 v1.1 — détection empirique sans noyaux diagnostiques | `SRC-HIST-O41-REPORT` |
+
+## Outils mathématiques externes
+
+| ID | v | Statut | Originalité | Intitulé | Interface / preuve |
+|---|---:|---|---|---|---|
+| `EXT-OAI-MARG-REPAIR` | 1 | DÉMONTRÉ | NON_EVALUE | Réparation simultanée des marginales de permutations | `/EXTRACTION_BRIQUES_OPENAI_2026-10-15.md` |
+| `EXT-OAI-MATCH-CORNER` | 1 | DÉMONTRÉ | NON_EVALUE | Compression fidèle des coins de Brauer et support commun | `/DECOMPOSITION_BRIQUES_LOT2_2026-10-15.md` |
+| `EXT-OAI-MATCH-RANK` | 1 | DÉMONTRÉ | NON_EVALUE | Rang et support des diagrammes de Brauer | `/EXTRACTION_BRIQUES_OPENAI_2026-10-15.md` |
+| `EXT-OAI-REL-CORNER` | 1 | DÉMONTRÉ | NON_EVALUE | Isomorphisme exact du coin de relations par restriction | `/DECOMPOSITION_BRIQUES_LOT2_2026-10-15.md` |
+| `EXT-OAI-REL-SELECT` | 1 | DÉMONTRÉ | NON_EVALUE | Sélecteurs élémentaires de relations | `/EXTRACTION_BRIQUES_OPENAI_2026-10-15.md` |
+| `EXT-OAI-UNIT-LIFT` | 1 | DÉMONTRÉ | NON_EVALUE | Relèvement des unités au coin de rang minimal | `/DECOMPOSITION_BRIQUES_LOT2_2026-10-15.md` |
+
+## Quantique
+
+| ID | v | Statut | Originalité | Intitulé | Interface / preuve |
+|---|---:|---|---|---|---|
+| `BR-Q-PRED-HIDDEN-01` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Séparation prédictive cachée : produit, corrélations et cardinalité | `/Recherche/01_BRIQUES_REUTILISABLES/BR-Q-PRED-HIDDEN-01_BRIQUE.md` |
+| `BR-Q-01` | 1 | DÉMONTRÉ | NON_EVALUE | Ambiguïté processus–instruments | `/Recherche/01_BRIQUES_REUTILISABLES/BR-Q-01_AMBIGUITE_PROCESSUS_INSTRUMENTS.md` |
+| `BR-Q-SWAP-MEM-01` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Témoin SWAP de mémoire relative aux continuations | `/Recherche/01_BRIQUES_REUTILISABLES/BR-Q-SWAP-MEM-01_BRIQUE.md` |
+| `Q-RQ4-COMMON-RANK` | 1 | DÉMONTRÉ | INDÉTERMINÉ | RQ-Q-4 — rang commun et factorisation | `/Recherche/03_AUDITS_CERTIFICATS/COMMIT_AUDIT_RAVI2_2026-10-14.md` |
+| `Q-RQ4-PAULI-ROBUST` | 1 | DÉMONTRÉ | INDÉTERMINÉ | RQ-Q-4 — seuil Pauli et borne scalaire optimale | `/Recherche/03_AUDITS_CERTIFICATS/COMMIT_AUDIT_RAVI2_2026-10-14.md` |
+
+## Temps / Règle 90
+
+| ID | v | Statut | Originalité | Intitulé | Interface / preuve |
+|---|---:|---|---|---|---|
+| `BR-R90-01` | 1 | DÉMONTRÉ | NON_EVALUE | Noyaux et période récurrente de Règle 90 | `/Recherche/01_BRIQUES_REUTILISABLES/BR-R90-01_NOYAUX_PERIODES.md` |
+| `BR-R90-02` | 1 | DÉMONTRÉ | NON_EVALUE | Uniformité Majority–Walsh avant repliement cyclique | `/Recherche/01_BRIQUES_REUTILISABLES/BR-R90-02_MAJORITY_WALSH.md` |
+| `BR-TIME-01` | 1 | DÉMONTRÉ | NON_EVALUE | Résolution intermédiaire sans flèche du temps | `/Recherche/01_BRIQUES_REUTILISABLES/BR-TIME-01_RESOLUTION_SANS_FLECHE.md` |
+| `BR-TIME-FACTOR-COMPLEX-01` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Complexité prédictive exacte du compteur réversible sparse | `/Recherche/01_BRIQUES_REUTILISABLES/BR-TIME-FACTOR-COMPLEX-01_BRIQUE.md` |
+| `BR-WORD-SINGLE-GAP-COMPLEX-01` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Complexité exacte d’un mot cyclique à gap exceptionnel unique | `/Recherche/01_BRIQUES_REUTILISABLES/BR-WORD-SINGLE-GAP-COMPLEX-01_BRIQUE.md` |
+| `BR-TIME-FINDET-BRIDGE-01` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Distinguabilité de phase versus détection persistante à mémoire finie | `/Recherche/01_BRIQUES_REUTILISABLES/BR-TIME-FINDET-BRIDGE-01_BRIQUE.md` |
+
+## Transformations / Autonomie
+
+| ID | v | Statut | Originalité | Intitulé | Interface / preuve |
+|---|---:|---|---|---|---|
+| `BR-DESC-01` | 1 | DÉMONTRÉ | CONNU_PRINCIPE_GENERAL | Suffisance pour une tâche ≠ autonomie de mise à jour | `/Recherche/01_BRIQUES_REUTILISABLES/BR-DESC-01_SUFFISANCE_VS_AUTONOMIE.md` |
+| `BR-DESC-02` | 1 | CALCUL EXACT | NON_EVALUE | Bonne marginale, mauvais ordre temporel | `/Recherche/01_BRIQUES_REUTILISABLES/BR-DESC-02_MARGINALE_VS_ORDRE_TEMPOREL.md` |
+| `BR-STATE-01` | 1 | DÉMONTRÉ | CONNU_OU_APPARENTE | États prédictifs et réparation canonique | `/Recherche/01_BRIQUES_REUTILISABLES/BR-STATE-01_ETATS_PREDICTIFS_REPARATION.md` |
+| `BR-STATE-COST-01` | 1 | DÉMONTRÉ | CONNU_OU_CLASSIQUE | Coût minimal d’extension par fermeture des comportements | `/Recherche/01_BRIQUES_REUTILISABLES/BR-STATE-COST-01_BRIQUE.md` |
+| `DET-FIN-01` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Perte asymptotique de sensibilité d’un détecteur fini à risque total borné | `/Recherche/01_BRIQUES_REUTILISABLES/DET-FIN-01_BRIQUE.md` |
+| `DESC-CLIP-01` | 1 | DÉMONTRÉ | NON_EVALUE | Projection locale d’un facteur d’évidence robuste | `/Recherche/01_BRIQUES_REUTILISABLES/DESC-CLIP-01_BRIQUE.md` |
+| `DESC-SUM-01` | 1 | DÉMONTRÉ | INDÉTERMINÉ | Détecteur — somme des deux évidences | `/Recherche/03_AUDITS_CERTIFICATS/COMMIT_AUDIT_RAVI2_2026-10-14.md` |
+
+## Raccordement TREE-CORE
+
+`BR-AFFINE-TREE-CORE` relie explicitement les certificats positifs de `BR-AFFINE-TREE-GLUE` aux certificats négatifs minimaux de `BR-AFFINE-GROUP-CORE`. Rapport : `/AFFINE_TREE_CORE_BRIDGE_2026-10-16.md`.
+
+
+## Raccordement GAUGE-CORE
+
+`BR-AFFINE-GAUGE-CORE` compose `BR-AFFINE-GAUGE-GLUE` avec `BR-AFFINE-GROUP-CORE` : translation commune ou noyau minimal d’étiquettes, avec borne serrée `d+1`. Rapport : `/GAUGE_CORE_BRIDGE_2026-10-16.md`.
