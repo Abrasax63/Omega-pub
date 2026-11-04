@@ -6,6 +6,11 @@ all globally coherent endofunctions N=4..8 with local color assignments.
 from itertools import product
 from collections import Counter
 Q=4; L=2; DEPTH=L+2; CYCLE=tuple(range(Q))
+TARGETS={
+ (0,7,8,15),(0,5,10,15),(2,7,8,13),(1,6,9,14),
+ (0,3,4,7,8,11,12,15),(0,1,4,5,10,11,14,15),
+ (4,5,6,7,8,9,10,11),(2,3,6,7,8,9,12,13)
+}
 
 def rotate(mask,k):
     return sum(((mask>>i)&1)<<((i+k)%Q) for i in range(Q))
@@ -86,36 +91,29 @@ assert len(diagrams)==1515, len(diagrams)
 assert len(proper)==172, len(proper)
 assert len(classes)==8, len(classes)
 assert Counter(map(len,classes))==Counter({4:4,8:4})
+assert classes=={canon(s) for s in TARGETS}, (classes,{canon(s) for s in TARGETS})
 print('LOCAL_CATALOGUE diagrams=1515 proper=172 rotation_classes=8 sizes={4:4,8:4}')
 for c,n in sorted(class_counts.items()): print('LOCAL_CLASS',len(c),c,'diagrams=',n)
 
-# Part II: cross-check local-prefix projection against full global colorings
-# on the 9-state witness, for every one of its 36 unordered pairs.
+# Part II: exact global coherence, but shadows computed by local color enumeration.
+TARGET_CANON={canon(s) for s in TARGETS}
+# Cross-check local-prefix projection against full global colorings on the 9-state witness.
 W=(1,2,3,0,8,7,6,2,0)
 def global_shadow(F,x,y):
     A=[x]; B=[y]
     for _ in range(L): A.append(F[A[-1]]); B.append(F[B[-1]])
-    neq=[(u,v) for u in range(len(F)) for v in range(u+1,len(F))
-         if F[u]==F[v] or {F[u],F[v]}=={u,v}]
+    neq=[(u,v) for u in range(len(F)) for v in range(u+1,len(F)) if F[u]==F[v] or {F[u],F[v]}=={u,v}]
     out=set()
     for z in range(1<<len(F)):
         if any(((z>>u)^(z>>v))&1==0 for u,v in neq): continue
         if any(((z>>A[t])^(z>>B[t]))&1 for t in range(L) if A[t]!=B[t]): continue
         out.add(sum(((z>>i)&1)<<i for i in CYCLE))
     return frozenset(out)
-
 for x in range(len(W)):
     for y in range(x+1,len(W)):
         assert local_shadow_for_map(W,x,y)==global_shadow(W,x,y), (x,y)
 print('LOCAL/GLOBAL witness cross-check PASS: all 36 pairs agree.')
 
-# Part III: exact global coherence; local color assignments for each pair.
-TARGETS={
- (0,7,8,15),(0,5,10,15),(2,7,8,13),(1,6,9,14),
- (0,3,4,7,8,11,12,15),(0,1,4,5,10,11,14,15),
- (4,5,6,7,8,9,10,11),(2,3,6,7,8,9,12,13)
-}
-TARGET_CANON={canon(s) for s in TARGETS}
 rows=[]
 for n in range(4,9):
     total=n**(n-4); nc=0; found=False

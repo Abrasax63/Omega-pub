@@ -244,7 +244,7 @@ Les 32 fiches de reconstitution ci-dessus ont été enrichies individuellement a
 
 [**C4, L=2 — coexistence des huit classes et minimum conditionnel à 9 états**](C4-L2-COEXISTENCE-MINIMUM-9-CONDITIONAL.md)
 
-Statut : **CALCUL EXACT sous spécification opérationnelle** ; statut mathématique inconditionnel : **À RÉEXAMINER**. La fiche donne le témoin à 9 états, l'énumération exhaustive N=4,…,8 et les trois voies de contrôle rapportées, mais explicite la réserve centrale : l'équivalence complète entre la spécification codée et la définition primaire V19 de l'ombre n'est pas encore certifiée. Cette fiche n'est pas ajoutée au noyau certifié.
+Statut : **CALCUL EXACT sous la définition primaire V19** pour la coexistence des huit classes cataloguées et le minimum de 9 états. L'audit du 4 novembre a passé le verrou sémantique et reproduit le catalogue ainsi que les calculs globaux. La certification RAVI-2 finale reste à réexaminer pour la preuve indépendante du lemme de localité L+2, la formalisation et la revue tierce. La fiche n'est pas ajoutée au noyau certifié.
 
 
 
