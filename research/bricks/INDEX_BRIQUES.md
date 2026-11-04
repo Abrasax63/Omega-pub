@@ -174,3 +174,10 @@ Ces huit cartes ont été retrouvées dans la bibliothèque privée, relues, pui
 | OBS-V19-N11-MOMENT-GRAM | 1 | CALCUL EXACT interne | `OBS-V19-N11-MOMENT-GRAM_BRIQUE.md` |
 
 Les correspondances de titre, d'énoncé, de domaine et de statut ont été comparées aux lignes SQLite v33 correspondantes. Les locateurs de preuve demeurent ceux indiqués dans chaque carte ; ils ne sont pas réputés tous présents dans cette branche.
+
+
+## Carte restaurée depuis la bibliothèque privée — 4 novembre 2026 (passe complémentaire)
+
+| ID | Version | Statut source | Carte |
+|---|---:|---|---|
+| BR-OBS-REVEAL-KERNEL | 1 | DÉMONTRÉ interne | `BR-OBS-REVEAL-KERNEL_BRIQUE.md` |
