@@ -37,3 +37,10 @@ Pour une machine complète déterministe à deux sorties, r_IO=1 et ADS existant
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-M27-BINARY`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `Adaptivity boundary - Mealy machines.docx`, note révisée le 27 septembre 2026, sections 1–5. Sous la localité exacte r_IO=1 et deux symboles de sortie, le rapport établit la borne de largeur fertile w(M)≤|Γ|−1=1. Les ADS réussis sont alors des peignes (combs) compilables en PDS de même profondeur maximale ; L_P=L_A. La note replace ce cas comme effondrement binaire d'une structure plus générale de conflits. **Limite :** le document qualifie les formulations compatibilité-nerve et spectre de conflits de candidates, en attente de revue externe ; ingrédients ADS/PDS et ambiguïté bornée classiques.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

@@ -38,3 +38,10 @@ Pour T:X→X fini total déterministe, L≥1, coloration binaire et paire x≠y,
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-RESTRICT-COUNT`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `CYCLE_MULTIAGENT_OBSERVABILITE_2026-10-15.md`, section « Résultat de transfert exact — OBS-RESTRICT-COUNT v1 ». Pour une paire x≠y, le graphe G_xy porte les arêtes {T^t x,T^t y}, 0≤t<L, boucles et doublons supprimés. Les traces coïncident exactement lorsque chaque composante est monochromatique. Après précoloration ρ, sans conflit de couleurs fixées, si m sommets sont libres et u composantes n'ont aucune couleur fixée, P(collision|ρ)=2^(u−m) ; avec un conflit, cette probabilité vaut 0. Le rapport donne aussi une CNF exacte sur les seules variables couleur, de largeur ≤2L. **Limite :** largeur bornée n'implique pas un nombre de clauses polynomial en L ; aucune identification à un nombre de capteurs n'est autorisée.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

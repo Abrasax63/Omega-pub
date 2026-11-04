@@ -34,3 +34,10 @@ Pour une famille finie P de paires dans le contrat OBS-RESTRICT-COUNT, poser B(r
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-RESTRICT-GREEDY`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : CYCLE_MULTIAGENT_OBSERVABILITE_2026-10-15.md, section Application constructive OBS-RESTRICT-GREEDY v1. Pour une famille P de paires, B(rho) est la somme exacte des probabilités conditionnelles de collision. Pour un bit libre v, B(rho) est la moyenne des deux valeurs après fixation de v ; choisir le bit qui minimise B garantit que B ne croît pas. Si B initial est strictement inférieur à 1, l'extension finale a zéro collision, car le nombre final de collisions est entier. Le rapport donne des exemples exécutés sur cycles n=4,5,6,10 et précise que B supérieur ou égal à 1 est inconclusif, sans empêcher la réussite.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

@@ -37,3 +37,10 @@ Il existe une endofonction cohérente U42 à 42 états contenant au moins 10 pai
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V19-UNIVERSAL10`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `V19_MULTIPLICITE_CAPACITE_2026-10-15.md`, sections 4–5, avec témoin `V19_UNIVERSAL10_U42_2026-10-15.json`. Le rapport décrit un opérateur cohérent U42 à 42 états, obtenu à partir du bassin maximal de profondeur 3 au-dessus du C5 orienté, auquel est ajouté un 2-cycle disjoint. Le vecteur exact des nombres de paires distinctes des 14 classes est [10,10,10,10,20,20,10,40,10,40,100,80,160,160]. Il en résulte que tout multiset de classes orientées de cardinal k≤10 est réalisable simultanément dans ce même opérateur, avec k paires d'états distinctes. **Limite :** calcul exact d'un témoin constructif et d'un vecteur de capacités ; ce n'est pas une preuve que 10 est la capacité maximale générale.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

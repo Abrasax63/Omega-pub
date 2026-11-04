@@ -40,3 +40,10 @@ Sous cohérence forcée, l’ombre sur un cycle distingué Cq, q≥3, d’une pa
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V19-LOCAL-L2`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Sources retrouvées : `NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE(2).md` et `V19_ASSEMBLAGE_ORIENTE_2026-10-15.md`. Le petit modèle affirme que sous cohérence forcée, l'ombre sur un cycle C_q d'une paire à horizon L≥2 dépend seulement du cycle et des deux préfixes de trajectoire aux temps 0,…,L+2. Pour C5,L=3, cela réduit à six états temporels par trajectoire (temps 0 à 5). La note du 25 septembre rapporte 99 545 comparaisons global/local sans divergence ; le rapport d'assemblage utilise ensuite ce lemme dans la borne de petit modèle pour k ombres, N≤q+2k(L+3)+max(3,2k). **Limite :** les essais ne remplacent pas la preuve de localité ; vérifier la correspondance exacte entre la définition primaire de l'ombre et l'encodage.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

@@ -35,3 +35,10 @@ Pour e²=e dans D_m, r=rang(e), il existe un morphisme unitaire injectif R_e:eD_
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `EXT-OAI-MATCH-CORNER`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `DECOMPOSITION_BRIQUES_LOT2_2026-10-15.md`, section 1, issue du manuscrit OpenAI *An exponential two-way deterministic state lower bound for one-way liveness*, lemme 2.2(i),(iii), pp.5–7. Pour un idempotent e de rang r dans le monoïde de Brauer D_m, le coin eD_me se représente par un morphisme injectif unitaire R_e vers D_r, préservant exactement le rang. Le rapport reconstruit aussi un support commun J' indépendant de l'élément, avec |J'|≤|J|. **Limites :** cela compresse une structure multiplicative déjà située dans le coin, pas un automate arbitraire ; idempotence indispensable ; originalité non évaluée et preuve non compilée dans Lean.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

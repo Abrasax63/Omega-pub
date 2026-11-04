@@ -234,3 +234,15 @@ Dossier : [research/bricks/reconstructed/](reconstructed/)
 | Q-RQ4-PAULI-ROBUST | [fiche](reconstructed/Q-RQ4-PAULI-ROBUST_RECONSTITUTION.md) |
 
 Aucune fiche reconstituée ne remplace un original qui serait retrouvé ultérieurement. Une récupération de l'original devra être conservée séparément et comparée avant toute substitution.
+
+
+## Enrichissement par sources historiques — 4 novembre 2026
+
+Les 32 fiches de reconstitution ci-dessus ont été enrichies individuellement avec les éléments pertinents retrouvés dans les rapports, manuscrits, audits et données de la bibliothèque privée. Chaque complément indique sa source, le résultat effectivement documenté et les limites de portée. Les fiches demeurent des reconstitutions, pas les cartes Markdown originales. Les statuts SQLite n'ont pas été promus et les contrôles historiques ne sont pas réputés rejoués par cette mise à jour.
+
+## Résultat C4, L=2 — fiche complémentaire conditionnelle
+
+[**C4, L=2 — coexistence des huit classes et minimum conditionnel à 9 états**](C4-L2-COEXISTENCE-MINIMUM-9-CONDITIONAL.md)
+
+Statut : **CALCUL EXACT sous spécification opérationnelle** ; statut mathématique inconditionnel : **À RÉEXAMINER**. La fiche donne le témoin à 9 états, l'énumération exhaustive N=4,…,8 et les trois voies de contrôle rapportées, mais explicite la réserve centrale : l'équivalence complète entre la spécification codée et la définition primaire V19 de l'ombre n'est pas encore certifiée. Cette fiche n'est pas ajoutée au noyau certifié.
+

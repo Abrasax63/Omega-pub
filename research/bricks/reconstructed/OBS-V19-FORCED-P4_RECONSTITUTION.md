@@ -41,3 +41,10 @@ Pour une endofonction finie observée en binaire à horizon L≥2, une contraint
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V19-FORCED-P4`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Sources retrouvées : `NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE(2).md` et `COMMIT_AUDIT_RAVI2_2026-10-14.md`. Pour L≥2, une contrainte singleton correspond à Tu=Tv ou à {Tu,Tv}={u,v}. Sous cohérence binaire, chaque fibre a taille ≤2 ; les arêtes de fusion et d'invariance sont chacune des matchings, mais leur union peut avoir des degrés 3. Les composantes cohérentes sont P1, P2, P3 ou P4. Contre-exemple au matching global : T=(1,0,1,0), avec contraintes {0,1},{0,2},{1,3}, graphe 2–0–1–3, cohérent. Audit rapporté : 50 069 endofonctions n≤6, dont 29 742 cohérentes, sans composante hors P1–P4. Ces chiffres sont historiques, non rejoués ici.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

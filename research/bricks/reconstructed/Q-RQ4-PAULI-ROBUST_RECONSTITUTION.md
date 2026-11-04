@@ -37,3 +37,10 @@ Pour les six préparations Pauli et P_m(a,b)=(1+(-1)^b t a_m)/2, t>0 assure rang
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `Q-RQ4-PAULI-ROBUST`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `NOTE_RANG_RECOLLEMENT_CONTEXTUEL_2026-09-30.md`, section 3. Pour les six préparations Pauli ±X, ±Y, ±Z et P_m(a,0)=1/2(1+t a_m), chaque P_m a rang 2 dès que t>0 ; les espaces colonnes de deux axes ont intersection égale aux constantes. À t=0, le rang tombe à 1 et les contre-exemples de RQ-Q-3 réapparaissent. Sous le contrat p=P_m f_m, la borne quantitative est |f_{m,0,r,z}−f_{m,1,r,z}|≤2δ/t, où δ est l'écart maximal des sommes non sélectives entre axes. La constante est optimale pour une question finale scalaire seulement ; elle n'est pas présentée comme une réalisation tomographique complète CPTP. Le rapport rappelle que les acquisitions publiques sont des statistiques descriptives, sans identifiants d'impulsions ni calibrations appariées permettant une conclusion causale.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

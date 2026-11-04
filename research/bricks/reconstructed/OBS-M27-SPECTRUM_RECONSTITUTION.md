@@ -39,3 +39,10 @@ Pour tout q≥3 et2≤k≤q−1, C(q,k) possède2k+1 états, r_IO=1, L_A=2, L_P=
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-M27-SPECTRUM`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `Adaptivity boundary - Mealy machines.docx`, note révisée le 27 septembre 2026, sections 5–6. La borne nécessaire 2≤k≤|Γ|−1 est annoncée comme exacte : pour chaque q≥3 et 2≤k≤q−1, une machine complète C(q,k) est construite avec r_IO=1, ADS de profondeur 2, aucun PDS et un unique minimal non-face de taille k dans le nerve de compatibilité à la racine. **Limite :** la note conserve un témoin ternaire minimal (|Q|,|Σ|,|Γ|)=(5,2,3) audité séparément ; les résultats généraux restent candidats en attente de revue externe.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

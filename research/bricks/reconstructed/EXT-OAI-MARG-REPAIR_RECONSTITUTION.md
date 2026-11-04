@@ -36,3 +36,10 @@ Aucune relation enregistrée.
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `EXT-OAI-MARG-REPAIR`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `EXTRACTION_BRIQUES_OPENAI_2026-10-15.md`, carte 2, appuyée sur le préprint *Random coordinate frames and partial permutation laws*, §16.1, lemme 16.2, p.67. La réparation est construite fibre par fibre selon la partition de sortie : couplages maximaux conditionnels pour corriger les deux injections ordonnées, puis remplacement de la loi de partition par l'uniforme, donnant TV≤ε1+ε2+3ε_part. La dépendance entre les deux bijections est autorisée. Contre-test source : uniforme sur les 12 permutations paires de quatre éléments ; les deux injections sont marginalement uniformes mais TV=1/2 de l'uniforme sur les 24 permutations. **Limite :** preuve reconstruite et contrôles du même assistant, pas réplication tierce ; ni optimalité de la constante 3 ni originalité établies.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

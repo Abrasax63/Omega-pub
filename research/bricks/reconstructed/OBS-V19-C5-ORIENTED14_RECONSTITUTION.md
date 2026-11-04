@@ -40,3 +40,10 @@ Pour C5 orienté par T(c_i)=c_{i+1}, observation binaire, L=3 et cohérence des 
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V19-C5-ORIENTED14`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Sources retrouvées : V19_ASSEMBLAGE_ORIENTE_2026-10-15.md et V19_MULTIPLICITE_CAPACITE_2026-10-15.md. La reproduction locale fixe C5 orienté, reconstruit 3 341 diagrammes et retrouve 14 classes propres modulo rotations C5, avec codimensions 1/2/3 réparties 4/6/4. Douze classes D5 restent inchangées ; une classe D5 de codimension 2 se scinde en deux classes chirales, non identifiées par rotation. Les 105 paires de classes orientées ont des témoins compatibles, corrigés ensuite pour imposer deux paires d'états distinctes. Le dossier de capacité précise que les classes orientées doivent être conservées pour la coexistence ; quotienter par réflexion peut perdre une information pertinente. Originalité bibliographique indéterminée ; aucun statut n'est promu.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

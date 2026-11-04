@@ -35,3 +35,10 @@ S⊆D_m non vide stable par produit, φ:S→M surjective multiplicative et q²=q
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `EXT-OAI-UNIT-LIFT`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `DECOMPOSITION_BRIQUES_LOT2_2026-10-15.md`, section 2, issue du manuscrit OpenAI, lemme 2.3, p.7. Pour un semigroupe fini S et une surjection multiplicative φ vers M, un idempotent q du quotient admet un relèvement idempotent e de rang minimal dans sa fibre. Sous cette minimalité, les éléments dont l'image est une unité se réduisent en permutations dans le coin correspondant. Le rapport fournit la preuve via puissances idempotentes et monotonie du rang. **Limites :** le résultat relève les unités individuellement, ne construit pas une section de groupe ; finitude et minimalité sont essentielles ; aucune application à la fermeture quantique n'est démontrée.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

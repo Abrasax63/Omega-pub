@@ -37,3 +37,10 @@ Pour a,b diagrammes de Brauer de degré m : r(ab)≤min(r(a),r(b)), m−r(a)≤|
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `EXT-OAI-MATCH-RANK`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `EXTRACTION_BRIQUES_OPENAI_2026-10-15.md`, carte 3, issue du manuscrit *An exponential two-way deterministic state lower bound for one-way liveness*, lemmes 2.1 et 2.2(ii), pp.4–5. Le rapport précise les définitions du diagramme de Brauer, du rang transversal et du support, puis les inégalités r(ab)≤min(r(a),r(b)), m−r(a)≤|supp(a)|, supp(ab)⊆supp(a)∪supp(b), et pour e²=e, |supp(e)|≤2(m−r(e)). Il donne des preuves par suivi des chemins transversaux et un contre-test montrant que l'idempotence est nécessaire pour la dernière borne. **Limite :** rang transversal, non rang matriciel ; aucune nouveauté revendiquée.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

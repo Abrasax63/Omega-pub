@@ -33,3 +33,10 @@ Aucune relation enregistrée.
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V9-STAB-N1`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `AUDIT_V10.md` (18 septembre 2026), section V9 stabilisation. L'égalité χ_obs,T,L=χ_obs,T,∞ pour L≥N−1 est jugée correcte, mais redondante dans le programme : elle découle déjà du théorème antérieur de raffinement des partitions, car chaque raffinement strict augmente le nombre de blocs d'au moins un et il reste au plus N−k raffinements avant la partition discrète. Le lemme de rang fournit une nouvelle preuve géométrique, pas une nouvelle découverte de la borne. Conserver explicitement l'étiquette d'originalité REDONDANT.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

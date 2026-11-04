@@ -43,3 +43,10 @@ Pour chacune des 105 paires non ordonnées avec répétition des 14 classes orie
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V19-PAIR-COMPLETE14`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Sources retrouvées : `V19_ASSEMBLAGE_ORIENTE_2026-10-15.md` et `V19_MULTIPLICITE_CAPACITE_2026-10-15.md`. Le rapport orienté examine les 105 paires non ordonnées avec répétition des 14 classes C5 modulo rotations et fournit un témoin pour chacune. L'audit de multiplicité corrige les cas où une même paire d'états avait été réutilisée : 105/105 sont ensuite réalisés avec deux paires d'états distinctes, qui peuvent partager un état mais ne sont pas le même objet combinatoire. Les témoins atteignent au plus 17 états. **Portée :** compatibilité par paires des labels de classes, pas preuve d'une loi générale pour les copies géométriques exactes ; le quotient orienté doit être préservé.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

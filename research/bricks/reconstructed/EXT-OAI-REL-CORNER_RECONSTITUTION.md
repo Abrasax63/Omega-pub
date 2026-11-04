@@ -34,3 +34,10 @@ Aucune relation enregistrée.
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `EXT-OAI-REL-CORNER`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `DECOMPOSITION_BRIQUES_LOT2_2026-10-15.md`, section 3, issue du manuscrit OpenAI, lemme 2.4, p.8. Dans le monoïde des relations binaires R_H, avec i=I_F, P²=P et iPi=i, poser Q=PiP. Le rapport établit Q²=Q, PQ=QP=Q et l'isomorphisme unitaire θ:QR_HQ→R_F, θ(Z)=iZi, d'inverse A↦PAP. Les conditions iPi=i et P²=P sont nécessaires, avec contre-exemples documentés. **Limite :** réduction du seul coin QR_HQ, pas de toutes les relations sur H ; pas de transfert automatique à V19.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

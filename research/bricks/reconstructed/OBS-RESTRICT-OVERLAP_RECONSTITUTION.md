@@ -36,3 +36,10 @@ G,H graphes sur le même V, Q_G,Q_H issus de la même restriction homogène ind�
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-RESTRICT-OVERLAP`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : TEST_SYNTHESE_INVERSE_2026-10-15.md, Brique 2. Pour deux graphes d'égalité G,H sur V, les espaces d'arêtes S_G,S_H sur F2 et leur intersection C donnent E[Q_G Q_H]=2^(−r_G−r_H)W_C(1−p), où W_C(t)=somme sur alpha dans C de t puissance |alpha|. Le dossier donne une preuve Fourier-Walsh et une preuve indépendante par le graphe biparti des composantes, avec lien au polynôme de Tutte multivarié. Contre-test : covariance nulle ne suffit pas à établir l'indépendance. Le rapprochement à OBS-RESTRICT-COUNT est illustratif, non une dépendance causale ; aucune extension aux oppositions forcées V19 n'est démontrée.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

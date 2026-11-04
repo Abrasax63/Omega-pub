@@ -34,3 +34,10 @@ Pour X fini de n≥1 états,T total déterministe,L≥1 fixé,couleurs binaires,
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `APP-OBS-SPARSE-DISJOINT`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `DECOMPOSITION_BRIQUES_LOT2_2026-10-15.md`, section 4, avec référence primaire Dell–Husfeldt–Wahlén, ECCC TR10-078 (2010), appendice A, lemme 6 et variante disjointe. Contrat d'application : H(c) encode l'injectivité des traces sur les seules variables de couleur ; largeur ≤2L. Pour L et η fixés, le théorème importé donne au plus 2^(ηn) sous-formules, largeur ≤2L, taille ≤M(L,η)n et supports de solutions disjoints. Le nombre de solutions et les sommes pondérées se décomposent exactement. **Limite :** preuve asymptotique importée, non reconstruite ni recompilée ici ; aucun gain de solveur ni constante M numérique n'est établi. Dépendance explicite à OBS-RESTRICT-COUNT.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

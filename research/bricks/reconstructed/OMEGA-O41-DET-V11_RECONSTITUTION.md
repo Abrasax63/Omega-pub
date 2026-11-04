@@ -35,3 +35,10 @@ Pour un horizon T, une fenêtre w et un risque δ, si Δ∞=||P_A-P_B||∞>2τ a
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OMEGA-O41-DET-V11`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Sources retrouvées : `rapport_omega_o41_detection_apprise.md` et `rapport_omega_ac_v1_audit_o41.md` (audit Ω-AC v1.1). Le cadre est un calendrier déterministe à deux régimes alternants, avec diagnostics conditionnellement indépendants et stationnaires par segment, fenêtres adjacentes de taille w et statistique D_t=||P̂_R−P̂_L||∞. Sous Δ∞>2τ, τ=sqrt(log(2dT/δ)/w), et durée minimale de séjour Γ≥2w+d_δ, le rapport prouve avec probabilité ≥1−δ l'égalité du nombre d'alarmes au nombre de changements, l'absence de fausses alarmes et M≤S d_δ. L'audit Ω-AC rapporte une redérivation architecturale indépendante et une énumération de 2^18 flux sur un modèle réduit, avec zéro violation sur l'événement de concentration. Deux formulations périphériques v1.0 ont été réfutées et corrigées : monotonie erronée du seuil à fenêtre fixe, et mélange preuve/simulation dans un booléen. Verdict du rapport : SURVÉCU_AUDIT, non vérifié formellement ni validé par un tiers. Les seuils L=480/768/1536 sont les premières longueurs testées correspondantes, pas des seuils monotones universels.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

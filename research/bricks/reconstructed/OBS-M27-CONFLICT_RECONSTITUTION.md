@@ -38,3 +38,10 @@ Si un état de connaissance accessible admet une ADS finie mais aucune PDS, un n
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-M27-CONFLICT`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `Adaptivity boundary - Mealy machines.docx`, note révisée le 27 septembre 2026, sections 4–5. À un état de connaissance K, chaque branche de sortie possède un langage régulier R(K(a,y)) de suffixes preset qui la résolvent. Leur intersection commune est le critère de PDS après le premier input. Si un ADS existe mais aucun PDS, un nœud atteignable contient une sous-famille minimale de ces langages à intersection vide : un conflict core. Sous r_IO=1, son arité est bornée par 2≤|C|≤|Γ|−1. **Limite :** candidate de résultat en attente d'examen externe, pas certification formelle.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

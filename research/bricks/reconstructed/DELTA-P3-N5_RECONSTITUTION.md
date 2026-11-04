@@ -33,3 +33,10 @@ Aucune relation enregistrée.
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `DELTA-P3-N5`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `rapport_spectre_defauts_iteration_1.md` (17 septembre 2026), section 5. Le rapport énumère tous les couples (T,π) jusqu'à n=5 : 162 500 couples, 19 spectres distincts à n=5. Le seul spectre fini non vide est D={2}, avec T=(0,0,0,1,2), π=(0,1,2,2,3), témoin de P3 sans P2. **Limite :** témoin et comptes rapportés dans cette source ; l'énumération n'est pas rejouée dans cette mise à jour.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

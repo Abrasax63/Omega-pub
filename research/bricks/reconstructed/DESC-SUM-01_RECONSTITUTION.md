@@ -37,3 +37,10 @@ Pour les16 blocs déterministes des deux calendriers sur12000 observations, les 
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `DESC-SUM-01`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `detection_correlations_2026-10-14.md`, commit scientifique `COMMIT-RAVI2-2026-10-14-V19-RQ4-MEALY-SUM`, avec audit `COMMIT_AUDIT_RAVI2_2026-10-14.md` et sortie `commit_audit_checks.json`. Contrat SQLite : 16 blocs déterministes, deux calendriers sur 12 000 observations, β=1001/1000, seuil β^7382, risque global sous le nul ≤16β^(−7382)≤1 %. Argument : somme de 16 évidences de bloc rationnelles non négatives, surmartingales conditionnelles, arrondis dirigés et règles de gel/prolongement. Registres persistants annoncés : 227 ou 313 bits. **Limite :** aucune amélioration de puissance après rupture n'est garantie ; preuve et contrôles rationnels ne sont pas rejoués dans cette mise à jour.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

@@ -39,3 +39,10 @@ Pour une machine de Mealy complète déterministe, toutes identités initiales p
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-M27-FERTILE`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `Adaptivity boundary - Mealy machines.docx`, note révisée le 27 septembre 2026, sections 1 et 3. Définition : une branche (a,y) est fertile si un même futur mot d'entrée peut encore produire au moins deux continuations de sortie distinctes. Sous r_IO=1, pour chaque input a, au plus |Γ|−1 sorties peuvent être fertiles ; la preuve utilise des matrices de chemins locaux à coefficients entiers, complétude (sommes de lignes ≥1) et borne uniforme par le nombre fini d'états. **Limite :** la note décrit ce mécanisme comme lié à l'ambiguïté bornée classique ; l'originalité n'est pas établie.
+
+> Ce complément ne remplace pas la fiche originale introuvable et ne vaut pas réaudit indépendant. Les statuts SQLite sont conservés sans promotion.

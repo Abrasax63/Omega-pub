@@ -157,3 +157,8 @@ Cette branche est soumise à revue avant toute intégration dans `main`. Le tran
 ### Reconstitutions documentaires — 4 novembre 2026
 
 En complément des 61 cartes/fichiers annoncés ci-dessus, la branche contient maintenant **32 fiches reconstituées** sous `research/bricks/reconstructed/`, à partir des enregistrements scientifiques structurés de SQLite v33. Elles ne sont pas les fichiers Markdown originaux et sont explicitement marquées comme reconstitutions. Elles ne constituent ni une nouvelle certification ni une promotion des statuts. L'index détaillé est dans [research/bricks/INDEX_BRIQUES.md](research/bricks/INDEX_BRIQUES.md).
+
+
+### Complément C4–L=2 (conditionnel)
+
+Une fiche dédiée documente le témoin à 9 états et l'énumération exhaustive jusqu'à 8 états pour la coexistence des huit classes C4O. Elle est classée **CALCUL EXACT sous spécification opérationnelle**, avec le théorème V19 inconditionnel **À RÉEXAMINER**. Elle n'est pas intégrée au noyau certifié. Voir [la fiche C4–L=2](research/bricks/C4-L2-COEXISTENCE-MINIMUM-9-CONDITIONAL.md).

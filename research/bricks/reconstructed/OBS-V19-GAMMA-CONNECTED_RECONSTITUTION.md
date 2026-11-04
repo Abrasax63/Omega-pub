@@ -33,3 +33,10 @@ Aucun audit ni test lié.
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V19-GAMMA-CONNECTED`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `NOTE_RECHERCHE_V19_GRAMMAIRE_PROFONDEUR_PHASE.md` (24 septembre 2026). Pour un bassin binaire cohérent vers C_q, le rapport introduit profondeur h(x), phase d'entrée φ(x), et phase asymptotique θ(x)=φ(x)−h(x) mod q, avec θ(Tx)=θ(x)+1. Pour une paire, l'ombre est décrite par H=max(h_x,h_y), s=[h_x≠h_y] et d=θ(y)−θ(x), avec un mot de gains de la forme s,0,…,0 ; en cas de fusion avant l'horizon, l'ombre est vide. La note donne pour C5,L=3 une classification à 12 types D5, puis la note V19 ultérieure (25 septembre) affine ce cadre à 13 classes via une grammaire locale différente. **Ne pas fusionner les versions 12 et 13** : la présente fiche est à conserver selon son contrat propre de bassin connecté et sa version SQLite.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

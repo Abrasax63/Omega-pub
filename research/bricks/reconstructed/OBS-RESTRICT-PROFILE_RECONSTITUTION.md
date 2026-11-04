@@ -34,3 +34,10 @@ G graphe fini d’égalités binaires uniformes indépendantes, profil de taille
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-RESTRICT-PROFILE`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : TEST_SYNTHESE_INVERSE_2026-10-15.md, Brique 1. Si les composantes de G ont tailles s_i, la loi de Q_G est déterminée par le produit P_G(z)=produit F_{s_i}(z), avec F_s(z)=2 somme_{j=0}^{s−1} binom(s,j)p^j((1−p)/2)^(s−j)z^j + p^s z^(s−1). Les coefficients donnent les masses des valeurs Q_G=2^(−d), avec une masse résiduelle en zéro. À n,k fixés, la fonction exacte p vers E Q_G² permet de reconstruire le profil des tailles via produit (1+x^(s_i)), x=p/(2−p), mais pas la topologie du graphe ; une seule variance ou des données bruitées ne suffisent pas. Dépendance causale enregistrée : PROFILE vers COUNT.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

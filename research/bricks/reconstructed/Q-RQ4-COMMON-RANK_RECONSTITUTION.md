@@ -38,3 +38,10 @@ Si p(a,m,b,r,z)=P_m(a,b)f_m(b,r,z), si chaque P_m a plein rang colonne et si leu
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `Q-RQ4-COMMON-RANK`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `NOTE_RANG_RECOLLEMENT_CONTEXTUEL_2026-09-30.md`, RQ-Q-4, section 2. L'identité non sélective somme sur b est indépendante de l'axe m pour les instruments idéaux, même si le peigne W a une mémoire temporelle. Dans le modèle alternatif p(a,m,b,r,z)=P_m(a,b)f_{m,b,r,z}, si chaque P_m a plein rang colonne et si l'intersection de leurs espaces colonnes vaut span(1_A), alors f ne dépend plus de m ni de b. La factorisation du peigne physique n'est conclue qu'avec complétude tomographique et existence d'un peigne réalisant ces probabilités. **Barrière explicite :** si l'instrument transmet à sa sortie une information sur a non contenue dans b, l'hypothèse de factorisation alternative est violée ; le théorème ne prouve pas l'absence de ce mécanisme dans les puces. L'originalité bibliographique demeure indéterminée.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

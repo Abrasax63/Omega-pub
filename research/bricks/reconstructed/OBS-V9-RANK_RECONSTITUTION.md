@@ -33,3 +33,10 @@ Pour une paire p={x,y} et e_t={T^t x,T^t y}, dès qu’une arête e_t devient d�
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V9-RANK`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `AUDIT_V10.md` (18 septembre 2026), section V9. Pour une paire p={x,y}, l'arête e_t={T^t x,T^t y} devient dépendante dès qu'elle est dans la fermeture graphique des arêtes précédentes ; appliquer T au chemin reliant ses extrémités donne un chemin pour l'étape suivante. Ainsi rank G_{p,L}=min(L,r_p). L'audit rapporte l'examen exhaustif de toutes les endofonctions de tailles 1 à 6, soit 50 069 systèmes, sans contre-exemple. Le statut de nouveauté du lemme est laissé indéterminé.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

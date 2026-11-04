@@ -43,3 +43,10 @@ Les 455 multisets de cardinal 3 des 13 classes D5 de C5,L=3 possèdent tous un t
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V19-TRIPLE-COMPLETE13`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Sources retrouvées : `V19_ASSEMBLAGE_ORIENTE_2026-10-15.md` et `V19_MULTIPLICITE_CAPACITE_2026-10-15.md`. Le rapport fournit des témoins pour les 455 multisets de trois classes D5 : 445 par union disjointe de témoins, 10 cas résiduels par partage explicite de queues/registre fixe. L'audit de multiplicité corrige les 26 lignes contenant une paire répétée ; les 455/455 disposent ensuite de trois paires d'états distinctes. Cela établit la complétude ternaire au niveau des 13 labels D5, pas une classification orientée complète : le quotient D5 peut masquer la chiralité des 14 classes C5. Les copies géométriques exactes peuvent présenter des obstructions plus précoces.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

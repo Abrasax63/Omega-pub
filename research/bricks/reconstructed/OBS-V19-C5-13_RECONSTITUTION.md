@@ -50,3 +50,10 @@ Sous cohérence des contraintes forcées, pour une endofonction finie avec C5 di
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V19-C5-13`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Sources retrouvées : NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE(2).md (25 septembre 2026) et NOTE_RECHERCHE_V19_FORME_NORMALE_13_OMBRES.md. La note de grammaire décrit les contraintes forcées, la structure P1–P4, la localité L+2 et, pour C5,L=3, l'énumération de 3 341 diagrammes locaux donnant 13 classes D5 d'ombres propres non vides. Elle distingue ces 13 ombres dynamiquement réalisables de 10 seulement observées dans les gaps N≤12. Elle rapporte des audits finis jusqu'à N=11 et 99 545 comparaisons global/local sans divergence. Attention aux versions : une note antérieure profondeur-phase décrit 12 types orbitaux ; elle ne doit pas être amalgamée sans versionnement avec la classification 13 issue de la note ultérieure.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.

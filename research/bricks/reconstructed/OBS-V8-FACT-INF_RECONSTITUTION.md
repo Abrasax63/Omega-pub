@@ -33,3 +33,10 @@ Aucune relation enregistrée.
 Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été rejoués ni réaudités ici. Les localisateurs ne garantissent pas l’accessibilité des sources. Aucun contenu de preuve absent n’a été inventé. Conserver cette fiche dans `research/bricks/reconstructed/` et ne pas la substituer à l’original. Toute correction ultérieure doit être versionnée selon RAVI-2.
 
 *Reconstitution du 4 novembre 2026 — `RESEARCH_MEMORY.sqlite` v33 — `OBS-V8-FACT-INF`.*
+
+
+## Sources retrouvées — complément documentaire
+
+Source retrouvée : `AUDIT_V10.md` (18 septembre 2026), section V8. Le rapport reconstruit la caractérisation d'une coloration génératrice à horizon infini : injectivité sur chaque fibre T⁻¹(y) et distinction des itinéraires symboliques des points périodiques. Cette dernière équivaut à des mots primitifs sur chaque cycle et à des classes de rotation distinctes pour les cycles de même longueur. La formule de factorisation de χ_obs,T,∞ est donnée avec les facteurs de fibres et les polynômes cycliques Q_r(z). L'audit rapporte une reconstruction indépendante et des contrôles exhaustifs/échantillonnés jusqu'à N=8, sans contre-exemple. Originalité bibliographique indéterminée.
+
+> Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.
