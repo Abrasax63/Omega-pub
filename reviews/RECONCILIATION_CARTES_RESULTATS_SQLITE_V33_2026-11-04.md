@@ -62,3 +62,15 @@ Aucune écriture SQLite, aucun changement de statut ou de dépendance n'a été 
 Les 17 correspondances précédemment classées « par nom seulement » ont été relues contre les enregistrements SQLite v33 : titre, noyau d'énoncé, hypothèses, statut et version. **17/17 correspondent sémantiquement** à une fiche de résultat. Le rapport détaillé est [REVUE_SEMANTIQUE_17_CARTES_CANDIDATES_2026-11-04.md](REVUE_SEMANTIQUE_17_CARTES_CANDIDATES_2026-11-04.md).
 
 La réserve reste documentaire : SQLite ne contient pas de liaison d'évidence explicite vers ces 17 fichiers Markdown. Aucune liaison, source, version ou statut n'a été modifié. Le classement devient donc « carte correspondante confirmée, liaison SQLite explicite non réparée », et non « preuve de provenance SQLite restaurée ».
+
+
+## Classement des quatre fichiers sans identifiant SQLite direct — 4 novembre 2026
+
+Les quatre fichiers restants ont été relus. Ils sont explicitement des interfaces ou certificats composites, et non des cartes autonomes associées à un `result_id` de SQLite v33 :
+
+- `GLOBAL-LOC-01.md` : interface composite de localisation globale, dépend de `OSC-REAL-01` et des certificats NS.
+- `NS-P55-COMP-01.md` : certificat composite de réalisation annulaire, avec sous-certificats P55-A/B/C/D.
+- `OSC-ITER-01.md` : interface composite d'itération oscillatoire à gain fixe.
+- `OSC-REAL-01.md` : interface composite de réalisation oscillatoire par sommation diagonale.
+
+Ils sont donc classés comme **documents composites hors table des résultats**, sans rattachement artificiel à un identifiant SQLite. Aucun statut ni relation n'a été modifié.
