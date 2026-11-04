@@ -246,3 +246,10 @@ Les 32 fiches de reconstitution ci-dessus ont été enrichies individuellement a
 
 Statut : **CALCUL EXACT sous spécification opérationnelle** ; statut mathématique inconditionnel : **À RÉEXAMINER**. La fiche donne le témoin à 9 états, l'énumération exhaustive N=4,…,8 et les trois voies de contrôle rapportées, mais explicite la réserve centrale : l'équivalence complète entre la spécification codée et la définition primaire V19 de l'ombre n'est pas encore certifiée. Cette fiche n'est pas ajoutée au noyau certifié.
 
+
+
+## Audit sémantique C4/L2 — 4 novembre 2026
+
+La convention de trajectoire a été rapprochée de la note primaire V19 : pour L=2, le mauvais événement impose l'égalité des couleurs aux temps 0 et 1. Les formulations en inégalité de deux documents archivés sont supersédées. Le catalogue local a été reproduit indépendamment (1 515 diagrammes, 172 ombres propres, 8 classes) ; le témoin à 9 états et l'énumération globale N=4,…,8 ont été rejoués. Voir [le rapport d'audit sémantique](../../reviews/AUDIT_SEMANTIQUE_C4_L2_2026-11-04.md) et [le script indépendant](../code/c4_l2_independent_local_audit_2026-11-04.py).
+
+Statut : **CALCUL EXACT** pour la coexistence des huit classes cataloguées et le minimum 9 sous la définition primaire V19. La certification RAVI-2 finale reste à réexaminer pour la preuve indépendante du lemme de localité L+2, la formalisation et la revue tierce.
