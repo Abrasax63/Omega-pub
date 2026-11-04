@@ -93,3 +93,23 @@ Ordre de traitement recommandé :
 4. corriger ensuite les relations SQLite dans une nouvelle version, après audit et sauvegarde.
 
 **Aucun statut scientifique n'est modifié par ce rapport.** La PR reste en brouillon ; aucune fusion ni écriture dans la base n'est effectuée.
+
+
+## 6. Avancement après récupération dans la bibliothèque privée
+
+Après la rédaction de ce relevé, huit cartes source supplémentaires ont été retrouvées dans la bibliothèque privée, comparées aux lignes SQLite v33 correspondantes (identifiant, titre, énoncé, domaine, hypothèses et statut), puis copiées sans réécriture dans `research/bricks/` :
+
+- `BR-AFFINE-GAUGE-GLUE`
+- `BR-AFFINE-GROUP-CORE`
+- `OBS-AFFINE-GROUP-CORE-VALIDATION`
+- `OBS-RESTRICT-AFFINE`
+- `OBS-RESTRICT-FORCED-QUOTIENT`
+- `BR-AFFINE-TREE-GLUE`
+- `OBS-V19-N11-THIRD-ORDER`
+- `OBS-V19-N11-MOMENT-GRAM`
+
+L'index public `research/bricks/INDEX_BRIQUES.md` a été complété avec ces huit entrées. Les fichiers ont été créés sur la branche de migration, pas sur `main`.
+
+**État du reliquat initial : 8 cartes restaurées ; 34 des 42 restent à retrouver ou à établir comme indisponibles.** Cette progression est documentaire uniquement : les statuts scientifiques n'ont pas changé et les scripts/calculs associés n'ont pas été rejoués.
+
+Un contrôle séparé a repéré `BR-OBS-KRYLOV-01` dans la branche et dans la bibliothèque, bien qu'il n'appartienne pas à la liste des 42 fichiers de carte absents. Sa relation de carte dans SQLite reste à examiner.
