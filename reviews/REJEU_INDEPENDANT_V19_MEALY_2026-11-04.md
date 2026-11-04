@@ -57,7 +57,7 @@ Le document binaire `Adaptivity boundary - Mealy machines.docx` a été retrouv�
 
 ### Certificat exécuté
 
-Script retrouvé : `mealy_boundary_certificate.py`.
+Script retrouvé, rejoué et maintenant publié : `research/code/mealy_boundary_certificate.py`.
 
 SHA-256 : `9496c346f86928c40137405dfda32046b922ff43ece0e55bfd3026c535e51555`.
 
@@ -76,7 +76,7 @@ Le script vérifie séparément la fermeture locale exacte, la profondeur ADS pa
 
 ### Nerf de compatibilité / borne de Helly
 
-Archive retrouvée et exécutée : `PREUVES_MEALY_HELLY_2026-10-16.zip`, script `mealy_helly_bridge.py`.
+Script retrouvé, rejoué et maintenant publié : `research/code/mealy_helly_bridge.py`. Le rapport source et la carte sont déjà présents sous `research/programs/Observabilite/Notes/MEALY_HELLY_BRIDGE_2026-10-16.md` et `research/bricks/BR-MEALY-HELLY-01_BRIQUE.md`. Les résultats et le manifeste de hachage sont publiés sous `research/data/mealy_helly/`. L'archive ZIP d'origine n'a pas été transférée comme binaire ; ses composants textuels et le script de calcul sont désormais accessibles séparément.
 
 SHA-256 du script : `48cb2d571b59aa9aa7de23faeb7bf0f6f27af20b467ff610bbbf06bfe06eacf2`.
 
@@ -93,7 +93,7 @@ Le JSON de sortie reproduit a le SHA-256 `fc24611629a1835a86e61dd8f2aaf3b71f15ab
 
 ### Limite essentielle
 
-Ce script contrôle la structure des nerfs et les non-faces minimales pour la famille construite. Il ne recalcule pas, pour chacune des 21 machines, la propriété r_IO=1 ni les valeurs L_A et L_P ; le rapport d'origine utilise la preuve de la borne fertile OBS-M27-FERTILE pour la borne universelle. Le script complémentaire `conflict_nerve_certificate.py`, mentionné dans le DOCX, n'a pas été retrouvé dans les éléments de Library consultés. Son absence dans cette recherche ne prouve pas qu'il n'existe nulle part.
+Ce script contrôle la structure des nerfs et les non-faces minimales pour la famille construite. Il ne recalcule pas, pour chacune des 21 machines, la propriété r_IO=1 ni les valeurs L_A et L_P ; le rapport d'origine utilise la preuve de la borne fertile OBS-M27-FERTILE pour la borne universelle. Le script complémentaire `conflict_nerve_certificate.py`, mentionné dans le DOCX, n'a pas été retrouvé dans les éléments de Library consultés et n'est pas publié dans la branche. Son absence dans cette recherche ne prouve pas qu'il n'existe nulle part.
 
 La nouveauté bibliographique des énoncés reste INDÉTERMINÉE ; le DOCX lui-même demande une revue experte externe.
 
@@ -107,7 +107,7 @@ La nouveauté bibliographique des énoncés reste INDÉTERMINÉE ; le DOCX lui-m
 - branche cible `main`, branche source `migration/ravi2-ccs-public-2026-11-04` ;
 - GitHub indique `mergeable = true` ;
 - tête observée avant ajout du présent rapport : `43d35c9a4b358b1cab33bf3cb52aef7adfb94f25` ;
-- 210 fichiers modifiés et 233 commits dans la PR.
+- au snapshot précédent l'ajout de ce rapport : 210 fichiers modifiés et 233 commits dans la PR ; les ajouts ultérieurs sont suivis séparément ci-dessous.
 
 Contrôles ciblés :
 
@@ -116,7 +116,9 @@ Contrôles ciblés :
 - le workflow V19 ne demande que `contents: read`, installe Python 3.12 et exécute le script d'audit ;
 - le dernier run associé à la tête vérifiée, run `41859306810`, est terminé avec conclusion `success`.
 
-Ce contrôle est un triage de chemins et de configuration, pas un audit exhaustif du contenu des 210 fichiers ni un scan de secrets certifié.
+Ce contrôle est un triage de chemins et de configuration, pas un audit exhaustif du contenu des fichiers ni un scan de secrets certifié.
+
+Après les rejeux, la tête `265aa3201d2da92a7b5e1aecb3f5bfbf7f1ed267` a déclenché le run `41861838491`, encore `queued` lors de la dernière consultation. Il ne doit pas être présenté comme un succès tant que GitHub ne donne pas une conclusion `success`.
 
 ## 4. Décision et limites restantes
 
