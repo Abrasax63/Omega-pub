@@ -153,3 +153,7 @@ Cette branche est soumise à revue avant toute intégration dans `main`. Le tran
 ---
 
 **Bienvenue sur Omega-pub. L'objectif est simple : rendre les travaux examinables, faciliter leur reproduction et accepter leur réfutation lorsqu'elle est justifiée.**
+
+### Reconstitutions documentaires — 4 novembre 2026
+
+En complément des 61 cartes/fichiers annoncés ci-dessus, la branche contient maintenant **32 fiches reconstituées** sous `research/bricks/reconstructed/`, à partir des enregistrements scientifiques structurés de SQLite v33. Elles ne sont pas les fichiers Markdown originaux et sont explicitement marquées comme reconstitutions. Elles ne constituent ni une nouvelle certification ni une promotion des statuts. L'index détaillé est dans [research/bricks/INDEX_BRIQUES.md](research/bricks/INDEX_BRIQUES.md).
