@@ -9,6 +9,7 @@ Les routines sont volontairement distinctes des scripts V8/V9 historiques.
 """
 from itertools import product
 from collections import deque, Counter
+import random
 
 def mobius(n):
     x=n; p=0; d=2
