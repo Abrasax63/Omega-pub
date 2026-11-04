@@ -1,0 +1,588 @@
+EXTRACTION TEXTUELLE — NON ORIGINALE DU POINT DE VUE DU FORMAT.
+Document source : rapport_omega_o41_detection_apprise.pdf, 16 pages, daté du 18 juillet 2026.
+Le PDF binaire original reste dans la bibliothèque privée ChatGPT ; ce fichier contient le texte extrait, avec marqueurs de pages, sans prétendre être une copie binaire ou une reproduction de mise en page.
+
+<PARSED TEXT FOR PAGE: 1 / 16>
+PROGRAMME OMEGA - O4.1
+Détection empirique
+d'une transformation
+sans noyaux diagnostiques fournis
+Garantie à haute probabilité, transition de coût
+et contre-exemples de durée de séjour
+Programme de recherche Omega
+Document de travail doctoral
+18 juillet 2026
+<PARSED TEXT FOR PAGE: 2 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 2
+Sommaire
+Statut scientifique 4
+Résumé 4
+1. Point de départ : ce qui restait oracle dans Ω-O3 5
+2. Cadre probabiliste 5
+2.1 Suite de régimes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+2.2 Canal diagnostique inconnu du détecteur . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+2.3 Hypothèses résiduelles . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+3. Détecteur empirique à deux fenêtres 6
+3.1 Fenêtres . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+3.2 Statistique et seuil . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+3.3 Pseudo-code . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+4. Lemme de concentration simultanée 7
+Lemme 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+Preuve . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+5. Théorème de détection sans noyaux fournis 7
+Théorème 1 - exactitude des commutations à haute probabilité . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+Preuve . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+6. Corollaire de coût pour l'observateur Ω 8
+Corollaire 1 - borne à haute probabilité . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+Corollaire 2 - universel partageant le détecteur . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+Corollaire 3 - meilleur rigide . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+7. Constantes exactes de la sonde Ω 9
+8. Protocole numérique 10
+8.1 Paramètres . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+8.2 Critère de succès théorique observé . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+9. Résultats 10
+9.1 Frontière empirique . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+9.2 Frontière certifiée . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+9.3 Contrôle du niveau . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+9.4 Calendrier non périodique . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+10. Contre-exemples 12
+10.1 Sonde aveugle : séparation nulle . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+10.2 Aliasing temporel malgré une séparation maximale . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+<PARSED TEXT FOR PAGE: 3 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 3
+10.3 Régimes plus courts que la mémoire . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+10.4 Troisième régime non représenté . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+11. Points faibles et portée exacte 13
+11.1 Horizon connu . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+11.2 Indépendance du canal diagnostique . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+11.3 Ruptures abruptes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+11.4 Coût statistique des faibles séparations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+11.5 Reset coûteux en échantillons . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+11.6 Classe structurelle encore oracle . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+11.7 Coûts incomplets . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+11.8 Borne suffisante, non optimale . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+12. Positionnement par rapport aux travaux existants 13
+13. Direction suivante : Ω-O4.2 14
+14. Reproductibilité 14
+Conclusion 15
+Références 16
+<PARSED TEXT FOR PAGE: 4 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 4
+Statut scientifique
+Version 1.1 - rectification méthodologique après audit Ω-AC v1.
+Ce document établit un résultat exact dans un modèle fini et sous des hypothèses explicites. Il ne
+prétend ni résoudre la détection générale de ruptures, ni découvrir spontanément des architectures
+prédictives, ni fournir une borne minimax nouvelle.
+La nouveauté interne au programme Ω est plus précise : le détecteur de Ω-O3 n'a plus accès aux lois
+diagnostiques P_A et P_B. Une concentration uniforme relie désormais les observations brutes, le
+délai de transformation et l'objectif structurel de l'observateur.
+Résumé
+Ω-O3 utilisait un CUSUM dont les rapports de vraisemblance étaient calculés à partir des deux
+noyaux vrais. Ω-O4.1 remplace cet oracle par deux fenêtres empiriques adjacentes. Le détecteur
+reçoit seulement une suite d'issues catégorielles
+Y_t=(V_t,Z_t)∈ A, | A|=8,
+et compare les fréquences observées dans deux fenêtres de taille w. Il ne reçoit aucune probabilité de
+mode.
+Pour un horizon T, un risque δ et
+τ=√((log(2| A|T/δ))/(w)),
+nous démontrons le résultat suivant. Si
+Δ_∞=|| P_A-P_B||_∞>2τ
+et si chaque régime dure au moins 2w+d_δ tours, où
+d_δ=
+⌊(2τ w)/(Δ_∞)⌋+1,
+alors, avec probabilité au moins 1-δ, le détecteur déclenche exactement une transformation par
+changement réel, aucune fausse transformation, et le nombre total de tours dans le mauvais mode
+vérifie
+M≤ S d_δ.
+En réinjectant cette garantie dans l'identité trajectorielle de Ω-O3, on obtient
+J_D≤ T L*+2λ T+cS+ρ S d_δ
+et
+J_U^oracle-J_D
+≥ 3λ T-cS-ρ S d_δ
+avec la même probabilité.
+Dans l'instance étudiée,
+Δ_∞=29/40,
+λ=1/64,
+c=1/8,
+ρ=11/20.
+Avec w=160, δ=0,05 et huit régimes, L=480 est la première longueur parmi celles testées qui
+satisfait le certificat de détection. Le gain moyen contre l'universel oracle devient positif dès la
+longueur testée L=768. La borne à haute probabilité, plus conservatrice, ne devient positive qu'à
+L=1536, avec une marge certifiée 2061/40=51,525.
+<PARSED TEXT FOR PAGE: 5 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 5
+Cette formulation « parmi les longueurs testées » est essentielle. À fenêtre fixe, le seuil croît comme
+sqrt(log T) : le certificat n'est donc pas monotone pour des horizons arbitrairement grands. Par
+exemple, pour huit segments de longueur L=600000, la condition Δ_∞>2τ échoue.
+Le contre-exemple central montre que l'identifiabilité seule ne suffit pas. Deux régimes déterministes
+à distance maximale peuvent alterner à chaque tour; si w est pair, les deux fenêtres ont toujours la
+même composition et la statistique vaut exactement zéro. Une durée de séjour minimale est donc une
+hypothèse structurelle, pas un détail technique de la preuve.
+---
+1. Point de départ : ce qui restait oracle dans
+Ω-O3
+Ω-O3 comparait quatre stratégies : deux observateurs rigides à trois blocs, un observateur universel
+oracle à six blocs, un universel détecté et un observateur dynamique commutant entre les deux
+partitions natives.
+Conditionnellement à une trajectoire quelconque du détecteur, son identité de coût était
+J_U^oracle-J_D=3λ T-cN-ρ M.
+Cette identité était exacte, mais le CUSUM connaissait les deux lois diagnostiques. Plus précisément,
+pour chaque issue y, il utilisait
+log(P_1- r_t(y)/P_ r_t(y)).
+Le problème de Ω-O4.1 est donc : peut-on remplacer ces probabilités fournies par les seules
+fréquences observées et conserver une conclusion démontrée sur le coût de la transformation ?
+Nous répondons oui dans un cadre fini, binaire, indépendant et à durée de séjour contrôlée.
+2. Cadre probabiliste
+2.1 Suite de régimes
+On fixe un horizon T et une suite déterministe
+r_1,…,r_T∈{A,B}.
+Elle est constante par morceaux et possède S points de changement. À chaque changement, le mode
+bascule nécessairement vers l'autre élément de l'ensemble binaire.
+La longueur minimale d'un segment est notée
+Γ=min_j |I_j|.
+Le calendrier peut être non périodique. La preuve n'exige pas que les segments aient la même
+longueur.
+2.2 Canal diagnostique inconnu du détecteur
+Après l'évaluation prédictive du tour t, une issue diagnostique indépendante est tirée :
+Y_t∼ P_r_t,
+Y_t∈ A,
+| A|=d.
+Conditionnellement au calendrier des régimes, les Y_t sont indépendantes. Les distributions P_A et
+P_B sont fixes à l'intérieur de chaque régime, mais elles ne sont pas transmises à l'algorithme.
+Le diagnostic arrive après le calcul de la perte du tour. Une alarme en fin de tour t ne change donc
+l'observateur qu'au tour t+1.
+<PARSED TEXT FOR PAGE: 6 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 6
+2.3 Hypothèses résiduelles
+Trois informations restent fournies :
+1 l'architecture du premier mode;
+2 les deux partitions et têtes prédictives candidates;
+3 la règle selon laquelle un changement alterne entre ces deux candidats.
+Ω-O4.1 retire l'oracle des lois diagnostiques, pas encore l'oracle de la classe structurelle.
+3. Détecteur empirique à deux fenêtres
+3.1 Fenêtres
+À une date où 2w observations sont disponibles depuis la dernière alarme, on définit deux fenêtres
+adjacentes :
+L_t=(Y_t-2w+1,…,Y_t-w),
+R_t=(Y_t-w+1,…,Y_t).
+Pour a∈A, leurs fréquences empiriques sont
+P_t^L(a)=(1)/(w)Σ_s=t-2w+1^t-w
+1{Y_s=a},
+P_t^R(a)=(1)/(w)Σ_s=t-w+1^t
+1{Y_s=a}.
+3.2 Statistique et seuil
+La statistique est
+D_t=|| P_t^R- P_t^L||_∞.
+Pour δ∈(0,1), on pose
+τ(T,w,δ,d)
+=√((log(2dT/δ))/(w)).
+Le détecteur déclenche si et seulement si
+D_t>τ.
+Après l'alarme, il inverse le mode dur et vide les deux fenêtres. Ce seuil dépend de l'horizon fini, de w,
+de δ et de la taille de l'alphabet, mais pas de P_A, de P_B ni de leur séparation.
+3.3 Pseudo-code
+entrée : w, δ, T, alphabet A, mode initial
+τ ← sqrt(log(2 |A| T / δ) / w)
+tampon ← vide
+pour t = 1,...,T :
+ évaluer l'observateur actif
+ recevoir Y_t après l'évaluation
+ ajouter Y_t au tampon
+ si le tampon contient au moins 2w observations :
+ séparer les w anciennes et les w récentes
+ D_t ← max_a |fréquence_récente(a)-fréquence_ancienne(a)|
+ si D_t > τ :
+ commuter vers l'autre architecture
+ vider le tampon
+<PARSED TEXT FOR PAGE: 7 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 7
+4. Lemme de concentration simultanée
+Lemme 1
+Pour toute suite déterministe de régimes et toute famille d'observations indépendantes Y_t∼P_{r_t},
+on a
+Pr[max_t,a|( P_t^R(a)- P_t^L(a))- E( P_t^R(a)- P_t^L(a))|>τ]≤δ,
+où le maximum porte sur les dates possédant deux fenêtres complètes et sur les d symboles.
+Preuve
+Fixons t et a. La variable centrée
+X_t,a=( P_t^R(a)- P_t^L(a))- E( P_t^R(a)- P_t^L(a))
+est une somme de 2w variables de Bernoulli indépendantes et centrées. Les w coefficients de la
+fenêtre droite valent 1/w; ceux de la fenêtre gauche valent -1/w. La somme des carrés des longueurs
+d'intervalle est donc
+2w((1)/(w))^2=(2)/(w).
+L'inégalité de Hoeffding donne
+Pr(|X_t,a|>x)≤ 2e^-wx^2.
+Il existe au plus T dates testées et d coordonnées. Par l'inégalité de l'union,
+Pr(max_t,a|X_t,a|>x)
+≤ 2dT e^-wx^2.
+Avec
+x=√((log(2dT/δ))/(w)),
+le membre de droite vaut δ. □
+Ce lemme est une application directe de l'inégalité classique de Hoeffding; il n'est pas revendiqué
+comme une nouvelle inégalité de concentration.
+5. Théorème de détection sans noyaux fournis
+On note
+Δ_∞=|| P_A-P_B||_∞
+et, lorsque Δ_∞>2τ,
+d_δ=
+⌊(2τ w)/(Δ_∞)⌋+1.
+La condition stricte Δ_∞>2τ entraîne d_δ≤w.
+Théorème 1 - exactitude des commutations à haute probabilité
+Supposons :
+1 le mode initial connu;
+2 deux modes alternants A et B;
+3 des observations diagnostiques indépendantes et stationnaires par morceau;
+4 Δ_∞>2τ;
+5 Γ≥2w+d_δ.
+Alors, avec probabilité au moins 1-δ :
+<PARSED TEXT FOR PAGE: 8 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 8
+N=S,
+aucune des N alarmes n'est fausse, chaque changement est corrigé après au plus d_δ tours évalués
+dans le nouveau régime et
+M≤ S d_δ.
+Preuve
+Travaillons sur l'événement de probabilité au moins 1-δ fourni par le lemme 1.
+Avant le premier changement, les deux fenêtres complètes éventuelles suivent la même loi. Leur
+différence moyenne est nulle. Le lemme impose alors D_t≤τ; aucune alarme ne peut survenir dans
+une zone stationnaire.
+Considérons un changement de P vers Q et supposons que les 2w observations précédant la rupture
+appartiennent au régime P. Après k≤w observations du nouveau régime, la fenêtre gauche suit encore
+P, tandis que la fenêtre droite contient w-k observations de P et k de Q. Pour une coordonnée a,
+E[
+P_t^R(a)- P_t^L(a)
+]
+=(k)/(w)(Q(a)-P(a)).
+Choisissons une coordonnée atteignant Δ_∞. Le lemme donne
+D_t≥ (kΔ_∞)/(w)-τ.
+Pour k=d_δ, la définition de d_δ implique
+(kΔ_∞)/(w)>2τ,
+donc D_t>τ. Une alarme a nécessairement eu lieu au plus tard après d_δ observations nouvelles.
+Toute alarme antérieure possède déjà une fenêtre traversant ce changement; ce n'est donc pas une
+fausse alarme.
+L'alarme vide le tampon. Il reste au moins
+Γ-d_δ≥2w
+observations stationnaires avant la rupture suivante. Le détecteur reconstruit donc deux fenêtres
+pures avant le prochain changement. Le raisonnement se répète par récurrence.
+Chaque changement produit ainsi exactement une alarme, aucune alarme ne se produit entre deux
+changements, et le mauvais mode persiste durant au plus d_δ évaluations par rupture. D'où N=S et
+M≤Sd_δ. □
+6. Corollaire de coût pour l'observateur Ω
+Les constantes prédictives de Ω-O3 restent inchangées :
+L*=23/120,
+ρ=11/20,
+λ=1/64,
+c=1/8.
+L'identité trajectorielle vaut pour tout chemin du nouveau détecteur :
+J_D=T L*+2λ T+cN+ρ M.
+Corollaire 1 - borne à haute probabilité
+Sous les hypothèses du théorème 1, avec probabilité au moins 1-δ,
+<PARSED TEXT FOR PAGE: 9 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 9
+J_D
+≤ T L*+2λ T+cS+ρ S d_δ.
+Comme
+J_U^oracle=T L*+5λ T,
+on obtient
+J_U^oracle-J_D
+≥ 3λ T-cS-ρ S d_δ.
+Une condition suffisante de domination est donc
+3λ T>cS+ρ S d_δ.
+Corollaire 2 - universel partageant le détecteur
+L'universel détecté et le dynamique subissent le même nombre M de tours mal classés. Sur
+l'événement du théorème, N=S, donc
+J_U^detected-J_D=3λ T-cS.
+Cette comparaison isole la valeur de la partition compacte. Elle ne dépend plus du délai, puisque le
+même délai affecte les deux stratégies.
+Corollaire 3 - meilleur rigide
+Si R_R désigne le regret prédictif du meilleur observateur natif fixé après observation de la
+trajectoire, une condition suffisante est
+R_R>cS+ρ S d_δ.
+Ici encore, cette condition est suffisante et non nécessaire.
+7. Constantes exactes de la sonde Ω
+La sonde est fixée à
+h_probe=(0,0), u_probe=0.
+Les huit probabilités exactes sont données ci-dessous pour audit. Le détecteur ne consulte jamais ce
+tableau.
+Précision d'implémentation : la décision d'alarme ne consulte pas ces lois. Le programme
+expérimental les utilise hors de cette décision afin de calculer, a posteriori, la séparation et de
+déclarer si les hypothèses du théorème sont satisfaites.
+Issue (V,Z) P_A P_B Écart absolu
+(0,00) 17/200 1/100 3/40
+(0,01) 1/200 1/100 1/200
+(0,10) 1/200 1/100 1/200
+(0,11) 1/200 17/100 33/200
+(1,00) 153/200 1/25 29/40
+(1,01) 9/200 1/25 1/200
+(1,10) 9/200 1/25 1/200
+(1,11) 9/200 17/25 127/200
+Ainsi,
+Δ_∞=29/40=0,725.
+<PARSED TEXT FOR PAGE: 10 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 10
+La coordonnée la plus discriminante n'est pas sélectionnée par l'algorithme : le maximum empirique
+porte simultanément sur les huit coordonnées.
+8. Protocole numérique
+8.1 Paramètres
+● taille de fenêtre : w=160;
+● risque théorique : δ=1/20=0,05;
+● huit segments et sept ruptures;
+● longueurs testées : 256, 480, 512, 768, 1024, 1536, 2048;
+● 300 trajectoires indépendantes par longueur;
+● pertes de population exactes;
+● un diagnostic indépendant après chaque évaluation;
+● coût structurel et marges calculés avec fractions.Fraction.
+Le seuil varie légèrement avec T=8L, conformément au théorème. Les graines aléatoires sont fixées
+par le programme.
+8.2 Critère de succès théorique observé
+Pour une trajectoire admissible, le code vérifie simultanément :
+N=S,
+N_false=0,
+max_j d_j≤ d_δ,
+M≤ S d_δ.
+Le taux d'échec empirique de ce quadruplet est affiché à côté de δ. Un taux observé nul ne remplace
+pas la preuve et ne valide pas à lui seul le niveau de risque; il constitue seulement un contrôle de
+cohérence de l'implémentation. Dans les résultats structurés, ces contrôles sont désormais rangés
+sous simulation_sanity_only, séparément des calculs déterministes et exacts.
+9. Résultats
+L T d_δ séjour min. N moyen M moyen délai moyen
+256 2048 128 448 6,000 1104,093 102,489
+480 3840 131 451 7,000 448,637 64,091
+512 4096 131 451 7,000 449,727 64,247
+768 6144 133 453 7,000 459,583 65,655
+1024 8192 135 455 7,000 460,907 65,844
+1536 12288 136 456 7,000 471,450 67,350
+2048 16384 138 458 7,000 472,747 67,535
+L théorème applicable fausses alarmes
+moyennes
+marge oracle moyenne gain contre tous
+256 non 2,730 -512,001 0 %
+480 oui 0 -67,625 0 %
+512 oui 0 -56,225 0 %
+768 oui 0 +34,354 100 %
+<PARSED TEXT FOR PAGE: 11 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 11
+L théorème applicable fausses alarmes
+moyennes
+marge oracle moyenne gain contre tous
+1024 oui 0 +129,626 100 %
+1536 oui 0 +315,828 100 %
+2048 oui 0 +507,114 100 %
+La « marge oracle » est J_U^oracle-J_D; une valeur positive favorise le dynamique.
+9.1 Frontière empirique
+La première longueur testée dont la marge moyenne est positive est
+L=768.
+Les 300 trajectoires gagnent alors contre l'universel oracle, l'universel détecté et le meilleur rigide.
+Le résultat n'est pas surprenant au vu du délai moyen : environ 66 tours par changement, nettement
+moins que la borne d_δ=133.
+9.2 Frontière certifiée
+La borne inférieure démontrée est
+B_L=3λ T-cS-ρ S d_δ.
+L B_L exact décimal domination certifiée
+480 -13009/40 -325,225 non
+512 -12529/40 -313,225 non
+768 -8997/40 -224,925 non
+1024 -1093/8 -136,625 non
+1536 2061/40 +51,525 oui
+2048 9433/40 +235,825 oui
+La première longueur testée certifiée est donc
+L=1536.
+L'écart entre 768 et 1536 mesure le conservatisme de l'union de Hoeffding. Il ne doit pas être masqué
+: l'expérience estime un comportement typique, tandis que le théorème protège simultanément toutes
+les dates et coordonnées avec une probabilité globale de 95 %.
+9.3 Contrôle du niveau
+Pour chaque longueur admissible de 480 à 2048, aucune des 300 trajectoires n'a violé le quadruplet
+certifié. Le taux observé est donc 0/300. Cette observation est compatible avec la borne δ=0,05, mais
+elle ne montre ni que la borne est serrée ni que le risque réel est nul.
+9.4 Calendrier non périodique
+Les longueurs
+640, 960, 512, 1400, 800, 2048, 600, 1800
+donnent T=8760 et satisfont le séjour minimal. Sur 300 trajectoires :
+● transformations moyennes : 7,000;
+● fausses transformations moyennes : 0;
+● tours mal classés moyens : 462,163;
+● délai moyen : 66,023;
+● marge oracle moyenne : +155,560;
+<PARSED TEXT FOR PAGE: 12 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 12
+● gain contre tous les comparateurs : 300/300;
+● violations du certificat : 0/300.
+Le théorème dépend donc de la durée de séjour, pas de la périodicité des changements.
+10. Contre-exemples
+10.1 Sonde aveugle : séparation nulle
+Pour
+h=(2,0), u=1,
+les deux distributions diagnostiques coïncident exactement. Ainsi,
+Δ_∞=0.
+La condition Δ_∞>2τ échoue pour tout w, T et δ. Aucun algorithme recevant uniquement cette sonde
+ne peut distinguer les deux modes mieux que par des informations externes. Le retrait de l'oracle ne
+supprime donc pas la nécessité de l'identifiabilité.
+10.2 Aliasing temporel malgré une séparation maximale
+Considérons un alphabet binaire et les lois déterministes
+P_A=(1,0), P_B=(0,1).
+Alors
+|| P_A-P_B||_∞=1,
+la séparation maximale possible. Faisons pourtant alterner les modes à chaque tour : A,B,A,B,.... Si
+w est pair, toute fenêtre de longueur w contient exactement w/2 zéros et w/2 uns. Deux fenêtres
+adjacentes possèdent donc la même loi empirique et
+D_t=0
+à chaque test.
+Dans l'instance exacte de longueur 10w=1600, il y a 1599 changements, aucune alarme et 800 tours
+mal classés pour le mode initial rigide A.
+Ce contre-exemple prouve que
+Δ_∞>0
+n'est pas suffisant sans séparation temporelle des ruptures.
+10.3 Régimes plus courts que la mémoire
+Dans l'expérience Ω à L=256, la condition exige un séjour d'au moins 448 tours. Elle est violée. Le
+détecteur produit en moyenne seulement six transformations pour sept ruptures, dont 2,730 sont
+fausses, et reste dans le mauvais mode pendant 1104,093 tours sur 2048.
+Le dynamique perd alors contre l'oracle de 512,001 en moyenne et ne gagne contre tous les
+comparateurs dans aucune des 300 trajectoires.
+10.4 Troisième régime non représenté
+Un changement de distribution peut être détecté sans que la bonne architecture soit disponible. Si un
+régime C inconnu apparaît, la règle binaire inverse simplement A↔B. Elle peut donc constater une
+rupture et sélectionner malgré tout une partition erronée.
+La détection d'une nouveauté n'est pas la création d'une représentation de cette nouveauté.
+<PARSED TEXT FOR PAGE: 13 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 13
+11. Points faibles et portée exacte
+11.1 Horizon connu
+Le seuil utilise T. Si l'exécution dépasse l'horizon annoncé sans recalibration, le budget global de
+fausse alarme n'est plus démontré. Une version « anytime » demanderait une dépense progressive du
+risque ou une martingale de test, avec un autre compromis de délai.
+11.2 Indépendance du canal diagnostique
+La preuve utilise Hoeffding pour des observations indépendantes. Des données temporellement
+dépendantes exigeraient des hypothèses de mélange, une concentration martingale ou un modèle
+explicite de dépendance.
+11.3 Ruptures abruptes
+Les lois sont stationnaires par morceaux. Une dérive lente peut rester sous le seuil à chaque fenêtre
+tout en accumulant un regret important.
+11.4 Coût statistique des faibles séparations
+La condition
+Δ_∞>2√((log(2dT/δ))/(w))
+impose approximativement
+w>(4log(2dT/δ))/(Δ_∞^2).
+Quand Δ_∞ est faible, la mémoire et le séjour minimal croissent comme Δ_∞^{-2}. Une transformation
+peut être identifiable en principe mais trop lente pour être économiquement utile.
+11.5 Reset coûteux en échantillons
+Après chaque alarme, le détecteur attend 2w nouvelles observations avant de retester. Ce choix
+simplifie la preuve et évite les alarmes multiples, mais il est statistiquement conservateur.
+11.6 Classe structurelle encore oracle
+Les deux partitions natives, leurs têtes prédictives et le mode initial sont préconstruits. Ω-O4.1 ne
+sélectionne pas une partition parmi K candidats et n'en invente aucune.
+11.7 Coûts incomplets
+Le stockage simultané des deux têtes, le maintien des comptes et le calcul du maximum sur huit
+coordonnées ne sont pas encore intégrés à J_D. Seuls la complexité persistante de la partition active
+et le coût c de la transformation sont facturés.
+11.8 Borne suffisante, non optimale
+L'union de Hoeffding protège tous les couples date-coordonnée. Elle ignore la variance, la structure
+multinomiale et la dépendance entre fenêtres chevauchantes. La frontière certifiée est donc
+volontairement prudente.
+12. Positionnement par rapport aux travaux
+existants
+L'inégalité utilisée vient de Hoeffding [1963]. Les tests par fenêtres et la détection de dérive sont
+classiques; ADWIN, par exemple, adapte la taille de fenêtre et donne des garanties de faux positifs et
+faux négatifs [Bifet et Gavaldà, 2007]. Le CUSUM paramétrique de Ω-O3 remonte à Page [1954], et
+les critères de délai séquentiel à Lorden [1971].
+<PARSED TEXT FOR PAGE: 14 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 14
+Ω-O4.1 ne revendique donc pas l'invention du test à deux fenêtres. Son apport est la composition
+démontrée suivante dans le système Ω :
+concentration empirique
+⇒
+(N=S, M≤ Sd_δ)
+⇒
+borne sur le coût de transformation.
+Cette composition transforme l'identité comptable de Ω-O3 en une garantie probabiliste ex ante, sans
+fournir les noyaux au détecteur. Elle demeure un théorème spécialisé, pas une théorie générale des
+observateurs.
+13. Direction suivante : Ω-O4.2
+Le prochain oracle à retirer est la paire de partitions déjà construite. Une étape raisonnable consiste
+à fixer une classe finie
+Q={q_1,…,q_K}
+et à faire apprendre simultanément :
+1 la partition active;
+2 sa tête prédictive;
+3 la décision de conserver, remplacer ou raffiner cette partition;
+4 le coût de stockage des candidats et le coût de calcul du détecteur.
+Une cible de recherche, non encore démontrée, serait
+R_T
+≤
+C√STlog K
++cS
++R_structure
++R_diagnostic.
+Pour éviter de réintroduire un oracle sous une autre forme, Ω-O4.2 devra distinguer trois événements
+: changement de paramètres à structure constante, changement vers une structure connue, et
+arrivée d'un régime dont aucune partition candidate n'est adéquate.
+14. Reproductibilité
+Artefacts :
+● omega_observer_learned_detection.py : expérience complète;
+● test_omega_observer_learned_detection.py : 17 tests Ω-O4.1;
+● output/observer_learned_detection/omega_observer_learned_detection_results.json :
+résultats structurés;
+● output/observer_learned_detection/omega_observer_learned_detection_metrics.csv :
+métriques tabulaires.
+Commandes :
+python3 omega_observer_learned_detection.py --trials 300
+python3 -m unittest -v \
+ test_omega_observer_dynamic.py \
+ test_omega_observer_learned_detection.py
+Les 29 tests cumulés Ω-O3/Ω-O4.1 vérifient notamment :
+● les constantes exactes de la sonde;
+<PARSED TEXT FOR PAGE: 15 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 15
+● le seuil de concentration;
+● le délai et le séjour certifiés;
+● le reset des fenêtres;
+● les identités trajectorielles exactes;
+● une trajectoire et un petit ensemble Monte-Carlo utilisés comme contrôles de
+cohérence, sans statut de preuve;
+● la sonde aveugle;
+● l'aliasing par alternance rapide.
+Conclusion
+Ω-O4.1 retire un oracle réel de Ω-O3 : les noyaux diagnostiques ne sont plus connus par le détecteur.
+Sous indépendance, séparation et durée de séjour, les fréquences empiriques suffisent pour garantir,
+avec probabilité au moins 1-δ, une transformation correcte et un coût borné.
+Le résultat central est
+Pr(
+J_U^oracle-J_D
+≥
+3λ T-cS-ρ S d_δ
+)
+≥1-δ.
+Dans l'instance finie, la transformation gagne empiriquement avant que la preuve uniforme ne puisse
+le garantir. Cette différence n'est pas un échec : elle localise exactement le prix du niveau de
+confiance et indique où améliorer le détecteur.
+La conclusion défendable est : un observateur dynamique peut décider sa transformation sans
+connaître les lois du canal diagnostique, mais seulement si le signal est à la fois
+statistiquement séparable et temporellement assez stable pour être appris avant la rupture
+suivante.
+<PARSED TEXT FOR PAGE: 16 / 16>
+Programme Omega - Experience O4.1 18 juillet 2026
+Detection empirique - garantie a haute probabilite 16
+Références
+1 W. Hoeffding (1963), Probability Inequalities for Sums of Bounded Random Variables, Journal of the
+American Statistical Association 58(301), 13-30. DOI.
+2 A. Bifet et R. Gavaldà (2007), Learning from Time-Changing Data with Adaptive Windowing, SIAM
+International Conference on Data Mining, 443-448. DOI.
+3 E. S. Page (1954), Continuous Inspection Schemes, Biometrika 41(1/2), 100-115. Article.
+4 G. Lorden (1971), Procedures for Reacting to a Change in Distribution, Annals of Mathematical
+Statistics 42(6), 1897-1908. Article.
+5 P. Auer, Y. Chen, P. Gajane, C.-W. Lee, H. Luo, R. Ortner et C.-Y. Wei (2019), Achieving Optimal
+Dynamic Regret for Non-stationary Bandits without Prior Information, COLT. PMLR.
+6 C.-Y. Wei et H. Luo (2021), Non-stationary Reinforcement Learning without Prior Knowledge: an
+Optimal Black-box Approach, COLT. PMLR.
