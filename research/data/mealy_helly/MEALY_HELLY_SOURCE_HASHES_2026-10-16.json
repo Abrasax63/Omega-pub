@@ -5,7 +5,7 @@
   },
   "public_portable_source": {
     "file": "research/code/mealy_helly_bridge.py",
-    "sha256": "TO_BE_FILLED"
+    "sha256": "b725b9a2c7f36fa67d13f483153ed2435c6d861e66238979942b50eef9c7956b"
   },
   "historical_result": {
     "file": "MEALY_HELLY_RESULTS_2026-10-16.json",
