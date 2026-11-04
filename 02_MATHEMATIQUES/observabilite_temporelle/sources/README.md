@@ -13,7 +13,7 @@ Ce dossier conserve les sources retrouvées pour la fiche [OBS-V8-FACT-INF](../O
 - [Correspondance du cas unaire](correspondance_cas_unaire_connu.csv)
 - [Contrôle symbolique de la spécialisation unaire](verification_specialisation_unaire.py)
 
-Les manifestes [V10](manifest_AUDIT_V10.json) et [V11](manifest_AUDIT_V11.json) conservent les empreintes SHA-256 et tailles déclarées dans les archives historiques.
+Les manifestes [V10](manifest_AUDIT_V10.json) et [V11](manifest_AUDIT_V11.json) conservent les empreintes SHA-256 et tailles des membres originaux des archives. Ces empreintes identifient les fichiers sources archivés ; les copies textuelles GitHub peuvent normaliser les fins de ligne et ne sont donc pas présentées comme identiques octet pour octet aux originaux.
 
 ## Provenance et empreintes
 
