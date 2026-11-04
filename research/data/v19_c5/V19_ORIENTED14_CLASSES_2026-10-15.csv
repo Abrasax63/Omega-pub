@@ -1,0 +1,17 @@
+<PARSED TEXT FOR SHEET: 1 / 1 TABS
+TAB NAME: V19_ORIENTED14_CLASSES_2026-10-15.csv>
+index,c5_class_id,codimension,boundary_assignments_count,canonical_shadow_bitset_hex,canonical_equations,d5_class_id,d5_split_size,is_chiral_split_member
+0,C5O-00,3,4,c0000003,x1+x4=0; x1+x3=0; x1+x2=0,D5-00,1,no
+1,C5O-01,3,4,84000021,x1+x4=0; x1+x3=0; x0+x2=0,D5-01,1,no
+2,C5O-02,3,4,40100802,x0+x4=1; x1+x3=0; x0+x2=1,D5-03,1,no
+3,C5O-03,3,4,40024002,x0+x3=1; x0+x2=1; x0+x1=1,D5-02,1,no
+4,C5O-04,2,8,f000000f,x2+x4=0; x2+x3=0,D5-04,1,no
+5,C5O-05,2,8,c0300c03,x2+x4=0; x1+x3=0,D5-05,1,no
+6,C5O-06,2,8,550000aa,x0+x4=1; x0+x3=1,D5-06,2,yes
+7,C5O-07,2,8,48124812,x1+x3=0; x0+x2=1,D5-07,1,no
+8,C5O-08,2,8,44442222,x0+x4=1; x0+x1=1,D5-08,1,no
+9,C5O-09,2,8,42424242,x0+x2=1; x0+x1=1,D5-06,2,yes
+10,C5O-10,1,16,ff0000ff,x3+x4=0,D5-09,1,no
+11,C5O-11,1,16,f0f00f0f,x2+x4=0,D5-10,1,no
+12,C5O-12,1,16,66666666,x0+x1=1,D5-11,1,no
+13,C5O-13,1,16,5a5a5a5a,x0+x2=1,D5-12,1,no
