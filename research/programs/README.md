@@ -34,3 +34,8 @@ Le canal de migration utilisé ne permet pas de transférer les octets du DOCX c
 - Les fichiers Markdown ont été transférés sous leurs contenus textuels ; aucune promotion de statut scientifique n'en découle.
 - L'extraction DOCX ne préserve pas la mise en page, les objets incorporés ou les tableaux complexes.
 - La base SQLite v33 demeure hors du dépôt public.
+
+
+## Source complémentaire liée depuis le protocole quantique
+
+Le document `AUDIT_CALIBRATION_MEMOIRE_QUANTIQUE_2026-09-30.md` est une source supplémentaire citée directement par `PROTOCOLE_CASSURE_JAUGE_QUANTIQUE_2026-09-30.md`. Il ne faisait pas partie des 12 locateurs distincts relevés dans le périmètre initial de la table `evidence`, mais son absence cassait un lien relatif du protocole. Il a été retrouvé dans la Library et restauré à l'emplacement attendu dans ce dépôt.
