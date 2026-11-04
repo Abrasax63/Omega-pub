@@ -14,13 +14,21 @@ Ce document distingue les fiches sources retrouvées dans la bibliothèque inter
 
 Les fiches transférées sont des transcriptions documentaires de fiches internes existantes. Aucune nouvelle preuve, compilation formelle ou exécution de code n'est revendiquée.
 
-## 2. Résultats CL-DYN — récupération nécessaire
+## 2. Résultats CL-DYN — sources retrouvées, cartes originales absentes
 
-Les identifiants CL-DYN-01, CL-DYN-02, CL-DYN-03 et CL-DYN-04 apparaissent dans l'état de recherche antérieur comme résultats du noyau mathématique. Les éléments récupérés rappellent notamment que CL-DYN-03 doit conserver la formulation corrigée portant sur l'unique cycle finalement atteint.
+Les identifiants CL-DYN-01 à CL-DYN-04 apparaissent dans l'historique de recherche du 25 septembre 2026. Les fiches originales autonomes et leurs liaisons d'évidence n'ont pas été retrouvées dans les inventaires actuels.
 
-Cependant, les fiches primaires complètes et leurs preuves n'ont pas été retrouvées dans les éléments examinés pour cette migration. Ils ne sont donc pas encore transférés comme résultats publiés.
+Des sources mathématiques de contenu concordant sont toutefois récupérées dans un dossier séparé :
+- rapport de spectres de défauts et scripts d'énumération ;
+- notes de recollement et de stratégie de couverture ;
+- témoins P2 sans P1 et P3 sans P2 ;
+- correction du critère de finitude de τ portant sur l'unique cycle terminal effectivement atteint.
 
-**Action requise :** retrouver les fiches sources, reconstruire leur correspondance exacte avec les identifiants, puis vérifier définitions, hypothèses, preuves, contre-tests et dépendances avant transfert.
+Le rapprochement des énoncés historiques avec ces sources reste documentaire et n'est pas une correspondance d'ID certifiée. Les statuts CORE/CERTIFIED rapportés dans l'historique ne sont pas réactivés. Aucun résultat CL-DYN n'est ajouté à l'index global comme fiche publiée.
+
+Voir [réconciliation détaillée CL-DYN-01 à 04](defauts_recollement/RECONCILIATION_CL_DYN_01_04.md).
+
+**Écart à auditer :** un ancien résumé mentionne 360 cas P3 sans P2 à N=5 ; le script source retrouvé et rejoué donne 240 spectres finis non vides. Le nombre 360 reste en quarantaine jusqu'à identification de sa définition ou de sa version de calcul.
 
 ## 3. Autres briques d'observation
 
