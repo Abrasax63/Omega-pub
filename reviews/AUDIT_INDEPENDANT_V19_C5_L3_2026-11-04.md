@@ -131,3 +131,16 @@ Les fichiers historiques du 15 octobre ne sont pas écrasés. Les nouveaux fichi
 - **INDÉTERMINÉ** : originalité bibliographique ; aucune revue humaine tierce ni formalisation Lean n'a été effectuée dans cet audit.
 
 Aucune base SQLite n'a été modifiée et aucun statut de résultat dans la base RAVI-2 n'a été promu.
+
+
+## Addendum de reproductibilité GitHub — 4 novembre 2026
+
+Le script a été ajusté pour lire ses quatre entrées et écrire ses quatre sorties dans `research/data/v19_c5/`, séparément du code. La commande prévue depuis la racine du dépôt est :
+
+```bash
+python research/code/audit_v19_c5_independent_2026-11-04.py
+```
+
+**État exact au moment de cet addendum :** le script modifié est commité sur la branche de migration, mais les huit fichiers de données (quatre entrées historiques et quatre sorties d'audit) ne sont pas encore présents dans le dépôt. L'exécution depuis les seuls fichiers GitHub n'a donc pas été validée et échouerait tant que les quatre entrées ne sont pas ajoutées. L'exécution locale du 4 novembre sur les fichiers de l'archive C5 s'est terminée avec : 3 341 diagrammes locaux, 510 ombres propres, 13 classes D5, 14 classes C5, 105 témoins de paires, 455 témoins de triples D5, et 560 triples C5 orientés dans U42.
+
+Le script ne modifie aucune base SQLite et n'écrit que les sorties dans le dossier de données. Aucun statut scientifique n'est promu. La réserve relative au lemme général de localité L+2 demeure inchangée.
