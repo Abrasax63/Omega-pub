@@ -40,3 +40,9 @@ Les statuts, audits et tests sont recopiés de SQLite ; ils n’ont pas été re
 Source retrouvée : `AUDIT_V10.md` (18 septembre 2026), section V8. Le rapport reconstruit la caractérisation d'une coloration génératrice à horizon infini : injectivité sur chaque fibre T⁻¹(y) et distinction des itinéraires symboliques des points périodiques. Cette dernière équivaut à des mots primitifs sur chaque cycle et à des classes de rotation distinctes pour les cycles de même longueur. La formule de factorisation de χ_obs,T,∞ est donnée avec les facteurs de fibres et les polynômes cycliques Q_r(z). L'audit rapporte une reconstruction indépendante et des contrôles exhaustifs/échantillonnés jusqu'à N=8, sans contre-exemple. Originalité bibliographique indéterminée.
 
 > Complément non original ; pas de réaudit indépendant. Statut SQLite inchangé.
+
+## Source historique restaurée dans GitHub — 4 novembre 2026
+
+Le document d'audit historique cité ci-dessus a maintenant été retrouvé dans la bibliothèque et copié sans réécriture dans le dépôt : [AUDIT_V10.md](../../sources/historical/AUDIT_V10.md). Il contient la reconstruction indépendante de V8 et les contrôles historiques rapportés.
+
+**Distinction à conserver :** AUDIT_V10 est une source d'audit/provenance, pas le fichier Markdown original de la carte V8. La présente fiche reste donc une reconstitution non originale ; aucune preuve n'a été promue ni réauditée par cette restauration documentaire.
