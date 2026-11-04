@@ -113,3 +113,12 @@ L'index public `research/bricks/INDEX_BRIQUES.md` a été complété avec ces hu
 **État du reliquat initial : 8 cartes restaurées ; 34 des 42 restent à retrouver ou à établir comme indisponibles.** Cette progression est documentaire uniquement : les statuts scientifiques n'ont pas changé et les scripts/calculs associés n'ont pas été rejoués.
 
 Un contrôle séparé a repéré `BR-OBS-KRYLOV-01` dans la branche et dans la bibliothèque, bien qu'il n'appartienne pas à la liste des 42 fichiers de carte absents. Sa relation de carte dans SQLite reste à examiner.
+
+
+## 7. Passe complémentaire de recherche dans toute la bibliothèque — 4 novembre 2026
+
+Une recherche par identifiants et noms de fichiers a été complétée par un inventaire paginé de la bibliothèque privée (1 494 fichiers parcourus, huit pages, sans curseur restant). Une carte individuelle supplémentaire correspondant exactement à un résultat du reliquat a été retrouvée à la racine de la bibliothèque : `BR-OBS-REVEAL-KERNEL_BRIQUE.md`.
+
+Le contenu intégral a été lu. Son identifiant, son titre, son statut, son domaine, ses hypothèses et ses renvois de preuve concordent avec l'entrée SQLite et l'index historique. La carte a été copiée sans réécriture dans `research/bricks/BR-OBS-REVEAL-KERNEL_BRIQUE.md` sur la branche de migration. L'index public a été complété.
+
+**État actualisé du reliquat initial : 9 cartes restaurées sur 42 ; 33 restent sans carte individuelle retrouvée.** Les autres résultats repérés dans les index, snapshots, audits, scripts ou données ne sont pas comptés comme cartes individuelles. Aucun document manquant n'a été reconstitué à partir d'un résumé. Aucun statut scientifique n'a été modifié, aucun calcul ni test n'a été rejoué, SQLite n'a pas été modifiée et la PR reste en brouillon.
