@@ -1,6 +1,6 @@
 # Mémoire quantique à trois temps : seuil de calibration et contrôle instrumental
 
-**Itération du 30 septembre 2026.** Cet audit poursuit [la note précédente](NOTE_VALIDATION_CONTEXTES_QUANTIQUES_2026-09-30.md). Il porte sur les dix jeux de comptages de Giarmatzi *et al.* et leurs matrices publiques `Wexp`, `Wphys`, `Wmark`. Aucun tir supplémentaire sur les puces n'a été effectué. Toutes les probabilités et valeurs de (p) calculées ici à partir des comptes supposent, sauf mention contraire, des tirs indépendants sans dérive.
+**Itération du 30 septembre 2026.** Cet audit poursuit la note précédente (non retrouvée dans les fichiers accessibles pour cette migration). Il porte sur les dix jeux de comptages de Giarmatzi *et al.* et leurs matrices publiques `Wexp`, `Wphys`, `Wmark`. Aucun tir supplémentaire sur les puces n'a été effectué. Toutes les probabilités et valeurs de (p) calculées ici à partir des comptes supposent, sauf mention contraire, des tirs indépendants sans dérive.
 
 ## Question et statut des sources
 
