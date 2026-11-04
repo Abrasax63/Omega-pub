@@ -157,3 +157,20 @@ Cet index est une interface de navigation. Il **ne crée, ne promeut, ne fusionn
 ## Raccordement GAUGE-CORE
 
 `BR-AFFINE-GAUGE-CORE` compose `BR-AFFINE-GAUGE-GLUE` avec `BR-AFFINE-GROUP-CORE` : translation commune ou noyau minimal d’étiquettes, avec borne serrée `d+1`. Rapport : `/GAUGE_CORE_BRIDGE_2026-10-16.md`.
+
+## Cartes restaurées depuis la bibliothèque privée — 4 novembre 2026
+
+Ces huit cartes ont été retrouvées dans la bibliothèque privée, relues, puis copiées sans réécriture de leur énoncé dans cette branche. Les statuts et versions reproduisent ceux des cartes sources ; cette opération n'est pas une nouvelle certification mathématique.
+
+| ID | Version | Statut source | Carte |
+|---|---:|---|---|
+| BR-AFFINE-GAUGE-GLUE | 1 | DÉMONTRÉ interne | `BR-AFFINE-GAUGE-GLUE_BRIQUE.md` |
+| BR-AFFINE-GROUP-CORE | 1 | DÉMONTRÉ interne | `BR-AFFINE-GROUP-CORE_BRIQUE.md` |
+| OBS-AFFINE-GROUP-CORE-VALIDATION | 1 | CALCUL EXACT interne | `OBS-AFFINE-GROUP-CORE-VALIDATION_BRIQUE.md` |
+| OBS-RESTRICT-AFFINE | 1 | DÉMONTRÉ interne | `OBS-RESTRICT-AFFINE_BRIQUE.md` |
+| OBS-RESTRICT-FORCED-QUOTIENT | 1 | DÉMONTRÉ interne | `OBS-RESTRICT-FORCED-QUOTIENT_BRIQUE.md` |
+| BR-AFFINE-TREE-GLUE | 1 | DÉMONTRÉ interne | `BR-AFFINE-TREE-GLUE_BRIQUE.md` |
+| OBS-V19-N11-THIRD-ORDER | 1 | CALCUL EXACT interne | `OBS-V19-N11-THIRD-ORDER_BRIQUE.md` |
+| OBS-V19-N11-MOMENT-GRAM | 1 | CALCUL EXACT interne | `OBS-V19-N11-MOMENT-GRAM_BRIQUE.md` |
+
+Les correspondances de titre, d'énoncé, de domaine et de statut ont été comparées aux lignes SQLite v33 correspondantes. Les locateurs de preuve demeurent ceux indiqués dans chaque carte ; ils ne sont pas réputés tous présents dans cette branche.
