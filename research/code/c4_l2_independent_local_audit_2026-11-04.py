@@ -114,6 +114,47 @@ for x in range(len(W)):
         assert local_shadow_for_map(W,x,y)==global_shadow(W,x,y), (x,y)
 print('LOCAL/GLOBAL witness cross-check PASS: all 36 pairs agree.')
 
+# Part II-bis: exhaustive local/global comparison on every coherent C4 system
+# with 4, 5 or 6 states; also check the forced-component path structure.
+def component_shapes(F):
+    n=len(F); adj=[[] for _ in range(n)]
+    for u in range(n):
+        for v in range(u+1,n):
+            if F[u]==F[v] or {F[u],F[v]}=={u,v}:
+                adj[u].append(v); adj[v].append(u)
+    seen=set(); shapes=[]
+    for s in range(n):
+        if s in seen: continue
+        todo=[s]; seen.add(s); comp=[]
+        while todo:
+            u=todo.pop(); comp.append(u)
+            for v in adj[u]:
+                if v not in seen: seen.add(v); todo.append(v)
+        edge_count=sum(len(adj[u]) for u in comp)//2
+        max_degree=max(len(adj[u]) for u in comp)
+        shapes.append((len(comp),max_degree,edge_count))
+    return shapes
+
+locality_rows=[]; locality_maps=0; locality_pairs=0; locality_components=0
+for n in range(4,7):
+    total=n**(n-4); coherent_count=0; pair_count=0
+    for tail in product(range(n),repeat=n-4):
+        F=(1,2,3,0)+tail
+        if not coherent(list(F)): continue
+        coherent_count+=1; locality_maps+=1
+        shapes=component_shapes(F); locality_components+=len(shapes)
+        assert all(size<=4 and degree<=2 and edges==size-1
+                   for size,degree,edges in shapes), (F,shapes)
+        for x in range(n):
+            for y in range(x+1,n):
+                pair_count+=1; locality_pairs+=1
+                assert local_shadow_for_map(F,x,y)==global_shadow(F,x,y), (F,x,y)
+    locality_rows.append((n,total,coherent_count,pair_count))
+    print(f'LOCALITY_ENUM N={n}: total={total}, coherent={coherent_count}, pair_comparisons={pair_count}',flush=True)
+assert locality_rows==[(4,1,1,6),(5,5,5,50),(6,36,32,480)],locality_rows
+assert locality_maps==38 and locality_pairs==536 and locality_components==173
+print('LOCALITY_EXHAUSTIVE PASS: 38 maps, 536 pair comparisons, 173 forced components, 0 divergence.')
+
 rows=[]
 for n in range(4,9):
     total=n**(n-4); nc=0; found=False

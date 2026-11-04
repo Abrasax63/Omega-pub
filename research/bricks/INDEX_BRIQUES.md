@@ -244,7 +244,7 @@ Les 32 fiches de reconstitution ci-dessus ont été enrichies individuellement a
 
 [**C4, L=2 — coexistence des huit classes et minimum conditionnel à 9 états**](C4-L2-COEXISTENCE-MINIMUM-9-CONDITIONAL.md)
 
-Statut : **CALCUL EXACT sous la définition primaire V19** pour la coexistence des huit classes cataloguées et le minimum de 9 états. L'audit du 4 novembre a passé le verrou sémantique et reproduit le catalogue ainsi que les calculs globaux. La certification RAVI-2 finale reste à réexaminer pour la preuve indépendante du lemme de localité L+2, la formalisation et la revue tierce. La fiche n'est pas ajoutée au noyau certifié.
+Statut : **CALCUL EXACT sous la définition primaire V19** pour la coexistence des huit classes cataloguées et le minimum de 9 états. L'audit du 4 novembre a passé le verrou sémantique et reproduit le catalogue ainsi que les calculs globaux. La preuve du lemme de localité L+2 a été reconstruite à partir de la structure P1–P4 et contrôlée exhaustivement sur 38 systèmes C4, 536 paires et 173 composantes sans divergence. La certification RAVI-2 finale reste à réexaminer pour la formalisation supplémentaire et la revue tierce. La fiche n'est pas ajoutée au noyau certifié.
 
 
 

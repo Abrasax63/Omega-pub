@@ -2,7 +2,7 @@
 
 **Type :** fiche de résultat complémentaire, créée le 4 novembre 2026 à partir des rapports archivés.  
 **Statut épistémique :** **CALCUL EXACT sous la définition primaire V19** (audit sémantique et recalculs du 4 novembre).  
-**Certification RAVI-2 finale :** **À RÉEXAMINER** pour la preuve indépendante du lemme de localité et la formalisation complète.  
+**Certification RAVI-2 finale :** **À RÉEXAMINER** pour la formalisation supplémentaire et la revue humaine tierce.  
 **Originalité bibliographique :** **INDÉTERMINÉE**.
 
 > Cette fiche n'est pas une carte originale retrouvée et n'est pas intégrée au noyau certifié. Le verrou de traduction sémantique entre la note primaire V19 et les scripts est maintenant passé ; la certification RAVI-2 finale reste distincte.
@@ -103,9 +103,9 @@ Ces exécutions sont celles rapportées dans les fichiers archivés ; cette fich
 5. **Coexistence et minimum : CALCUL EXACT sous la définition primaire.** Le témoin global à 9 états et l'absence exhaustive de témoin pour N≤8 ont été recalculés en énumérant les colorations de tous les états ; cette borne inférieure ne dépend pas du lemme de localité.
 6. **Dérive documentaire corrigée :** les formulations en inégalité de trajectoire dans CERTIFICAT_CONDITIONNEL_V19_C4_L2_2026-10-28.md et AUDIT_OBS_V19_LOCAL_L2_2026-10-28.md sont obsolètes. Elles sont contredites par la note primaire et les scripts effectivement inspectés/exécutés. Voir le rapport d'audit ci-dessous.
 
-**Verrous restants :** preuve indépendante ligne par ligne du lemme de localité L+2 ; éventuelle formalisation Lean ; revue humaine tierce ; audit bibliographique d'originalité. Aucun de ces points n'annule le calcul global de minimalité pour les huit classes cataloguées.
+**Verrous restants :** formalisation Lean éventuelle ; revue humaine tierce ; audit bibliographique d'originalité. La preuve du lemme de localité L+2 est reconstruite en §4.1 du rapport d'audit et contrôlée sur 38 systèmes, 536 paires et 173 composantes forcées sans divergence. Aucun de ces compléments ne remet en cause le calcul global de minimalité pour les huit classes cataloguées.
 
-**Verdict à conserver :** **CALCUL EXACT** pour la coexistence des huit classes cataloguées et le minimum de 9 sous la définition primaire V19 ; **À RÉEXAMINER** pour la certification RAVI-2 finale de l'exhaustivité du catalogue et de la preuve de localité.
+**Verdict à conserver :** **CALCUL EXACT** pour la coexistence des huit classes cataloguées et le minimum de 9 sous la définition primaire V19 ; lemme de localité L+2 **DÉMONTRÉ** sous les hypothèses primaires. La certification formelle et la revue tierce restent des étapes supplémentaires.
 
 ## 8. Provenance
 
