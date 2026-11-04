@@ -37,3 +37,9 @@ La correspondance certaine est donc : ces trois documents étayent `OBS-V8-FACT-
 **Correspondance CL-DYN ↔ OBS-V8 : INDÉTERMINÉE.**  
 **Migration autonome de OBS-V8 : effectuée.**  
 **Promotion ou modification des CL-DYN : aucune.**
+
+## Complément de récupération des sources CL-DYN — 4 novembre 2026
+
+Les énoncés historiques et des sources candidates ont maintenant été retrouvés. Les cartes originales CL-DYN ne sont toujours pas retrouvées comme fichiers autonomes et aucune correspondance exacte ID→fichier n'est certifiée. Voir le [dossier de réconciliation CL-DYN-01 à 04](../defauts_recollement/RECONCILIATION_CL_DYN_01_04.md) et ses [sources candidates](../defauts_recollement/README.md).
+
+Les sources étayent séparément les définitions B, E_h, Δ_h, la périodicité ultime, le critère de cycle terminal et les deux contre-exemples P2↛P1 / P3↛P2. Elles ne créent aucun lien de dépendance avec OBS-V8.
