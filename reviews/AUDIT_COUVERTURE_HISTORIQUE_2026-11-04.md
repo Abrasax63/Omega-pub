@@ -98,7 +98,7 @@ Statut : **EMPIRIQUE ANTÉRIEUR / NON RÉAUDITÉ**. Le document retrouvé exige 
 Statut : `PASS_LEGACY_INVENTORY_SLICE / PARTIAL_REPRODUCIBILITY / NO-GO / authorization=NONE`.
 
 Constats documentés :
-- cinq copies de `omega_sim_headless.js` sont byte-identiques (SHA-256 `840f1cef58bafa5d822ebf2acbc9ceaa0cf84c14a075dbf6ac09a9239`) ; une variante distincte ne change que trois paramètres.
+- cinq copies de `omega_sim_headless.js` sont byte-identiques (SHA-256 `840f1cef58bafa5d822ef55abbef2acbc9ceaa00cf84c14a075dbf6ac09a9239`) ; une variante distincte ne change que trois paramètres.
 - le script headless ne produit que cinq colonnes ; les CSV conservés en ont 26. Le producteur exact des 26 métriques n'a pas été retrouvé.
 - les deux rejeux locaux du script sont déterministes, mais ne reproduisent pas le CSV conservé à 235 étapes.
 - les instantanés JSON sont structurellement cohérents ; deux CSV sont des préfixes de deux instantanés, mais les trajectoires n'ont pas de registre d'exécution complet.
