@@ -53,3 +53,8 @@ Le script a été exécuté avec succès sur l'archive source de la Library et a
 Le contrôle en lecture seule de SQLite v33 a isolé 12 chemins distincts sous `02_PROGRAMMES_ACTIFS` et `05_BIBLIOGRAPHIE`. Les 12 fichiers correspondants ont été retrouvés dans la Library. Onze sources Markdown ont été transférées sous `research/programs/` et `research/bibliography/`. Le douzième document, un DOCX (`Adaptivity boundary - Mealy machines.docx`), est représenté par une extraction textuelle explicitement marquée `EXTRACTED.md` : l'original binaire reste dans la Library et n'est pas présenté comme copié. Le manifeste des correspondances et limites est `research/programs/README.md`.
 
 Les contenus transférés n'ont pas été utilisés pour promouvoir les statuts des résultats. La restauration documentaire ne remplace pas l'audit de chaque preuve et ne rend pas la base SQLite publique.
+
+
+## Revue sémantique des 17 cartes candidates — 4 novembre 2026
+
+Les 17 fichiers dont le nom correspondait à un résultat SQLite sans liaison d'évidence explicite ont été comparés à SQLite v33 (titre, énoncé, hypothèses, statut et version). Les 17 correspondances sont confirmées sémantiquement. Les liaisons d'évidence vers les fichiers Markdown restent toutefois absentes dans SQLite ; aucune relation n'a été ajoutée et aucun statut n'a changé. Voir `reviews/REVUE_SEMANTIQUE_17_CARTES_CANDIDATES_2026-11-04.md`.
