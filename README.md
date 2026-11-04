@@ -1,65 +1,155 @@
-# Omega-pub — RAVI-2 / CCS / Omega-SRR
+# Omega-pub — Laboratoire public de recherche RAVI-2 / CCS / Omega-SRR
 
-**Espace public de discussion, de reproduction et de réfutation de travaux de recherche.**
+## Pourquoi ce dépôt existe
 
-Ce dépôt accueille progressivement des dossiers de recherche issus des travaux RAVI-2, CCS et Omega-SRR. Son objectif est de permettre à des lecteurs extérieurs — chercheurs, mathématiciens, informaticiens et personnes intéressées — d'examiner les définitions, les démonstrations, les calculs et les limites annoncées.
+Omega-pub est un espace public destiné à présenter des travaux de recherche en cours ou déjà étudiés, à les rendre compréhensibles et vérifiables, puis à les soumettre à une critique extérieure.
 
-> **Principe central : publier n'est pas certifier.** Aucun résultat n'est réputé démontré du seul fait qu'il figure ici. Les statuts épistémiques doivent être explicitement indiqués et justifiés.
+L'objectif n'est pas de faire approuver des idées par principe. Il est de permettre à d'autres personnes de comprendre exactement ce qui est affirmé, de refaire les raisonnements et les calculs, de chercher des contre-exemples et, si nécessaire, de montrer qu'un résultat est faux ou trop général.
 
-## Périmètre
+**La réfutation est une contribution utile. Une critique argumentée vaut davantage qu'une approbation sans vérification.**
 
-- **RAVI-2** — méthode de recherche adversariale, vérification indépendante, contre-exemples et traçabilité des résultats.
-- **CCS** — corpus de structures et de travaux associés, publiés uniquement après vérification de leur provenance et de leur statut.
-- **Omega-SRR** — travaux conservés sous leur périmètre propre ; aucune équivalence avec RAVI-2 ou CCS n'est présumée.
+Ce dépôt est un projet de recherche ouvert porté par ses contributeurs. Sa présence sur GitHub ne signifie ni qu'il est affilié à une université ou à un laboratoire institutionnel, ni que ses travaux ont fait l'objet d'une évaluation scientifique par les pairs. Toute validation doit être documentée dossier par dossier.
 
-Les rapprochements entre ces axes doivent être explicitement argumentés. Une analogie n'est pas une correspondance formelle.
+## Les trois axes présentés
 
-## Comment participer
+### 1. RAVI-2 — Méthode de recherche et de vérification adversariale
 
-1. Lire le [protocole de revue](REVIEW_PROTOCOL.md).
-2. Ouvrir une [Issue](../../issues) pour une question, une erreur possible, un contre-exemple ou une demande de clarification.
-3. Proposer une correction par Pull Request, avec justification et références.
-4. Pour une démonstration ou un calcul, fournir suffisamment d'éléments pour permettre une vérification indépendante.
+RAVI-2 est le cadre méthodologique utilisé pour examiner les résultats. Il vise à réduire les erreurs de raisonnement, les conclusions prématurées et les confirmations circulaires.
 
-Les critiques sont bienvenues, y compris lorsqu'elles invalident une affirmation. Les désaccords doivent porter sur des énoncés précis et vérifiables.
+Sa démarche consiste notamment à :
 
-## Statuts utilisés
+1. Partir du dernier état effectivement vérifié, plutôt que de recommencer sans raison une exploration déjà close.
+2. Identifier le point incertain qui pourrait le plus changer la conclusion.
+3. Tenter d'abord de réfuter l'hypothèse séduisante : rechercher les contre-exemples et les cas limites.
+4. Séparer les preuves mathématiques, les calculs exacts, les simulations, les observations empiriques et les conjectures.
+5. Faire vérifier les étapes décisives par une méthode ou un raisonnement indépendant.
+6. Conserver les hypothèses, les limites, les dépendances, les versions et les résultats négatifs.
+7. Ne pas remplacer un résultat antérieur validé par une variante qui n'a pas encore été vérifiée.
 
-| Statut | Signification |
+RAVI-2 n'est pas une garantie automatique de vérité. C'est un protocole de travail dont l'application et les conclusions doivent elles-mêmes pouvoir être examinées.
+
+### 2. CCS — Corpus de structures et de résultats associés
+
+CCS désigne ici un axe de travaux et un corpus de structures mathématiques étudiées dans le cadre du projet.
+
+Les dossiers publics devront préciser, pour chaque structure :
+- sa définition exacte et sa notation ;
+- le problème auquel elle répond ;
+- les hypothèses nécessaires ;
+- les résultats établis et ceux qui restent ouverts ;
+- les preuves, calculs ou programmes permettant de les examiner ;
+- les liens éventuels avec des résultats déjà publiés dans la littérature.
+
+L'acronyme CCS ne doit pas être interprété comme une équivalence avec une théorie extérieure : son périmètre et ses définitions seront explicités dans les dossiers concernés. Aucun résultat ne sera présenté comme démontré sans justification consultable.
+
+### 3. Omega-SRR — Axe de recherche distinct
+
+Omega-SRR est un autre axe de travail conservé dans le projet. Il sera présenté selon ses propres définitions, sources et critères de validation.
+
+Aucun lien mathématique entre Omega-SRR, CCS et RAVI-2 ne doit être supposé. Lorsqu'un rapprochement sera proposé, le dossier devra distinguer clairement :
+- une analogie ou une piste d'interprétation ;
+- une correspondance formelle définie ;
+- une hypothèse testable ;
+- un résultat effectivement démontré.
+
+## Quels sujets peut-on examiner ?
+
+Les dossiers seront publiés progressivement. Les travaux mathématiques déjà étudiés comprennent notamment des questions autour des systèmes dynamiques finis déterministes, de l'observation et de la perte d'information lors du passage d'une description microscopique à une description macroscopique.
+
+Parmi les objets employés dans ces travaux figurent des espaces d'états observés, des relations macroscopiques et des comparaisons entre itérations d'une dynamique observée et observation de l'évolution microscopique. Les définitions précises, les domaines de validité et les résultats correspondants devront toujours être lus dans leurs fiches dédiées.
+
+D'autres sujets exploratoires peuvent être présentés, mais ils seront séparés des résultats établis. Une question ouverte, y compris un problème majeur de mathématiques ou d'informatique théorique, ne sera jamais présentée comme résolue en l'absence d'une preuve vérifiable.
+
+## Comment lire un résultat publié ici ?
+
+Chaque résultat doit, dans la mesure du possible, être accompagné d'une fiche contenant :
+
+- **Identifiant et version** : pour retrouver précisément l'énoncé examiné.
+- **Énoncé** : ce qui est affirmé, sans ambiguïté.
+- **Statut** : niveau réel de validation.
+- **Périmètre** : ce qui est couvert et ce qui ne l'est pas.
+- **Hypothèses** : conditions nécessaires.
+- **Preuve ou certificat** : démonstration, calcul ou protocole reproductible.
+- **Contre-tests** : cas limites et tentatives de réfutation.
+- **Dépendances** : résultats utilisés par cet énoncé.
+- **Provenance** : données, code, références et historique des modifications.
+
+### Statuts épistémiques
+
+| Statut | Sens |
 |---|---|
-| DÉMONTRÉ | Preuve examinée dans le périmètre et sous les hypothèses indiqués |
-| CALCUL EXACT | Résultat obtenu par calcul exact reproductible |
-| SIMULÉ | Résultat issu d'une simulation, avec protocole et limites |
-| EMPIRIQUE | Observation issue de données ou d'une expérience décrite |
-| CONJECTURÉ | Proposition non démontrée |
-| RÉFUTÉ | Contre-exemple ou argument décisif établi |
-| INDÉTERMINÉ | Éléments insuffisants pour conclure |
-| À RÉEXAMINER | Résultat antérieur nécessitant un nouvel audit |
+| **DÉMONTRÉ** | Une preuve est disponible et son périmètre est explicite. |
+| **CALCUL EXACT** | Le résultat découle d'un calcul exact dont les entrées et la méthode sont vérifiables. |
+| **SIMULÉ** | Le résultat provient d'une simulation ; il ne constitue pas à lui seul une preuve générale. |
+| **EMPIRIQUE** | Le résultat repose sur des observations ou des données décrites. |
+| **CONJECTURÉ** | Proposition plausible ou piste de recherche non démontrée. |
+| **RÉFUTÉ** | Un contre-exemple ou un argument invalide l'énoncé dans le périmètre annoncé. |
+| **INDÉTERMINÉ** | Les éléments disponibles ne permettent pas de conclure. |
+| **À RÉEXAMINER** | Un résultat antérieur nécessite un nouvel examen ou une clarification. |
 
-Un statut s'applique à un énoncé délimité, pas à un domaine entier.
+Ces statuts ne sont pas des décorations : ils indiquent ce que le lecteur est en droit de conclure. Un calcul sur un nombre fini de cas ne démontre pas automatiquement une propriété générale. Une simulation n'est pas une démonstration. Une conjecture n'est pas un théorème.
 
-## Organisation prévue
+## Vous souhaitez participer ?
 
-- research/ — dossiers de recherche publics, classés par sujet.
-- reviews/ — rapports de revue et réponses documentées.
-- reproducibility/ — scripts, données minimales et instructions de reproduction.
-- templates/ — modèles de fiches de résultat et de rapports de critique.
+Les contributions extérieures sont recherchées, qu'elles viennent de chercheurs, d'étudiants, de développeurs, de mathématiciens ou de lecteurs curieux.
 
-Les contenus seront ajoutés progressivement. L'absence d'un dossier signifie qu'il n'a pas encore été publié ici ; elle ne signifie pas qu'il n'existe pas dans les archives de travail.
+Vous pouvez notamment :
 
-## Garanties de méthode
+- demander une définition ou une clarification ;
+- signaler une erreur dans un raisonnement ;
+- proposer un contre-exemple ;
+- reproduire un calcul ou une simulation ;
+- signaler un résultat déjà connu dans la littérature ;
+- proposer une autre démonstration ;
+- identifier une hypothèse oubliée ou une limite de validité.
 
-- Préserver les résultats antérieurs validés ; toute révision est versionnée.
-- Distinguer preuve, calcul, simulation, observation et conjecture.
-- Publier les hypothèses, le périmètre, les dépendances et les limites.
-- Ne jamais présenter une exécution comme réalisée si elle ne l'a pas été.
-- Documenter les contre-tests et les résultats négatifs.
-- Ne pas exposer de données privées, secrets, identifiants ou archives internes.
+**Pour commencer :**
+1. Consultez le [protocole de revue](REVIEW_PROTOCOL.md).
+2. Ouvrez une [discussion ou une question dans les Issues](../../issues).
+3. Pour une correction documentée, proposez une [Pull Request](../../pulls).
+4. Indiquez toujours le fichier, la version et l'énoncé précis que vous examinez.
 
-## Langues
+Les contributions peuvent être rédigées en français ou en anglais. Les échanges doivent rester argumentés, respectueux et vérifiables.
 
-Les contributions peuvent être rédigées en français ou en anglais. Les termes mathématiques, notations et énoncés formels doivent rester stables entre traductions.
+## Comment les critiques seront-elles traitées ?
+
+Une critique extérieure ne sera ni acceptée ni rejetée sur la seule autorité de son auteur. Elle sera examinée à partir de son contenu.
+
+Lorsqu'une critique est pertinente, le traitement attendu est :
+1. Identifier exactement l'affirmation contestée.
+2. Reproduire indépendamment le raisonnement ou le calcul, si possible.
+3. Tester le contre-exemple ou l'objection.
+4. Déterminer si la conclusion est confirmée, limitée, corrigée ou réfutée.
+5. Publier une réponse motivée et conserver l'historique.
+
+Les auteurs d'un résultat peuvent répondre, mais leur réponse ne constitue pas à elle seule une validation indépendante. Le nombre d'étoiles, de commentaires ou de contributeurs ne constitue jamais une preuve.
+
+## Organisation du dépôt
+
+- `research/` — dossiers scientifiques et fiches de résultats.
+- `reviews/` — rapports de vérification, critiques et réponses.
+- `reproducibility/` — code, données partageables et instructions de reproduction.
+- `templates/` — modèles de fiches et de rapports.
+
+Les dossiers seront ajoutés après vérification de leur provenance, de leur contenu et de leur statut. Les archives privées ne sont pas automatiquement publiques : seules les pièces sélectionnées et autorisées seront transférées.
+
+## Limites et engagements
+
+- Ne pas annoncer comme exécuté un calcul ou un programme qui ne l'a pas été.
+- Ne pas transformer une simulation en preuve.
+- Ne pas masquer les contre-exemples ou les résultats négatifs.
+- Ne pas confondre une analogie avec une correspondance mathématique.
+- Ne pas présenter une conjecture comme un résultat établi.
+- Citer les publications et sources externes utilisées.
+- Protéger les données privées, les identifiants, les secrets et les contenus dont la diffusion n'est pas autorisée.
+- Versionner les corrections afin de conserver la traçabilité.
+
+## État actuel du dépôt
+
+Le dépôt public contient actuellement sa présentation générale et son protocole de contribution et de revue. **Les dossiers scientifiques détaillés et leurs preuves ne sont pas encore intégralement publiés ici.**
+
+Cette distinction est volontaire : le dépôt doit permettre au public de savoir précisément ce qui est déjà accessible et ce qui reste à publier. Les prochaines publications seront ajoutées progressivement, avec leurs statuts et leurs limites.
 
 ---
 
-**État du dépôt :** mise en place de l'espace public et de son protocole de revue. Les dossiers scientifiques seront publiés séparément, après contrôle de leur contenu et de leur statut.
+**Bienvenue sur Omega-pub. L'objectif est simple : rendre les travaux examinables, faciliter leur reproduction et accepter leur réfutation lorsqu'elle est justifiée.**
