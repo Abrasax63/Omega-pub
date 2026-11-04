@@ -23,7 +23,7 @@ Une ligne n'est ajoutée que lorsqu'une fiche dédiée existe dans le dépôt. L
 
 ## Résultats non encore migrés
 
-Les identifiants CL-DYN-01/02/03/04, CL-H-01, CL-OBSINF-01, CL-REFL-01 et CL-HO-01 sont à récupérer depuis leurs fiches primaires et preuves. Voir [l'état de migration mathématique](../02_MATHEMATIQUES/MIGRATION_ETAT.md).
+Les fiches originales CL-DYN-01/02/03/04 restent non migrées, bien que des sources candidates aient été retrouvées ; voir la [réconciliation CL-DYN](../02_MATHEMATIQUES/defauts_recollement/RECONCILIATION_CL_DYN_01_04.md). CL-H-01, CL-OBSINF-01, CL-REFL-01 et CL-HO-01 restent à récupérer depuis leurs fiches primaires. Voir aussi [l'état de migration mathématique](../02_MATHEMATIQUES/MIGRATION_ETAT.md).
 
 Aucun résultat C4 ou SAT n'est déclaré ici comme résultat certifié. Les dossiers expérimentaux correspondants seront inventoriés séparément après récupération de leurs définitions exécutables et rapports de vérification.
 
