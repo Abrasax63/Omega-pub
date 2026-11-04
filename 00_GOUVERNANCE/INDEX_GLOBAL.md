@@ -1,27 +1,31 @@
 # Index global des résultats
 
-**Version de l'index :** 0.1  
+**Version de l'index :** 0.2  
 **Dernière mise à jour :** 2026-11-04  
 **Rôle :** inventaire des résultats effectivement documentés dans Omega-pub.
 
 ## Règle de lecture
 
-Une ligne ne doit être ajoutée comme résultat que lorsqu'une fiche dédiée existe dans le dépôt. Ne pas déduire le statut d'un résultat d'une conversation, d'un nom de fichier, d'un commit ou d'une simulation non documentée.
+Une ligne n'est ajoutée que lorsqu'une fiche dédiée existe dans le dépôt. Le statut scientifique est repris de la fiche source ; le statut de publication décrit la complétude du dossier public. Ces deux statuts ne sont pas interchangeables.
 
-## Résultats publiés dans ce dépôt
+## Fiches de résultats présentes dans ce dépôt
 
-| ID | Domaine | Énoncé / titre | Version | Statut scientifique | Statut de publication | Fiche |
+| ID | Domaine | Énoncé / titre | Version | Statut scientifique source | Statut de publication | Fiche |
 |---|---|---|---|---|---|---|
-| — | — | Aucun résultat scientifique détaillé n'est encore enregistré dans cet index. | — | — | — | — |
+| BR-R90-01 | Mathématiques / Règle 90 | Noyaux et période récurrente | 0.1 | DÉMONTRÉ (fiche interne) | EXPÉRIMENTAL — audit détaillé à joindre | [Fiche](../02_MATHEMATIQUES/temps_regle90/BR-R90-01_NOYAUX_PERIODES.md) |
+| BR-R90-02 | Mathématiques / Règle 90 | Uniformité Majority–Walsh avant repliement cyclique | 0.1 | DÉMONTRÉ (fiche interne) | EXPÉRIMENTAL — audit détaillé à joindre | [Fiche](../02_MATHEMATIQUES/temps_regle90/BR-R90-02_MAJORITY_WALSH.md) |
 
-## Travaux à inventorier
+## Résultats non encore migrés
 
-Les travaux déjà étudiés dans le cadre du projet doivent être ajoutés après récupération et vérification de leurs fiches, preuves, hypothèses, contre-tests et provenance. Leur existence dans l'historique de travail ne vaut pas publication dans ce dépôt.
+Les identifiants CL-DYN-01/02/03/04, CL-H-01, CL-OBSINF-01, CL-REFL-01 et CL-HO-01 sont à récupérer depuis leurs fiches primaires et preuves. Voir [l'état de migration mathématique](../02_MATHEMATIQUES/MIGRATION_ETAT.md).
+
+Aucun résultat C4 ou SAT n'est déclaré ici comme résultat certifié. Les dossiers expérimentaux correspondants seront inventoriés séparément après récupération de leurs définitions exécutables et rapports de vérification.
 
 ## Dépendances
 
-Les dépendances seront renseignées dans chaque fiche de résultat et reportées ici lorsqu'une vue transversale est utile.
+Les dépendances seront renseignées dans chaque fiche et reportées ici lorsqu'une vue transversale est utile. Une dépendance non vérifiée doit rester explicitement signalée.
 
 ## Historique
 
-- 0.1 — Création de l'index. Aucun résultat scientifique n'a été déclaré publié par défaut.
+- 0.1 — Création de l'index ; aucun résultat scientifique n'était déclaré.
+- 0.2 — Ajout de deux fiches source BR-R90-01 et BR-R90-02, publiées à titre expérimental faute de transfert de leurs audits détaillés.
