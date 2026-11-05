@@ -11,6 +11,8 @@ Le fichier `V19Core.lean` est autonome (Lean 4, sans Mathlib) et contient :
 - `V19CorePeriodic` et `v19_invariant_endpoints_core_periodic` : chaque extrémité d'une arête I est un point fixe ou appartient à un 2-cycle ;
 - `v19_merge_not_both_core_periodic` : une arête M ne peut relier deux états fixes/2-périodiques distincts ;
 - `v19_no_alternating_MIMI` et `v19_no_alternating_IMIM` : les deux orientations d'une chaîne forcée alternée de quatre arêtes sont impossibles.
+- `V19ForcedEdge` et `v19_forced_edge_symm` : adjacency non orientée des arêtes M/I et preuve de sa symétrie.
+- `V19AlternatingChain4` et `v19_no_forced_alternating_chain4` : regroupement et exclusion des deux motifs alternés de quatre arêtes.
 
 Ces résultats formalisent les deux propriétés de matching et l'obstruction locale qui borne les chaînes alternées. Ils constituent le noyau combinatoire du raisonnement P1–P4.
 
@@ -21,7 +23,9 @@ Le workflow [V19 Lean core](https://github.com/Abrasax63/Omega-pub/actions/workf
 Première compilation réussie du noyau initial :
 [GitHub Actions — run 42075241015](https://github.com/Abrasax63/Omega-pub/actions/runs/42075241015).
 
-La compilation complète du fichier, incluant les lemmes sur I, les extrémités périodiques et les chaînes alternées, a réussi : [GitHub Actions — run 42076029405](https://github.com/Abrasax63/Omega-pub/actions/runs/42076029405).
+La compilation complète du noyau précédent a réussi : [GitHub Actions — run 42076029405](https://github.com/Abrasax63/Omega-pub/actions/runs/42076029405).
+
+L'extension du graphe forcé compile également : [GitHub Actions — run 42078870162](https://github.com/Abrasax63/Omega-pub/actions/runs/42078870162).
 
 ## Ce qui reste à formaliser
 
@@ -34,3 +38,6 @@ La compilation complète du fichier, incluant les lemmes sur I, les extrémités
 **Statut :** matching M et I, périodicité des extrémités I et obstruction aux chaînes alternées de quatre arêtes compilés sous Lean 4.19. La classification globale P1–P4 et le théorème général L+2 restent non formalisés et non certifiés.
 
 Aucune étape ultérieure ne doit être considérée comme acquise tant que son théorème Lean compilé n'est pas présent.
+
+
+L'adjacence forcée est maintenant explicitée, mais les composantes connexes ne sont pas encore définies dans Lean : la classification P1–P4 n'est donc pas encore un théorème formalisé.
