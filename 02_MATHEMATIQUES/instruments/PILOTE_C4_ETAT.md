@@ -9,6 +9,7 @@ La version 0.1 indiquait qu'aucun calcul C4 n'avait été exécuté et que les s
 
 Le 4 novembre 2026, la note primaire interne V19(2) a été retrouvée intégralement (359 lignes), relue, puis raccordée explicitement au contrat C4, L=2. Les vérifications et limites sont consignées ici :
 
+- [Source primaire V19(2), 359 lignes](../defauts_recollement/sources/V19/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE_2.md)
 - [Pilote complet C4, L=2](../defauts_recollement/PILOTE_EXTRACTION_C4_L2_2026-11-04.md)
 - [Raccord primaire V19(2) ↔ C4, L=2](../defauts_recollement/RACCORD_PRIMAIRE_V19_C4_L2_2026-11-04.md)
 - [Audit des quotients du témoin à 9 états](../defauts_recollement/AUDIT_QUOTIENTS_TEMOIN9_C4_L2_2026-11-04.md)
