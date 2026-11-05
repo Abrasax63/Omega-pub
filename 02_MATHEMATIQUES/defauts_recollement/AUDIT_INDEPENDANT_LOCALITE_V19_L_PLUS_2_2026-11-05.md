@@ -240,3 +240,27 @@ La projection sur B est donc déterminée par le sous-graphe visible et les éga
 - Lean : **NON RÉALISÉ**.
 - Statut global de certification : **À RÉEXAMINER** jusqu'à une formalisation des définitions et de l'argument de projection, ou une revue humaine indépendante supplémentaire.
 
+
+
+## 10. Première formalisation Lean — 5 novembre
+
+Un premier noyau autonome Lean 4 a été ajouté dans `lean/V19Core.lean`, avec son protocole dans `lean/README.md`.
+
+Le noyau définit :
+- `V19Merge` : arête de fusion ;
+- `V19Invariant` : arête d'invariance ;
+- `V19Coherent` : existence d'une coloration binaire séparant les extrémités des arêtes forcées.
+
+Deux déclarations sans axiome ajouté ni `sorry` ont été écrites :
+- `v19_merge_matching` : un sommet ne peut pas avoir deux voisins distincts par fusion ;
+- `v19_no_three_preimages` : trois états distincts ne peuvent pas avoir la même image.
+
+**État de vérification :**
+- Première tentative CI : échec d'initialisation du conteneur, car l'image Docker référencée n'existe pas / n'est pas accessible. Le compilateur Lean n'a donc pas été lancé ; cet échec ne constitue pas une erreur de preuve.
+- Le workflow a été corrigé pour utiliser l'action officielle `leanprover/lean-action@v1` et le fichier `lean-toolchain` épinglé à Lean 4.19.0.
+- Une étape de compilation a aussi été ajoutée au workflow de vérification locale existant.
+- Au moment de cette mise à jour, aucune exécution réussie de compilation Lean n'a encore été observée.
+
+**Portée formelle :** seul le lemme de matching des arêtes M et son corollaire sur les fibres sont écrits. Le matching des arêtes I, la classification P1–P4, la visibilité et le théorème d'égalité des ombres jusqu'à L+2 ne sont pas encore formalisés.
+
+**Statut :** noyau Lean rédigé ; compilation **INDÉTERMINÉE / À CONFIRMER** ; théorème L+2 toujours **À RÉEXAMINER**, non certifié par Lean.
