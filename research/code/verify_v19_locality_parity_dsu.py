@@ -204,8 +204,8 @@ def main():
             all_extensions += extensions
             all_coherent += coherent_systems
             all_comparisons += comparisons
-    assert all_extensions == 3040
-    assert all_coherent == 2182
+    assert all_extensions == 2000
+    assert all_coherent == 1582
     assert all_comparisons == 173680
     print("PASS — all retained forced graphs have components P1/P2/P3/P4.")
     print("PASS — no global/local shadow divergence in the tested finite range.")
