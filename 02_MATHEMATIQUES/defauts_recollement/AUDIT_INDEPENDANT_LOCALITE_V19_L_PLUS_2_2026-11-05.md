@@ -316,3 +316,17 @@ Compilation vérifiée sous Lean 4.19.0 : [GitHub Actions run 42079365572](https
 **Portée exacte :** le graphe forcé a un degré au plus deux au sens où il ne peut exister trois voisins distincts d'un même sommet. Cette borne ne suffit pas à classifier ses composantes : il reste à formaliser les chemins, la connexité, l'exclusion générale des cycles et la réduction à P1–P4. La visibilité et l'égalité des ombres jusqu'à L+2 restent hors du noyau.
 
 **Statut :** borne de degré au plus deux : **COMPILÉE / DÉMONTRÉE DANS LE NOYAU LEAN**. Classification P1–P4 : **NON FORMALISÉE**. Théorème général L+2 : **À RÉEXAMINER**.
+
+
+## Formalisation Lean complémentaire — chemins de quatre arêtes et 4-cycles
+
+Le noyau Lean a reçu les lemmes suivants dans `lean/V19Core.lean` :
+
+- `v19_merge_two_step_backtracks` : deux arêtes M consécutives imposent le retour au sommet précédent ;
+- `v19_invariant_two_step_backtracks` : même résultat pour deux arêtes I consécutives ;
+- `v19_no_nonbacktracking_forced_walk4` : aucune marche forcée de quatre arêtes sans retour immédiat n'existe ;
+- `v19_no_forced_simple_cycle4` : aucun cycle simple de quatre sommets n'existe.
+
+La preuve du théorème de marche utilise les matchings M/I pour forcer l'alternance, puis les deux obstructions alternées déjà compilées.
+
+**Limite explicite :** la compilation CI du premier ajout a détecté une erreur d'orientation dans l'application au cycle de quatre sommets. Cette orientation a été corrigée dans le commit suivant. La recompilation du commit corrigé reste à obtenir ; ces nouveaux théorèmes ne sont donc pas encore déclarés compilés. L'exclusion formelle de cycles de toute longueur et la classification des composantes connexes P1–P4 restent ouvertes.
