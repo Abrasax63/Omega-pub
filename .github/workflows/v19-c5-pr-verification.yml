@@ -7,14 +7,6 @@ on:
       - "research/code/audit_v19_c5_independent_2026-11-04.py"
       - "research/data/v19_c5/**"
       - ".github/workflows/v19-c5-pr-verification.yml"
-  push:
-    branches:
-      - maintenance/reconciliation-bibliotheque-2026-11-05
-    paths:
-      - "research/code/audit_v19_c5_independent_2026-11-04.py"
-      - "research/data/v19_c5/**"
-      - ".github/workflows/v19-c5-pr-verification.yml"
-
 permissions:
   contents: read
 
