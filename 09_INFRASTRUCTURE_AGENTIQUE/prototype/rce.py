@@ -333,8 +333,14 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     rendered = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if args.output:
-        # Output is written only to the explicit destination; repository inputs stay untouched.
-        args.output.write_text(rendered, encoding="utf-8")
+        destination = args.output.resolve()
+        try:
+            destination.relative_to(root)
+        except ValueError:
+            pass
+        else:
+            parser.error("Le fichier de sortie doit être situé hors du dépôt : le prototype reste strictement en lecture seule.")
+        destination.write_text(rendered, encoding="utf-8")
     else:
         sys.stdout.write(rendered)
     return 0
