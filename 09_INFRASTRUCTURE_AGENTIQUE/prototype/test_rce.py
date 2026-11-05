@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from rce import build_context, load_pending_items, load_registered_results, markdown_tables
+from rce import build_context, load_pending_items, load_registered_results, markdown_tables, main
 
 
 class MarkdownParsingTests(unittest.TestCase):
@@ -41,6 +41,19 @@ class MarkdownParsingTests(unittest.TestCase):
             self.assertEqual(len(pending), 1)
             self.assertIn("CL-DYN", pending[0]["id"])
             self.assertIn("NON ÉTABLI", pending[0]["scientific_status_source"])
+
+    def test_cli_refuses_output_inside_repository(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "00_GOUVERNANCE").mkdir()
+            (root / "00_GOUVERNANCE/INDEX_GLOBAL.md").write_text("", encoding="utf-8")
+            (root / "00_GOUVERNANCE/REGISTRE_TRANSVERSAL.md").write_text("", encoding="utf-8")
+            destination = root / "context.json"
+            with self.assertRaises(SystemExit) as raised:
+                main(["--repo", str(root), "--question", "test query",
+                      "--output", str(destination)])
+            self.assertEqual(raised.exception.code, 2)
+            self.assertFalse(destination.exists())
 
     def test_context_is_read_only_and_has_role_guidance(self):
         with tempfile.TemporaryDirectory() as tmp:
