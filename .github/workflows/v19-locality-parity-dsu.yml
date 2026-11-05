@@ -6,6 +6,7 @@ on:
     paths:
       - "research/code/verify_v19_locality_parity_dsu.py"
       - ".github/workflows/v19-locality-parity-dsu.yml"
+      - "research/code/audit_v19_visibility_edge_cases.py"
 
 permissions:
   contents: read
@@ -22,3 +23,5 @@ jobs:
           python-version: "3.12"
       - name: Run independent parity-DSU enumeration
         run: python research/code/verify_v19_locality_parity_dsu.py
+      - name: Run targeted visibility edge-case audit
+        run: python research/code/audit_v19_visibility_edge_cases.py
