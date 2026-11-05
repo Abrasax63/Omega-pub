@@ -473,11 +473,11 @@ theorem v19_reachable_symm
     (T : α → α) {x y : α}
     (hxy : V19Reachable T x y) : V19Reachable T y x := by
   induction hxy with
-  | refl x => exact V19Reachable.refl x
-  | @tail x y z hxy hyz ih =>
+  | refl => exact V19Reachable.refl _
+  | tail hxy hedge ih =>
       exact V19Reachable.tail
-        (V19Reachable.tail (V19Reachable.refl z)
-          (v19_forced_edge_symm T hyz))
+        (V19Reachable.tail (V19Reachable.refl _)
+          (v19_forced_edge_symm T hedge))
         ih
 
 /-- Reachability is transitive. -/
@@ -486,29 +486,27 @@ theorem v19_reachable_trans
     (hxy : V19Reachable T x y)
     (hyz : V19Reachable T y z) : V19Reachable T x z := by
   induction hyz with
-  | refl y => exact hxy
-  | @tail y z w hyz hzw ih =>
-      exact V19Reachable.tail ih hzw
+  | refl => exact hxy
+  | tail hyz hedge ih =>
+      exact V19Reachable.tail ih hedge
 
 /-- The connected component of a root in the forced graph. -/
-def V19Component (T : α → α) (root : α) : Set α :=
-  {x | V19Reachable T root x}
+def V19Component (T : α → α) (root : α) : α → Prop :=
+  fun x => V19Reachable T root x
 
-/-- Two vertices are in the same forced-graph component iff each is reachable
-from the other; the reverse implication follows from symmetry. -/
+/-- Membership in a component is symmetric as a reachability statement. -/
 theorem v19_component_membership_symm
     (T : α → α) {root x : α}
-    (h : x ∈ V19Component T root) : V19Reachable T x root :=
+    (h : V19Component T root x) : V19Reachable T x root :=
   v19_reachable_symm T h
-
 
 /-- Vertices connected to one another have exactly the same component. -/
 theorem v19_component_eq_of_reachable
     (T : α → α) {x y : α}
     (hxy : V19Reachable T x y) :
     V19Component T x = V19Component T y := by
-  apply Set.ext
-  intro z
+  funext z
+  apply propext
   constructor
   · intro hxz
     exact v19_reachable_trans T (v19_reachable_symm T hxy) hxz
@@ -521,22 +519,21 @@ theorem v19_component_eq_iff_reachable
     V19Component T x = V19Component T y ↔ V19Reachable T x y := by
   constructor
   · intro hcomp
-    have hxx : x ∈ V19Component T x := V19Reachable.refl x
-    have hyx : x ∈ V19Component T y := by
+    have hxx : V19Component T x x := V19Reachable.refl x
+    have hyx : V19Component T y x := by
       rw [← hcomp]
       exact hxx
     exact v19_reachable_symm T hyx
   · exact v19_component_eq_of_reachable T
 
-/-- Component membership is equivalent to equality of the rooted components. -/
+/-- A vertex belongs to a rooted component exactly when the rooted components
+are equal. -/
 theorem v19_mem_component_iff_component_eq
     (T : α → α) (root x : α) :
-    x ∈ V19Component T root ↔
+    V19Component T root x ↔
       V19Component T root = V19Component T x := by
   constructor
   · intro h
     exact (v19_component_eq_iff_reachable T root x).2 h
   · intro h
-    have hrx : V19Reachable T root x :=
-      (v19_component_eq_iff_reachable T root x).1 h
-    exact hrx
+    exact (v19_component_eq_iff_reachable T root x).1 h
