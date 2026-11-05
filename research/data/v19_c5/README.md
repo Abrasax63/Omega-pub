@@ -18,9 +18,9 @@ Le script `../../code/audit_v19_c5_independent_2026-11-04.py` utilise quatre ent
 | `V19_PAIR_WITNESSES_C5O14_REPAIRED_2026-11-04.csv` | 105 | 1b89fd999eac948e342835853854816fdeacf0f6 |
 | `V19_TRIPLE_WITNESSES_D5_13_REPAIRED_2026-11-04.csv` | 455 | 1a96aa36ab0ebe2bd7859153ec3fb88eec9767b2 |
 | `V19_TRIPLE_WITNESSES_C5O14_U42_2026-11-04.csv` | 560 | 273a32f10e7076bde110288f2808c864f92ca3c3 |
-| `AUDIT_V19_C5_INDEPENDENT_2026-11-04.json` | rapport JSON | b55685ae74f57f999e4d685f065f7a08f651f23f |
+| `AUDIT_V19_C5_INDEPENDENT_SUMMARY_2026-11-04.json` | résumé JSON valide | créé dans la consolidation |
 
-Les identifiants ci-dessus sont des **Git blob SHA-1**, pas des SHA-256 de fichiers.
+Les identifiants ci-dessus sont des **Git blob SHA-1**, pas des SHA-256 de fichiers. Le rapport détaillé `AUDIT_V19_C5_INDEPENDENT_2026-11-04.json` est produit par le script à l'exécution ; le fichier homonyme de la branche source était tronqué et invalide, il n'a donc pas été importé.
 
 ## Provenance et limite d'intégrité binaire
 
@@ -46,4 +46,4 @@ python research/code/audit_v19_c5_independent_2026-11-04.py
 Lecture des six CSV depuis la branche après transfert : les en-têtes et comptes de lignes attendus sont présents ; les 14 classes sont uniques ; les 105 multisets de paires et 455 multisets de triples D5 sont uniques ; les 560 triples orientés U42 sont uniques ; les paires d'états sont distinctes dans les fichiers réparés ; les étiquettes de classes sont conservées entre fichiers historiques et fichiers réparés. Ces contrôles structurels ne remplacent pas une exécution Python du script depuis un clone propre.
 
 
-Le job vérifie les assertions et régénère les trois CSV de sortie ainsi que le rapport JSON dans son environnement éphémère. Le script est corrigé dans cette consolidation pour écrire le rapport JSON dans `research/data/v19_c5/`, conformément à cette arborescence. Il ne compare pas encore octet par octet ces sorties régénérées aux exports textuels versionnés ; cette égalité de sérialisation n'est pas revendiquée.
+Le job vérifie les assertions et régénère les trois CSV de sortie ainsi que le rapport JSON dans son environnement éphémère. Le script est corrigé dans cette consolidation pour écrire le rapport JSON détaillé dans `research/data/v19_c5/`, conformément à cette arborescence. Le résumé JSON versionné dans le dépôt ne se substitue pas à ce rapport détaillé généré. Il ne compare pas encore octet par octet ces sorties régénérées aux exports textuels versionnés ; cette égalité de sérialisation n'est pas revendiquée.
