@@ -155,3 +155,28 @@ Aucune divergence n'a été observée. Le script reproductible associé est `res
 - Généralisation au-delà des hypothèses énoncées : **NON REVENDIQUÉE**.
 - Statut de certification final : **À RÉEXAMINER** jusqu'au contre-audit indépendant.
 
+
+
+## 8. Contre-vérification finie indépendante par union-find à parité — 5 novembre
+
+Un second vérificateur, `research/code/verify_v19_locality_parity_dsu.py`, a été ajouté. Il n'utilise pas la propagation de couleurs du premier script : les contraintes sont agrégées par une structure union-find avec parité, puis les colorations du cycle sont énumérées.
+
+Périmètre exact :
+- cycles distingués C_q, pour q=3,4,5,6 ;
+- extensions fonctionnelles de taille N=q,q+1,q+2,q+3 ;
+- tous les systèmes dont le graphe forcé est cohérent ;
+- toutes les paires initiales ;
+- horizons L=2,3,4,5.
+
+Résultats exécutés localement et reproduits par GitHub Actions :
+- 2 000 extensions de fonctions examinées ;
+- 1 582 systèmes cohérents retenus ;
+- 173 680 comparaisons entre ombre globale et ombre restreinte aux préfixes jusqu'à L+2 ;
+- aucune divergence ;
+- aucune composante forcée hors des formes P1,P2,P3,P4.
+
+CI : [run 42019391876](https://github.com/Abrasax63/Omega-pub/actions/runs/42019391876), job `parity-dsu-stress`, conclusion `success`.
+
+Ce test est indépendant du premier au niveau de l'algorithme de résolution des contraintes (union-find à parité contre propagation de couleurs). Il partage néanmoins la même formalisation des arêtes forcées et du calcul de l'ombre ; il ne constitue donc pas une vérification indépendante des définitions elles-mêmes.
+
+Portée : calcul exact fini sur le domaine indiqué. Il ne démontre pas la localité pour tous q,L,N, ne remplace pas le contre-audit mathématique de l'étape de visibilité, et ne constitue pas une preuve formelle Lean.
