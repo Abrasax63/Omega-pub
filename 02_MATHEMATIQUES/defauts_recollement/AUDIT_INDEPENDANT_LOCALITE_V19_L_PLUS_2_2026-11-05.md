@@ -350,3 +350,25 @@ Compilation du commit `b1f7fcac5259da5e9f26a605d575ebfe0a1b2452` confirmée sous
 - [workflow noyau Lean #42081850875](https://github.com/Abrasax63/Omega-pub/actions/runs/42081850875) : job `lean-core` SUCCESS, étape `Compile V19 core` SUCCESS.
 
 **Portée exacte :** le résultat borne tous les chemins simples à quatre sommets. Il ne prouve pas encore, à lui seul, que chaque composante connexe est exactement un chemin P1, P2, P3 ou P4 : il reste à formaliser le passage de la connexité et de l'absence de cycle à une énumération complète de la composante, ainsi que le raccord avec les définitions canoniques P1–P4. Le théorème de visibilité et le théorème L+2 restent également non formalisés. Aucun statut de certification du théorème L+2 n'est modifié.
+
+
+## 14. Connexité du graphe forcé — formalisation Lean complémentaire
+
+Après l'ajout initial de la relation de connexité, la CI Lean a détecté des erreurs de récursion et de typage dans cette première version. Elles ont été corrigées avant toute revendication de compilation.
+
+Le noyau définit maintenant :
+- `V19Reachable T x y` : existence d'une marche finie d'arêtes forcées ;
+- `v19_reachable_refl`, `v19_reachable_trans`, `v19_reachable_symm` : réflexivité, transitivité et symétrie ;
+- `V19Component T root` : prédicat des sommets atteignables depuis la racine ;
+- `v19_component_eq_of_reachable` : deux racines reliées définissent le même ensemble de sommets ;
+- `v19_component_eq_iff_reachable` : égalité des composantes enracinées si et seulement si les racines sont reliées ;
+- `v19_mem_component_iff_component_eq` : appartenance à une composante si et seulement si elle est égale à la composante enracinée au sommet ;
+- `v19_merge_invariant_disjoint` : une même paire distincte ne peut porter simultanément une arête M et une arête I ;
+- `v19_root_mem_component` et `v19_component_adjacent_closed` : la racine appartient à sa composante et celle-ci est fermée par les arêtes forcées incidentes.
+
+**Compilation confirmée sous Lean 4.19.0 :**
+- commit `9047b6987a0a3979eaf56eaa2c06c6f7312fa3ee`, workflow [#42087598469](https://github.com/Abrasax63/Omega-pub/actions/runs/42087598469), étape `Compile V19 core` SUCCESS ;
+- même commit, workflow [#42087598738](https://github.com/Abrasax63/Omega-pub/actions/runs/42087598738), étape `Compile V19 core` SUCCESS ;
+- commit `060ff8142ee296df7a85292a68b4d8267b79d67d`, workflow [#42087804728](https://github.com/Abrasax63/Omega-pub/actions/runs/42087804728), étape `Compile V19 core` SUCCESS ; ce dernier commit ajoute la disjonction M/I et la fermeture des composantes.
+
+**Limite maintenue :** ces lemmes établissent le langage des composantes et ses lois élémentaires. Ils ne démontrent pas encore qu'une composante contient au plus quatre sommets, ni qu'elle est un chemin P1, P2, P3 ou P4. La note primaire V19(2), section 3, contient déjà l'énoncé mathématique P1–P4 comme résultat démontré dans le corpus ; son transfert dans le noyau Lean reste incomplet. La formalisation Lean du théorème de petit modèle L+2 reste également absente.
