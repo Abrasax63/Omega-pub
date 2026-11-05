@@ -271,8 +271,8 @@ theorem v19_no_three_forced_neighbors
       · exact hzw (v19_invariant_neighbors_eq T hcoh hxzI hxwI)
   · rcases hxz with hxzM | hxzI
     · rcases hxw with hxwM | hxwI
-      · exact hyw (v19_merge_neighbors_eq T hcoh hxzM hxwM)
-      · exact hyz (v19_invariant_neighbors_eq T hcoh hxyI hxwI)
+      · exact hzw (v19_merge_neighbors_eq T hcoh hxzM hxwM)
+      · exact hyw (v19_invariant_neighbors_eq T hcoh hxyI hxwI)
     · rcases hxw with hxwM | hxwI
-      · exact hzw (v19_invariant_neighbors_eq T hcoh hxzI hxwI)
       · exact hyz (v19_invariant_neighbors_eq T hcoh hxyI hxzI)
+      · exact hzw (v19_invariant_neighbors_eq T hcoh hxzI hxwI)
