@@ -180,3 +180,63 @@ CI : [run 42019391876](https://github.com/Abrasax63/Omega-pub/actions/runs/42019
 Ce test est indépendant du premier au niveau de l'algorithme de résolution des contraintes (union-find à parité contre propagation de couleurs). Il partage néanmoins la même formalisation des arêtes forcées et du calcul de l'ombre ; il ne constitue donc pas une vérification indépendante des définitions elles-mêmes.
 
 Portée : calcul exact fini sur le domaine indiqué. Il ne démontre pas la localité pour tous q,L,N, ne remplace pas le contre-audit mathématique de l'étape de visibilité, et ne constitue pas une preuve formelle Lean.
+
+
+## 9. Contre-audit mathématique indépendant — 5 novembre, seconde passe
+
+Cette passe repart des définitions de la note primaire, sans utiliser les résultats des scripts comme prémisses. Elle vérifie séparément la structure des contraintes, puis la réduction de l'ombre à la partie visible.
+
+### 9.1 Structure P1–P4 : reconstruction
+
+Notons F le graphe des arêtes forcées, M les arêtes de fusion et I les arêtes d'invariance.
+
+- Pour chaque sommet w, les préimages distinctes de w forment une clique M. La cohérence bipartie impose donc |T^{-1}(w)|<=2 : M est un matching.
+- Une arête I ne peut relier que les deux sommets d'un 2-cycle ou deux points fixes. Tous les points fixes sont deux à deux reliés par I ; trois points fixes donneraient un triangle. Il y a donc au plus deux points fixes dans tout le système cohérent, et I est un matching.
+- Un sommet périodique ne peut avoir deux préimages périodiques distinctes : sur les cycles, T est une permutation. Une arête M ne relie donc jamais deux sommets périodiques distincts.
+- Tout sommet non périodique est incident à M au plus une fois et jamais à I. Tout sommet périodique est incident à I au plus une fois et à M au plus une fois. Le degré dans F est donc au plus deux.
+- Un cycle dans F devrait alterner M et I. Une arête I de type 2-cycle a pour extrémités les deux sommets du 2-cycle ; une arête M qui s'y attache relie un prédécesseur transitoire à l'un de ces sommets. Une arête I de type points fixes a pour extrémités les deux seuls points fixes possibles ; toute arête M qui s'y attache vient d'un prédécesseur transitoire. Dans les deux cas, les sommets transitoires ne peuvent pas prolonger le chemin par I, et aucun autre sommet périodique ne peut le fermer par M. Aucun cycle n'est donc possible.
+
+Ainsi chaque composante de F est un chemin P1, P2, P3 ou P4. Cette déduction est valable pour toute taille finie, pas seulement dans les domaines testés.
+
+### 9.2 Visibilité des chemins entre ancrages
+
+Posons A = B union les états T^t(x),T^t(y) pour 0<=t<L. Ce sont les seuls sommets qui portent une contrainte d'égalité du mauvais événement ou une couleur observée sur B.
+
+La propriété utile n'est pas que toute la composante forcée d'un ancrage soit nécessairement visible. Elle est que **tout chemin forcé reliant deux sommets de A est visible dans B et les préfixes jusqu'à L+2**.
+
+Vérification par types :
+
+1. **Ancrage transitoire z.** Il n'est incident qu'à une éventuelle arête M. Si son voisin est un autre ancrage, les deux extrémités sont déjà visibles. Si son voisin est périodique s, alors T(z)=T(s) et l'orbite de z révèle le noyau périodique. Pour un 2-cycle, trois pas au plus donnent z→b→a→b ; pour un point fixe, un pas donne le point fixe. Le partenaire I est donc révélé avant ou au temps L+2. Un frère de préimage supplémentaire qui n'est pas ancrage ne peut pas prolonger le chemin vers un autre ancrage.
+2. **Ancrage dans un 2-cycle.** Son partenaire I est son image suivante, donc visible. Un frère de préimage attaché à l'un des deux sommets ne peut compter comme second ancrage que s'il appartient à l'un des deux préfixes ; dans ce cas sa propre trajectoire révèle le même noyau.
+3. **Ancrage point fixe.** Son partenaire I est l'autre point fixe éventuel. Si ce partenaire ou son frère de préimage est un ancrage, la trajectoire de cet ancrage le révèle (le frère transitoire atteint le point fixe en un pas). Sinon, le chemin supplémentaire ne relie aucun autre ancrage et n'ajoute aucune contrainte à l'ombre sur B.
+
+Comme F a diamètre au plus trois, les cas ci-dessus épuisent les chemins possibles. La marge L+2 couvre le cas le plus long, celui d'un frère transitoire attaché à un 2-cycle.
+
+### 9.3 Extension des sommets omis : précision à apporter
+
+La formulation précédente de la section 4 disait que les sommets omis adjacents au sous-graphe visible sont toujours des « extrémités ». C'est trop fort au sens littéral : si un seul point fixe d'une paire I est un ancrage, l'autre point fixe peut être omis avec son propre frère transitoire ; le morceau omis est alors un chemin pendant de longueur deux, pas un sommet isolé.
+
+Cela ne crée pas de contre-exemple. Un chemin pendant d'une composante bipartie, qui ne contient ni sommet de B ni extrémité d'une égalité du mauvais événement, peut toujours être colorié en prolongeant la couleur de son unique point d'attache. Il n'impose aucune nouvelle relation entre sommets de B. La preuve doit donc parler de **branches pendantes sans ancrage**, et non seulement de feuilles isolées.
+
+Cette correction est une précision de la preuve, pas une réfutation du lemme L+2.
+
+### 9.4 Réduction de l'ombre — argument de projection
+
+Dans un graphe de contraintes binaires, une coloration de B est prolongeable si et seulement si :
+- aucune composante du graphe augmenté F union E_L ne contient un cycle de parité contradictoire ;
+- les parités des chemins reliant des sommets de B sont respectées.
+
+Les arêtes de E_L ont leurs deux extrémités dans A. Les seules parties de F pouvant créer une relation entre deux ancrages, ou entre un ancrage et B, sont les chemins forcés examinés en 9.2 ; ils sont visibles dans les préfixes jusqu'à L+2. Toutes les branches de F non visibles qui restent attachées à cette partie visible ne contiennent aucun autre ancrage : elles se prolongent toujours et ne changent ni la cohérence ni les parités induites sur B. Les composantes entièrement extérieures se colorient indépendamment, puisque F est cohérent et qu'aucune arête de E_L ne les touche.
+
+La projection sur B est donc déterminée par le sous-graphe visible et les égalités E_L. Cela fournit l'argument manquant entre la visibilité des chemins et l'égalité des ombres.
+
+### 9.5 Verdict de cette passe
+
+- Structure P1–P4 : **DÉMONTRÉ** par l'argument combinatoire ci-dessus, sous les définitions exactes de M, I et cohérence bipartie.
+- Localité L+2 : **preuve reconstruite et cohérente après précision** sur les branches pendantes sans ancrage. La marge L+2 est suffisante dans les cas de 2-cycle ; le cas fixe est plus court.
+- Aucun contre-exemple mathématique n'a été trouvé dans cette passe.
+- Le passage précédent « les sommets omis sont toujours des extrémités » est corrigé conceptuellement par 9.3 ; il ne faut pas le citer dans sa formulation littérale.
+- Les deux scripts de calcul et leurs résultats restent des vérifications finies complémentaires, pas la base de la preuve universelle.
+- Lean : **NON RÉALISÉ**.
+- Statut global de certification : **À RÉEXAMINER** jusqu'à une formalisation des définitions et de l'argument de projection, ou une revue humaine indépendante supplémentaire.
+
