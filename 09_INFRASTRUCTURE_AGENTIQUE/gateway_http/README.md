@@ -54,12 +54,11 @@ Le workflow GitHub Actions dédié exécute les tests HTTP sur chaque modificati
 - La passerelle ne certifie aucun résultat et ne modifie aucun statut scientifique.
 - Le déploiement Vercel et la connexion d'un client MCP sont des étapes distinctes, non réalisées par ce commit.
 
-
 ## Connexion d'un client MCP distant
 
-Endpoint Preview actuellement déployé :
+Endpoint Preview (alias de branche Vercel, à privilégier pour éviter de figer une URL de déploiement éphémère) :
 
-`https://omega-pub-rce-gateway-pxgi5181w-omega-61f0.vercel.app/mcp`
+`https://omega-pub-rce-gateway-git-architecture-memoir-45b844-omega-61f0.vercel.app/mcp`
 
 La protection Vercel de l'équipe reste active. Un client externe doit donc envoyer **deux en-têtes secrets**, sans les placer dans l'URL :
 
@@ -74,7 +73,7 @@ Exemple de forme de configuration (syntaxe indicative ; le format exact dépend 
 {
   "mcpServers": {
     "omega-memory": {
-      "url": "https://omega-pub-rce-gateway-pxgi5181w-omega-61f0.vercel.app/mcp",
+      "url": "https://omega-pub-rce-gateway-git-architecture-memoir-45b844-omega-61f0.vercel.app/mcp",
       "headers": {
         "Authorization": "Bearer ${OMEGA_GATEWAY_TOKEN}",
         "x-vercel-protection-bypass": "${VERCEL_AUTOMATION_BYPASS_SECRET}"
