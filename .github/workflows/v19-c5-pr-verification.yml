@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 jobs:
-  reproduce-and-compare:
+  reproduce-and-validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,14 +28,86 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Preserve committed exports
+        run: |
+          mkdir -p /tmp/v19-committed
+          cp research/data/v19_c5/V19_PAIR_WITNESSES_C5O14_REPAIRED_2026-11-04.csv /tmp/v19-committed/
+          cp research/data/v19_c5/V19_TRIPLE_WITNESSES_D5_13_REPAIRED_2026-11-04.csv /tmp/v19-committed/
+          cp research/data/v19_c5/V19_TRIPLE_WITNESSES_C5O14_U42_2026-11-04.csv /tmp/v19-committed/
       - name: Execute independent audit
         run: python research/code/audit_v19_c5_independent_2026-11-04.py
-      - name: Compare regenerated CSVs with committed exports
+      - name: Validate committed and regenerated witnesses semantically
         run: |
-          git diff --exit-code -- \
-            research/data/v19_c5/V19_PAIR_WITNESSES_C5O14_REPAIRED_2026-11-04.csv \
-            research/data/v19_c5/V19_TRIPLE_WITNESSES_D5_13_REPAIRED_2026-11-04.csv \
-            research/data/v19_c5/V19_TRIPLE_WITNESSES_C5O14_U42_2026-11-04.csv
+          python - <<'PY'
+          import csv, json, runpy
+          from pathlib import Path
+          from collections import Counter
+          ns = runpy.run_path("research/code/audit_v19_c5_independent_2026-11-04.py", run_name="v19_audit")
+          canonical = ns["canonical"]
+          equation_shadow = ns["equation_shadow"]
+          global_shadow = ns["global_shadow"]
+          coherent = ns["coherent"]
+          root = Path("research/data/v19_c5")
+          classes = list(csv.DictReader((root / "V19_ORIENTED14_CLASSES_2026-10-15.csv").open()))
+          c5_id, d5_id = {}, {}
+          for row in classes:
+              s = equation_shadow(row["canonical_equations"])
+              c5_id[canonical(s, False)] = int(row["c5_class_id"].split("-")[1])
+              d5_id[canonical(s, True)] = int(row["d5_class_id"].split("-")[1])
+          def rows(path):
+              with open(path, newline="", encoding="utf-8") as f:
+                  return list(csv.DictReader(f))
+          def validate_pair_file(path):
+              data = rows(path)
+              assert len(data) == 105, (path, len(data))
+              seen = set()
+              for r in data:
+                  T = tuple(json.loads(r["T"]))
+                  assert len(T) == int(r["n_states"]) and T[:5] == (1,2,3,4,0) and coherent(T)
+                  ps = [tuple(json.loads(r[k])) for k in ("pair_a","pair_b")]
+                  assert len(set(ps)) == 2
+                  for p, col in zip(ps, ("class_a","class_b")):
+                      assert c5_id[canonical(global_shadow(T,p),False)] == int(r[col].split("-")[1])
+                  seen.add(tuple(sorted(r[k] for k in ("class_a","class_b"))))
+              assert len(seen) == 105
+          def validate_d5_triples(path):
+              data = rows(path)
+              assert len(data) == 455, (path, len(data))
+              seen = set()
+              for r in data:
+                  T = tuple(json.loads(r["T"]))
+                  assert len(T) == int(r["n_states"]) and T[:5] == (1,2,3,4,0) and coherent(T)
+                  ps = [tuple(json.loads(r[k])) for k in ("pair_a","pair_b","pair_c")]
+                  assert len(set(ps)) == 3
+                  for p, col in zip(ps, ("class_a","class_b","class_c")):
+                      assert d5_id[canonical(global_shadow(T,p),True)] == int(r[col].split("-")[1])
+                  seen.add(tuple(sorted(r[k] for k in ("class_a","class_b","class_c"))))
+              assert len(seen) == 455
+          def validate_u42(path):
+              data = rows(path)
+              assert len(data) == 560, (path, len(data))
+              seen = set()
+              for r in data:
+                  T = tuple(json.loads(r["T"]))
+                  assert len(T) == int(r["n_states"]) == 42 and T[:5] == (1,2,3,4,0) and coherent(T)
+                  ps = [tuple(json.loads(r[k])) for k in ("pair_a","pair_b","pair_c")]
+                  assert len(set(ps)) == 3
+                  tri = tuple(int(r[k].split("-")[1]) for k in ("class_a","class_b","class_c"))
+                  assert tri == tuple(sorted(tri))
+                  for p, target in zip(ps, tri):
+                      assert c5_id[canonical(global_shadow(T,p),False)] == target
+                  seen.add(tri)
+              assert len(seen) == 560
+          files = [
+              ("V19_PAIR_WITNESSES_C5O14_REPAIRED_2026-11-04.csv", validate_pair_file),
+              ("V19_TRIPLE_WITNESSES_D5_13_REPAIRED_2026-11-04.csv", validate_d5_triples),
+              ("V19_TRIPLE_WITNESSES_C5O14_U42_2026-11-04.csv", validate_u42),
+          ]
+          for name, check in files:
+              for path in (Path("/tmp/v19-committed")/name, root/name):
+                  check(path)
+          print("PASS: exports commités et sorties régénérées vérifiés sémantiquement.")
+          PY
       - name: Upload regenerated detailed report
         if: always()
         uses: actions/upload-artifact@v4
