@@ -500,3 +500,43 @@ theorem v19_component_membership_symm
     (T : α → α) {root x : α}
     (h : x ∈ V19Component T root) : V19Reachable T x root :=
   v19_reachable_symm T h
+
+
+/-- Vertices connected to one another have exactly the same component. -/
+theorem v19_component_eq_of_reachable
+    (T : α → α) {x y : α}
+    (hxy : V19Reachable T x y) :
+    V19Component T x = V19Component T y := by
+  apply Set.ext
+  intro z
+  constructor
+  · intro hxz
+    exact v19_reachable_trans T (v19_reachable_symm T hxy) hxz
+  · intro hyz
+    exact v19_reachable_trans T hxy hyz
+
+/-- Two rooted components are equal exactly when their roots are connected. -/
+theorem v19_component_eq_iff_reachable
+    (T : α → α) (x y : α) :
+    V19Component T x = V19Component T y ↔ V19Reachable T x y := by
+  constructor
+  · intro hcomp
+    have hxx : x ∈ V19Component T x := V19Reachable.refl x
+    have hyx : x ∈ V19Component T y := by
+      rw [← hcomp]
+      exact hxx
+    exact v19_reachable_symm T hyx
+  · exact v19_component_eq_of_reachable T
+
+/-- Component membership is equivalent to equality of the rooted components. -/
+theorem v19_mem_component_iff_component_eq
+    (T : α → α) (root x : α) :
+    x ∈ V19Component T root ↔
+      V19Component T root = V19Component T x := by
+  constructor
+  · intro h
+    exact (v19_component_eq_iff_reachable T root x).2 h
+  · intro h
+    have hrx : V19Reachable T root x :=
+      (v19_component_eq_iff_reachable T root x).1 h
+    exact hrx
