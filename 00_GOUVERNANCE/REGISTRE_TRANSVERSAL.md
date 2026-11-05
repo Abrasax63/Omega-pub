@@ -1,7 +1,7 @@
 # Registre transversal des résultats
 
 **Version :** 0.2  
-**Date :** 2026-11-04  
+**Date :** 2026-11-05  
 **Périmètre :** fiches de résultats effectivement présentes dans le dépôt public.
 
 Ce registre est une vue transversale de navigation. Il ne remplace pas les fiches sources et ne constitue pas une validation scientifique supplémentaire.
@@ -57,4 +57,5 @@ Le registre doit rester dérivé des fiches : aucune affirmation ne doit appara�
 
 ## Historique
 
-- 0.1 — Création du registre transversal à partir des deux fiches BR-R90 effectivement présentes dans le dépôt. Les dossiers non migrés sont isolés dans une liste d'attente documentaire.\n- 0.2 — Ajout du pilote C4, L=2 avec statut scientifique CALCUL EXACT limité au contrat V19(2), et statut de publication EXPÉRIMENTAL.
+- 0.1 — Création du registre transversal à partir des deux fiches BR-R90 effectivement présentes dans le dépôt. Les dossiers non migrés sont isolés dans une liste d'attente documentaire.
+- 0.2 — Ajout du pilote C4, L=2 avec statut scientifique CALCUL EXACT limité au contrat V19(2), et statut de publication EXPÉRIMENTAL.
