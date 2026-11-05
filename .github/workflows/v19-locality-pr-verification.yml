@@ -25,12 +25,10 @@ jobs:
           python-version: "3.12"
       - name: Exhaustive coherent C3 extensions, N <= 7, L in {2,3}
         run: python research/code/verify_v19_locality_exhaustive_small.py
-      - name: Install Lean toolchain
-        uses: leanprover/lean-action@v1
-        with:
-          lake-package-directory: 02_MATHEMATIQUES/defauts_recollement/lean
-          auto-config: false
-          use-mathlib-cache: false
+      - name: Install pinned Lean toolchain
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
       - name: Compile V19 Lean core
         working-directory: 02_MATHEMATIQUES/defauts_recollement/lean
         run: lean V19Core.lean
