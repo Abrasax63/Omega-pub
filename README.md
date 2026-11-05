@@ -30,11 +30,11 @@ Le dépôt est organisé en modules scientifiques séparés, reliés par un socl
 | [05_OMEGA_SRR](05_OMEGA_SRR/) | Littérature, définitions et recherches Omega-SRR |
 | [06_CALCUL_SCIENTIFIQUE](06_CALCUL_SCIENTIFIQUE/) | Programmes, simulations, données et reproductions |
 | [07_REVUES_INDEPENDANTES](07_REVUES_INDEPENDANTES/) | Critiques, contre-exemples et réponses |
-| [08_ARCHIVES](08_ARCHIVES/) | Versions et dossiers conservés pour traçabilité |
+| [08_ARCHIVES](08_ARCHIVES/) | Versions et dossiers conservés pour traçabilité |\n| [09_INFRASTRUCTURE_AGENTIQUE](09_INFRASTRUCTURE_AGENTIQUE/) | Mémoire scientifique partagée, contexte agentique, provenance et propositions contrôlées |
 
 La création d'un module ne certifie aucun résultat. Les dossiers sont alimentés progressivement après vérification de leur contenu, de leur provenance et de leur statut.
 
-## RAVI-2 — Méthode de recherche et de vérification adversariale
+## Infrastructure agentique native\n\nLe module [09_INFRASTRUCTURE_AGENTIQUE](09_INFRASTRUCTURE_AGENTIQUE/) spécifie l'intégration du multi-agent à la mémoire scientifique commune : consultation des résultats internes et externes, paquets de contexte versionnés, provenance des interventions, prévention des confirmations circulaires et dépôt de propositions sans promotion automatique des statuts. Il s'agit d'une architecture proposée, non d'un service agentique déjà déployé.\n\n## RAVI-2 — Méthode de recherche et de vérification adversariale
 
 RAVI-2 est le cadre méthodologique utilisé pour examiner les résultats. Il vise à réduire les erreurs de raisonnement, les conclusions prématurées et les confirmations circulaires.
 
