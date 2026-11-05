@@ -440,3 +440,63 @@ theorem v19_no_simple_path5
     (p : V19SimplePath5 T) : False := by
   exact v19_no_simple_forced_path_five_vertices T hcoh
     p.edge01 p.edge12 p.edge23 p.edge34 p.distinct02 p.distinct13 p.distinct24
+
+
+/-!
+## Reachability and connected components
+
+We now give the forced graph an explicit connectivity relation.  Reachability
+is the reflexive transitive closure of forced adjacency, represented by finite
+walks.  This supplies the component notion needed for the later P1--P4
+classification; it does not itself assert that components are paths.
+-/
+
+/-- Finite-walk reachability in the undirected forced graph. -/
+inductive V19Reachable (T : α → α) : α → α → Prop where
+  | refl (x : α) : V19Reachable T x x
+  | tail {x y z : α} :
+      V19Reachable T x y → V19ForcedEdge T y z → V19Reachable T x z
+
+/-- Every vertex belongs to its own forced-graph component. -/
+theorem v19_reachable_refl
+    (T : α → α) (x : α) : V19Reachable T x x :=
+  V19Reachable.refl x
+
+/-- Every forced edge is a one-step reachability witness. -/
+theorem v19_edge_reachable
+    (T : α → α) {x y : α}
+    (hxy : V19ForcedEdge T x y) : V19Reachable T x y :=
+  V19Reachable.tail (V19Reachable.refl x) hxy
+
+/-- Reachability is symmetric because forced edges are symmetric. -/
+theorem v19_reachable_symm
+    (T : α → α) {x y : α}
+    (hxy : V19Reachable T x y) : V19Reachable T y x := by
+  induction hxy with
+  | refl x => exact V19Reachable.refl x
+  | @tail x y z hxy hyz ih =>
+      exact V19Reachable.tail
+        (V19Reachable.tail (V19Reachable.refl z)
+          (v19_forced_edge_symm T hyz))
+        ih
+
+/-- Reachability is transitive. -/
+theorem v19_reachable_trans
+    (T : α → α) {x y z : α}
+    (hxy : V19Reachable T x y)
+    (hyz : V19Reachable T y z) : V19Reachable T x z := by
+  induction hyz with
+  | refl y => exact hxy
+  | @tail y z w hyz hzw ih =>
+      exact V19Reachable.tail ih hzw
+
+/-- The connected component of a root in the forced graph. -/
+def V19Component (T : α → α) (root : α) : Set α :=
+  {x | V19Reachable T root x}
+
+/-- Two vertices are in the same forced-graph component iff each is reachable
+from the other; the reverse implication follows from symmetry. -/
+theorem v19_component_membership_symm
+    (T : α → α) {root x : α}
+    (h : x ∈ V19Component T root) : V19Reachable T x root :=
+  v19_reachable_symm T h
