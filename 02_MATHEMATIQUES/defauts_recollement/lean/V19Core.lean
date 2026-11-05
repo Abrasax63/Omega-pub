@@ -629,3 +629,31 @@ theorem v19_no_simple_cycle5
     distinct24 := c.distinct24
     distinct34 := c.distinct34
   }
+
+
+/-!
+## Arbitrary finite simple cycles
+
+Cycles are indexed by a finite cyclic index type. This avoids a special
+case for each length and makes simplicity an injectivity condition.
+The successor operation is explicit modulo the cycle length.
+-/
+
+/-- Cyclic successor on Fin n, defined when the cycle length is positive. -/
+def V19CycleNext (n : Nat) (hn : 0 < n) (i : Fin n) : Fin n :=
+  ⟨(i.val + 1) % n, Nat.mod_lt _ hn⟩
+
+/--
+A simple forced cycle of arbitrary finite length n ≥ 3.
+The edge predicate includes the closing edge from the final index back to 0.
+-/
+structure V19SimpleCycle (T : α → α) (n : Nat) (hn : 3 ≤ n) where
+  vertex : Fin n → α
+  distinct : Function.Injective vertex
+  edge : ∀ i : Fin n,
+    V19ForcedEdge T (vertex i) (vertex (V19CycleNext n (by omega) i))
+
+/-- The cycle has an explicit first vertex at index zero. -/
+def V19CycleStart {T : α → α} {n : Nat} {hn : 3 ≤ n}
+    (c : V19SimpleCycle T n hn) : α :=
+  c.vertex ⟨0, by omega⟩
