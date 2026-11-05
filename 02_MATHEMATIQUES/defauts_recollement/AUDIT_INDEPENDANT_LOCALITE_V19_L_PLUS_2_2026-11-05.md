@@ -339,3 +339,14 @@ Le théorème `v19_no_forced_simple_cycle3` a également été ajouté. Il trait
 La compilation du commit contenant ce complément a réussi dans GitHub Actions : run [#42081463185](https://github.com/Abrasax63/Omega-pub/actions/runs/42081463185), étape `Compile V19 core` = SUCCESS. Si elle réussit, les cycles simples de tailles 3 et 4 seront explicitement exclus dans Lean ; les cycles simples de taille au moins 5 contiennent un sous-chemin simple de quatre arêtes, exclu par `v19_no_nonbacktracking_forced_walk4`.
 
 La déduction globale sur les cycles s'appuie donc sur ces trois cas de taille, mais la formalisation d'un prédicat générique de cycle de longueur arbitraire et le théorème graphologique « degré ≤ 2 + acyclicité + finitude ⇒ composantes chemins » ne sont pas encore ajoutés au noyau.
+
+
+## Borne Lean des chemins simples — 5 novembre 2026
+
+Ajout de `v19_no_simple_forced_path_five_vertices` dans `lean/V19Core.lean`. Pour cinq sommets consécutifs reliés par quatre arêtes forcées, les trois conditions de non-retour immédiat suffisent à appliquer l'obstruction déjà démontrée. Il n'existe donc aucun chemin simple forcé comportant cinq sommets ; tout chemin simple a au plus quatre sommets (P1–P4 au sens de sa longueur).
+
+Compilation du commit `b1f7fcac5259da5e9f26a605d575ebfe0a1b2452` confirmée sous Lean 4.19.0 :
+- [workflow dédié chemins/cycles #42081851012](https://github.com/Abrasax63/Omega-pub/actions/runs/42081851012) : job `lean-core` SUCCESS, étape `Compile V19 core` SUCCESS ;
+- [workflow noyau Lean #42081850875](https://github.com/Abrasax63/Omega-pub/actions/runs/42081850875) : job `lean-core` SUCCESS, étape `Compile V19 core` SUCCESS.
+
+**Portée exacte :** le résultat borne tous les chemins simples à quatre sommets. Il ne prouve pas encore, à lui seul, que chaque composante connexe est exactement un chemin P1, P2, P3 ou P4 : il reste à formaliser le passage de la connexité et de l'absence de cycle à une énumération complète de la composante, ainsi que le raccord avec les définitions canoniques P1–P4. Le théorème de visibilité et le théorème L+2 restent également non formalisés. Aucun statut de certification du théorème L+2 n'est modifié.
