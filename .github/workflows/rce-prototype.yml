@@ -11,6 +11,7 @@ on:
       - "architecture/memoire-agentique-native-2026-11-05"
     paths:
       - "09_INFRASTRUCTURE_AGENTIQUE/prototype/**"
+      - "09_INFRASTRUCTURE_AGENTIQUE/gateway/**"
       - ".github/workflows/rce-prototype.yml"
 
 permissions:
