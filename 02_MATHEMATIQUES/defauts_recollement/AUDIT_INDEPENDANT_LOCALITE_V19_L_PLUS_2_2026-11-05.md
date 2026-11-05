@@ -281,3 +281,14 @@ La compilation initiale du noyau a réussi (run GitHub Actions 42075241015). La 
 **Portée exacte :** ces lemmes établissent formellement les deux matchings, la nature fixe/2-cycle des extrémités I, l'impossibilité d'une arête M entre deux états fixes/2-périodiques, et l'impossibilité des deux motifs alternés de quatre arêtes. Ils donnent les ingrédients locaux pour borner la longueur des chemins forcés. Ils ne constituent pas encore le théorème global disant que chaque composante est exactement l'un des chemins P1–P4 : la formalisation explicite des composantes et de leur connexité reste à faire. La visibilité, l'extension des branches et l'égalité des ombres L+2 restent également hors du noyau Lean.
 
 **Statut :** matching M et I, extrémités I fixes/2-périodiques, exclusion des arêtes M entre ces états, et obstruction aux chaînes alternées de quatre arêtes : **COMPILÉS / DÉMONTRÉS DANS LE NOYAU LEAN**. Classification complète P1–P4 et théorème L+2 : non formalisés et non certifiés.
+
+
+## 12. Graphe forcé explicite — 5 novembre, 17:52 UTC
+
+Le fichier `lean/V19Core.lean` définit désormais `V19ForcedEdge` comme la disjonction étiquetée M/I. Le lemme `v19_forced_edge_symm` établit la symétrie de cette relation, ce qui permet de la lire comme une adjacency non orientée. Le prédicat `V19AlternatingChain4` regroupe les deux orientations possibles d'une chaîne de quatre arêtes alternées ; `v19_no_forced_alternating_chain4` en démontre l'impossibilité sous `V19Coherent`, en réutilisant les deux lemmes précédents.
+
+La nouvelle version a été compilée avec succès sous Lean 4.19.0 par GitHub Actions : [run 42078870162](https://github.com/Abrasax63/Omega-pub/actions/runs/42078870162), job `lean-core`, étape `Compile V19 core` : SUCCESS.
+
+**Portée exacte :** l'adjacence forcée est maintenant explicite et symétrique, et l'obstruction aux chaînes alternées est réunie sous un théorème unique. Cela ne formalise toujours pas les composantes connexes, leur classification P1–P4, la visibilité des chemins entre ancrages, l'extension des branches pendantes, ni l'égalité des ombres jusqu'à L+2.
+
+**Statut :** graphe forcé élémentaire et obstruction aux chaînes alternées : **COMPILÉS**. Classification P1–P4 et théorème général L+2 : **NON FORMALISÉS / À RÉEXAMINER**.
