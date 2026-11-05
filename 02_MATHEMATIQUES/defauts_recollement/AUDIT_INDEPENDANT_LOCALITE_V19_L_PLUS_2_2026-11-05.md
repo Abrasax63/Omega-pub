@@ -330,3 +330,12 @@ Le noyau Lean a reçu les lemmes suivants dans `lean/V19Core.lean` :
 La preuve du théorème de marche utilise les matchings M/I pour forcer l'alternance, puis les deux obstructions alternées déjà compilées.
 
 **Limite explicite :** la compilation CI du premier ajout a détecté une erreur d'orientation dans l'application au cycle de quatre sommets. Cette orientation a été corrigée dans le commit suivant. La recompilation du commit corrigé reste à obtenir ; ces nouveaux théorèmes ne sont donc pas encore déclarés compilés. L'exclusion formelle de cycles de toute longueur et la classification des composantes connexes P1–P4 restent ouvertes.
+
+
+### Complément : exclusion du triangle forcé
+
+Le théorème `v19_no_forced_simple_cycle3` a également été ajouté. Il traite les huit répartitions possibles des types M/I sur les trois arêtes ; dans chaque cas, le matching M ou I force l'identification de deux sommets supposés distincts.
+
+La compilation du commit contenant ce complément est en attente de résultat CI. Si elle réussit, les cycles simples de tailles 3 et 4 seront explicitement exclus dans Lean ; les cycles simples de taille au moins 5 contiennent un sous-chemin simple de quatre arêtes, exclu par `v19_no_nonbacktracking_forced_walk4`.
+
+La déduction globale sur les cycles s'appuie donc sur ces trois cas de taille, mais la formalisation d'un prédicat générique de cycle de longueur arbitraire et le théorème graphologique « degré ≤ 2 + acyclicité + finitude ⇒ composantes chemins » ne sont pas encore ajoutés au noyau.
