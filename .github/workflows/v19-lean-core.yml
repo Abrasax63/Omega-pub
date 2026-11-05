@@ -1,0 +1,26 @@
+name: V19 Lean core
+
+on:
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/defauts_recollement/lean/**"
+      - ".github/workflows/v19-lean-core.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "02_MATHEMATIQUES/defauts_recollement/lean/**"
+      - ".github/workflows/v19-lean-core.yml"
+
+jobs:
+  lean-core:
+    runs-on: ubuntu-latest
+    container:
+      image: leanprover/lean4:v4.19.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check Lean version
+        run: lean --version
+      - name: Compile V19 core
+        run: lean 02_MATHEMATIQUES/defauts_recollement/lean/V19Core.lean
