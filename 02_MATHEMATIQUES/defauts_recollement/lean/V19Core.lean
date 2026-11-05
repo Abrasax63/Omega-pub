@@ -144,14 +144,11 @@ theorem v19_merge_not_both_core_periodic
           u = T u := huFix.symm
           _ = T v := huv.2
           _ = vNext := hvNext
-      have hTuv : T u = v := by
-        calc
-          T u = T vNext := congrArg T huNextEq
-          _ = v := hvBack
       have huvEq : u = v := by
         calc
           u = T u := huFix.symm
-          _ = v := hTuv
+          _ = T vNext := congrArg T huNextEq
+          _ = v := hvBack
       exact huv.1 huvEq
   · rcases hv with hvFix | ⟨vNext, hvNext, hvBack, hvNe⟩
     · have huNextEq : uNext = v := by
@@ -159,14 +156,10 @@ theorem v19_merge_not_both_core_periodic
           uNext = T u := huNext.symm
           _ = T v := huv.2
           _ = v := hvFix
-      have hTvu : T v = u := by
-        calc
-          T v = T uNext := congrArg T huNextEq.symm
-          _ = u := huBack
       have huvEq : u = v := by
         calc
-          u = T u := huFix.symm
-          _ = T v := huv.2
+          u = T uNext := huBack.symm
+          _ = T v := congrArg T huNextEq
           _ = v := hvFix
       exact huv.1 huvEq
     · have hPartners : uNext = vNext := by
