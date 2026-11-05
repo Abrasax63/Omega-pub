@@ -1,0 +1,29 @@
+name: V19 path and cycle Lean checks
+
+on:
+  push:
+    branches:
+      - maintenance/reconciliation-bibliotheque-2026-11-05
+    paths:
+      - '02_MATHEMATIQUES/defauts_recollement/lean/V19Core.lean'
+      - '.github/workflows/v19-path-cycle-lean.yml'
+  pull_request:
+    paths:
+      - '02_MATHEMATIQUES/defauts_recollement/lean/V19Core.lean'
+      - '.github/workflows/v19-path-cycle-lean.yml'
+  workflow_dispatch:
+
+jobs:
+  lean-core:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install pinned Lean toolchain
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Check Lean version
+        run: lean --version
+      - name: Compile V19 core
+        run: lean 02_MATHEMATIQUES/defauts_recollement/lean/V19Core.lean
