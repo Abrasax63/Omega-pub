@@ -72,6 +72,10 @@ Le document préliminaire PR #3 disait qu'aucun calcul C4 n'avait été exécut�
 
 Le pilote C4 est un cas issu du corpus interne V19 ; il ne démontre pas à lui seul l'extraction d'un instrument depuis le corpus externe OpenAI.
 
+## 7. Source primaire V19(2) restaurée
+
+La note primaire de 359 lignes a été copiée sans modification de contenu depuis la branche historique PR #2 vers [sources/V19/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE_2.md](../02_MATHEMATIQUES/defauts_recollement/sources/V19/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE_2.md). Le Git blob SHA-1 de la source sur la branche historique est `a76d304c31d0858f625cda89ac9bc1b98a937022`. Un contrôle lexical ciblé du texte copié n'a trouvé ni adresse électronique, ni chemin local privé, ni marqueur usuel de secret ; ce contrôle n'est pas un scanner de sécurité exhaustif.
+
 ## 7. Statut exact du pilote C4, L=2
 
 - Témoin simultané à 9 états : **CALCUL EXACT** sous la définition primaire interne V19(2), pour C4, L=2 et C4O-00…07.
@@ -84,7 +88,7 @@ Le pilote C4 est un cas issu du corpus interne V19 ; il ne démontre pas à lui 
 
 Aucune généralisation à d'autres q ou L n'est revendiquée.
 
-## 8. Décisions et ordre de migration
+## 9. Décisions et ordre de migration
 
 1. Garder `main` comme référence.
 2. Réunir PR #3 et PR #4 dans une branche de maintenance, sans mélanger protocole, registre d'instruments et dossier C4.
@@ -97,6 +101,6 @@ Aucune généralisation à d'autres q ou L n'est revendiquée.
 
 Ordre des lots : sources primaires CL-DYN/CL-H/CL-OBSINF/CL-REFL/CL-HO ; cartes originales ; code et données ; rapports ; sécurité et historique Git.
 
-## 9. Limites
+## 10. Limites
 
 Cet audit utilise les arbres GitHub et les rapports déjà présents sur la branche historique. Il ne constitue pas une lecture intégrale des 226 contenus, une revue mathématique tierce, un audit exhaustif de secrets ni un rejeu de tous les scripts. Les éléments non lus ou non rejoués restent non vérifiés.
