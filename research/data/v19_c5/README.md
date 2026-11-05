@@ -34,7 +34,7 @@ Le programme a été exécuté avec succès sur l'archive source récupérée da
 
 ### Reproduction sur la tête actuelle de la PR #5 — 5 novembre 2026
 
-<badge>SUCCÈS CI</badge>
+**SUCCÈS CI**
 
 Le workflow GitHub Actions [run 41984528892](https://github.com/Abrasax63/Omega-pub/actions/runs/41984528892), déclenché sur la branche `maintenance/reconciliation-bibliotheque-2026-11-05`, commit `14e3881a63a977e9f511a636fea73bfc3fa340e9`, a terminé avec succès sous Python 3.12.
 
