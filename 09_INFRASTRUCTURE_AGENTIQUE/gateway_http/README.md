@@ -53,3 +53,39 @@ Le workflow GitHub Actions dédié exécute les tests HTTP sur chaque modificati
 - L'authentification par jeton est une protection minimale de prototype, pas un remplacement d'une gestion OAuth multi-utilisateur.
 - La passerelle ne certifie aucun résultat et ne modifie aucun statut scientifique.
 - Le déploiement Vercel et la connexion d'un client MCP sont des étapes distinctes, non réalisées par ce commit.
+
+
+## Connexion d'un client MCP distant
+
+Endpoint Preview actuellement déployé :
+
+`https://omega-pub-rce-gateway-pxgi5181w-omega-61f0.vercel.app/mcp`
+
+La protection Vercel de l'équipe reste active. Un client externe doit donc envoyer **deux en-têtes secrets**, sans les placer dans l'URL :
+
+- `Authorization: Bearer <OMEGA_GATEWAY_TOKEN>`
+- `x-vercel-protection-bypass: <VERCEL_AUTOMATION_BYPASS_SECRET>`
+
+Le premier est la clé d'accès propre à ce serveur ; le second contourne uniquement l'écran d'authentification Vercel pour les appels automatisés. Ne jamais les committer, les coller dans un ticket ou les exposer dans des logs. Ils doivent être stockés dans le gestionnaire de secrets du client.
+
+Exemple de forme de configuration (syntaxe indicative ; le format exact dépend du client MCP) :
+
+```json
+{
+  "mcpServers": {
+    "omega-memory": {
+      "url": "https://omega-pub-rce-gateway-pxgi5181w-omega-61f0.vercel.app/mcp",
+      "headers": {
+        "Authorization": "Bearer ${OMEGA_GATEWAY_TOKEN}",
+        "x-vercel-protection-bypass": "${VERCEL_AUTOMATION_BYPASS_SECRET}"
+      }
+    }
+  }
+}
+```
+
+Le serveur n'implémente pas encore le flux OAuth 2.1 de la spécification d'autorisation MCP : il s'agit d'une authentification statique par Bearer, adaptée à un prototype mono-client si les deux secrets sont conservés séparément et protégés. Le client doit envoyer `MCP-Protocol-Version: 2025-11-25` sur les requêtes qui suivent `initialize`, et `Accept: application/json, text/event-stream` sur les POST.
+
+Les appels sans en-tête `Origin` sont acceptés pour les clients serveur-à-serveur. Si un client envoie un en-tête `Origin`, son origine doit être ajoutée explicitement à `OMEGA_ALLOWED_ORIGINS`. Ne pas autoriser `*`.
+
+**Limite ChatGPT :** ce dépôt et Vercel ne peuvent pas, à eux seuls, enregistrer ce serveur comme application personnalisée dans l'interface ChatGPT. La connexion effective dépend d'un client qui permet de déclarer un endpoint MCP distant et des en-têtes personnalisés.
