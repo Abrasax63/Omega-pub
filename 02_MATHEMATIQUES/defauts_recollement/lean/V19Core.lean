@@ -384,3 +384,19 @@ theorem v19_no_forced_simple_cycle3
           (v19_invariant_two_step_backtracks T hcoh h01I h12I).symm
       · exact h20I.1
           (v19_invariant_two_step_backtracks T hcoh h01I h12I).symm
+
+
+/--
+No simple forced path can contain five vertices.  Pairwise distinctness of
+the five vertices supplies the three non-backtracking hypotheses needed by
+the four-edge obstruction.
+-/
+theorem v19_no_simple_forced_path_five_vertices
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 x3 x4 : α}
+    (h01 : V19ForcedEdge T x0 x1)
+    (h12 : V19ForcedEdge T x1 x2)
+    (h23 : V19ForcedEdge T x2 x3)
+    (h34 : V19ForcedEdge T x3 x4)
+    (h02 : x0 ≠ x2) (h13 : x1 ≠ x3) (h24 : x2 ≠ x4) : False :=
+  v19_no_nonbacktracking_forced_walk4 T hcoh h01 h12 h23 h34 h02 h13 h24
