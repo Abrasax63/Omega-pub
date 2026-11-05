@@ -76,7 +76,7 @@ Le pilote C4 est un cas issu du corpus interne V19 ; il ne démontre pas à lui 
 
 La note primaire de 359 lignes a été copiée sans modification de contenu depuis la branche historique PR #2 vers [sources/V19/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE_2.md](../02_MATHEMATIQUES/defauts_recollement/sources/V19/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE_2.md). Le Git blob SHA-1 de la source sur la branche historique est `a76d304c31d0858f625cda89ac9bc1b98a937022`. Un contrôle lexical ciblé du texte copié n'a trouvé ni adresse électronique, ni chemin local privé, ni marqueur usuel de secret ; ce contrôle n'est pas un scanner de sécurité exhaustif.
 
-## 7. Statut exact du pilote C4, L=2
+## 8. Statut exact du pilote C4, L=2
 
 - Témoin simultané à 9 états : **CALCUL EXACT** sous la définition primaire interne V19(2), pour C4, L=2 et C4O-00…07.
 - Absence de témoin pour N=4,…,8 : **CALCUL EXACT**, énumération exhaustive sous le contrat raccordé.
