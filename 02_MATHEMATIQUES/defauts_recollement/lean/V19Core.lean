@@ -106,3 +106,87 @@ theorem v19_invariant_matching
     · calc
         v = T u := huSwap.symm
         _ = w := huSwap'
+
+/-- States on fixed points or 2-cycles, the only endpoints of I-edges. -/
+def V19CorePeriodic (T : α → α) (x : α) : Prop :=
+  T x = x ∨ ∃ y, T x = y ∧ T y = x ∧ y ≠ x
+
+/-- Both endpoints of every invariant edge are fixed or on a 2-cycle. -/
+theorem v19_invariant_endpoints_core_periodic
+    (T : α → α) {u v : α} (h : V19Invariant T u v) :
+    V19CorePeriodic T u ∧ V19CorePeriodic T v := by
+  rcases h.2 with ⟨hu, hv⟩ | ⟨hu, hv⟩
+  · exact ⟨Or.inl hu, Or.inl hv⟩
+  · exact ⟨Or.inr ⟨v, hu, hv, h.1.symm⟩,
+           Or.inr ⟨u, hv, hu, h.1⟩⟩
+
+/--
+A merge edge cannot join two distinct fixed/2-cycle states.
+This is the local dynamical fact that prevents M-edges from joining
+the periodic endpoints of I-edges.
+-/
+theorem v19_merge_not_both_core_periodic
+    (T : α → α) {u v : α}
+    (huv : V19Merge T u v)
+    (hu : V19CorePeriodic T u)
+    (hv : V19CorePeriodic T v) : False := by
+  rcases hu with huFix | ⟨uNext, huNext, huBack, huNe⟩
+  · rcases hv with hvFix | ⟨vNext, hvNext, hvBack, hvNe⟩
+    · have huvEq : u = v := by
+        calc
+          u = T u := huFix.symm
+          _ = T v := huv.2
+          _ = v := hvFix
+      exact huv.1 huvEq
+    · have huToV : T u = v := by
+        calc
+          T u = T v := huv.2
+          _ = vNext := hvNext
+          _ = T vNext := hvBack.symm
+      have huvEq : u = v := by
+        calc
+          u = T u := huFix.symm
+          _ = T vNext := huToV.trans hvBack.symm
+          _ = v := hvBack
+      exact huv.1 huvEq
+  · rcases hv with hvFix | ⟨vNext, hvNext, hvBack, hvNe⟩
+    · have huvEq : u = v := by
+        calc
+          u = T uNext := huBack.symm
+          _ = T u := by rw [huNext]
+          _ = T v := huv.2
+          _ = v := hvFix
+      exact huv.1 huvEq
+    · have hPartners : uNext = vNext := by
+        calc
+          uNext = T u := huNext.symm
+          _ = T v := huv.2
+          _ = vNext := hvNext
+      have huvEq : u = v := by
+        calc
+          u = T uNext := huBack.symm
+          _ = T vNext := congrArg T hPartners
+          _ = v := hvBack
+      exact huv.1 huvEq
+
+/-- An alternating M-I-M-I chain of four edges is impossible. -/
+theorem v19_no_alternating_MIMI
+    (T : α → α) {x0 x1 x2 x3 x4 : α}
+    (h01 : V19Merge T x0 x1)
+    (h12 : V19Invariant T x1 x2)
+    (h23 : V19Merge T x2 x3)
+    (h34 : V19Invariant T x3 x4) : False := by
+  have h2Periodic := (v19_invariant_endpoints_core_periodic T h12).2
+  have h3Periodic := (v19_invariant_endpoints_core_periodic T h34).1
+  exact v19_merge_not_both_core_periodic T h23 h2Periodic h3Periodic
+
+/-- An alternating I-M-I-M chain of four edges is impossible. -/
+theorem v19_no_alternating_IMIM
+    (T : α → α) {x0 x1 x2 x3 x4 : α}
+    (h01 : V19Invariant T x0 x1)
+    (h12 : V19Merge T x1 x2)
+    (h23 : V19Invariant T x2 x3)
+    (h34 : V19Merge T x3 x4) : False := by
+  have h1Periodic := (v19_invariant_endpoints_core_periodic T h01).2
+  have h2Periodic := (v19_invariant_endpoints_core_periodic T h23).1
+  exact v19_merge_not_both_core_periodic T h12 h1Periodic h2Periodic
