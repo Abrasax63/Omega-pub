@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Targeted adversarial audit of V19 L+2 visibility edge cases.
+"""Exhaustive targeted audit of V19 L+2 visibility edge cases.
 
-Enumerates every endofunction extension in the stated finite domain, finds
-the three requested edge cases, and compares global/local shadows for every
-P4-both-leaves witness plus one witness of each other type.
+Enumerates every endofunction extension in the finite domain q=3..6,
+N=q..q+4, all coherent systems, all initial pairs and L=2..5. It compares
+the complete global shadow with the shadow restricted to B and both
+trajectory prefixes through L+2, while explicitly counting three adversarial
+edge cases.
 
-This is finite falsification, not a general proof.
+Finite exact falsification only; not a general proof or Lean certification.
 """
 from itertools import combinations, product
 
@@ -134,27 +136,16 @@ def shadow(T, pair, L, q, allowed=None):
     )
 
 
-def compare_witness(T, pair, L, q, prefix, label):
-    full = shadow(T, pair, L, q)
-    local = shadow(T, pair, L, q, prefix)
-    if full != local:
-        raise AssertionError({
-            "kind": "LOCALITY COUNTEREXAMPLE",
-            "case": label, "q": q, "N": len(T), "T": T,
-            "L": L, "pair": pair, "prefix": sorted(prefix),
-            "global_shadow": sorted(full), "local_shadow": sorted(local),
-        })
-
-
 def run():
     counts = {
-        "extensions": 0, "coherent": 0,
+        "extensions": 0,
+        "coherent": 0,
+        "comparisons": 0,
         "P4_both_leaves_anchors": 0,
         "fixed_I_exactly_one_visible": 0,
         "equalities_cross_forced_components": 0,
     }
     witnesses = {}
-    p4_witnesses = []
 
     for q in range(3, 7):
         cycle = tuple((i + 1) % q for i in range(q))
@@ -182,55 +173,53 @@ def run():
                             }
                             leaves = [v for v in group if degree[v] == 1]
                             if len(leaves) == 2 and all(v in R for v in leaves):
-                                counts["P4_both_leaves_anchors"] += 1
-                                p4_witnesses.append(
-                                    (q, T, L, pair, P)
-                                )
+                                key = "P4_both_leaves_anchors"
+                                counts[key] += 1
+                                witnesses.setdefault(key, (q, T, L, pair, P))
 
                         for u, v in edges:
                             if (T[u] == u and T[v] == v
                                     and ((u in P) != (v in P))):
                                 key = "fixed_I_exactly_one_visible"
                                 counts[key] += 1
-                                witnesses.setdefault(
-                                    key, (q, T, L, pair, P)
-                                )
+                                witnesses.setdefault(key, (q, T, L, pair, P))
 
                         a, b = pair
                         for _ in range(L):
                             if a != b and cid[a] != cid[b]:
                                 key = "equalities_cross_forced_components"
                                 counts[key] += 1
-                                witnesses.setdefault(
-                                    key, (q, T, L, pair, P)
-                                )
+                                witnesses.setdefault(key, (q, T, L, pair, P))
                             a, b = T[a], T[b]
 
-    assert counts["extensions"] == 25058, counts
-    assert counts["coherent"] == 16986, counts
-    for key in (
-        "P4_both_leaves_anchors",
-        "fixed_I_exactly_one_visible",
-        "equalities_cross_forced_components",
-    ):
-        assert counts[key] > 0, (key, counts)
+                        full = shadow(T, pair, L, q)
+                        local = shadow(T, pair, L, q, P)
+                        counts["comparisons"] += 1
+                        if full != local:
+                            raise AssertionError({
+                                "kind": "LOCALITY COUNTEREXAMPLE",
+                                "q": q, "N": n, "T": T, "L": L,
+                                "pair": pair, "prefix": sorted(P),
+                                "global_shadow": sorted(full),
+                                "local_shadow": sorted(local),
+                            })
 
-    # Check every occurrence of the P4/two-anchor case; the other two
-    # structurally distinct cases are checked on explicit witnesses.
-    for q, T, L, pair, P in p4_witnesses:
-        compare_witness(T, pair, L, q, P, "P4_both_leaves_anchors")
-    for key, witness in witnesses.items():
-        q, T, L, pair, P = witness
-        compare_witness(T, pair, L, q, P, key)
-
+    expected = {
+        "extensions": 25058,
+        "coherent": 16986,
+        "comparisons": 2454968,
+        "P4_both_leaves_anchors": 384,
+        "fixed_I_exactly_one_visible": 83712,
+        "equalities_cross_forced_components": 7801692,
+    }
+    assert counts == expected, {"actual": counts, "expected": expected}
     print("COUNTS", counts)
-    print("P4 witness comparisons", len(p4_witnesses))
     for key, (q, T, L, pair, P) in witnesses.items():
         print("WITNESS", key, {
             "q": q, "N": len(T), "T": T, "L": L,
             "pair": pair, "visible_prefix": sorted(P),
         })
-    print("PASS: no mismatch in all P4/two-anchor witnesses and the two other targeted witnesses.")
+    print("PASS: no global/local shadow mismatch in all 2,454,968 comparisons.")
     print("PASS: all three adversarial edge cases occurred.")
     print("Scope: finite exact enumeration only; no general theorem or Lean certification.")
 
