@@ -7,6 +7,8 @@ on:
       - "research/code/verify_v19_locality_exhaustive_small.py"
       - "02_MATHEMATIQUES/defauts_recollement/sources/V19/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE_2.md"
       - "02_MATHEMATIQUES/defauts_recollement/AUDIT_INDEPENDANT_LOCALITE_V19_L_PLUS_2_2026-11-05.md"
+      - "02_MATHEMATIQUES/defauts_recollement/lean/**"
+      - ".github/workflows/v19-locality-pr-verification.yml"
 
 permissions:
   contents: read
@@ -23,3 +25,12 @@ jobs:
           python-version: "3.12"
       - name: Exhaustive coherent C3 extensions, N <= 7, L in {2,3}
         run: python research/code/verify_v19_locality_exhaustive_small.py
+      - name: Install Lean toolchain
+        uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: 02_MATHEMATIQUES/defauts_recollement/lean
+          auto-config: false
+          use-mathlib-cache: false
+      - name: Compile V19 Lean core
+        working-directory: 02_MATHEMATIQUES/defauts_recollement/lean
+        run: lean V19Core.lean
