@@ -569,3 +569,63 @@ theorem v19_component_adjacent_closed
     (hxy : V19ForcedEdge T x y) :
     V19Component T root y :=
   V19Reachable.tail hx hxy
+
+
+/-!
+## Five-cycle obstruction
+
+A simple cycle of length five contains a simple path on five vertices.
+We expose that graph-shaped statement as a named Lean object so later
+arbitrary-cycle arguments can reduce to explicit finite witnesses.
+This theorem is deliberately only the five-cycle case; it does not yet
+define or exclude cycles of arbitrary length.
+-/
+
+/-- A simple forced 5-cycle, with its five vertices and closing edge. -/
+structure V19SimpleCycle5 (T : α → α) where
+  x0 : α
+  x1 : α
+  x2 : α
+  x3 : α
+  x4 : α
+  edge01 : V19ForcedEdge T x0 x1
+  edge12 : V19ForcedEdge T x1 x2
+  edge23 : V19ForcedEdge T x2 x3
+  edge34 : V19ForcedEdge T x3 x4
+  edge40 : V19ForcedEdge T x4 x0
+  distinct01 : x0 ≠ x1
+  distinct02 : x0 ≠ x2
+  distinct03 : x0 ≠ x3
+  distinct04 : x0 ≠ x4
+  distinct12 : x1 ≠ x2
+  distinct13 : x1 ≠ x3
+  distinct14 : x1 ≠ x4
+  distinct23 : x2 ≠ x3
+  distinct24 : x2 ≠ x4
+  distinct34 : x3 ≠ x4
+
+/-- Coherence excludes every simple forced cycle on five vertices. -/
+theorem v19_no_simple_cycle5
+    (T : α → α) (hcoh : V19Coherent T)
+    (c : V19SimpleCycle5 T) : False := by
+  exact v19_no_simple_path5 T hcoh {
+    x0 := c.x0
+    x1 := c.x1
+    x2 := c.x2
+    x3 := c.x3
+    x4 := c.x4
+    edge01 := c.edge01
+    edge12 := c.edge12
+    edge23 := c.edge23
+    edge34 := c.edge34
+    distinct01 := c.distinct01
+    distinct02 := c.distinct02
+    distinct03 := c.distinct03
+    distinct04 := c.distinct04
+    distinct12 := c.distinct12
+    distinct13 := c.distinct13
+    distinct14 := c.distinct14
+    distinct23 := c.distinct23
+    distinct24 := c.distinct24
+    distinct34 := c.distinct34
+  }
