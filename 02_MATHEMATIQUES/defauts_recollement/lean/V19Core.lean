@@ -236,3 +236,41 @@ theorem v19_no_forced_alternating_chain4
                 ⟨x0, x1, x2, x3, x4, h01, h12, h23, h34⟩
   · exact v19_no_alternating_MIMI T h01 h12 h23 h34
   · exact v19_no_alternating_IMIM T h01 h12 h23 h34
+
+
+/-- Two M-neighbors of the same vertex must coincide. -/
+theorem v19_merge_neighbors_eq
+    (T : α → α) (hcoh : V19Coherent T)
+    {x y z : α}
+    (hxy : V19Merge T x y)
+    (hxz : V19Merge T x z) : y = z :=
+  v19_merge_matching T hcoh hxy hxz
+
+/-- Two I-neighbors of the same vertex must coincide. -/
+theorem v19_invariant_neighbors_eq
+    (T : α → α) (hcoh : V19Coherent T)
+    {x y z : α}
+    (hxy : V19Invariant T x y)
+    (hxz : V19Invariant T x z) : y = z :=
+  v19_invariant_matching T hcoh hxy hxz
+
+/-- A vertex cannot have three pairwise distinct forced neighbors.
+The proof uses the two edge matchings and the two-color coherence condition. -/
+theorem v19_no_three_forced_neighbors
+    (T : α → α) (hcoh : V19Coherent T)
+    {x y z w : α}
+    (hxy : V19ForcedEdge T x y)
+    (hxz : V19ForcedEdge T x z)
+    (hxw : V19ForcedEdge T x w)
+    (hyz : y ≠ z) (hyw : y ≠ w) (hzw : z ≠ w) : False := by
+  rcases hxy with hxyM | hxyI <;>
+  rcases hxz with hxzM | hxzI <;>
+  rcases hxw with hxwM | hxwI
+  · exact hyz (v19_merge_neighbors_eq T hcoh hxyM hxzM)
+  · exact hyw (v19_merge_neighbors_eq T hcoh hxyM hxwI)
+  · exact hyz (v19_invariant_neighbors_eq T hcoh hxyI hxzM)
+  · exact hyw (v19_invariant_neighbors_eq T hcoh hxyI hxwI)
+  · exact hyz (v19_merge_neighbors_eq T hcoh hxzM hxyM)
+  · exact hzw (v19_merge_neighbors_eq T hcoh hxzM hxwI)
+  · exact hyz (v19_invariant_neighbors_eq T hcoh hxzI hxyM)
+  · exact hzw (v19_invariant_neighbors_eq T hcoh hxzI hxwI)
