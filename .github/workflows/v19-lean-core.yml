@@ -1,0 +1,30 @@
+name: V19 Lean core — matching and chains
+
+on:
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/defauts_recollement/lean/**"
+      - ".github/workflows/v19-lean-core.yml"
+  push:
+    branches:
+      - main
+      - "maintenance/**"
+    paths:
+      - "02_MATHEMATIQUES/defauts_recollement/lean/**"
+      - ".github/workflows/v19-lean-core.yml"
+
+jobs:
+  lean-core:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install pinned Lean toolchain
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain leanprover/lean4:v4.19.0
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Check Lean version
+        run: lean --version
+      - name: Compile V19 core
+        working-directory: 02_MATHEMATIQUES/defauts_recollement/lean
+        run: lean V19Core.lean

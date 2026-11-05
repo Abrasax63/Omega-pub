@@ -1,0 +1,27 @@
+name: V19 locality — independent parity-DSU stress test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "research/code/verify_v19_locality_parity_dsu.py"
+      - ".github/workflows/v19-locality-parity-dsu.yml"
+      - "research/code/audit_v19_visibility_edge_cases.py"
+
+permissions:
+  contents: read
+
+jobs:
+  parity-dsu-stress:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run independent parity-DSU enumeration
+        run: python research/code/verify_v19_locality_parity_dsu.py
+      - name: Run targeted visibility edge-case audit
+        run: python research/code/audit_v19_visibility_edge_cases.py

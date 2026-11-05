@@ -1,0 +1,659 @@
+import Lean
+
+/-
+V19 locality — Lean formalization, first kernel.
+
+This file formalizes both edge matchings, the periodic endpoints of invariant
+edges, and a local obstruction to alternating forced chains of four edges.
+The full P1--P4 component classification, visibility lemma, and L+2 shadow
+theorem are not yet formalized.
+
+Compile from this directory with:
+  lean V19Core.lean
+-/
+
+universe u
+
+variable {α : Type u}
+
+def V19Merge (T : α → α) (u v : α) : Prop :=
+  u ≠ v ∧ T u = T v
+
+def V19Invariant (T : α → α) (u v : α) : Prop :=
+  u ≠ v ∧
+    ((T u = u ∧ T v = v) ∨ (T u = v ∧ T v = u))
+
+def V19Coherent (T : α → α) : Prop :=
+  ∃ color : α → Bool,
+    ∀ ⦃u v : α⦄,
+      (V19Merge T u v ∨ V19Invariant T u v) →
+      color u ≠ color v
+
+private theorem bool_two_color_middle
+    (a b c : Bool) (hab : a ≠ b) (hac : a ≠ c) : b = c := by
+  cases a <;> cases b <;> cases c <;> simp_all
+
+/--
+A coherent forced-constraint graph cannot contain two distinct merge
+neighbors at one vertex. Equivalently, every fibre of T has size at most two.
+-/
+theorem v19_merge_matching
+    (T : α → α) (hcoh : V19Coherent T)
+    {u v w : α}
+    (huv : V19Merge T u v)
+    (huw : V19Merge T u w) : v = w := by
+  rcases hcoh with ⟨color, hcolor⟩
+  by_cases hvw : v = w
+  · exact hvw
+  have hvwMerge : V19Merge T v w := by
+    refine ⟨hvw, ?_⟩
+    calc
+      T v = T u := huv.2.symm
+      _ = T w := huw.2
+  have huvColor := hcolor (u := u) (v := v) (Or.inl huv)
+  have huwColor := hcolor (u := u) (v := w) (Or.inl huw)
+  have hvwColor := hcolor (u := v) (v := w) (Or.inl hvwMerge)
+  have sameColor : color v = color w :=
+    bool_two_color_middle (color u) (color v) (color w) huvColor huwColor
+  exact False.elim (hvwColor sameColor)
+
+/--
+No three distinct states can have the same image in a coherent system.
+This is the direct fibre-cardinality form of the merge-matching theorem.
+-/
+theorem v19_no_three_preimages
+    (T : α → α) (hcoh : V19Coherent T)
+    {u v w : α}
+    (huv : u ≠ v) (huw : u ≠ w) (hvw : v ≠ w)
+    (hTu : T u = T v) (hTw : T u = T w) : False := by
+  have hmergeUV : V19Merge T u v := ⟨huv, hTu⟩
+  have hmergeUW : V19Merge T u w := ⟨huw, hTw⟩
+  have hEq := v19_merge_matching T hcoh hmergeUV hmergeUW
+  exact hvw hEq
+
+
+
+/--
+The invariant relation is a matching in every coherent system.
+-/
+theorem v19_invariant_matching
+    (T : α → α) (hcoh : V19Coherent T)
+    {u v w : α}
+    (huv : V19Invariant T u v)
+    (huw : V19Invariant T u w) : v = w := by
+  by_cases hvwEq : v = w
+  · exact hvwEq
+  rcases hcoh with ⟨color, hcolor⟩
+  rcases huv.2 with ⟨huFix, hvFix⟩ | ⟨huSwap, hvSwap⟩
+  · rcases huw.2 with ⟨huFix', hwFix⟩ | ⟨huSwap', hwSwap⟩
+    · have hvw : V19Invariant T v w := ⟨hvwEq, Or.inl ⟨hvFix, hwFix⟩⟩
+      have huvColor := hcolor (u := u) (v := v) (Or.inr huv)
+      have huwColor := hcolor (u := u) (v := w) (Or.inr huw)
+      have hvwColor := hcolor (u := v) (v := w) (Or.inr hvw)
+      have sameColor : color v = color w :=
+        bool_two_color_middle (color u) (color v) (color w) huvColor huwColor
+      exact (hvwColor sameColor).elim
+    · have hwEq : w = u := by
+        calc
+          w = T u := huSwap'.symm
+          _ = u := huFix
+      exact (huw.1 hwEq.symm).elim
+  · rcases huw.2 with ⟨huFix', hwFix⟩ | ⟨huSwap', hwSwap⟩
+    · have hvEq : v = u := by
+        calc
+          v = T u := huSwap.symm
+          _ = u := huFix'
+      exact (huv.1 hvEq.symm).elim
+    · calc
+        v = T u := huSwap.symm
+        _ = w := huSwap'
+
+/-- States on fixed points or 2-cycles, the only endpoints of I-edges. -/
+def V19CorePeriodic (T : α → α) (x : α) : Prop :=
+  T x = x ∨ ∃ y, T x = y ∧ T y = x ∧ y ≠ x
+
+/-- Both endpoints of every invariant edge are fixed or on a 2-cycle. -/
+theorem v19_invariant_endpoints_core_periodic
+    (T : α → α) {u v : α} (h : V19Invariant T u v) :
+    V19CorePeriodic T u ∧ V19CorePeriodic T v := by
+  rcases h.2 with ⟨hu, hv⟩ | ⟨hu, hv⟩
+  · exact ⟨Or.inl hu, Or.inl hv⟩
+  · exact ⟨Or.inr ⟨v, hu, hv, h.1.symm⟩,
+           Or.inr ⟨u, hv, hu, h.1⟩⟩
+
+/--
+A merge edge cannot join two distinct fixed/2-cycle states.
+This is the local dynamical fact that prevents M-edges from joining
+the periodic endpoints of I-edges.
+-/
+theorem v19_merge_not_both_core_periodic
+    (T : α → α) {u v : α}
+    (huv : V19Merge T u v)
+    (hu : V19CorePeriodic T u)
+    (hv : V19CorePeriodic T v) : False := by
+  rcases hu with huFix | ⟨uNext, huNext, huBack, huNe⟩
+  · rcases hv with hvFix | ⟨vNext, hvNext, hvBack, hvNe⟩
+    · have huvEq : u = v := by
+        calc
+          u = T u := huFix.symm
+          _ = T v := huv.2
+          _ = v := hvFix
+      exact huv.1 huvEq
+    · have huNextEq : u = vNext := by
+        calc
+          u = T u := huFix.symm
+          _ = T v := huv.2
+          _ = vNext := hvNext
+      have huvEq : u = v := by
+        calc
+          u = T u := huFix.symm
+          _ = T vNext := congrArg T huNextEq
+          _ = v := hvBack
+      exact huv.1 huvEq
+  · rcases hv with hvFix | ⟨vNext, hvNext, hvBack, hvNe⟩
+    · have huNextEq : uNext = v := by
+        calc
+          uNext = T u := huNext.symm
+          _ = T v := huv.2
+          _ = v := hvFix
+      have huvEq : u = v := by
+        calc
+          u = T uNext := huBack.symm
+          _ = T v := congrArg T huNextEq
+          _ = v := hvFix
+      exact huv.1 huvEq
+    · have hPartners : uNext = vNext := by
+        calc
+          uNext = T u := huNext.symm
+          _ = T v := huv.2
+          _ = vNext := hvNext
+      have huvEq : u = v := by
+        calc
+          u = T uNext := huBack.symm
+          _ = T vNext := congrArg T hPartners
+          _ = v := hvBack
+      exact huv.1 huvEq
+
+/-- An alternating M-I-M-I chain of four edges is impossible. -/
+theorem v19_no_alternating_MIMI
+    (T : α → α) {x0 x1 x2 x3 x4 : α}
+    (h01 : V19Merge T x0 x1)
+    (h12 : V19Invariant T x1 x2)
+    (h23 : V19Merge T x2 x3)
+    (h34 : V19Invariant T x3 x4) : False := by
+  have h2Periodic := (v19_invariant_endpoints_core_periodic T h12).2
+  have h3Periodic := (v19_invariant_endpoints_core_periodic T h34).1
+  exact v19_merge_not_both_core_periodic T h23 h2Periodic h3Periodic
+
+/-- An alternating I-M-I-M chain of four edges is impossible. -/
+theorem v19_no_alternating_IMIM
+    (T : α → α) {x0 x1 x2 x3 x4 : α}
+    (h01 : V19Invariant T x0 x1)
+    (h12 : V19Merge T x1 x2)
+    (h23 : V19Invariant T x2 x3)
+    (h34 : V19Merge T x3 x4) : False := by
+  have h1Periodic := (v19_invariant_endpoints_core_periodic T h01).2
+  have h2Periodic := (v19_invariant_endpoints_core_periodic T h23).1
+  exact v19_merge_not_both_core_periodic T h12 h1Periodic h2Periodic
+
+
+/--
+The undirected forced-constraint graph: an edge is either a merge edge M
+or an invariant edge I. The disjunction retains the edge type.
+-/
+def V19ForcedEdge (T : α → α) (u v : α) : Prop :=
+  V19Merge T u v ∨ V19Invariant T u v
+
+/-- Forced edges are symmetric, so they define an undirected graph. -/
+theorem v19_forced_edge_symm
+    (T : α → α) {u v : α}
+    (h : V19ForcedEdge T u v) : V19ForcedEdge T v u := by
+  rcases h with hM | hI
+  · exact Or.inl ⟨hM.1.symm, hM.2.symm⟩
+  · rcases hI.2 with ⟨hu, hv⟩ | ⟨huv, hvu⟩
+    · exact Or.inr ⟨hI.1.symm, Or.inl ⟨hv, hu⟩⟩
+    · exact Or.inr ⟨hI.1.symm, Or.inr ⟨hvu, huv⟩⟩
+
+/--
+A length-four alternating forced chain. Its two possible orientations are
+listed explicitly so the predicate does not hide the M/I edge labels.
+-/
+def V19AlternatingChain4 (T : α → α) : Prop :=
+  (∃ x0 x1 x2 x3 x4,
+    V19Merge T x0 x1 ∧ V19Invariant T x1 x2 ∧
+    V19Merge T x2 x3 ∧ V19Invariant T x3 x4) ∨
+  (∃ x0 x1 x2 x3 x4,
+    V19Invariant T x0 x1 ∧ V19Merge T x1 x2 ∧
+    V19Invariant T x2 x3 ∧ V19Merge T x3 x4)
+
+/-- No coherent forced-constraint graph contains an alternating chain
+of four edges. -/
+theorem v19_no_forced_alternating_chain4
+    (T : α → α) (hcoh : V19Coherent T) :
+    ¬ V19AlternatingChain4 T := by
+  intro h
+  rcases h with ⟨x0, x1, x2, x3, x4, h01, h12, h23, h34⟩ |
+                ⟨x0, x1, x2, x3, x4, h01, h12, h23, h34⟩
+  · exact v19_no_alternating_MIMI T h01 h12 h23 h34
+  · exact v19_no_alternating_IMIM T h01 h12 h23 h34
+
+
+/-- Two M-neighbors of the same vertex must coincide. -/
+theorem v19_merge_neighbors_eq
+    (T : α → α) (hcoh : V19Coherent T)
+    {x y z : α}
+    (hxy : V19Merge T x y)
+    (hxz : V19Merge T x z) : y = z :=
+  v19_merge_matching T hcoh hxy hxz
+
+/-- Two I-neighbors of the same vertex must coincide. -/
+theorem v19_invariant_neighbors_eq
+    (T : α → α) (hcoh : V19Coherent T)
+    {x y z : α}
+    (hxy : V19Invariant T x y)
+    (hxz : V19Invariant T x z) : y = z :=
+  v19_invariant_matching T hcoh hxy hxz
+
+/-- A vertex cannot have three pairwise distinct forced neighbors.
+The proof uses the two edge matchings and the two-color coherence condition. -/
+theorem v19_no_three_forced_neighbors
+    (T : α → α) (hcoh : V19Coherent T)
+    {x y z w : α}
+    (hxy : V19ForcedEdge T x y)
+    (hxz : V19ForcedEdge T x z)
+    (hxw : V19ForcedEdge T x w)
+    (hyz : y ≠ z) (hyw : y ≠ w) (hzw : z ≠ w) : False := by
+  rcases hxy with hxyM | hxyI
+  · rcases hxz with hxzM | hxzI
+    · exact hyz (v19_merge_neighbors_eq T hcoh hxyM hxzM)
+    · rcases hxw with hxwM | hxwI
+      · exact hyw (v19_merge_neighbors_eq T hcoh hxyM hxwM)
+      · exact hzw (v19_invariant_neighbors_eq T hcoh hxzI hxwI)
+  · rcases hxz with hxzM | hxzI
+    · rcases hxw with hxwM | hxwI
+      · exact hzw (v19_merge_neighbors_eq T hcoh hxzM hxwM)
+      · exact hyw (v19_invariant_neighbors_eq T hcoh hxyI hxwI)
+    · rcases hxw with hxwM | hxwI
+      · exact hyz (v19_invariant_neighbors_eq T hcoh hxyI hxzI)
+      · exact hzw (v19_invariant_neighbors_eq T hcoh hxzI hxwI)
+
+
+/-!
+## Four-edge path and 4-cycle consequences
+
+The matching lemmas imply that two consecutive edges of the same type
+must immediately backtrack.  We make this consequence explicit, then
+exclude every non-backtracking forced walk of four edges and, in
+particular, every simple forced 4-cycle.
+-/
+
+/-- Two consecutive merge edges immediately backtrack. -/
+theorem v19_merge_two_step_backtracks
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 : α}
+    (h01 : V19Merge T x0 x1)
+    (h12 : V19Merge T x1 x2) : x0 = x2 := by
+  have h10 : V19Merge T x1 x0 := ⟨h01.1.symm, h01.2.symm⟩
+  exact v19_merge_matching T hcoh h10 h12
+
+/-- Two consecutive invariant edges immediately backtrack. -/
+theorem v19_invariant_two_step_backtracks
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 : α}
+    (h01 : V19Invariant T x0 x1)
+    (h12 : V19Invariant T x1 x2) : x0 = x2 := by
+  have h10 : V19Invariant T x1 x0 := by
+    rcases h01.2 with ⟨h0, h1⟩ | ⟨h01', h10'⟩
+    · exact ⟨h01.1.symm, Or.inl ⟨h1, h0⟩⟩
+    · exact ⟨h01.1.symm, Or.inr ⟨h10', h01'⟩⟩
+  exact v19_invariant_matching T hcoh h10 h12
+
+/-- A forced four-edge walk with no immediate backtracking is impossible.
+The three inequalities are exactly the non-backtracking conditions. -/
+theorem v19_no_nonbacktracking_forced_walk4
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 x3 x4 : α}
+    (h01 : V19ForcedEdge T x0 x1)
+    (h12 : V19ForcedEdge T x1 x2)
+    (h23 : V19ForcedEdge T x2 x3)
+    (h34 : V19ForcedEdge T x3 x4)
+    (h02 : x0 ≠ x2) (h13 : x1 ≠ x3) (h24 : x2 ≠ x4) : False := by
+  rcases h01 with h01M | h01I
+  · rcases h12 with h12M | h12I
+    · exact h02 (v19_merge_two_step_backtracks T hcoh h01M h12M)
+    · rcases h23 with h23M | h23I
+      · rcases h34 with h34M | h34I
+        · exact h24 (v19_merge_two_step_backtracks T hcoh h23M h34M)
+        · exact v19_no_alternating_MIMI T h01M h12I h23M h34I
+      · exact h13 (v19_invariant_two_step_backtracks T hcoh h12I h23I)
+  · rcases h12 with h12M | h12I
+    · rcases h23 with h23M | h23I
+      · exact h13 (v19_merge_two_step_backtracks T hcoh h12M h23M)
+      · rcases h34 with h34M | h34I
+        · exact v19_no_alternating_IMIM T h01I h12M h23I h34M
+        · exact h24 (v19_invariant_two_step_backtracks T hcoh h23I h34I)
+    · exact h02 (v19_invariant_two_step_backtracks T hcoh h01I h12I)
+
+/-- A simple forced 4-cycle is impossible. -/
+theorem v19_no_forced_simple_cycle4
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 x3 : α}
+    (h01 : V19ForcedEdge T x0 x1)
+    (h12 : V19ForcedEdge T x1 x2)
+    (h23 : V19ForcedEdge T x2 x3)
+    (h30 : V19ForcedEdge T x3 x0)
+    (h02 : x0 ≠ x2) (h13 : x1 ≠ x3) : False := by
+  apply v19_no_nonbacktracking_forced_walk4 T hcoh h01 h12 h23
+    h30 h02 h13
+  exact h02.symm
+
+
+/-- A simple forced triangle is impossible. -/
+theorem v19_no_forced_simple_cycle3
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 : α}
+    (h01 : V19ForcedEdge T x0 x1)
+    (h12 : V19ForcedEdge T x1 x2)
+    (h20 : V19ForcedEdge T x2 x0) : False := by
+  rcases h01 with h01M | h01I
+  · rcases h12 with h12M | h12I
+    · rcases h20 with h20M | h20I
+      · exact h20M.1 (v19_merge_two_step_backtracks T hcoh h01M h12M).symm
+      · exact h20I.1 (v19_merge_two_step_backtracks T hcoh h01M h12M).symm
+    · rcases h20 with h20M | h20I
+      · have h02M : V19Merge T x0 x2 :=
+          ⟨h20M.1.symm, h20M.2.symm⟩
+        have h12eq := v19_merge_matching T hcoh h01M h02M
+        exact h12I.1 h12eq
+      · have h10eq :=
+          v19_invariant_two_step_backtracks T hcoh h12I h20I
+        exact h01M.1 h10eq.symm
+  · rcases h12 with h12M | h12I
+    · rcases h20 with h20M | h20I
+      · exact h01I.1
+          (v19_merge_two_step_backtracks T hcoh h12M h20M).symm
+      · have h02I : V19Invariant T x0 x2 := by
+          rcases h20I.2 with ⟨h2, h0⟩ | ⟨h20', h02'⟩
+          · exact ⟨h20I.1.symm, Or.inl ⟨h0, h2⟩⟩
+          · exact ⟨h20I.1.symm, Or.inr ⟨h02', h20'⟩⟩
+        have h02eq :=
+          v19_invariant_matching T hcoh h01I h02I
+        exact h12M.1 h02eq
+    · rcases h20 with h20M | h20I
+      · exact h20M.1
+          (v19_invariant_two_step_backtracks T hcoh h01I h12I).symm
+      · exact h20I.1
+          (v19_invariant_two_step_backtracks T hcoh h01I h12I).symm
+
+
+/--
+No simple forced path can contain five vertices.  Pairwise distinctness of
+the five vertices supplies the three non-backtracking hypotheses needed by
+the four-edge obstruction.
+-/
+theorem v19_no_simple_forced_path_five_vertices
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 x3 x4 : α}
+    (h01 : V19ForcedEdge T x0 x1)
+    (h12 : V19ForcedEdge T x1 x2)
+    (h23 : V19ForcedEdge T x2 x3)
+    (h34 : V19ForcedEdge T x3 x4)
+    (h02 : x0 ≠ x2) (h13 : x1 ≠ x3) (h24 : x2 ≠ x4) : False :=
+  v19_no_nonbacktracking_forced_walk4 T hcoh h01 h12 h23 h34 h02 h13 h24
+
+
+/-!
+## Explicit finite path witnesses
+
+The previous obstruction was stated with four edge hypotheses and only the
+three inequalities needed to rule out immediate backtracking.  We now add
+an explicit predicate for a *simple* five-vertex path, including all
+pairwise distinctness conditions.  This is a first graph-language bridge;
+it is not yet a theorem about connected components.
+-/
+
+/-- A simple forced path on exactly five pairwise distinct vertices. -/
+structure V19SimplePath5 (T : α → α) where
+  x0 : α
+  x1 : α
+  x2 : α
+  x3 : α
+  x4 : α
+  edge01 : V19ForcedEdge T x0 x1
+  edge12 : V19ForcedEdge T x1 x2
+  edge23 : V19ForcedEdge T x2 x3
+  edge34 : V19ForcedEdge T x3 x4
+  distinct01 : x0 ≠ x1
+  distinct02 : x0 ≠ x2
+  distinct03 : x0 ≠ x3
+  distinct04 : x0 ≠ x4
+  distinct12 : x1 ≠ x2
+  distinct13 : x1 ≠ x3
+  distinct14 : x1 ≠ x4
+  distinct23 : x2 ≠ x3
+  distinct24 : x2 ≠ x4
+  distinct34 : x3 ≠ x4
+
+/-- Coherence excludes every simple forced path on five vertices. -/
+theorem v19_no_simple_path5
+    (T : α → α) (hcoh : V19Coherent T)
+    (p : V19SimplePath5 T) : False := by
+  exact v19_no_simple_forced_path_five_vertices T hcoh
+    p.edge01 p.edge12 p.edge23 p.edge34 p.distinct02 p.distinct13 p.distinct24
+
+
+/-!
+## Reachability and connected components
+
+We now give the forced graph an explicit connectivity relation.  Reachability
+is the reflexive transitive closure of forced adjacency, represented by finite
+walks.  This supplies the component notion needed for the later P1--P4
+classification; it does not itself assert that components are paths.
+-/
+
+/-- Finite-walk reachability in the undirected forced graph. -/
+inductive V19Reachable (T : α → α) : α → α → Prop where
+  | refl (x : α) : V19Reachable T x x
+  | tail {x y z : α} :
+      V19Reachable T x y → V19ForcedEdge T y z → V19Reachable T x z
+
+/-- Every vertex belongs to its own forced-graph component. -/
+theorem v19_reachable_refl
+    (T : α → α) (x : α) : V19Reachable T x x :=
+  V19Reachable.refl x
+
+/-- Every forced edge is a one-step reachability witness. -/
+theorem v19_edge_reachable
+    (T : α → α) {x y : α}
+    (hxy : V19ForcedEdge T x y) : V19Reachable T x y :=
+  V19Reachable.tail (V19Reachable.refl x) hxy
+
+/-- Reachability is transitive. -/
+theorem v19_reachable_trans
+    (T : α → α) {x y z : α}
+    (hxy : V19Reachable T x y)
+    (hyz : V19Reachable T y z) : V19Reachable T x z := by
+  induction hyz with
+  | refl => exact hxy
+  | tail hyz hedge ih =>
+      exact V19Reachable.tail ih hedge
+
+/-- Reachability is symmetric because forced edges are symmetric. -/
+theorem v19_reachable_symm
+    (T : α → α) {x y : α}
+    (hxy : V19Reachable T x y) : V19Reachable T y x := by
+  induction hxy with
+  | refl => exact V19Reachable.refl _
+  | tail hxy hedge ih =>
+      exact v19_reachable_trans T
+        (V19Reachable.tail (V19Reachable.refl _)
+          (v19_forced_edge_symm T hedge))
+        ih
+
+/-- The connected component of a root in the forced graph. -/
+def V19Component (T : α → α) (root : α) : α → Prop :=
+  fun x => V19Reachable T root x
+
+/-- Membership in a component is symmetric as a reachability statement. -/
+theorem v19_component_membership_symm
+    (T : α → α) {root x : α}
+    (h : V19Component T root x) : V19Reachable T x root :=
+  v19_reachable_symm T h
+
+/-- Vertices connected to one another have exactly the same component. -/
+theorem v19_component_eq_of_reachable
+    (T : α → α) {x y : α}
+    (hxy : V19Reachable T x y) :
+    V19Component T x = V19Component T y := by
+  funext z
+  apply propext
+  constructor
+  · intro hxz
+    exact v19_reachable_trans T (v19_reachable_symm T hxy) hxz
+  · intro hyz
+    exact v19_reachable_trans T hxy hyz
+
+/-- Two rooted components are equal exactly when their roots are connected. -/
+theorem v19_component_eq_iff_reachable
+    (T : α → α) (x y : α) :
+    V19Component T x = V19Component T y ↔ V19Reachable T x y := by
+  constructor
+  · intro hcomp
+    have hxx : V19Component T x x := V19Reachable.refl x
+    have hyx : V19Component T y x := by
+      rw [← hcomp]
+      exact hxx
+    exact v19_reachable_symm T hyx
+  · exact v19_component_eq_of_reachable T
+
+/-- A vertex belongs to a rooted component exactly when the rooted components
+are equal. -/
+theorem v19_mem_component_iff_component_eq
+    (T : α → α) (root x : α) :
+    V19Component T root x ↔
+      V19Component T root = V19Component T x := by
+  constructor
+  · intro h
+    exact (v19_component_eq_iff_reachable T root x).2 h
+  · intro h
+    exact (v19_component_eq_iff_reachable T root x).1 h
+
+
+/-- A merge edge and an invariant edge cannot join the same distinct pair. -/
+theorem v19_merge_invariant_disjoint
+    (T : α → α) {u v : α}
+    (hm : V19Merge T u v)
+    (hi : V19Invariant T u v) : False := by
+  rcases hi.2 with ⟨hu, hv⟩ | ⟨huv, hvu⟩
+  · apply hm.1
+    calc
+      u = T u := hu.symm
+      _ = T v := hm.2
+      _ = v := hv
+  · apply hm.1
+    calc
+      u = T v := hvu.symm
+      _ = T u := hm.2.symm
+      _ = v := huv
+
+/-- A component contains its root. -/
+theorem v19_root_mem_component
+    (T : α → α) (root : α) :
+    V19Component T root root :=
+  V19Reachable.refl root
+
+/-- A component is closed under every forced edge leaving one of its vertices. -/
+theorem v19_component_adjacent_closed
+    (T : α → α) {root x y : α}
+    (hx : V19Component T root x)
+    (hxy : V19ForcedEdge T x y) :
+    V19Component T root y :=
+  V19Reachable.tail hx hxy
+
+
+/-!
+## Five-cycle obstruction
+
+A simple cycle of length five contains a simple path on five vertices.
+We expose that graph-shaped statement as a named Lean object so later
+arbitrary-cycle arguments can reduce to explicit finite witnesses.
+This theorem is deliberately only the five-cycle case; it does not yet
+define or exclude cycles of arbitrary length.
+-/
+
+/-- A simple forced 5-cycle, with its five vertices and closing edge. -/
+structure V19SimpleCycle5 (T : α → α) where
+  x0 : α
+  x1 : α
+  x2 : α
+  x3 : α
+  x4 : α
+  edge01 : V19ForcedEdge T x0 x1
+  edge12 : V19ForcedEdge T x1 x2
+  edge23 : V19ForcedEdge T x2 x3
+  edge34 : V19ForcedEdge T x3 x4
+  edge40 : V19ForcedEdge T x4 x0
+  distinct01 : x0 ≠ x1
+  distinct02 : x0 ≠ x2
+  distinct03 : x0 ≠ x3
+  distinct04 : x0 ≠ x4
+  distinct12 : x1 ≠ x2
+  distinct13 : x1 ≠ x3
+  distinct14 : x1 ≠ x4
+  distinct23 : x2 ≠ x3
+  distinct24 : x2 ≠ x4
+  distinct34 : x3 ≠ x4
+
+/-- Coherence excludes every simple forced cycle on five vertices. -/
+theorem v19_no_simple_cycle5
+    (T : α → α) (hcoh : V19Coherent T)
+    (c : V19SimpleCycle5 T) : False := by
+  exact v19_no_simple_path5 T hcoh {
+    x0 := c.x0
+    x1 := c.x1
+    x2 := c.x2
+    x3 := c.x3
+    x4 := c.x4
+    edge01 := c.edge01
+    edge12 := c.edge12
+    edge23 := c.edge23
+    edge34 := c.edge34
+    distinct01 := c.distinct01
+    distinct02 := c.distinct02
+    distinct03 := c.distinct03
+    distinct04 := c.distinct04
+    distinct12 := c.distinct12
+    distinct13 := c.distinct13
+    distinct14 := c.distinct14
+    distinct23 := c.distinct23
+    distinct24 := c.distinct24
+    distinct34 := c.distinct34
+  }
+
+
+/-!
+## Arbitrary finite simple cycles
+
+Cycles are indexed by a finite cyclic index type. This avoids a special
+case for each length and makes simplicity an injectivity condition.
+The successor operation is explicit modulo the cycle length.
+-/
+
+/-- Cyclic successor on Fin n, defined when the cycle length is positive. -/
+def V19CycleNext (n : Nat) (hn : 0 < n) (i : Fin n) : Fin n :=
+  ⟨(i.val + 1) % n, Nat.mod_lt _ hn⟩
+
+/--
+A simple forced cycle of arbitrary finite length n ≥ 3.
+The edge predicate includes the closing edge from the final index back to 0.
+-/
+structure V19SimpleCycle (T : α → α) (n : Nat) (hn : 3 ≤ n) where
+  vertex : Fin n → α
+  distinct : ∀ i j : Fin n, vertex i = vertex j → i = j
+  edge : ∀ i : Fin n,
+    V19ForcedEdge T (vertex i) (vertex (V19CycleNext n (by omega) i))
+
+/-- The cycle has an explicit first vertex at index zero. -/
+def V19CycleStart {T : α → α} {n : Nat} {hn : 3 ≤ n}
+    (c : V19SimpleCycle T n hn) : α :=
+  c.vertex ⟨0, by omega⟩
