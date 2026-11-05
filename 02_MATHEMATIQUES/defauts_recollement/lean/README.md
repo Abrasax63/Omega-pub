@@ -45,3 +45,17 @@ Aucune étape ultérieure ne doit être considérée comme acquise tant que son 
 
 
 L'adjacence forcée est maintenant explicitée, mais les composantes connexes ne sont pas encore définies dans Lean : la classification P1–P4 n'est donc pas encore un théorème formalisé.
+
+
+## Connexité et composantes — état vérifié au 5 novembre 2026
+
+Le noyau définit désormais `V19Reachable` comme la relation de marche finie du graphe forcé, puis `V19Component` comme le prédicat des sommets atteignables depuis une racine. Les lemmes de réflexivité, symétrie et transitivité sont compilés. Deux racines sont dans la même composante exactement lorsque leurs prédicats de composante sont égaux (`v19_component_eq_iff_reachable`). La fermeture d'une composante par les arêtes forcées est aussi établie.
+
+La séparation des types d'arêtes est explicite : `v19_merge_invariant_disjoint` prouve qu'une même paire distincte ne peut être à la fois M et I.
+
+Compilation Lean 4.19.0 confirmée :
+- [run #42087598469](https://github.com/Abrasax63/Omega-pub/actions/runs/42087598469) — noyau Lean, SUCCESS ;
+- [run #42087598738](https://github.com/Abrasax63/Omega-pub/actions/runs/42087598738) — chemins et cycles, SUCCESS ;
+- [run #42087804728](https://github.com/Abrasax63/Omega-pub/actions/runs/42087804728) — noyau Lean après disjonction M/I et fermeture des composantes, SUCCESS.
+
+**Frontière de preuve :** les composantes sont maintenant définies et leurs lois élémentaires sont prouvées. Le théorème Lean « chaque composante est P1, P2, P3 ou P4 » n'est toujours pas formalisé. La note primaire V19(2) contient déjà ce théorème mathématique, mais le noyau Lean doit encore reconstruire le passage de la connexité, de la borne de degré et de l'exclusion des cycles à la classification explicite. Le théorème de petit modèle L+2 et la visibilité restent eux aussi hors de la formalisation.
