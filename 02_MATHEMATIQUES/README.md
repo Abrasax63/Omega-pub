@@ -21,7 +21,7 @@ Ces deux fiches sont actuellement publiées avec le statut **EXPÉRIMENTAL** : l
 
 Les résultats CL-DYN-01/02/03/04 et les briques d'observation listées dans [MIGRATION_ETAT.md](MIGRATION_ETAT.md) ne sont pas encore présentés comme fiches publiques complètes. Leur migration attend la récupération et le contrôle des sources primaires.
 
-Les dossiers C4 et les travaux SAT ne sont pas déclarés ici comme résultats certifiés.
+Le pilote C4, L=2 est maintenant documenté comme **CALCUL EXACT sous la définition primaire interne V19(2)** pour les huit classes C4O-00…07. Sa publication reste **EXPÉRIMENTALE** ; originalité bibliographique indéterminée et formalisation Lean non réalisée. Voir [le pilote complet](defauts_recollement/PILOTE_EXTRACTION_C4_L2_2026-11-04.md) et [le raccord primaire](defauts_recollement/RACCORD_PRIMAIRE_V19_C4_L2_2026-11-04.md). Les autres dossiers C4 et les travaux SAT ne sont pas déclarés certifiés.
 
 ## Règles du module
 
@@ -30,3 +30,12 @@ Les dossiers C4 et les travaux SAT ne sont pas déclarés ici comme résultats c
 - Distinguer preuve générale, calcul fini exact, simulation et conjecture.
 - Conserver les réfutations, limites et anciennes versions.
 - Toute fiche doit préciser ses dépendances et la version exacte des résultats qu'elle utilise.
+
+
+## Instruments et extraction de méthodes
+
+- [Bibliothèque des instruments](instruments/README.md)
+- [Registre des instruments](instruments/REGISTRE_INSTRUMENTS.md)
+- [Modèle de fiche d'instrument](instruments/MODELE_INSTRUMENT.md)
+
+Le registre distingue les instruments généraux admis des candidats internes ou externes. Le pilote C4 est un cas interne limité à q=4 et L=2 ; aucune transférabilité générale n'est revendiquée.
