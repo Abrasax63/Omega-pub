@@ -220,7 +220,7 @@ def main(argv: list[str] | None = None) -> int:
             response = {"jsonrpc": "2.0", "id": None,
                         "error": {"code": -32700, "message": str(exc)}}
         if response is not None:
-            sys.stdout.write(json.dumps(response, ensure_ascii=False, separators=(",", ":")) + "\\n")
+            sys.stdout.write(json.dumps(response, ensure_ascii=False, separators=(",", ":")) + "\n")
             sys.stdout.flush()
     return 0
 
