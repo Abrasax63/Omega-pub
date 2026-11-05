@@ -162,18 +162,13 @@ def load_pending_items(root: Path) -> list[dict[str, Any]]:
     path = safe_repo_path(root, REGISTER_PATH)
     if not path or not path.is_file():
         return []
-    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
-    start = next((i for i, line in enumerate(lines)
-                  if "Éléments en attente de migration" in line), None)
-    if start is None:
-        return []
-    section = []
-    for line in lines[start + 1:]:
-        if line.startswith("## "):
-            break
-        section.append(line)
+    content = path.read_text(encoding="utf-8", errors="replace")
     pending = []
-    for _, rows in markdown_tables("\n".join(section)):
+    # Select by the table's explicit schema rather than relying on heading
+    # boundaries; this remains stable if explanatory headings are inserted.
+    for header, rows in markdown_tables(content):
+        if "Identifiants / dossier" not in header:
+            continue
         for row in rows:
             identifier = clean_cell(row.get("Identifiants / dossier", ""))
             if identifier:
