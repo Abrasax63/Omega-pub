@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Omega-pub : bibliothèque publique de recherche, méthode RAVI-2, mathématiques, informatique théorique et calcul scientifique.">
+  <meta name="theme-color" content="#101b2b">
+  <title>Omega-pub — Laboratoire public de recherche</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1220;--panel:#111d2e;--panel2:#16243a;--line:#293b53;--text:#edf3fb;--muted:#b4c2d4;--accent:#82c8ff;--mint:#9de3cf;--max:1120px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#18304a 0,transparent 38%),var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    a{color:var(--accent);text-underline-offset:3px}a:hover{color:#c2e6ff}a:focus-visible{outline:3px solid var(--mint);outline-offset:4px;border-radius:4px}
+    .wrap{width:min(var(--max),calc(100% - 40px));margin:auto}.top{padding:22px 0;border-bottom:1px solid var(--line)}.nav{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.brand{font-weight:750;letter-spacing:.04em;color:var(--text);text-decoration:none}.navlinks{display:flex;gap:18px;flex-wrap:wrap;font-size:.92rem}.navlinks a{color:var(--muted)}
+    .hero{padding:76px 0 62px}.eyebrow{color:var(--mint);font-size:.78rem;font-weight:750;letter-spacing:.16em;text-transform:uppercase}.hero h1{font-size:clamp(2.5rem,7vw,5.2rem);line-height:1.02;letter-spacing:-.055em;max-width:850px;margin:18px 0}.hero p{font-size:clamp(1.08rem,2vw,1.3rem);color:var(--muted);max-width:760px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-block;padding:11px 17px;border:1px solid var(--accent);border-radius:8px;text-decoration:none;font-weight:700}.btn.primary{background:var(--accent);color:#081421}.btn.secondary{border-color:var(--line);color:var(--text)}
+    .notice{border:1px solid #49627b;background:#101e30;border-radius:12px;padding:18px 20px;color:var(--muted);margin:8px 0 54px}.notice strong{color:var(--text)}
+    section{padding:38px 0}.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}.section-head h2{font-size:clamp(1.65rem,3vw,2.3rem);letter-spacing:-.035em;margin:0}.section-head p{margin:0;color:var(--muted);max-width:540px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:13px;padding:21px;min-width:0}.card h3{margin:0 0 7px;font-size:1.12rem}.card p{margin:0 0 14px;color:var(--muted)}.card .kicker{font-size:.76rem;text-transform:uppercase;letter-spacing:.12em;color:var(--mint);font-weight:700}.card a{font-weight:650}
+    .method{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;counter-reset:steps}.step{border-left:2px solid var(--accent);padding:4px 0 4px 16px}.step b{display:block;margin-bottom:4px}.step span{color:var(--muted);font-size:.94rem}
+    .status{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 9px;font-size:.78rem;color:var(--mint);white-space:nowrap}.result{display:flex;justify-content:space-between;gap:18px;align-items:start;padding:16px 0;border-bottom:1px solid var(--line)}.result:last-child{border:0}.result p{margin:3px 0 0;color:var(--muted);font-size:.94rem}
+    .callout{background:#102437;border:1px solid #31536c;border-radius:13px;padding:24px}.callout h2{margin-top:0}.callout p{color:var(--muted)}
+    footer{border-top:1px solid var(--line);margin-top:50px;padding:28px 0 44px;color:var(--muted);font-size:.9rem}.foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+    @media(max-width:700px){.hero{padding:54px 0 42px}.grid,.method{grid-template-columns:1fr}.section-head{display:block}.section-head p{margin-top:8px}.result{display:block}.result .status{margin-top:9px}.wrap{width:min(var(--max),calc(100% - 28px))}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  </style>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="#accueil">OMEGA-PUB</a>
+  <nav class="navlinks" aria-label="Navigation principale">
+    <a href="#recherche">Recherche</a><a href="#methode">Méthode</a><a href="#resultats">Résultats</a><a href="#contribuer">Contribuer</a>
+    <a href="https://github.com/Abrasax63/Omega-pub">Dépôt GitHub ↗</a>
+  </nav>
+</div></header>
+<main id="accueil">
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Bibliothèque scientifique ouverte · Documentation vérifiable</div>
+      <h1>Rendre la recherche<br>examinable.</h1>
+      <p>Omega-pub rassemble des travaux de recherche, leurs méthodes, leurs calculs et leurs objections. Chaque affirmation doit pouvoir être comprise, contrôlée, reproduite — et, si nécessaire, réfutée.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/Abrasax63/Omega-pub/tree/main/00_GOUVERNANCE/INDEX_GLOBAL.md">Consulter l’index des résultats</a>
+        <a class="btn secondary" href="https://github.com/Abrasax63/Omega-pub">Explorer le dépôt source</a>
+      </div>
+    </section>
+    <aside class="notice"><strong>À propos du projet.</strong> Omega-pub est un projet de recherche ouvert porté par ses contributeurs. Il n'est pas présenté comme un laboratoire universitaire ou institutionnel. La présence d'un document ici ne signifie pas qu'il a été évalué par les pairs : le statut et le périmètre de chaque résultat doivent être lus dans sa fiche.</aside>
+
+    <section id="recherche">
+      <div class="section-head"><h2>Huit espaces, un cadre commun</h2><p>Les domaines sont organisés séparément pour éviter les transferts implicites de définitions ou de validation.</p></div>
+      <div class="grid">
+        <article class="card"><div class="kicker">01 · Méthode</div><h3>RAVI-2</h3><p>Protocoles de recherche adversariale, audits, certifications et traçabilité des décisions.</p><a href="https://github.com/Abrasax63/Omega-pub/tree/main/01_RAVI2">Ouvrir le module →</a></article>
+        <article class="card"><div class="kicker">02 · Mathématiques</div><h3>Systèmes dynamiques et observation</h3><p>Travaux sur les systèmes finis, les projections d'observation, les invariants et les défauts de recollement.</p><a href="https://github.com/Abrasax63/Omega-pub/tree/main/02_MATHEMATIQUES">Ouvrir le module →</a></article>
+        <article class="card"><div class="kicker">03 · Informatique théorique</div><h3>SAT et complexité</h3><p>Définitions, réductions, expériences et questions de complexité, avec leurs limites explicites.</p><a href="https://github.com/Abrasax63/Omega-pub/tree/main/03_INFORMATIQUE_THEORIQUE">Ouvrir le module →</a></article>
+        <article class="card"><div class="kicker">04 · Structures</div><h3>CCS</h3><p>Corpus de structures et de résultats propres à cet axe ; aucune équivalence extérieure n'est présupposée.</p><a href="https://github.com/Abrasax63/Omega-pub/tree/main/04_CCS">Ouvrir le module →</a></article>
+        <article class="card"><div class="kicker">05 · Recherche distincte</div><h3>Omega-SRR</h3><p>Définitions, littérature et pistes propres à cet axe, sans rapprochement automatique avec les autres modules.</p><a href="https://github.com/Abrasax63/Omega-pub/tree/main/05_OMEGA_SRR">Ouvrir le module →</a></article>
+        <article class="card"><div class="kicker">06 · Reproductibilité</div><h3>Calcul scientifique</h3><p>Programmes, simulations, données partageables et procédures de reproduction.</p><a href="https://github.com/Abrasax63/Omega-pub/tree/main/06_CALCUL_SCIENTIFIQUE">Ouvrir le module →</a></article>
+        <article class="card"><div class="kicker">07 · Contradiction utile</div><h3>Revues indépendantes</h3><p>Rapports critiques, contre-exemples, objections et réponses documentées.</p><a href="https://github.com/Abrasax63/Omega-pub/tree/main/07_REVUES_INDEPENDANTES">Ouvrir le module →</a></article>
+        <article class="card"><div class="kicker">08 · Mémoire</div><h3>Archives</h3><p>Versions antérieures et dossiers conservés pour maintenir la traçabilité des travaux.</p><a href="https://github.com/Abrasax63/Omega-pub/tree/main/08_ARCHIVES">Ouvrir le module →</a></article>
+      </div>
+    </section>
+
+    <section id="methode">
+      <div class="section-head"><h2>Une méthode qui cherche d'abord ses propres erreurs</h2><p>RAVI-2 organise le travail ; il ne garantit pas automatiquement la vérité d'une conclusion.</p></div>
+      <div class="method">
+        <div class="step"><b>1. Repartir du dernier état vérifié</b><span>Conserver les résultats antérieurs et leurs limites, sans recommencer inutilement.</span></div>
+        <div class="step"><b>2. Choisir le point décisif</b><span>Identifier l'incertitude dont la résolution pourrait le plus changer la conclusion.</span></div>
+        <div class="step"><b>3. Tenter la réfutation</b><span>Tester les cas minimaux, extrêmes et les contre-exemples avant de conclure.</span></div>
+        <div class="step"><b>4. Séparer les niveaux de preuve</b><span>Distinguer preuve, calcul exact, simulation, observation empirique et conjecture.</span></div>
+        <div class="step"><b>5. Vérifier indépendamment</b><span>Reprendre les étapes décisives par une méthode ou un raisonnement distinct.</span></div>
+        <div class="step"><b>6. Garder les traces</b><span>Documenter hypothèses, dépendances, versions, données, code et résultats négatifs.</span></div>
+      </div>
+      <p style="margin-top:20px"><a href="https://github.com/Abrasax63/Omega-pub/blob/main/REVIEW_PROTOCOL.md">Lire le protocole de revue indépendant →</a> · <a href="https://github.com/Abrasax63/Omega-pub/blob/main/ARCHITECTURE.md">Lire l'architecture scientifique →</a></p>
+    </section>
+
+    <section id="resultats">
+      <div class="section-head"><h2>État des résultats documentés</h2><p>Vue issue de l'index du dépôt au 5 novembre 2026. Les statuts ne sont pas requalifiés par cette vitrine.</p></div>
+      <div class="card">
+        <div class="result"><div><strong>BR-R90-01 — Noyaux et période récurrente</strong><p>Mathématiques / Règle 90 · fiche source indiquant « DÉMONTRÉ ».</p></div><span class="status">EXPÉRIMENTAL</span></div>
+        <div class="result"><div><strong>BR-R90-02 — Uniformité Majority–Walsh avant repliement cyclique</strong><p>Mathématiques / Règle 90 · fiche source indiquant « DÉMONTRÉ ».</p></div><span class="status">EXPÉRIMENTAL</span></div>
+        <p style="margin:16px 0 0;color:var(--muted);font-size:.92rem">Important : l'index qualifie actuellement ces deux dossiers de publication expérimentale, leurs audits détaillés restant à joindre. Les autres briques historiques mentionnées dans l'index ne sont pas présentées ici comme résultats migrés ou certifiés.</p>
+      </div>
+      <p><a href="https://github.com/Abrasax63/Omega-pub/blob/main/00_GOUVERNANCE/INDEX_GLOBAL.md">Voir l'index global et ses mises à jour →</a> · <a href="https://github.com/Abrasax63/Omega-pub/blob/main/00_GOUVERNANCE/STATUTS.md">Comprendre les statuts →</a></p>
+    </section>
+
+    <section id="contribuer">
+      <div class="callout">
+        <h2>Une critique argumentée est une contribution.</h2>
+        <p>Vous pouvez demander une clarification, signaler une erreur, proposer un contre-exemple, reproduire un calcul ou apporter une référence bibliographique. Les contributions sont examinées sur leurs arguments, pas sur le prestige de leur auteur ni sur le nombre de réactions.</p>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/Abrasax63/Omega-pub/issues">Poser une question / signaler un problème</a>
+          <a class="btn secondary" href="https://github.com/Abrasax63/Omega-pub/pulls">Consulter ou proposer une correction</a>
+          <a class="btn secondary" href="https://github.com/Abrasax63/Omega-pub/blob/main/00_GOUVERNANCE/GUIDE_LECTURE.md">Guide de lecture</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer><div class="wrap foot"><span>Omega-pub · Projet de recherche ouvert</span><span><a href="https://github.com/Abrasax63/Omega-pub">Code et documents sur GitHub</a> · Site documentaire généré depuis le dépôt</span></div></footer>
+</body>
+</html>
