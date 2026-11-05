@@ -162,14 +162,22 @@ def load_pending_items(root: Path) -> list[dict[str, Any]]:
     path = safe_repo_path(root, REGISTER_PATH)
     if not path or not path.is_file():
         return []
-    content = path.read_text(encoding="utf-8", errors="replace")
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     pending = []
-    # Select by the table's explicit schema rather than relying on heading
-    # boundaries; this remains stable if explanatory headings are inserted.
-    for header, rows in markdown_tables(content):
-        if "Identifiants / dossier" not in header:
+    # Locate this table by its distinctive header, then parse its rows directly.
+    # This avoids coupling retrieval to the surrounding document headings.
+    for i, line in enumerate(lines):
+        if not (line.strip().startswith("|") and "Identifiants / dossier" in line):
             continue
-        for row in rows:
+        header = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        for rowline in lines[i + 2:]:
+            rowline = rowline.strip()
+            if not (rowline.startswith("|") and rowline.endswith("|")):
+                break
+            cells = [cell.strip() for cell in rowline.strip("|").split("|")]
+            if len(cells) != len(header):
+                continue
+            row = dict(zip(header, cells))
             identifier = clean_cell(row.get("Identifiants / dossier", ""))
             if identifier:
                 pending.append({
@@ -181,6 +189,7 @@ def load_pending_items(root: Path) -> list[dict[str, Any]]:
                     "scientific_status_source": "NON ÉTABLI — élément en attente de migration",
                     "source_refs": [{"path": REGISTER_PATH, "kind": "pending_migration_register"}],
                 })
+        break
     return pending
 
 
