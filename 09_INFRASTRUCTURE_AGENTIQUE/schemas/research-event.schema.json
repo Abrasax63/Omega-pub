@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Abrasax63/Omega-pub/blob/main/09_INFRASTRUCTURE_AGENTIQUE/schemas/research-event.schema.json",
+  "title": "Omega-pub Research Event",
+  "description": "Proposition de schéma pour journaliser une activité de recherche ou une intervention agentique. Ce schéma n'est pas encore utilisé par un service en production.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "event_type",
+    "occurred_at",
+    "mission_id",
+    "actor",
+    "inputs",
+    "outputs",
+    "epistemic_space",
+    "execution_status"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifiant stable et unique de l'événement."
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "context_retrieval",
+        "literature_search",
+        "reasoning",
+        "computation",
+        "simulation",
+        "formalization",
+        "review",
+        "counterexample",
+        "proposal",
+        "validation_decision",
+        "publication",
+        "revision"
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "mission_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "actor_type", "role"],
+      "properties": {
+        "actor_id": { "type": "string", "minLength": 1 },
+        "actor_type": {
+          "type": "string",
+          "enum": ["human", "agent", "service", "tool"]
+        },
+        "role": { "type": "string", "minLength": 1 },
+        "provider": { "type": ["string", "null"] },
+        "model_or_tool": { "type": ["string", "null"] },
+        "version": { "type": ["string", "null"] },
+        "configuration_ref": { "type": ["string", "null"] }
+      }
+    },
+    "context_manifest": {
+      "type": ["object", "null"],
+      "properties": {
+        "manifest_id": { "type": "string" },
+        "version": { "type": "string" },
+        "content_hash": { "type": "string" },
+        "retrieved_item_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/reference" }
+    },
+    "outputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/reference" }
+    },
+    "epistemic_space": {
+      "type": "string",
+      "enum": ["certified_internal", "experimental_internal", "external", "mixed"]
+    },
+    "execution_status": {
+      "type": "string",
+      "enum": ["completed", "partial", "failed", "not_executed"]
+    },
+    "independence": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string", "enum": ["independent", "dependent", "unknown", "not_applicable"] },
+        "method": { "type": "string", "enum": ["independent", "dependent", "unknown", "not_applicable"] },
+        "implementation": { "type": "string", "enum": ["independent", "dependent", "unknown", "not_applicable"] },
+        "data": { "type": "string", "enum": ["independent", "dependent", "unknown", "not_applicable"] },
+        "environment": { "type": "string", "enum": ["independent", "dependent", "unknown", "not_applicable"] },
+        "agent": { "type": "string", "enum": ["independent", "dependent", "unknown", "not_applicable"] },
+        "review": { "type": "string", "enum": ["independent", "dependent", "unknown", "not_applicable"] }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "supersedes_event_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "privacy_class": {
+      "type": "string",
+      "enum": ["public", "internal", "private", "restricted"]
+    }
+  },
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_id", "ref_type", "epistemic_space"],
+      "properties": {
+        "ref_id": { "type": "string", "minLength": 1 },
+        "version": { "type": ["string", "null"] },
+        "ref_type": {
+          "type": "string",
+          "enum": [
+            "result",
+            "definition",
+            "source",
+            "document",
+            "code",
+            "dataset",
+            "run",
+            "context_bundle",
+            "agent_artifact",
+            "counterexample",
+            "review"
+          ]
+        },
+        "uri": { "type": ["string", "null"], "format": "uri-reference" },
+        "content_hash": { "type": ["string", "null"] },
+        "locator": { "type": ["string", "null"] },
+        "epistemic_space": {
+          "type": "string",
+          "enum": ["certified_internal", "experimental_internal", "external"]
+        },
+        "scientific_status": {
+          "type": ["string", "null"],
+          "enum": [
+            "DÉMONTRÉ",
+            "CALCUL EXACT",
+            "SIMULÉ",
+            "EMPIRIQUE",
+            "CONJECTURÉ",
+            "RÉFUTÉ",
+            "INDÉTERMINÉ",
+            "À RÉEXAMINER",
+            null
+          ]
+        },
+        "publication_status": {
+          "type": ["string", "null"],
+          "enum": ["PUBLIC", "EXPÉRIMENTAL", "PRIVÉ", "ARCHIVÉ", null]
+        }
+      }
+    }
+  }
+}
