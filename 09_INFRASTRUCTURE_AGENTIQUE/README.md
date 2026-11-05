@@ -46,6 +46,10 @@ Ce document décrit une architecture cible. Il ne prétend pas qu'un moteur de c
 6. Les propositions sont soumises au processus de validation RAVI-2.
 7. Après décision documentée, le référentiel est mis à jour ; les versions antérieures restent traçables.
 
+## Prototype exécutable initial
+
+Le sous-dossier [`prototype/`](prototype/) contient un premier moteur RCE local en lecture seule, son mode d'emploi, des tests unitaires et un exemple de mission. Il lit les index existants, sépare les fiches présentes des dossiers en attente, recherche des extraits traçables et prépare un contexte adapté à cinq rôles d'agents. Cette version ne fait pas encore de recherche web, de recherche sémantique ni d'orchestration de modèles. Son exécution par CI est configurée dans `.github/workflows/rce-prototype.yml` ; tant que le workflow n'a pas rendu de résultat, les tests ne sont pas déclarés réussis.
+
 ## Documents du module
 
 - [Contrat du moteur de contexte](CONTRAT_CONTEXT_ENGINE.md)
