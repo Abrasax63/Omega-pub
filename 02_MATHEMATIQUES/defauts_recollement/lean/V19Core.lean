@@ -537,3 +537,35 @@ theorem v19_mem_component_iff_component_eq
     exact (v19_component_eq_iff_reachable T root x).2 h
   · intro h
     exact (v19_component_eq_iff_reachable T root x).1 h
+
+
+/-- A merge edge and an invariant edge cannot join the same distinct pair. -/
+theorem v19_merge_invariant_disjoint
+    (T : α → α) {u v : α}
+    (hm : V19Merge T u v)
+    (hi : V19Invariant T u v) : False := by
+  rcases hi.2 with ⟨hu, hv⟩ | ⟨huv, hvu⟩
+  · apply hm.1
+    calc
+      u = T u := hu.symm
+      _ = T v := hm.2
+      _ = v := hv
+  · apply hm.1
+    calc
+      u = T v := hvu.symm
+      _ = T u := hm.2.symm
+      _ = v := huv
+
+/-- A component contains its root. -/
+theorem v19_root_mem_component
+    (T : α → α) (root : α) :
+    V19Component T root root :=
+  V19Reachable.refl root
+
+/-- A component is closed under every forced edge leaving one of its vertices. -/
+theorem v19_component_adjacent_closed
+    (T : α → α) {root x y : α}
+    (hx : V19Component T root x)
+    (hxy : V19ForcedEdge T x y) :
+    V19Component T root y :=
+  V19Reachable.tail hx hxy
