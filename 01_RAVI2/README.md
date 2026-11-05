@@ -12,3 +12,13 @@ Aucun certificat n'est déclaré par la seule création de ce module.
 - [Index global des résultats](../00_GOUVERNANCE/INDEX_GLOBAL.md)
 - [Référentiel des statuts](../00_GOUVERNANCE/STATUTS.md)
 - [Modèle de fiche de résultat](../templates/RESULTAT.md)
+
+
+## Extraction et réutilisation des méthodes
+
+- [Protocole d'extraction RAVI-2](PROTOCOLE_EXTRACTION_METHODES.md)
+- [Module pilote d'extraction](03_EXTRACTION_METHODES/README.md)
+
+Le protocole distingue publication, énoncé, preuve, instrument, application et certification. Un instrument extrait n'est pas automatiquement nouveau, correct, formalisé ou transférable.
+
+Le cas C4, L=2 est un pilote interne documenté dans le module mathématique. Il ne constitue pas une extraction démontrée depuis le corpus externe OpenAI.
