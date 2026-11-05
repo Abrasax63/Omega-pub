@@ -649,7 +649,7 @@ The edge predicate includes the closing edge from the final index back to 0.
 -/
 structure V19SimpleCycle (T : α → α) (n : Nat) (hn : 3 ≤ n) where
   vertex : Fin n → α
-  distinct : Function.Injective vertex
+  distinct : ∀ i j : Fin n, vertex i = vertex j → i = j
   edge : ∀ i : Fin n,
     V19ForcedEdge T (vertex i) (vertex (V19CycleNext n (by omega) i))
 
