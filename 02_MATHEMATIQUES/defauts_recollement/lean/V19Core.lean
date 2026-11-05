@@ -344,5 +344,5 @@ theorem v19_no_forced_simple_cycle4
     (h30 : V19ForcedEdge T x3 x0)
     (h02 : x0 ≠ x2) (h13 : x1 ≠ x3) : False := by
   apply v19_no_nonbacktracking_forced_walk4 T hcoh h01 h12 h23
-    (v19_forced_edge_symm T h30) h02 h13
+    h30 h02 h13
   exact h02.symm
