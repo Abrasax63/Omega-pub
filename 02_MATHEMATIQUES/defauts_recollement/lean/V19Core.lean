@@ -3,9 +3,10 @@ import Lean
 /-
 V19 locality — Lean formalization, first kernel.
 
-This file formalizes only the elementary matching consequence for merge edges.
-It does NOT formalize the invariant-edge matching lemma, the P1--P4 component
-classification, the visibility lemma, or the L+2 shadow theorem.
+This file formalizes both edge matchings, the periodic endpoints of invariant
+edges, and a local obstruction to alternating forced chains of four edges.
+The full P1--P4 component classification, visibility lemma, and L+2 shadow
+theorem are not yet formalized.
 
 Compile from this directory with:
   lean V19Core.lean
