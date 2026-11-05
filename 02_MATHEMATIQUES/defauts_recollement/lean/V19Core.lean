@@ -263,14 +263,16 @@ theorem v19_no_three_forced_neighbors
     (hxz : V19ForcedEdge T x z)
     (hxw : V19ForcedEdge T x w)
     (hyz : y ≠ z) (hyw : y ≠ w) (hzw : z ≠ w) : False := by
-  rcases hxy with hxyM | hxyI <;>
-  rcases hxz with hxzM | hxzI <;>
-  rcases hxw with hxwM | hxwI
-  · exact hyz (v19_merge_neighbors_eq T hcoh hxyM hxzM)
-  · exact hyw (v19_merge_neighbors_eq T hcoh hxyM hxwI)
-  · exact hyz (v19_invariant_neighbors_eq T hcoh hxyI hxzM)
-  · exact hyw (v19_invariant_neighbors_eq T hcoh hxyI hxwI)
-  · exact hyz (v19_merge_neighbors_eq T hcoh hxzM hxyM)
-  · exact hzw (v19_merge_neighbors_eq T hcoh hxzM hxwI)
-  · exact hyz (v19_invariant_neighbors_eq T hcoh hxzI hxyM)
-  · exact hzw (v19_invariant_neighbors_eq T hcoh hxzI hxwI)
+  rcases hxy with hxyM | hxyI
+  · rcases hxz with hxzM | hxzI
+    · exact hyz (v19_merge_neighbors_eq T hcoh hxyM hxzM)
+    · rcases hxw with hxwM | hxwI
+      · exact hyw (v19_merge_neighbors_eq T hcoh hxyM hxwM)
+      · exact hzw (v19_invariant_neighbors_eq T hcoh hxzI hxwI)
+  · rcases hxz with hxzM | hxzI
+    · rcases hxw with hxwM | hxwI
+      · exact hyw (v19_merge_neighbors_eq T hcoh hxzM hxwM)
+      · exact hyz (v19_invariant_neighbors_eq T hcoh hxyI hxwI)
+    · rcases hxw with hxwM | hxwI
+      · exact hzw (v19_invariant_neighbors_eq T hcoh hxzI hxwI)
+      · exact hyz (v19_invariant_neighbors_eq T hcoh hxyI hxzI)
