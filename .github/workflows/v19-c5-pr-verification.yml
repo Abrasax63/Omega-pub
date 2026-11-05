@@ -1,0 +1,45 @@
+name: V19 C5 L3 — verification de la branche de consolidation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "research/code/audit_v19_c5_independent_2026-11-04.py"
+      - "research/data/v19_c5/**"
+      - ".github/workflows/v19-c5-pr-verification.yml"
+  push:
+    branches:
+      - maintenance/reconciliation-bibliotheque-2026-11-05
+    paths:
+      - "research/code/audit_v19_c5_independent_2026-11-04.py"
+      - "research/data/v19_c5/**"
+      - ".github/workflows/v19-c5-pr-verification.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  reproduce-and-compare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Execute independent audit
+        run: python research/code/audit_v19_c5_independent_2026-11-04.py
+      - name: Compare regenerated CSVs with committed exports
+        run: |
+          git diff --exit-code -- \
+            research/data/v19_c5/V19_PAIR_WITNESSES_C5O14_REPAIRED_2026-11-04.csv \
+            research/data/v19_c5/V19_TRIPLE_WITNESSES_D5_13_REPAIRED_2026-11-04.csv \
+            research/data/v19_c5/V19_TRIPLE_WITNESSES_C5O14_U42_2026-11-04.csv
+      - name: Upload regenerated detailed report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v19-c5-regenerated-report
+          path: research/data/v19_c5/AUDIT_V19_C5_INDEPENDENT_2026-11-04.json
+          if-no-files-found: warn
