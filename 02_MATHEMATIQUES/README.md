@@ -39,3 +39,12 @@ Le pilote C4, L=2 est maintenant documenté comme **CALCUL EXACT sous la défini
 - [Modèle de fiche d'instrument](instruments/MODELE_INSTRUMENT.md)
 
 Le registre distingue les instruments généraux admis des candidats internes ou externes. Le pilote C4 est un cas interne limité à q=4 et L=2 ; aucune transférabilité générale n'est revendiquée.
+
+
+## Instruments et extraction de méthodes
+
+- [Bibliothèque des instruments](instruments/README.md)
+- [Registre des instruments](instruments/REGISTRE_INSTRUMENTS.md)
+- [Modèle de fiche d'instrument](instruments/MODELE_INSTRUMENT.md)
+
+Le registre distingue les instruments généraux admis des candidats internes ou externes. Le pilote C4 est un cas interne limité à q=4 et L=2 ; aucune transférabilité générale n'est revendiquée.
