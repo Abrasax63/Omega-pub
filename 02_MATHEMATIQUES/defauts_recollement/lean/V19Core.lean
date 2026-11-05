@@ -195,3 +195,44 @@ theorem v19_no_alternating_IMIM
   have h1Periodic := (v19_invariant_endpoints_core_periodic T h01).2
   have h2Periodic := (v19_invariant_endpoints_core_periodic T h23).1
   exact v19_merge_not_both_core_periodic T h12 h1Periodic h2Periodic
+
+
+/--
+The undirected forced-constraint graph: an edge is either a merge edge M
+or an invariant edge I. The disjunction retains the edge type.
+-/
+def V19ForcedEdge (T : α → α) (u v : α) : Prop :=
+  V19Merge T u v ∨ V19Invariant T u v
+
+/-- Forced edges are symmetric, so they define an undirected graph. -/
+theorem v19_forced_edge_symm
+    (T : α → α) {u v : α}
+    (h : V19ForcedEdge T u v) : V19ForcedEdge T v u := by
+  rcases h with hM | hI
+  · exact Or.inl ⟨hM.1.symm, hM.2.symm⟩
+  · rcases hI.2 with ⟨hu, hv⟩ | ⟨huv, hvu⟩
+    · exact Or.inr ⟨hI.1.symm, Or.inl ⟨hv, hu⟩⟩
+    · exact Or.inr ⟨hI.1.symm, Or.inr ⟨hvu, huv⟩⟩
+
+/--
+A length-four alternating forced chain. Its two possible orientations are
+listed explicitly so the predicate does not hide the M/I edge labels.
+-/
+def V19AlternatingChain4 (T : α → α) : Prop :=
+  (∃ x0 x1 x2 x3 x4,
+    V19Merge T x0 x1 ∧ V19Invariant T x1 x2 ∧
+    V19Merge T x2 x3 ∧ V19Invariant T x3 x4) ∨
+  (∃ x0 x1 x2 x3 x4,
+    V19Invariant T x0 x1 ∧ V19Merge T x1 x2 ∧
+    V19Invariant T x2 x3 ∧ V19Merge T x3 x4)
+
+/-- No coherent forced-constraint graph contains an alternating chain
+of four edges. -/
+theorem v19_no_forced_alternating_chain4
+    (T : α → α) (hcoh : V19Coherent T) :
+    ¬ V19AlternatingChain4 T := by
+  intro h
+  rcases h with ⟨x0, x1, x2, x3, x4, h01, h12, h23, h34⟩ |
+                ⟨x0, x1, x2, x3, x4, h01, h12, h23, h34⟩
+  · exact v19_no_alternating_MIMI T h01 h12 h23 h34
+  · exact v19_no_alternating_IMIM T h01 h12 h23 h34
