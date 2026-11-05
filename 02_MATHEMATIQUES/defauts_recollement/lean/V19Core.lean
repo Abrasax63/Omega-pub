@@ -276,3 +276,73 @@ theorem v19_no_three_forced_neighbors
     · rcases hxw with hxwM | hxwI
       · exact hyz (v19_invariant_neighbors_eq T hcoh hxyI hxzI)
       · exact hzw (v19_invariant_neighbors_eq T hcoh hxzI hxwI)
+
+
+/-!
+## Four-edge path and 4-cycle consequences
+
+The matching lemmas imply that two consecutive edges of the same type
+must immediately backtrack.  We make this consequence explicit, then
+exclude every non-backtracking forced walk of four edges and, in
+particular, every simple forced 4-cycle.
+-/
+
+/-- Two consecutive merge edges immediately backtrack. -/
+theorem v19_merge_two_step_backtracks
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 : α}
+    (h01 : V19Merge T x0 x1)
+    (h12 : V19Merge T x1 x2) : x0 = x2 := by
+  have h10 : V19Merge T x1 x0 := ⟨h01.1.symm, h01.2.symm⟩
+  exact v19_merge_matching T hcoh h10 h12
+
+/-- Two consecutive invariant edges immediately backtrack. -/
+theorem v19_invariant_two_step_backtracks
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 : α}
+    (h01 : V19Invariant T x0 x1)
+    (h12 : V19Invariant T x1 x2) : x0 = x2 := by
+  have h10 : V19Invariant T x1 x0 := by
+    rcases h01.2 with ⟨h0, h1⟩ | ⟨h01', h10'⟩
+    · exact ⟨h01.1.symm, Or.inl ⟨h1, h0⟩⟩
+    · exact ⟨h01.1.symm, Or.inr ⟨h10', h01'⟩⟩
+  exact v19_invariant_matching T hcoh h10 h12
+
+/-- A forced four-edge walk with no immediate backtracking is impossible.
+The three inequalities are exactly the non-backtracking conditions. -/
+theorem v19_no_nonbacktracking_forced_walk4
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 x3 x4 : α}
+    (h01 : V19ForcedEdge T x0 x1)
+    (h12 : V19ForcedEdge T x1 x2)
+    (h23 : V19ForcedEdge T x2 x3)
+    (h34 : V19ForcedEdge T x3 x4)
+    (h02 : x0 ≠ x2) (h13 : x1 ≠ x3) (h24 : x2 ≠ x4) : False := by
+  rcases h01 with h01M | h01I
+  · rcases h12 with h12M | h12I
+    · exact h02 (v19_merge_two_step_backtracks T hcoh h01M h12M)
+    · rcases h23 with h23M | h23I
+      · rcases h34 with h34M | h34I
+        · exact h24 (v19_merge_two_step_backtracks T hcoh h23M h34M)
+        · exact v19_no_alternating_MIMI T h01M h12I h23M h34I
+      · exact h13 (v19_invariant_two_step_backtracks T hcoh h12I h23I)
+  · rcases h12 with h12M | h12I
+    · rcases h23 with h23M | h23I
+      · exact h13 (v19_merge_two_step_backtracks T hcoh h12M h23M)
+      · rcases h34 with h34M | h34I
+        · exact v19_no_alternating_IMIM T h01I h12M h23I h34M
+        · exact h24 (v19_invariant_two_step_backtracks T hcoh h23I h34I)
+    · exact h02 (v19_invariant_two_step_backtracks T hcoh h01I h12I)
+
+/-- A simple forced 4-cycle is impossible. -/
+theorem v19_no_forced_simple_cycle4
+    (T : α → α) (hcoh : V19Coherent T)
+    {x0 x1 x2 x3 : α}
+    (h01 : V19ForcedEdge T x0 x1)
+    (h12 : V19ForcedEdge T x1 x2)
+    (h23 : V19ForcedEdge T x2 x3)
+    (h30 : V19ForcedEdge T x3 x0)
+    (h02 : x0 ≠ x2) (h13 : x1 ≠ x3) : False := by
+  apply v19_no_nonbacktracking_forced_walk4 T hcoh h01 h12 h23
+    (v19_forced_edge_symm T h30) h02 h13
+  exact h02.symm
