@@ -22,7 +22,7 @@ La revue de Ying Xie examine 38 familles sur les 372 familles initiales. Elle pr
 ### OPENAI-INST-112 — restriction signée indépendante du nombre de clauses
 
 **Source secondaire précise :** Ying Xie, §9.3.2, famille 112, notamment Lemma 3.1 et Lemma 4.1.  
-**Source primaire repérée :** *Beyond the Square-Root Exponent for Depth-Three Boolean Circuits*.  
+**Source primaire repérée :** *Beyond the Square-Root Exponent for Depth-Three Boolean Circuits* — https://github.com/openai/math/blob/main/preprints/Beyond-the-Square-Root-Exponent-for-Depth-Three-Boolean-Circuits-September-23-2026/main.pdf.  
 **Formalisation annoncée :** https://github.com/openai/math/blob/main/lean/docs/112.md
 
 **Instrument extrait.** Une expansion signée d'une CNF sous restriction aléatoire est réécrite comme mélange de termes pondérés positivement, chacun associé à l'espérance d'une CNF de largeur bornée. Une identité de mélange marqueur/ordre aléatoire normalise les indices de clauses violées et élimine la dépendance explicite au nombre de clauses dans la borne de corrélation rapportée.
