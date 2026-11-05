@@ -6,11 +6,9 @@ Statut : **RACCORD SÉMANTIQUE VÉRIFIÉ SUR LA SOURCE PRIMAIRE INTERNE** ; rés
 
 ## 1. Retrouvaille documentaire
 
-La note primaire n'était pas absente. Elle se trouve à :
+La note primaire n'était pas absente. Elle a été retrouvée dans la Library, puis restaurée sans modification de contenu dans le dépôt public : [NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE_2.md](sources/V19/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE_2.md).
 
-`/Recherche/02_PROGRAMMES_ACTIFS/Observabilite/Notes/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE(2).md`
-
-Identifiant : `file_0000000018ec8211b9fee091c47e349f`. Document daté du 25 septembre 2026, 359 lignes, récupéré intégralement le 4 novembre.
+Source d'origine : `/Recherche/02_PROGRAMMES_ACTIFS/Observabilite/Notes/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE(2).md` ; identifiant Library : `file_0000000018ec8211b9fee091c47e349f`. Document daté du 25 septembre 2026, 359 lignes. Git blob SHA-1 sur la branche historique : `a76d304c31d0858f625cda89ac9bc1b98a937022`.
 
 L'audit de bibliothèque du 14 octobre indiquait déjà une lecture partielle de ses lignes 1–120. La reprise a lu le document complet, notamment les sections 2 à 4. L'ancien rapport de quotients affirmait à tort que la version (2) n'avait pas été retrouvée ; cette affirmation est corrigée.
 
