@@ -104,3 +104,14 @@ Ordre des lots : sources primaires CL-DYN/CL-H/CL-OBSINF/CL-REFL/CL-HO ; cartes 
 ## 10. Limites
 
 Cet audit utilise les arbres GitHub et les rapports déjà présents sur la branche historique. Il ne constitue pas une lecture intégrale des 226 contenus, une revue mathématique tierce, un audit exhaustif de secrets ni un rejeu de tous les scripts. Les éléments non lus ou non rejoués restent non vérifiés.
+
+
+## 11. Complément — intégration V19 C5, L=3 (5 novembre 2026)
+
+Le dossier indépendant C5, L=3 a été transféré depuis la branche historique vers `02_MATHEMATIQUES/v19_c5/` et `research/data/v19_c5/`, avec son script sous `research/code/`. Le transfert conserve les fichiers historiques et les exports réparés ; il n'écrase aucune source.
+
+La comparaison des témoins triples D5 confirme 455 lignes dans chaque export, 429 lignes inchangées et 26 modifiées ; les changements portent sur `pair_b` (25) et `pair_c` (3). Les témoins de paires simples ont 2 réparations sur 105. Le rapport source annonce 13 classes D5, 14 classes C5 orientées, une séparation chirale D5-06 → C5O-06/C5O-09, 455/560 combinaisons orientées couvertes par les triples D5, et un témoin U42 à 42 états qui vérifie les 560 triples orientés.
+
+Une anomalie de migration a été détectée : le JSON détaillé de la branche source est tronqué et invalide. Il n'a pas été recopié comme rapport valide ; un résumé JSON distinct est conservé. Le script a été corrigé pour déposer son JSON détaillé dans `research/data/v19_c5/`, conformément au README. **La commande n'a pas été rejouée sur la tête actuelle de la PR** pendant cette opération.
+
+Ce dossier ne redémontre pas le lemme général de localité V19, ne revendique aucune généralisation à d'autres q ou L, et reste expérimental. Originalité bibliographique : INDÉTERMINÉE ; Lean : NON RÉALISÉ.
