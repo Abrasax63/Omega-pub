@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - "maintenance/**"
     paths:
       - "02_MATHEMATIQUES/defauts_recollement/lean/**"
       - ".github/workflows/v19-lean-core.yml"
