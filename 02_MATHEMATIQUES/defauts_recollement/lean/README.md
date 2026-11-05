@@ -21,7 +21,7 @@ Le workflow [V19 Lean core](https://github.com/Abrasax63/Omega-pub/actions/workf
 Première compilation réussie du noyau initial :
 [GitHub Actions — run 42075241015](https://github.com/Abrasax63/Omega-pub/actions/runs/42075241015).
 
-Les ajouts ultérieurs sur les extrémités périodiques et les chaînes alternées doivent encore passer cette compilation avant d'être considérés comme vérifiés.
+La compilation complète du fichier, incluant les lemmes sur I, les extrémités périodiques et les chaînes alternées, a réussi : [GitHub Actions — run 42076029405](https://github.com/Abrasax63/Omega-pub/actions/runs/42076029405).
 
 ## Ce qui reste à formaliser
 
@@ -31,6 +31,6 @@ Les ajouts ultérieurs sur les extrémités périodiques et les chaînes altern�
 - l'extension des branches pendantes sans ancrage ;
 - l'égalité des projections de colorations sur B, donc l'égalité des ombres globale et locale.
 
-**Statut :** noyau initial compilé ; extension matching I / périodicité / chaînes de quatre arêtes écrite mais compilation à confirmer ; théorème général L+2 non formalisé et non certifié.
+**Statut :** matching M et I, périodicité des extrémités I et obstruction aux chaînes alternées de quatre arêtes compilés sous Lean 4.19. La classification globale P1–P4 et le théorème général L+2 restent non formalisés et non certifiés.
 
 Aucune étape ultérieure ne doit être considérée comme acquise tant que son théorème Lean compilé n'est pas présent.
