@@ -18,7 +18,7 @@ Le cas choisi est le dossier C4, L=2 : réalisation des huit classes d'ombres C4
 - `RESULTATS_C4_L2_CLASSES_2026-10-27.md` : catalogue local de huit classes.
 - `AUDIT_V19_C4_L2_REPRISE_2026-10-28.md` : témoin à neuf états et énumération exhaustive jusqu'à huit états.
 - `CERTIFICAT_CONDITIONNEL_V19_C4_L2_2026-10-28.md` : spécification opérationnelle et portée conditionnelle.
-- `NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE(2).md` : source primaire interne du critère singleton, du graphe forcé P1–P4 et du théorème de petit modèle L+2. Fichier de 359 lignes, récupéré intégralement et relu le 2026-11-04.
+- [Note primaire V19(2)](sources/V19/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE_2.md) : source interne du critère singleton, du graphe forcé P1–P4 et du théorème de petit modèle L+2. Fichier de 359 lignes, restauré sans modification de contenu depuis la branche historique PR #2 et relu intégralement le 2026-11-04.
 - `verify_c4_l2_9state.py` : vérificateur indépendant utilisant les préfixes jusqu'au temps 4.
 
 L'audit du 14 octobre indiquait déjà une lecture partielle (lignes 1–120) de la note V19(2). La reprise du 4 novembre a retrouvé le fichier complet et fermé explicitement le raccord C4, L=2. Voir `RACCORD_PRIMAIRE_V19_C4_L2_2026-11-04.md`.
