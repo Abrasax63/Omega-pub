@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-04",
+  "document_type": "summary_of_independent_finite_computational_audit",
+  "source_branch": "migration/ravi2-ccs-public-2026-11-04",
+  "local_catalogue": {
+    "canonical_diagrams": 3341,
+    "proper_diagrams": 510,
+    "D5_classes": 13,
+    "C5_rotation_classes": 14,
+    "unique_chiral_split": [
+      "D5-06"
+    ],
+    "chiral_C5_classes": [
+      "C5O-06",
+      "C5O-09"
+    ],
+    "scope": "Finite catalogue only; universal L+2 reduction relies on primary V19 locality lemma, not reproved here."
+  },
+  "archived_pairs": {
+    "rows": 105,
+    "duplicate_pair_rows_repaired": 2,
+    "all_repaired_pairs_distinct": true
+  },
+  "archived_D5_triples": {
+    "rows": 455,
+    "modified_rows": 26,
+    "unchanged_rows": 429,
+    "pair_b_modifications": 25,
+    "pair_c_modifications": 3,
+    "all_three_pairs_distinct_after_repair": true,
+    "oriented_coverage": 455,
+    "total_oriented_multisets": 560,
+    "missing": 105,
+    "all_missing_contain": "C5O-09"
+  },
+  "U42": {
+    "states": 42,
+    "unordered_state_pairs_examined": 861,
+    "proper_shadow_pairs": 680,
+    "minimum_witnesses_per_oriented_class": 10,
+    "oriented_triples_constructed": 560,
+    "all_560_reported_verified_by_source_script": true
+  },
+  "limitations": [
+    "The primary V19 locality lemma is not reproved line-by-line.",
+    "No generalization to other q or L is established.",
+    "Bibliographic originality is undetermined.",
+    "Lean formalization not performed."
+  ],
+  "source_json_integrity": {
+    "status": "INVALID_TRUNCATED",
+    "source_file": "AUDIT_V19_C5_INDEPENDENT_2026-11-04.json",
+    "source_branch": "migration/ravi2-ccs-public-2026-11-04",
+    "handling": "Not copied as a valid report; this summary is a separate valid JSON artifact."
+  },
+  "publication_status": "EXPERIMENTAL"
+}
