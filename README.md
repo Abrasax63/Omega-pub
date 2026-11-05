@@ -103,8 +103,8 @@ Vous pouvez notamment demander une définition ou une clarification, signaler un
 
 **Pour commencer :**
 1. Consultez le [protocole de revue](REVIEW_PROTOCOL.md).
-2. Ouvrez une [discussion ou une question dans les Issues](../../issues).
-3. Pour une correction documentée, proposez une [Pull Request](../../pulls).
+2. Ouvrez une [discussion ou une question dans les Issues](https://github.com/Abrasax63/Omega-pub/issues).
+3. Pour une correction documentée, proposez une [Pull Request](https://github.com/Abrasax63/Omega-pub/pulls).
 4. Indiquez toujours le fichier, la version et l'énoncé précis que vous examinez.
 
 Les contributions peuvent être rédigées en français ou en anglais. Les échanges doivent rester argumentés, respectueux et vérifiables.
