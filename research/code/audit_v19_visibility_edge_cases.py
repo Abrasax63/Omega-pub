@@ -92,7 +92,7 @@ def run():
     witnesses={}
     for q in range(3,7):
         base=tuple((i+1)%q for i in range(q))
-        for n in range(q,q+4):
+        for n in range(q,q+5):
             for tail in product(range(n),repeat=n-q):
                 T=base+tail; totals["extensions"]+=1
                 E=forced(T)
@@ -130,7 +130,7 @@ def run():
                                 key="equalities_cross_forced_components"; totals[key]+=1
                                 witnesses.setdefault(key,(q,n,T,L,pair,(a,b),cid[a],cid[b]))
                             a,b=T[a],T[b]
-    assert totals["extensions"]==2000, totals
+    assert totals["extensions"]==4258, totals
     assert totals["coherent"]==1582, totals
     assert totals["comparisons"]==173680, totals
     for k in ("P4_both_leaves_anchors","fixed_I_exactly_one_visible","equalities_cross_forced_components"):
