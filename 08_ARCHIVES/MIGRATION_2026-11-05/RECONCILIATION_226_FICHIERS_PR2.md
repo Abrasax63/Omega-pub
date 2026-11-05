@@ -23,7 +23,7 @@
 | DOUBLON OU ARCHIVE | 38 |
 | **Total** | **226** |
 
-**Important :** les statuts ci-dessous sont des statuts de migration documentaire. Ils ne modifient aucun statut scientifique. Pour les 183 fichiers « À TRANSFÉRER », l'absence de transfert est établie par l'arbre Git comparé ; leur contenu n'a pas tous été lu. Le statut ne préjuge ni de leur qualité ni de leur autorisation de publication.
+**Important :** les statuts ci-dessous sont des statuts de migration documentaire. Ils ne modifient aucun statut scientifique. Pour les 183 fichiers « À TRANSFÉRER », aucun chemin de destination ou rapprochement de contenu n'a été établi pour ces entrées dans les contrôles effectués ; leur contenu n'a pas tous été lu. Le statut ne préjuge ni de leur qualité ni de leur autorisation de publication.
 
 ## Registre exhaustif
 
