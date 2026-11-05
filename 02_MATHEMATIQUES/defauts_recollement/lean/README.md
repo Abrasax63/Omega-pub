@@ -6,7 +6,7 @@ Le fichier `V19Core.lean` est autonome (Lean 4, sans Mathlib) et contient :
 
 - `V19Merge` et `V19Invariant`, les deux relations d'arêtes forcées ;
 - `V19Coherent`, la cohérence exprimée par une coloration binaire séparant les extrémités de toute arête forcée ;
-- `v19_merge_matching` et `v19_no_three_preimages) : les arêtes de fusion forment un matching, et trois états distincts ne peuvent avoir la même image ;
+- `v19_merge_matching` et `v19_no_three_preimages` : les arêtes de fusion forment un matching, et trois états distincts ne peuvent avoir la même image ;
 - `v19_invariant_matching` : les arêtes d'invariance forment également un matching ;
 - `V19CorePeriodic` et `v19_invariant_endpoints_core_periodic` : chaque extrémité d'une arête I est un point fixe ou appartient à un 2-cycle ;
 - `v19_merge_not_both_core_periodic` : une arête M ne peut relier deux états fixes/2-périodiques distincts ;
