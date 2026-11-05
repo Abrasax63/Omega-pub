@@ -303,3 +303,16 @@ La nouvelle version a été compilée avec succès sous Lean 4.19.0 par GitHub A
 **Portée exacte :** l'adjacence forcée est maintenant explicite et symétrique, et l'obstruction aux chaînes alternées est réunie sous un théorème unique. Cela ne formalise toujours pas les composantes connexes, leur classification P1–P4, la visibilité des chemins entre ancrages, l'extension des branches pendantes, ni l'égalité des ombres jusqu'à L+2.
 
 **Statut :** graphe forcé élémentaire et obstruction aux chaînes alternées : **COMPILÉS**. Classification P1–P4 et théorème général L+2 : **NON FORMALISÉS / À RÉEXAMINER**.
+
+
+## 13. Borne de degré du graphe forcé — 5 novembre 2026
+
+Le noyau Lean contient maintenant les lemmes `v19_merge_neighbors_eq` et `v19_invariant_neighbors_eq`, qui expriment que chaque sommet possède au plus un voisin de type M et au plus un voisin de type I. Le théorème `v19_no_three_forced_neighbors` en déduit qu'aucun sommet ne peut avoir trois voisins forcés deux à deux distincts.
+
+La preuve effectue le partage exhaustif des trois étiquettes incidentes M/I : parmi trois arêtes, deux ont nécessairement le même type ; le lemme de matching correspondant identifie alors leurs extrémités, en contradiction avec leur distinction.
+
+Compilation vérifiée sous Lean 4.19.0 : [GitHub Actions run 42079365572](https://github.com/Abrasax63/Omega-pub/actions/runs/42079365572), job `lean-core`, étape `Compile V19 core` : SUCCESS.
+
+**Portée exacte :** le graphe forcé a un degré au plus deux au sens où il ne peut exister trois voisins distincts d'un même sommet. Cette borne ne suffit pas à classifier ses composantes : il reste à formaliser les chemins, la connexité, l'exclusion générale des cycles et la réduction à P1–P4. La visibilité et l'égalité des ombres jusqu'à L+2 restent hors du noyau.
+
+**Statut :** borne de degré au plus deux : **COMPILÉE / DÉMONTRÉE DANS LE NOYAU LEAN**. Classification P1–P4 : **NON FORMALISÉE**. Théorème général L+2 : **À RÉEXAMINER**.
