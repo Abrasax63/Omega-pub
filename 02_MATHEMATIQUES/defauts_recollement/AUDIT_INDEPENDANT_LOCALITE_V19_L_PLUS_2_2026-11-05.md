@@ -264,3 +264,20 @@ Deux déclarations sans axiome ajouté ni `sorry` ont été écrites :
 **Portée formelle :** seul le lemme de matching des arêtes M et son corollaire sur les fibres sont écrits. Le matching des arêtes I, la classification P1–P4, la visibilité et le théorème d'égalité des ombres jusqu'à L+2 ne sont pas encore formalisés.
 
 **Statut :** noyau Lean rédigé ; compilation **INDÉTERMINÉE / À CONFIRMER** ; théorème L+2 toujours **À RÉEXAMINER**, non certifié par Lean.
+
+
+## 11. Extension du noyau Lean — 5 novembre, 17:32 UTC
+
+Le noyau a été étendu au-delà du seul matching M :
+
+- `v19_invariant_matching` formalise que I est également un matching ;
+- `V19CorePeriodic` encode les points fixes et les états appartenant à un 2-cycle ;
+- `v19_invariant_endpoints_core_periodic` établit que les extrémités de toute arête I sont de ce type ;
+- `v19_merge_not_both_core_periodic` établit qu'une arête M ne peut relier deux tels états distincts ;
+- `v19_no_alternating_MIMI` et `v19_no_alternating_IMIM` excluent les deux orientations d'une chaîne forcée alternée de quatre arêtes.
+
+La compilation initiale du noyau précédent a réussi (run GitHub Actions 42075241015). Les nouveaux lemmes viennent d'être ajoutés et leur nouvelle compilation est en attente au moment de cette note ; ils ne sont donc pas encore déclarés compilés.
+
+**Portée exacte :** ces lemmes donnent les ingrédients locaux pour obtenir une borne de longueur des chemins forcés. Ils ne constituent pas encore le théorème global disant que chaque composante est exactement l'un des chemins P1–P4 : la formalisation explicite des composantes et de leur connexité reste à faire. La visibilité, l'extension des branches et l'égalité des ombres L+2 restent également hors du noyau Lean.
+
+**Statut :** matching M et corollaire fibres compilés ; matching I et obstruction aux chaînes de quatre arêtes écrits, compilation en attente ; classification complète P1–P4 et théorème L+2 non certifiés formellement.
