@@ -13,7 +13,7 @@ Aucun instrument n'est encore inscrit comme méthode générale certifiée ou co
 
 | Désignation | Source | Domaine vérifié | Statut dans le cas pilote | Nouveauté | Lean | Transfert |
 |---|---|---|---|---|---|---|
-| EXT-FINITE-PROJECTION-COLORING v0.2 | Note interne V19(2), sections 2–4 | C4, observation binaire, L=2, huit classes C4O | CALCUL EXACT sous V19(2) | INDÉTERMINÉE | Non réalisé | Non testé |
+| EXT-FINITE-PROJECTION-COLORING v0.2 | [Note interne V19(2), sections 2–4](../defauts_recollement/sources/V19/NOTE_RECHERCHE_V19_GRAMMAIRE_ORBITALE_2.md) | C4, observation binaire, L=2, huit classes C4O | CALCUL EXACT sous V19(2) | INDÉTERMINÉE | Non réalisé | Non testé |
 
 Dossier : [PILOTE-EXT-C4-L2](../defauts_recollement/PILOTE_EXTRACTION_C4_L2_2026-11-04.md). Cette méthode est documentée pour un cas précis. Elle ne constitue pas un instrument extrait d'une publication externe du corpus OpenAI et aucune transférabilité générale n'est revendiquée.
 
