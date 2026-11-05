@@ -1,4 +1,4 @@
-name: V19 Lean core
+name: V19 Lean core — matching and chains
 
 on:
   pull_request:
