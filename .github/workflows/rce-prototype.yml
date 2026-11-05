@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "09_INFRASTRUCTURE_AGENTIQUE/prototype/**"
+      - "09_INFRASTRUCTURE_AGENTIQUE/gateway/**"
       - ".github/workflows/rce-prototype.yml"
   push:
     branches:
@@ -27,6 +28,9 @@ jobs:
           python-version: "3.11"
       - name: Run standard-library unit tests
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prototype
+        run: python -m unittest -v
+      - name: Run MCP gateway unit tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/gateway
         run: python -m unittest -v
       - name: Smoke test against the repository indexes
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prototype
