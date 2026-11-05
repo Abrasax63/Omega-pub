@@ -358,8 +358,8 @@ theorem v19_no_forced_simple_cycle3
   rcases h01 with h01M | h01I
   · rcases h12 with h12M | h12I
     · rcases h20 with h20M | h20I
-      · exact h20M.1 (v19_merge_two_step_backtracks T hcoh h01M h12M)
-      · exact h20I.1 (v19_merge_two_step_backtracks T hcoh h01M h12M)
+      · exact h20M.1 (v19_merge_two_step_backtracks T hcoh h01M h12M).symm
+      · exact h20I.1 (v19_merge_two_step_backtracks T hcoh h01M h12M).symm
     · rcases h20 with h20M | h20I
       · have h02M : V19Merge T x0 x2 :=
           ⟨h20M.1.symm, h20M.2.symm⟩
@@ -371,7 +371,7 @@ theorem v19_no_forced_simple_cycle3
   · rcases h12 with h12M | h12I
     · rcases h20 with h20M | h20I
       · exact h01I.1
-          (v19_merge_two_step_backtracks T hcoh h12M h20M)
+          (v19_merge_two_step_backtracks T hcoh h12M h20M).symm
       · have h02I : V19Invariant T x0 x2 := by
           rcases h20I.2 with ⟨h2, h0⟩ | ⟨h20', h02'⟩
           · exact ⟨h20I.1.symm, Or.inl ⟨h0, h2⟩⟩
@@ -381,6 +381,6 @@ theorem v19_no_forced_simple_cycle3
         exact h12M.1 h02eq
     · rcases h20 with h20M | h20I
       · exact h20M.1
-          (v19_invariant_two_step_backtracks T hcoh h01I h12I)
+          (v19_invariant_two_step_backtracks T hcoh h01I h12I).symm
       · exact h20I.1
-          (v19_invariant_two_step_backtracks T hcoh h01I h12I)
+          (v19_invariant_two_step_backtracks T hcoh h01I h12I).symm
