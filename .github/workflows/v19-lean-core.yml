@@ -21,9 +21,9 @@ jobs:
       - name: Install Lean toolchain
         uses: leanprover/lean-action@v1
         with:
+          lake-package-directory: 02_MATHEMATIQUES/defauts_recollement/lean
           auto-config: false
           use-mathlib-cache: false
-          leanchecker: false
       - name: Check Lean version
         working-directory: 02_MATHEMATIQUES/defauts_recollement/lean
         run: lean --version
