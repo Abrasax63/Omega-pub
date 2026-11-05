@@ -400,3 +400,43 @@ theorem v19_no_simple_forced_path_five_vertices
     (h34 : V19ForcedEdge T x3 x4)
     (h02 : x0 ≠ x2) (h13 : x1 ≠ x3) (h24 : x2 ≠ x4) : False :=
   v19_no_nonbacktracking_forced_walk4 T hcoh h01 h12 h23 h34 h02 h13 h24
+
+
+/-!
+## Explicit finite path witnesses
+
+The previous obstruction was stated with four edge hypotheses and only the
+three inequalities needed to rule out immediate backtracking.  We now add
+an explicit predicate for a *simple* five-vertex path, including all
+pairwise distinctness conditions.  This is a first graph-language bridge;
+it is not yet a theorem about connected components.
+-/
+
+/-- A simple forced path on exactly five pairwise distinct vertices. -/
+structure V19SimplePath5 (T : α → α) where
+  x0 : α
+  x1 : α
+  x2 : α
+  x3 : α
+  x4 : α
+  edge01 : V19ForcedEdge T x0 x1
+  edge12 : V19ForcedEdge T x1 x2
+  edge23 : V19ForcedEdge T x2 x3
+  edge34 : V19ForcedEdge T x3 x4
+  distinct01 : x0 ≠ x1
+  distinct02 : x0 ≠ x2
+  distinct03 : x0 ≠ x3
+  distinct04 : x0 ≠ x4
+  distinct12 : x1 ≠ x2
+  distinct13 : x1 ≠ x3
+  distinct14 : x1 ≠ x4
+  distinct23 : x2 ≠ x3
+  distinct24 : x2 ≠ x4
+  distinct34 : x3 ≠ x4
+
+/-- Coherence excludes every simple forced path on five vertices. -/
+theorem v19_no_simple_path5
+    (T : α → α) (hcoh : V19Coherent T)
+    (p : V19SimplePath5 T) : False := by
+  exact v19_no_simple_forced_path_five_vertices T hcoh
+    p.edge01 p.edge12 p.edge23 p.edge34 p.distinct02 p.distinct13 p.distinct24
