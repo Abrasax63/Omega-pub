@@ -468,18 +468,6 @@ theorem v19_edge_reachable
     (hxy : V19ForcedEdge T x y) : V19Reachable T x y :=
   V19Reachable.tail (V19Reachable.refl x) hxy
 
-/-- Reachability is symmetric because forced edges are symmetric. -/
-theorem v19_reachable_symm
-    (T : α → α) {x y : α}
-    (hxy : V19Reachable T x y) : V19Reachable T y x := by
-  induction hxy with
-  | refl => exact V19Reachable.refl _
-  | tail hxy hedge ih =>
-      exact V19Reachable.tail
-        (V19Reachable.tail (V19Reachable.refl _)
-          (v19_forced_edge_symm T hedge))
-        ih
-
 /-- Reachability is transitive. -/
 theorem v19_reachable_trans
     (T : α → α) {x y z : α}
@@ -489,6 +477,18 @@ theorem v19_reachable_trans
   | refl => exact hxy
   | tail hyz hedge ih =>
       exact V19Reachable.tail ih hedge
+
+/-- Reachability is symmetric because forced edges are symmetric. -/
+theorem v19_reachable_symm
+    (T : α → α) {x y : α}
+    (hxy : V19Reachable T x y) : V19Reachable T y x := by
+  induction hxy with
+  | refl => exact V19Reachable.refl _
+  | tail hxy hedge ih =>
+      exact v19_reachable_trans T
+        (V19Reachable.tail (V19Reachable.refl _)
+          (v19_forced_edge_symm T hedge))
+        ih
 
 /-- The connected component of a root in the forced graph. -/
 def V19Component (T : α → α) (root : α) : α → Prop :=
