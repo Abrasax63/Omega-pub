@@ -19,7 +19,7 @@ Une ligne n'est ajoutée que lorsqu'une fiche dédiée existe dans le dépôt. L
 | ID | Domaine | Énoncé / titre | Version | Statut scientifique source | Statut de publication | Fiche |
 |---|---|---|---|---|---|---|
 | BR-R90-01 | Mathématiques / Règle 90 | Noyaux et période récurrente | 0.1 | DÉMONTRÉ (fiche interne) | EXPÉRIMENTAL — audit détaillé à joindre | [Fiche](../02_MATHEMATIQUES/temps_regle90/BR-R90-01_NOYAUX_PERIODES.md) |
-| BR-R90-02 | Mathématiques / Règle 90 | Uniformité Majority–Walsh avant repliement cyclique | 0.1 | DÉMONTRÉ (fiche interne) | EXPÉRIMENTAL — audit détaillé à joindre | [Fiche](../02_MATHEMATIQUES/temps_regle90/BR-R90-02_MAJORITY_WALSH.md) |\n| PILOTE-EXT-C4-L2-2026-11-04 | Mathématiques / observation binaire | Témoin global à 9 états et minimalité pour C4O-00…07 sous V19(2) | 0.2 | CALCUL EXACT (périmètre V19(2), C4, L=2) | EXPÉRIMENTAL — revue tierce et Lean non réalisés | [Dossier](../02_MATHEMATIQUES/defauts_recollement/PILOTE_EXTRACTION_C4_L2_2026-11-04.md) |
+| BR-R90-02 | Mathématiques / Règle 90 | Uniformité Majority–Walsh avant repliement cyclique | 0.1 | DÉMONTRÉ (fiche interne) | EXPÉRIMENTAL — audit détaillé à joindre | [Fiche](../02_MATHEMATIQUES/temps_regle90/BR-R90-02_MAJORITY_WALSH.md) |\n| PILOTE-EXT-C4-L2-2026-11-04 | Mathématiques / observation binaire | Témoin global à 9 états et minimalité pour C4O-00…07 sous V19(2) | 0.2 | CALCUL EXACT (périmètre V19(2), C4, L=2) | EXPÉRIMENTAL — revue tierce et Lean non réalisés | [Dossier](../02_MATHEMATIQUES/defauts_recollement/PILOTE_EXTRACTION_C4_L2_2026-11-04.md) |\n| PILOTE-EXT-C4-L2-2026-11-04 | Mathématiques / observation binaire | Témoin global à 9 états et minimalité pour C4O-00…07 sous V19(2) | 0.2 | CALCUL EXACT (périmètre V19(2), C4, L=2) | EXPÉRIMENTAL — revue tierce et Lean non réalisés | [Dossier](../02_MATHEMATIQUES/defauts_recollement/PILOTE_EXTRACTION_C4_L2_2026-11-04.md) |
 
 ## Résultats non encore migrés
 
@@ -34,4 +34,4 @@ Les dépendances seront renseignées dans chaque fiche et reportées ici lorsqu'
 ## Historique
 
 - 0.1 — Création de l'index ; aucun résultat scientifique n'était déclaré.
-- 0.2 — Ajout de deux fiches source BR-R90-01 et BR-R90-02, publiées à titre expérimental faute de transfert de leurs audits détaillés.\n- 0.3 — Ajout du pilote C4, L=2 comme CALCUL EXACT sous V19(2), publication EXPÉRIMENTALE.
+- 0.2 — Ajout de deux fiches source BR-R90-01 et BR-R90-02, publiées à titre expérimental faute de transfert de leurs audits détaillés.\n- 0.3 — Ajout du pilote C4, L=2 comme CALCUL EXACT sous V19(2), publication EXPÉRIMENTALE.\n- 0.3 — Ajout du pilote C4, L=2 comme CALCUL EXACT sous V19(2), publication EXPÉRIMENTALE.
