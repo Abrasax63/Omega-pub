@@ -105,7 +105,17 @@ def _dispatch(message: dict[str, Any]) -> dict[str, Any] | None:
             }
 
     response = gateway.handle_message(REPO_ROOT, message)
-    # Report the actual transport when the caller asks for gateway_status.
+    if response and method == "tools/list" and "result" in response:
+        read_only_annotations = {
+            "readOnlyHint": True,
+            "destructiveHint": False,
+            "idempotentHint": True,
+            "openWorldHint": False,
+        }
+        for tool in response["result"].get("tools", []):
+            tool["annotations"] = dict(read_only_annotations)
+
+    # Report the deployed checkout and actual transport, not local STDIO details.
     if (
         response
         and method == "tools/call"
@@ -116,6 +126,9 @@ def _dispatch(message: dict[str, Any]) -> dict[str, Any] | None:
             content = response["result"]["content"][0]["text"]
             status = json.loads(content)
             status["transport"] = "streamable_http"
+            status["mode"] = "read_only_deployed_checkout"
+            status.pop("repository_root", None)
+            status["repository_root_name"] = REPO_ROOT.name
             response["result"]["content"][0]["text"] = json.dumps(
                 status, ensure_ascii=False, indent=2
             )
@@ -130,7 +143,6 @@ async def mcp_endpoint(request: Request) -> Response:
         return JSONResponse({"error": "Origin not allowed"}, status_code=403)
 
     if not _authorized(request):
-        # Distinguish missing server configuration from invalid client credentials.
         if not os.environ.get("OMEGA_GATEWAY_TOKEN"):
             return JSONResponse({"error": "Gateway authentication is not configured"}, status_code=503)
         return JSONResponse({"error": "Unauthorized"}, status_code=401)
@@ -164,13 +176,7 @@ async def mcp_endpoint(request: Request) -> Response:
         return JSONResponse({"error": "Invalid JSON-RPC request"}, status_code=400)
 
     method = message["method"]
-    if method == "initialize":
-        params = message.get("params") or {}
-        requested = params.get("protocolVersion", SERVER_PROTOCOL) if isinstance(params, dict) else None
-        if requested not in SUPPORTED_PROTOCOLS:
-            # The initialize result negotiates the server's supported stable version.
-            pass
-    else:
+    if method != "initialize":
         protocol = request.headers.get("mcp-protocol-version")
         if protocol not in SUPPORTED_PROTOCOLS:
             return JSONResponse(
