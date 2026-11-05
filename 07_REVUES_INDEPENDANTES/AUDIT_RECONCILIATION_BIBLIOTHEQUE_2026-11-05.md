@@ -41,7 +41,7 @@ La comparaison de `main` avec PR #2 donne **diverged**, avec 269 commits d'avanc
 | `reviews/` | 47 |
 | **Total** | **226** |
 
-L'inventaire détaillé des chemins est dans [INVENTAIRE_FICHIERS_PR2.md](../08_ARCHIVES/MIGRATION_2026-11-05/INVENTAIRE_FICHIERS_PR2.md). Il s'agit d'un inventaire d'arborescence, pas d'une lecture intégrale de chaque fichier.
+L'inventaire détaillé des chemins est dans [INVENTAIRE_FICHIERS_PR2.md](../08_ARCHIVES/MIGRATION_2026-11-05/INVENTAIRE_FICHIERS_PR2.md). La [réconciliation fichier par fichier des 226 éléments](../08_ARCHIVES/MIGRATION_2026-11-05/RECONCILIATION_226_FICHIERS_PR2.md) attribue les quatre statuts de migration : **3 TRANSFÉRÉ ET VÉRIFIÉ, 2 TRANSFÉRÉ MAIS NON VÉRIFIÉ, 183 À TRANSFÉRER, 38 DOUBLON OU ARCHIVE**. Il s'agit d'un statut documentaire ; il ne certifie pas le contenu scientifique.
 
 ## 4. Cartes, reconstitutions et provenance
 
