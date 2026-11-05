@@ -54,7 +54,7 @@ theorem v19_merge_matching
   have hvwColor := hcolor (u := v) (v := w) (Or.inl hvwMerge)
   have sameColor : color v = color w :=
     bool_two_color_middle (color u) (color v) (color w) huvColor huwColor
-  exact hvwColor sameColor
+  exact False.elim (hvwColor sameColor)
 
 /--
 No three distinct states can have the same image in a coherent system.
