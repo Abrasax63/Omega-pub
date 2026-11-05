@@ -48,3 +48,8 @@ Le registre distingue les instruments généraux admis des candidats internes ou
 - [Modèle de fiche d'instrument](instruments/MODELE_INSTRUMENT.md)
 
 Le registre distingue les instruments généraux admis des candidats internes ou externes. Le pilote C4 est un cas interne limité à q=4 et L=2 ; aucune transférabilité générale n'est revendiquée.
+
+
+## Dossier expérimental V19 — C5, L=3
+
+Un audit indépendant du catalogue C5/D5, des témoins de paires et triples et du témoin U42 a été migré dans [le dossier C5](v19_c5/AUDIT_V19_C5_L3_2026-11-05.md). Les données historiques et corrigées, le script et un résumé JSON sont conservés dans `research/data/v19_c5/` et `research/code/`. Le dossier reste **EXPÉRIMENTAL** : le lemme général de localité V19 n'est pas redémontré, l'originalité bibliographique reste indéterminée et Lean n'a pas été réalisé. Il n'est donc pas ajouté à l'index des fiches de résultats certifiées.
