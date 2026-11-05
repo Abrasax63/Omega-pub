@@ -292,3 +292,14 @@ La nouvelle version a été compilée avec succès sous Lean 4.19.0 par GitHub A
 **Portée exacte :** l'adjacence forcée est maintenant explicite et symétrique, et l'obstruction aux chaînes alternées est réunie sous un théorème unique. Cela ne formalise toujours pas les composantes connexes, leur classification P1–P4, la visibilité des chemins entre ancrages, l'extension des branches pendantes, ni l'égalité des ombres jusqu'à L+2.
 
 **Statut :** graphe forcé élémentaire et obstruction aux chaînes alternées : **COMPILÉS**. Classification P1–P4 et théorème général L+2 : **NON FORMALISÉS / À RÉEXAMINER**.
+
+
+## 12. Graphe forcé explicite — 5 novembre, 17:52 UTC
+
+Le fichier `lean/V19Core.lean` définit désormais `V19ForcedEdge` comme la disjonction étiquetée M/I. Le lemme `v19_forced_edge_symm` établit la symétrie de cette relation, ce qui permet de la lire comme une adjacency non orientée. Le prédicat `V19AlternatingChain4` regroupe les deux orientations possibles d'une chaîne de quatre arêtes alternées ; `v19_no_forced_alternating_chain4` en démontre l'impossibilité sous `V19Coherent`, en réutilisant les deux lemmes précédents.
+
+La nouvelle version a été compilée avec succès sous Lean 4.19.0 par GitHub Actions : [run 42078870162](https://github.com/Abrasax63/Omega-pub/actions/runs/42078870162), job `lean-core`, étape `Compile V19 core` : SUCCESS.
+
+**Portée exacte :** l'adjacence forcée est maintenant explicite et symétrique, et l'obstruction aux chaînes alternées est réunie sous un théorème unique. Cela ne formalise toujours pas les composantes connexes, leur classification P1–P4, la visibilité des chemins entre ancrages, l'extension des branches pendantes, ni l'égalité des ombres jusqu'à L+2.
+
+**Statut :** graphe forcé élémentaire et obstruction aux chaînes alternées : **COMPILÉS**. Classification P1–P4 et théorème général L+2 : **NON FORMALISÉS / À RÉEXAMINER**.
