@@ -27,6 +27,10 @@ La compilation complète du noyau précédent a réussi : [GitHub Actions — ru
 
 L'extension du graphe forcé compile également : [GitHub Actions — run 42078870162](https://github.com/Abrasax63/Omega-pub/actions/runs/42078870162).
 
+
+- `v19_no_three_forced_neighbors` : sous cohérence, un sommet ne peut pas avoir trois voisins forcés deux à deux distincts. Le résultat découle des matchings M et I : parmi trois arêtes incidentes, deux auraient nécessairement le même type.
+- `v19_merge_neighbors_eq` et `v19_invariant_neighbors_eq` exposent les deux lemmes de voisinage utilisés dans cette borne de degré.
+
 ## Ce qui reste à formaliser
 
 - le théorème de classification de toutes les composantes du graphe forcé en chemins de taille au plus quatre sommets (P1–P4), à partir des lemmes locaux ;
