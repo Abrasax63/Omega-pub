@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import tempfile
@@ -5,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from fastapi.testclient import TestClient
+import httpx
 
 import app as http_gateway
 
@@ -26,7 +27,6 @@ class HttpGatewayTests(unittest.TestCase):
         (self.root / "fiche.md").write_text("# BR-01\nPreuve à auditer.\n", encoding="utf-8")
         self.old_root = http_gateway.REPO_ROOT
         http_gateway.REPO_ROOT = self.root
-        self.client = TestClient(http_gateway.app)
         self.env = patch.dict(os.environ, {"OMEGA_GATEWAY_TOKEN": "test-secret"}, clear=False)
         self.env.start()
         self.headers = {
@@ -40,11 +40,19 @@ class HttpGatewayTests(unittest.TestCase):
         http_gateway.REPO_ROOT = self.old_root
         self.temp.cleanup()
 
+    async def _request(self, method, path, headers=None, json_body=None):
+        transport = httpx.ASGITransport(app=http_gateway.app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+            return await client.request(method, path, headers=headers, json=json_body)
+
+    def request(self, method, path, headers=None, json_body=None):
+        return asyncio.run(self._request(method, path, headers, json_body))
+
     def post_rpc(self, message, extra_headers=None):
         headers = dict(self.headers)
         if extra_headers:
             headers.update(extra_headers)
-        return self.client.post("/mcp", headers=headers, json=message)
+        return self.request("POST", "/mcp", headers=headers, json_body=message)
 
     def test_initialize_negotiates_supported_protocol(self):
         response = self.post_rpc({
@@ -60,9 +68,12 @@ class HttpGatewayTests(unittest.TestCase):
             {"MCP-Protocol-Version": "2025-11-25"},
         )
         self.assertEqual(response.status_code, 200)
-        names = [tool["name"] for tool in response.json()["result"]["tools"]]
+        tools = response.json()["result"]["tools"]
+        names = [tool["name"] for tool in tools]
         self.assertEqual(names, ["gateway_status", "memory_search", "memory_get"])
         self.assertFalse(any("write" in name or "delete" in name for name in names))
+        self.assertTrue(all(tool["annotations"]["readOnlyHint"] for tool in tools))
+        self.assertTrue(all(not tool["annotations"]["destructiveHint"] for tool in tools))
 
     def test_memory_get_returns_source_without_certifying(self):
         response = self.post_rpc(
@@ -76,7 +87,7 @@ class HttpGatewayTests(unittest.TestCase):
         self.assertEqual(result["scientific_validation"], "not_performed")
         self.assertIn("Preuve à auditer", result["source"]["content"])
 
-    def test_gateway_status_reports_http_transport(self):
+    def test_gateway_status_reports_deployed_http_transport_without_local_path(self):
         response = self.post_rpc(
             {"jsonrpc": "2.0", "id": 4, "method": "tools/call",
              "params": {"name": "gateway_status", "arguments": {}}},
@@ -84,6 +95,8 @@ class HttpGatewayTests(unittest.TestCase):
         )
         result = json.loads(response.json()["result"]["content"][0]["text"])
         self.assertEqual(result["transport"], "streamable_http")
+        self.assertEqual(result["mode"], "read_only_deployed_checkout")
+        self.assertNotIn("repository_root", result)
         self.assertFalse(result["writes_enabled"])
 
     def test_notifications_return_202_without_body(self):
@@ -95,16 +108,19 @@ class HttpGatewayTests(unittest.TestCase):
         self.assertEqual(response.content, b"")
 
     def test_authentication_is_required(self):
-        response = self.client.post(
-            "/mcp",
+        response = self.request(
+            "POST", "/mcp",
             headers={"Content-Type": "application/json", "Accept": "application/json, text/event-stream"},
-            json={"jsonrpc": "2.0", "id": 1, "method": "initialize"},
+            json_body={"jsonrpc": "2.0", "id": 1, "method": "initialize"},
         )
         self.assertEqual(response.status_code, 401)
 
     def test_missing_server_token_fails_closed(self):
         with patch.dict(os.environ, {}, clear=True):
-            response = self.client.post("/mcp", headers=self.headers, json={"jsonrpc": "2.0", "id": 1, "method": "initialize"})
+            response = self.request(
+                "POST", "/mcp", headers=self.headers,
+                json_body={"jsonrpc": "2.0", "id": 1, "method": "initialize"},
+            )
         self.assertEqual(response.status_code, 503)
 
     def test_origin_is_rejected_unless_allowlisted(self):
@@ -128,7 +144,7 @@ class HttpGatewayTests(unittest.TestCase):
         self.assertTrue(response.json()["result"]["isError"])
 
     def test_get_is_not_supported(self):
-        response = self.client.get("/mcp", headers={"Accept": "text/event-stream"})
+        response = self.request("GET", "/mcp", headers={"Accept": "text/event-stream"})
         self.assertEqual(response.status_code, 405)
 
 
