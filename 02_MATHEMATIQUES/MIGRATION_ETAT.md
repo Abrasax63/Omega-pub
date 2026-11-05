@@ -87,3 +87,18 @@ Documents :
 - [Audit des quotients](defauts_recollement/AUDIT_QUOTIENTS_TEMOIN9_C4_L2_2026-11-04.md)
 
 Ce complément ne modifie pas les réserves concernant CL-DYN-01/02/03/04, CL-H-01, CL-OBSINF-01, CL-REFL-01 et CL-HO-01. Le résultat C4 ne doit pas être généralisé à d'autres q ou L.
+
+
+## 8. Complément du 5 novembre 2026 — audit V19 C5, L=3
+
+Le dossier C5/D5 a été transféré depuis la branche historique `migration/ravi2-ccs-public-2026-11-04` vers [l'audit C5, L=3](v19_c5/AUDIT_V19_C5_L3_2026-11-05.md), avec les CSV historiques, les exports réparés, le témoin U42, le script et le README de reproduction.
+
+- Catalogue fini rapporté : 3 341 diagrammes canoniques, 510 ombres propres, 13 classes D5 et 14 classes C5 orientées.
+- Paires : 2 lignes réparées sur 105.
+- Triples D5 : 26 lignes modifiées sur 455 ; les 3 paires sont distinctes après réparation.
+- Couverture orientée des témoins D5 : 455/560 ; les 105 combinaisons manquantes contiennent C5O-09.
+- Témoin U42 : 42 états ; le script source rapporte la vérification des 560 triples orientés.
+
+**Limites :** le lemme général de localité V19 n'est pas redémontré ligne par ligne ; aucune généralisation à d'autres q ou L n'est revendiquée ; originalité bibliographique indéterminée ; formalisation Lean non réalisée. Publication expérimentale uniquement.
+
+**Anomalie de provenance :** le JSON de rapport détaillé présent sur la branche historique est tronqué et invalide. Il n'a pas été copié sous son nom comme s'il était valide. Un résumé JSON distinct et valide est fourni ; le script migré a été corrigé pour écrire son rapport détaillé dans `research/data/v19_c5/`. La commande n'a pas été rejouée sur la tête actuelle de cette PR pendant cette migration.
