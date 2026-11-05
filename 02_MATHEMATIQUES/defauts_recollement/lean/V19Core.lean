@@ -139,22 +139,33 @@ theorem v19_merge_not_both_core_periodic
           _ = T v := huv.2
           _ = v := hvFix
       exact huv.1 huvEq
-    · have huToV : T u = v := by
+    · have huNextEq : u = vNext := by
         calc
-          T u = T v := huv.2
+          u = T u := huFix.symm
+          _ = T v := huv.2
           _ = vNext := hvNext
-          _ = T vNext := hvBack.symm
+      have hTuv : T u = v := by
+        calc
+          T u = T vNext := congrArg T huNextEq
+          _ = v := hvBack
       have huvEq : u = v := by
         calc
           u = T u := huFix.symm
-          _ = T vNext := huToV.trans hvBack.symm
-          _ = v := hvBack
+          _ = v := hTuv
       exact huv.1 huvEq
   · rcases hv with hvFix | ⟨vNext, hvNext, hvBack, hvNe⟩
-    · have huvEq : u = v := by
+    · have huNextEq : uNext = v := by
         calc
-          u = T uNext := huBack.symm
-          _ = T u := by rw [huNext]
+          uNext = T u := huNext.symm
+          _ = T v := huv.2
+          _ = v := hvFix
+      have hTvu : T v = u := by
+        calc
+          T v = T uNext := congrArg T huNextEq.symm
+          _ = u := huBack
+      have huvEq : u = v := by
+        calc
+          u = T u := huFix.symm
           _ = T v := huv.2
           _ = v := hvFix
       exact huv.1 huvEq
