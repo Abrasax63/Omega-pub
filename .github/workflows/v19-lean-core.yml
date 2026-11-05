@@ -15,12 +15,18 @@ on:
 jobs:
   lean-core:
     runs-on: ubuntu-latest
-    container:
-      image: leanprover/lean4:v4.19.0
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install Lean toolchain
+        uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          use-mathlib-cache: false
+          leanchecker: false
       - name: Check Lean version
+        working-directory: 02_MATHEMATIQUES/defauts_recollement/lean
         run: lean --version
       - name: Compile V19 core
-        run: lean 02_MATHEMATIQUES/defauts_recollement/lean/V19Core.lean
+        working-directory: 02_MATHEMATIQUES/defauts_recollement/lean
+        run: lean V19Core.lean
