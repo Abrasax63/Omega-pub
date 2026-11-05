@@ -40,6 +40,7 @@ Cette section sert de liste de travail, pas de registre de résultats publiés.
 | CL-DYN-01 à CL-DYN-04 | Mathématiques · dynamique | Fiches primaires et preuves non encore réunies dans le dépôt | Retrouver les sources, vérifier énoncés, hypothèses, preuves, contre-tests et dépendances |
 | CL-H-01, CL-OBSINF-01, CL-REFL-01, CL-HO-01 | Mathématiques · observation | Fiches primaires non encore réunies dans le dépôt | Même contrôle source, sans reconstruire les preuves depuis un résumé |
 | Autres dossiers C4 (hors pilote C4, L=2) | Mathématiques · catalogue expérimental | Le pilote C4, L=2 est documenté séparément ; les autres dossiers restent à inventorier | Définition exécutable, rapport de calcul, certificat de coexistence ou d'incompatibilité et statut précis |
+| V19 C5, L=3 | Mathématiques · observation / V19 | Dossier de calcul fini migré ; réparations de témoins et couverture U42 documentées, sans fiche certifiée | Rejouer le script sur la tête de consolidation, vérifier la sortie JSON générée et auditer séparément le lemme primaire de localité ; originalité bibliographique et Lean restent ouverts |
 | SAT / #SAT / P-NP | Informatique théorique | Travaux non recensés ici comme résultats certifiés | Énoncés précis, réductions, preuves ou certificats, contre-tests et revue bibliographique |
 
 Pour le détail des travaux mathématiques en attente, voir [l'état de migration](../02_MATHEMATIQUES/MIGRATION_ETAT.md). Les éléments de cette section ne doivent pas être interprétés comme des résultats validés ou même comme des fiches publiques existantes.
