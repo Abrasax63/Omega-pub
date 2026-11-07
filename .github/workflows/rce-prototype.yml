@@ -1,0 +1,42 @@
+name: RCE prototype tests
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prototype/**"
+      - "09_INFRASTRUCTURE_AGENTIQUE/gateway/**"
+      - ".github/workflows/rce-prototype.yml"
+  push:
+    branches:
+      - "architecture/memoire-agentique-native-2026-11-05"
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prototype/**"
+      - "09_INFRASTRUCTURE_AGENTIQUE/gateway/**"
+      - ".github/workflows/rce-prototype.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run standard-library unit tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prototype
+        run: python -m unittest -v
+      - name: Run MCP gateway unit tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/gateway
+        run: python -m unittest -v
+      - name: Smoke test against the repository indexes
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prototype
+        run: |
+          python rce.py --repo ../.. --question "BR-R90-01 noyaux période" --role formalist --output /tmp/omega-rce-result.json
+          python -c "import json; d=json.load(open('/tmp/omega-rce-result.json', encoding='utf-8')); assert d['registered_results'], 'No indexed result retrieved'; assert d['registered_results'][0]['publication_status'].startswith('EXPÉRIMENTAL'); assert d['manifest']['mode'] == 'read_only_local_checkout'; print('Repository index smoke test: OK')"
+          python rce.py --repo ../.. --question "CL-DYN migration mathématiques" --role refuter --output /tmp/omega-rce-pending.json
+          python -c "import json; d=json.load(open('/tmp/omega-rce-pending.json', encoding='utf-8')); assert d['pending_migration_items'], 'Pending migration items were not retrieved'; print('Pending migration smoke test: OK')"

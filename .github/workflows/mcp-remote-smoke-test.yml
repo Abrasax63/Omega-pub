@@ -1,0 +1,142 @@
+name: MCP remote authenticated smoke test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  remote-mcp-smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify required secrets are configured
+        env:
+          OMEGA_GATEWAY_TOKEN: ${{ secrets.OMEGA_GATEWAY_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          test -n "$OMEGA_GATEWAY_TOKEN" || { echo "::error::Missing GitHub Actions secret OMEGA_GATEWAY_TOKEN"; exit 1; }
+          test -n "$VERCEL_AUTOMATION_BYPASS_SECRET" || { echo "::error::Missing GitHub Actions secret VERCEL_AUTOMATION_BYPASS_SECRET"; exit 1; }
+
+      - name: Initialize MCP and verify read-only tools remotely
+        env:
+          OMEGA_GATEWAY_TOKEN: ${{ secrets.OMEGA_GATEWAY_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          MCP_URL: https://omega-pub-rce-gateway-git-architecture-memoir-45b844-omega-61f0.vercel.app/mcp
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          url = os.environ["MCP_URL"]
+          headers = {
+              "Authorization": "Bearer " + os.environ["OMEGA_GATEWAY_TOKEN"],
+              "x-vercel-protection-bypass": os.environ["VERCEL_AUTOMATION_BYPASS_SECRET"],
+              "Content-Type": "application/json",
+              "Accept": "application/json, text/event-stream",
+          }
+
+          def rpc(message, protocol=None):
+              request_headers = dict(headers)
+              if protocol:
+                  request_headers["MCP-Protocol-Version"] = protocol
+              request = urllib.request.Request(
+                  url,
+                  data=json.dumps(message).encode("utf-8"),
+                  headers=request_headers,
+                  method="POST",
+              )
+              try:
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      status = response.status
+                      body = response.read()
+              except urllib.error.HTTPError as error:
+                  # Never print request headers or secret values.
+                  detail = error.read().decode("utf-8", "replace")[:500]
+                  raise RuntimeError(f"HTTP {error.code}: {detail}") from None
+              if status != 200:
+                  raise RuntimeError(f"Unexpected HTTP status: {status}")
+              try:
+                  payload = json.loads(body)
+              except Exception:
+                  raise RuntimeError("Response is not valid JSON") from None
+              if payload.get("jsonrpc") != "2.0" or "error" in payload:
+                  raise RuntimeError("Invalid JSON-RPC response or protocol error")
+              return payload
+
+          initialized = rpc({
+              "jsonrpc": "2.0",
+              "id": 1,
+              "method": "initialize",
+              "params": {
+                  "protocolVersion": "2025-11-25",
+                  "capabilities": {},
+                  "clientInfo": {"name": "omega-github-actions-smoke-test", "version": "1"},
+              },
+          })
+          result = initialized.get("result", {})
+          if result.get("protocolVersion") != "2025-11-25":
+              raise RuntimeError("MCP initialize returned an unexpected protocol version")
+          print("PASS: authenticated MCP initialize")
+
+          # The deployed adapter is stateless; notifications return HTTP 202 with no body.
+          notification = urllib.request.Request(
+              url,
+              data=json.dumps({
+                  "jsonrpc": "2.0",
+                  "method": "notifications/initialized",
+              }).encode("utf-8"),
+              headers={
+                  **headers,
+                  "MCP-Protocol-Version": "2025-11-25",
+              },
+              method="POST",
+          )
+          try:
+              with urllib.request.urlopen(notification, timeout=20) as response:
+                  if response.status != 202 or response.read():
+                      raise RuntimeError("initialized notification did not return empty HTTP 202")
+          except urllib.error.HTTPError as error:
+              raise RuntimeError(f"initialized notification returned HTTP {error.code}") from None
+          print("PASS: initialized notification")
+
+          listed = rpc(
+              {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
+              "2025-11-25",
+          )
+          tools = listed.get("result", {}).get("tools", [])
+          names = [tool.get("name") for tool in tools]
+          expected = ["gateway_status", "memory_search", "memory_get"]
+          if names != expected:
+              raise RuntimeError(f"Unexpected MCP tool inventory: {names!r}")
+          if not all(tool.get("annotations", {}).get("readOnlyHint") is True for tool in tools):
+              raise RuntimeError("One or more exposed tools are not marked read-only")
+          if not all(tool.get("annotations", {}).get("destructiveHint") is False for tool in tools):
+              raise RuntimeError("One or more exposed tools are marked destructive")
+          print("PASS: tools/list exposes exactly the three read-only tools")
+
+          status = rpc(
+              {
+                  "jsonrpc": "2.0",
+                  "id": 3,
+                  "method": "tools/call",
+                  "params": {"name": "gateway_status", "arguments": {}},
+              },
+              "2025-11-25",
+          )
+          content = status.get("result", {}).get("content", [])
+          if not content or content[0].get("type") != "text":
+              raise RuntimeError("gateway_status returned no text payload")
+          details = json.loads(content[0]["text"])
+          if details.get("transport") != "streamable_http":
+              raise RuntimeError("gateway_status does not report streamable_http")
+          if details.get("mode") != "read_only_deployed_checkout":
+              raise RuntimeError("gateway_status does not report read-only deployed mode")
+          if details.get("writes_enabled") is not False:
+              raise RuntimeError("gateway_status does not confirm writes are disabled")
+          print("PASS: gateway_status confirms deployed read-only HTTP mode")
+          print("REMOTE MCP SMOKE TEST: SUCCESS")
+          PY

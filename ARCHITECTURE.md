@@ -27,10 +27,19 @@ Cette architecture est une convention de travail du projet. Elle ne constitue pa
 - `06_CALCUL_SCIENTIFIQUE/` : programmes, simulations, données partageables et procédures de reproduction.
 - `07_REVUES_INDEPENDANTES/` : rapports, contre-exemples, critiques et réponses.
 - `08_ARCHIVES/` : versions et dossiers retirés de l'index actif, conservés pour traçabilité.
+- `09_INFRASTRUCTURE_AGENTIQUE/` : contrats de mémoire partagée, moteur de contexte, provenance des agents et dépôt contrôlé de propositions. Ce module décrit une architecture cible ; il ne signifie pas qu'un orchestrateur ou un moteur de mémoire est déjà déployé.
 
 Les modules sont des frontières d'organisation, pas des affirmations d'indépendance mathématique.
 
-## 4. Statut scientifique et statut de publication
+## 4. Infrastructure agentique native
+
+Le multi-agent est conçu comme un composant de l'écosystème documentaire, et non comme une mémoire parallèle. Le module `09_INFRASTRUCTURE_AGENTIQUE/` définit le contrat de consultation des trois espaces (certifié interne, expérimental interne, externe), le paquet de contexte par mission, l'identification des agents et des exécutions, ainsi que la traçabilité des dérivations.
+
+Les agents disposent d'un accès en lecture selon leurs droits et peuvent déposer des propositions. Ils ne peuvent pas promouvoir seuls un résultat au statut certifié. Les propositions passent par les procédures RAVI-2. La répétition d'une affirmation par plusieurs agents ne constitue pas une vérification indépendante.
+
+Cette spécification est une proposition documentaire ; les services logiciels correspondants restent à construire et à tester.
+
+## 5. Statut scientifique et statut de publication
 
 Le statut scientifique décrit le niveau de justification d'un énoncé. Le statut de publication décrit sa disponibilité.
 
@@ -52,7 +61,7 @@ Statuts de publication proposés :
 
 Ces deux dimensions doivent être renseignées séparément. Un contenu public peut être conjectural ; un résultat démontré peut ne pas encore être publié.
 
-## 5. Identifiants et versions
+## 6. Identifiants et versions
 
 Chaque résultat reçoit un identifiant stable, par exemple `MATH-OBS-001` ou `SAT-001`. Une version est attachée à chaque modification substantielle de l'énoncé, de ses hypothèses, de sa preuve ou de son statut.
 
@@ -65,11 +74,11 @@ Une correction doit indiquer :
 
 Les commits Git documentent les modifications du dépôt ; ils ne remplacent pas la version scientifique de la fiche.
 
-## 6. Dépendances entre résultats
+## 7. Dépendances entre résultats
 
 Les dépendances doivent être déclarées dans les fiches, avec l'identifiant et la version exacte du résultat utilisé. Une dépendance non vérifiée doit être signalée comme telle. Les cycles de dépendances doivent être explicités et examinés : aucun résultat ne peut se justifier uniquement par un autre résultat qui dépend lui-même du premier.
 
-## 7. Reproductibilité
+## 8. Reproductibilité
 
 Pour un calcul ou un programme, documenter autant que possible :
 - langage et version ;
@@ -82,10 +91,10 @@ Pour un calcul ou un programme, documenter autant que possible :
 
 Une simulation ne constitue pas une preuve générale. Ne jamais déclarer une exécution qui n'a pas effectivement eu lieu.
 
-## 8. Publication et archivage
+## 9. Publication et archivage
 
 GitHub héberge les sources et l'historique de développement. Les versions scientifiques destinées à être citées pourront ensuite être archivées sur une infrastructure adaptée (par exemple Zenodo), avec métadonnées de citation. Cette étape ne doit être réalisée qu'après vérification du contenu à archiver et des droits de diffusion.
 
-## 9. État de cette architecture
+## 10. État de cette architecture
 
 Cette architecture est une première version de gouvernance documentaire. Elle ne certifie aucun résultat scientifique et ne signifie pas que tous les modules sont déjà renseignés. L'index global indique explicitement les contenus effectivement publiés.
