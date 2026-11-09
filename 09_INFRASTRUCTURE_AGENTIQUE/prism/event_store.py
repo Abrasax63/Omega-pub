@@ -252,7 +252,7 @@ def append_events(path: Path, events: list[dict[str, Any]]) -> dict[str, Any]:
         chained.append(event)
         previous = event["event_hash"]
     state = verify_events(chained, previous_hash=expected)
-    rendered = "".join(_canonical(event) + "\\n" for event in chained)
+    rendered = "".join(_canonical(event) + "\n" for event in chained)
     try:
         with path.open("a", encoding="utf-8", newline="") as handle:
             handle.write(rendered)
