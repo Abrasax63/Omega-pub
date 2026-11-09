@@ -5,6 +5,7 @@ on:
     paths:
       - "09_INFRASTRUCTURE_AGENTIQUE/prototype/**"
       - "09_INFRASTRUCTURE_AGENTIQUE/gateway/**"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/**"
       - ".github/workflows/rce-prototype.yml"
   push:
     branches:
@@ -29,6 +30,9 @@ jobs:
           python-version: "3.11"
       - name: Run standard-library unit tests
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prototype
+        run: python -m unittest -v
+      - name: Run adaptive prism planner unit tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
         run: python -m unittest -v
       - name: Run MCP gateway unit tests
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/gateway
