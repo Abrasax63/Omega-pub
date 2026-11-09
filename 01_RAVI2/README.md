@@ -90,3 +90,7 @@ Le lot 03 réconcilie Discovery v0.2, Structural Graph v0.2, le benchmark de ran
 - [Réconciliation des revues et audits historiques — lot 04 (10 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT04_2026-11-09.md)
 
 Le lot 04 couvre les 42 enregistrements SQLite sans carte individuelle, les récupérations et empreintes de sources, les rejeux historiques V19/Mealy, l'assemblage orienté D5/C5 et les certificats/revues Two Equal Gaps. Il conserve les limites de reproductibilité et l'originalité indéterminée.
+
+- [Réconciliation des revues et audits historiques — lot 05 (5 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT05_2026-11-09.md)
+
+Le lot 05 clôt les cinq derniers chemins de reviews de l'inventaire : fibre paire→mauvais objet, reconstruction N11, capacités et région de coexistence V19, ainsi que vérification technique SQLite v33. Le statut P4 reste explicitement à réexaminer.
