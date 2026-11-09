@@ -242,6 +242,7 @@ def append_events(path: Path, events: list[dict[str, Any]]) -> dict[str, Any]:
         path.parent.mkdir(parents=True, exist_ok=True)
         expected = GENESIS
     # Re-chain the new batch to the current tail without changing prior lines.
+    verify_events(events)  # Reject malformed or tampered source batches before re-chaining.
     chained = []
     previous = expected
     for original in events:
