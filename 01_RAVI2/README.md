@@ -50,3 +50,5 @@ Ce registre est un inventaire documentaire partiel. Il ne constitue ni une nouve
 Ce premier lot classe le contenu de 11 fiches lues intégralement. Les statuts restent ceux déclarés par les sources et sont marqués non réaudités ; aucun script n'a été exécuté et aucune certification n'a été renouvelée. Les autres briques, revues et artefacts restent à traiter.
 
 - [Réconciliation sémantique des briques — lot 02 (11 fichiers, 9 novembre 2026)](RECONCILIATION_SEMANTIQUE_BRIQUES_LOT02_2026-11-09.md)
+
+- [Réconciliation sémantique des briques — lot 03, noyau V19 C5/L=3 (11 fichiers, 9 novembre 2026)](RECONCILIATION_SEMANTIQUE_BRIQUES_LOT03_2026-11-09.md)
