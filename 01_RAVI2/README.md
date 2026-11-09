@@ -32,3 +32,10 @@ Le cas C4, L=2 est un pilote interne documenté dans le module mathématique. Il
 Le protocole distingue publication, énoncé, preuve, instrument, application et certification. Un instrument extrait n'est pas automatiquement nouveau, correct, formalisé ou transférable.
 
 Le cas C4, L=2 est un pilote interne documenté dans le module mathématique. Il ne constitue pas une extraction démontrée depuis le corpus externe OpenAI.
+
+
+## Provenance et inventaire historique
+
+- [Registre initial des certificats et artefacts de vérification historiques (9 novembre 2026)](REGISTRE_CERTIFICATS_HISTORIQUES_2026-11-09.md)
+
+Ce registre est un inventaire documentaire partiel. Il ne constitue ni une nouvelle certification, ni une intégration complète des sources dans l'architecture agentique.
