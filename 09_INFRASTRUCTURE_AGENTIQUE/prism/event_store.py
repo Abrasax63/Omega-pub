@@ -241,8 +241,17 @@ def append_events(path: Path, events: list[dict[str, Any]]) -> dict[str, Any]:
     else:
         path.parent.mkdir(parents=True, exist_ok=True)
         expected = GENESIS
-    state = verify_events(events, previous_hash=expected)
-    rendered = "".join(_canonical(event) + "\n" for event in events)
+    # Re-chain the new batch to the current tail without changing prior lines.
+    chained = []
+    previous = expected
+    for original in events:
+        event = dict(original)
+        event["previous_hash"] = previous
+        event["event_hash"] = _event_hash(event)
+        chained.append(event)
+        previous = event["event_hash"]
+    state = verify_events(chained, previous_hash=expected)
+    rendered = "".join(_canonical(event) + "\\n" for event in chained)
     try:
         with path.open("a", encoding="utf-8", newline="") as handle:
             handle.write(rendered)
