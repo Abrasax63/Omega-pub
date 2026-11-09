@@ -64,3 +64,7 @@ Le lot 05 classe 11 reconstitutions documentaires (observabilité, spectres de d
 - [Réconciliation sémantique des briques — lot 06, clôture des reconstitutions (15 fichiers, 9 novembre 2026)](RECONCILIATION_SEMANTIQUE_BRIQUES_LOT06_2026-11-09.md)
 
 Le lot 06 classe les 15 reconstitutions restantes. Les 32/32 reconstitutions du corpus historique sont désormais classées documentairement. Les statuts restent historiques, non réaudités ; aucune preuve ou exécution n'a été renouvelée.
+
+- [Réconciliation sémantique des briques — lot 07, mémoire prédictive et temps (11 fichiers, 9 novembre 2026)](RECONCILIATION_SEMANTIQUE_BRIQUES_LOT07_2026-11-09.md)
+
+Le lot 07 classe 11 briques originales sur les processus/mémoires prédictifs, les coûts d'extension comportementale, la complexité des mots temporels, la détection finie et les facteurs d'évidence. Les statuts restent historiques, non réaudités ; aucun script ni calcul n'a été rejoué et aucune certification n'est renouvelée.
