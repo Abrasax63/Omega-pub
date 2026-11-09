@@ -94,3 +94,7 @@ Le lot 04 couvre les 42 enregistrements SQLite sans carte individuelle, les réc
 - [Réconciliation des revues et audits historiques — lot 05 (5 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT05_2026-11-09.md)
 
 Le lot 05 clôt les cinq derniers chemins de reviews de l'inventaire : fibre paire→mauvais objet, reconstruction N11, capacités et région de coexistence V19, ainsi que vérification technique SQLite v33. Le statut P4 reste explicitement à réexaminer.
+
+- [Réconciliation des revues et audits historiques — lot 06 (2 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT06_2026-11-09.md)
+
+Le lot 06 clôt les deux chemins restants : consolidation SQLite v33 et Discovery v0.1. Les 47 chemins du dossier `reviews/` de l'inventaire historique sont maintenant couverts par une lecture documentaire, en tenant compte des audits déjà lus avant les lots.
