@@ -96,3 +96,29 @@ Tests P3 :
 ```bash
 python -m unittest -v
 ```
+
+## P4 — Journal d'événements append-only
+
+`event_store.py` ajoute un journal JSONL chaîné par empreintes SHA-256.
+Il réutilise les objets P1/P2/P3 et produit les événements
+`mission_planned`, `context_prepared`, `perspective_recorded` et
+`execution_closed`.
+
+- `lifecycle_events(plan, context_bundle, run)` construit les événements
+  d'un cycle sans recopier le texte de la mission, les documents du contexte
+  ni les sorties de perspectives : seuls les identifiants, statuts,
+  références, métadonnées et empreintes sont journalisés.
+- `append_events(path, events)` vérifie la chaîne existante puis ajoute un
+  lot sans tronquer ni réécrire le journal.
+- `read_ledger(path)` relit et vérifie l'intégrité de toute la chaîne.
+
+Le chemin du journal est fourni explicitement par l'appelant. Le module ne
+choisit pas de destination dans le dépôt et n'écrit rien automatiquement.
+Un journal valide établit l'intégrité documentaire de la séquence, pas la
+vérité des sorties, leur indépendance ou une certification RAVI-2.
+
+Tests P4 :
+
+```bash
+python -m unittest -v
+```
