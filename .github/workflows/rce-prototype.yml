@@ -13,6 +13,7 @@ on:
     paths:
       - "09_INFRASTRUCTURE_AGENTIQUE/prototype/**"
       - "09_INFRASTRUCTURE_AGENTIQUE/gateway/**"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/**"
       - ".github/workflows/rce-prototype.yml"
 
 permissions:
