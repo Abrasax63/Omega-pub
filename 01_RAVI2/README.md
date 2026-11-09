@@ -54,3 +54,8 @@ Ce premier lot classe le contenu de 11 fiches lues intégralement. Les statuts r
 - [Réconciliation sémantique des briques — lot 03, noyau V19 C5/L=3 (11 fichiers, 9 novembre 2026)](RECONCILIATION_SEMANTIQUE_BRIQUES_LOT03_2026-11-09.md)
 
 - [Réconciliation sémantique des briques — lot 04, capacités et reconstitutions V19 (11 fichiers, 9 novembre 2026)](RECONCILIATION_SEMANTIQUE_BRIQUES_LOT04_2026-11-09.md)
+
+
+- [Réconciliation sémantique des briques — lot 05, reconstitutions transversales (11 fichiers, 9 novembre 2026)](RECONCILIATION_SEMANTIQUE_BRIQUES_LOT05_2026-11-09.md)
+
+Le lot 05 classe 11 reconstitutions documentaires (observabilité, spectres de défauts, surveillance Mealy et lemmes externes sur diagrammes de Brauer/relations). Les statuts restent ceux des enregistrements historiques ; aucune preuve ni aucun test n'a été rejoué et aucun certificat n'est renouvelé.
