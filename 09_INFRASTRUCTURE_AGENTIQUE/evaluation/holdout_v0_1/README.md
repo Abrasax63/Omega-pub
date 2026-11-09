@@ -1,29 +1,30 @@
-# Jeu pilote P5 — version 0.1
+# Jeu pilote P5 — v0.1 (développement public, non aveugle)
 
-**Statut :** jeu pilote construit ; gel documentaire à ce commit ; pas encore exécuté.  
-**Taille :** 5 cas, un par strate.  
-**Usage :** test exploratoire initial, pas benchmark statistiquement puissant.
+**Statut :** cinq cas publics de développement ; aucune campagne A/B/C exécutée.  
+**Usage autorisé :** tests fonctionnels, essais de prompts et démonstrations non aveugles.  
+**Usage interdit comme preuve :** benchmark aveugle ou démonstration de supériorité.
 
 ## Fichiers
-- `cases.jsonl` : énoncés, livrables attendus et axes de notation.
-- `answer_key.jsonl` : éléments de correction et erreurs critiques. À conserver hors du contexte des systèmes évalués.
-- Les commits Git ci-dessous fixent la version des fichiers ; les empreintes SHA-256 devront être calculées dans l'environnement de collecte avant le lancement.
+- `cases.jsonl` : cinq énoncés publics, un par strate.
+- `answer_key.jsonl` : corrigé historiquement commité dans le dépôt public.
 
-## Avertissement de confidentialité
-Le dépôt est public. La séparation en fichiers ne rend donc PAS le corrigé secret : toute personne ayant accès à la branche peut le consulter. Pour une véritable évaluation aveugle, copier `answer_key.jsonl` dans un espace privé avant de soumettre les cas aux systèmes, puis retirer le corrigé du contexte des évaluateurs. Cette version est un pilote reproductible, pas un jeu de test secret.
+## Alerte de contamination
+
+Le corrigé est accessible dans l'historique et les copies du dépôt public. Il est donc **compromis comme secret**. Le déplacer, le supprimer ou réécrire la branche ne garantit pas l'effacement des clones, caches ou historiques. Ne pas utiliser v0.1 pour une évaluation prétendument aveugle.
+
+Pour un essai aveugle, créer un holdout v0.2 avec de nouveaux cas et garder son corrigé dans un espace privé, hors de portée des systèmes et évaluateurs pendant la génération. Le dépôt public ne doit contenir que les cas destinés aux systèmes et une empreinte du corrigé privé, pas son contenu.
 
 ## Limites
-- 5 cas seulement : insuffisant pour conclure statistiquement à une supériorité générale.
-- Un cas par strate ne permet pas d'estimer correctement les effets de domaine.
-- Le cas documentaire est fondé sur RFC 9110, source primaire.
-- Les cas formels et calculatoires ont des corrigés déterministes ; le cas exploratoire est évalué sur la calibration et la qualité des contre-modèles, pas sur une réponse unique.
-- Aucun résultat A/B/C n'est inclus. Aucune campagne n'a été lancée.
-- Ce jeu doit rester inchangé après le premier lancement. Toute modification ultérieure crée une nouvelle version et doit être testée sur un autre jeu tenu à l'écart.
+- Cinq cas ne permettent aucune conclusion statistique générale.
+- Un cas par strate ne permet pas d'estimer les effets de domaine.
+- Le cas documentaire s'appuie sur la RFC 9110, sections 9.2.1 et 9.2.2 : https://www.rfc-editor.org/rfc/rfc9110.html
+- Aucun résultat A/B/C, aucune notation indépendante et aucune analyse statistique ne sont présents.
 
-## Procédure de gel
-1. Vérifier les empreintes.
-2. Copier le corrigé dans un espace privé.
-3. Geler les prompts et le barème avant toute génération.
-4. Générer A/B/C en sessions séparées.
-5. Randomiser et masquer les bras avant notation.
-6. Ne déverrouiller les bras qu'après gel des notes.
+## Gel avant une future campagne v0.2
+1. Préparer les cas et le corrigé privé indépendamment.
+2. Faire relire les critères par une personne non impliquée dans la génération.
+3. Calculer et enregistrer les empreintes SHA-256 avant les essais.
+4. Pré-enregistrer modèles, versions, prompts, outils, budgets, randomisation et barème.
+5. Générer A/B/C en sessions séparées, sans corrigé.
+6. Faire noter chaque sortie par au moins deux évaluateurs indépendants, à l'aveugle.
+7. Figer les notes avant arbitrage et dévoilement des bras.
