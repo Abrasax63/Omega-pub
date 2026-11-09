@@ -15,7 +15,7 @@ Ce registre rend les artefacts retrouvés navigables et sépare leur nature. Il 
 
 L'audit final de la migration historique du 4 novembre recensait dans la branche source :
 - 94 fichiers sous `research/bricks/`, dont 32 fiches explicitement marquées comme reconstitutions non originales ;
-- 42 fichiers sous `reviews/` ;
+- 47 fichiers sous `reviews/` ;
 - 44 fichiers sous `reproducibility/` ;
 - 5 documents de méthode, 14 fichiers de programmes, 5 fichiers de code et 11 fichiers de données.
 
