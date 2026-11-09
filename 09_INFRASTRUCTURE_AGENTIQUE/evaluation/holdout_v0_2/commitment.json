@@ -1,0 +1,19 @@
+{
+  "holdout_id": "P5-HOLDOUT-2026-11-09-v0.2",
+  "protocol_version": "0.2",
+  "created_date_utc": "2026-11-09",
+  "hash_algorithm": "SHA-256",
+  "encoding": "UTF-8",
+  "newline": "LF; final newline included",
+  "public_cases": {
+    "file": "cases.jsonl",
+    "sha256": "7826c9cb3262d09e2cc47c8547353be95786bcd87e4b92c4be453bb0f4a85a66",
+    "count": 5
+  },
+  "private_answer_key": {
+    "file": "answer_key.private.json",
+    "sha256": "6e22868dc702d951fec0fa9a27629c57be50711e1afacf349bb5261716dc81c3",
+    "publication_status": "PRIVATE_NOT_IN_REPOSITORY"
+  },
+  "experiment_status": "NOT_RUN"
+}
