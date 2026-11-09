@@ -135,6 +135,8 @@ def prepare_contexts(
         "context_preparer_version": VERSION,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "mission": {
+            **{key: mission[key] for key in ("mission_id", "domain", "scope", "exclusions", "constraints")
+               if key in mission},
             "question": question.strip(),
             "mission_type": mission.get("mission_type"),
             "known_ids": known_ids,
