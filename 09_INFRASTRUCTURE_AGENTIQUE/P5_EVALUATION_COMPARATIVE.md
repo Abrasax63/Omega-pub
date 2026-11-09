@@ -1,88 +1,104 @@
 # P5 — protocole d’évaluation comparative du prisme Omega
 
-**Version :** 0.1  
-**Statut :** protocole et validateur implémentés ; aucune campagne A/B/C exécutée  
-**Branche :** `architecture/memoire-agentique-native-2026-11-05`  
-**Périmètre :** évaluer l’utilité du routage adaptatif, pas valider des résultats scientifiques.
+**Version :** 0.2 — durcissement pré-enregistrement  
+**Statut :** protocole préparé ; pilote non lancé ; aucune sortie A/B/C ni notation humaine  
+**Branche de correction :** `audit/p5-hardening-2026-11-09`  
+**Périmètre :** mesurer l’utilité du routage adaptatif, jamais certifier une vérité scientifique.
 
-## 1. Question évaluée
+## 1. Question et hypothèse nulle
 
-Sur un ensemble de missions fixé avant l’essai, la configuration C (prisme adaptatif) améliore-t-elle la qualité des réponses par rapport à A (ChatGPT sans décomposition explicite) et B (prisme fixe), à budget comparable ?
+Question : sur les mêmes missions, C (routage adaptatif) produit-il de meilleurs résultats que A (réponse directe) et B (rôles fixes), à ressources comparables ?
 
-Aucun gain n’est présumé. Une absence de gain, une régression ou un résultat indéterminé sont des issues recevables.
+Hypothèse nulle opérationnelle : aucune amélioration de C n’est présumée. Une égalité, une régression ou des résultats indéterminés sont des issues recevables. Le pilote à cinq cas est exploratoire et ne permet pas une conclusion statistique générale.
 
 ## 2. Bras comparés
 
-- **A — référence :** réponse directe de l’agent principal, sans plan de perspectives explicite.
-- **B — prisme fixe :** même agent principal, rôles préétablis identiques pour toutes les missions pertinentes.
-- **C — prisme adaptatif :** plan produit par `planner.py`, rôles sélectionnés et justifiés selon la mission.
+- **A — référence :** réponse directe, sans décomposition explicite.
+- **B — fixe :** même modèle principal, ensemble de rôles fixé avant l’essai et appliqué de manière constante.
+- **C — adaptatif :** plan produit par le planificateur adaptatif de la version testée.
 
-Les trois bras utilisent le même modèle disponible, la même version/configuration autant que possible, les mêmes outils autorisés, le même contexte de départ et le même budget maximal. Toute différence inévitable est consignée. Les perspectives de B et C sont des rôles du même agent principal, pas des agents indépendants.
+Les rôles de B et C sont des perspectives d’un même agent, non des agents indépendants. Il faut donc parler de « perspectives » et non de validation multi-agent indépendante.
 
-## 3. Jeu d’évaluation tenu à l’écart
+## 3. Gel des cas et contamination du corrigé
 
-Le jeu doit être gelé avant les essais et ne doit pas avoir servi à modifier le planificateur, les prompts ou les règles de notation.
+Le jeu pilote v0.1 contient cinq cas, un par strate. Il est trop petit pour estimer un effet de domaine ou une supériorité générale.
 
-Strates minimales :
-1. problèmes formels avec hypothèses et quantificateurs ;
-2. cas finis/calculables avec résultat de référence reproductible ;
-3. questions documentaires nécessitant des sources primaires ;
-4. missions exploratoires avec plusieurs hypothèses concurrentes ;
-5. cas adversariaux contenant ambiguïtés, données manquantes ou prémisses fausses.
+**Alerte critique :** le corrigé v0.1 a été commité dans un dépôt public. Il doit être considéré comme compromis et ne peut plus servir de corrigé secret pour une évaluation véritablement aveugle. Le supprimer aujourd’hui ne supprimerait pas les copies, clones ou historiques déjà accessibles. Ne pas lancer une notation aveugle avec ce corrigé.
 
-Pour chaque cas, un responsable prépare avant l’essai : identifiant, énoncé exact, périmètre, corrigé ou critères de décision, sources de référence, pièges connus, tests discriminants et limites du corrigé. Les cas et corrigés sont conservés séparément des sorties évaluées. Le jeu final n’est pas encore constitué par ce commit.
+Pour poursuivre un test réellement aveugle :
+1. créer un nouveau jeu v0.2 indépendant, sans réutiliser les énoncés exacts v0.1 ;
+2. garder le corrigé et les critères détaillés dans un espace privé non accessible aux systèmes évalués ni aux évaluateurs pendant la génération ;
+3. ne publier dans le dépôt public que les identifiants, la procédure et les empreintes cryptographiques du jeu/corrigé, jamais le corrigé ;
+4. faire vérifier le contenu et le corrigé par un responsable qui ne participe pas à la génération ni à la notation ;
+5. enregistrer les empreintes avant les essais et ne modifier ensuite ni cas, ni barème, ni prompts.
 
-## 4. Procédure
+Le jeu v0.1 peut rester un jeu de développement/public, mais ses résultats ne devront pas être présentés comme aveugles si les réponses de référence ont été exposées aux systèmes ou aux évaluateurs.
 
-1. Geler le jeu, les critères, les budgets et les versions ; calculer les empreintes des fichiers.
-2. Générer A, B et C pour chaque cas dans des sessions séparées, avec ordre aléatoire. Ne pas exposer les sorties d’un bras aux autres.
-3. Capturer les prompts, contextes, outils réellement utilisés, versions, temps, appels, coûts disponibles, erreurs et sorties brutes.
-4. Remplacer les étiquettes A/B/C par des identifiants opaques avant notation. L’évaluateur ne doit pas connaître le bras.
-5. Faire noter chaque sortie par au moins deux évaluateurs indépendants, sans accès à l’identité du bras ni aux notes de l’autre évaluateur.
-6. Résoudre les désaccords selon une règle préenregistrée ; conserver les notes initiales et l’arbitrage.
-7. Déverrouiller les étiquettes seulement après gel des notes.
-8. Rapporter les résultats par strate, les différences appariées, les intervalles d’incertitude, les échecs et les cas où les évaluateurs ne peuvent pas trancher.
+## 4. Pré-enregistrement obligatoire
 
-Si deux évaluateurs réellement indépendants ne sont pas disponibles, le rapport doit le dire et ne pas qualifier la notation d’indépendante.
+Avant la première génération, remplir et verrouiller un manifeste contenant au minimum :
 
-## 5. Grille de notation humaine
+- identifiant/version et empreinte SHA-256 de chaque cas ;
+- empreinte du corrigé privé, non publié ;
+- identifiant exact du modèle, fournisseur, version/snapshot et paramètres ;
+- date/heure, environnement et limites de contexte ;
+- prompt système et prompt utilisateur exacts de A, B et C ;
+- commit Git du planificateur et configuration de B ;
+- outils autorisés, versions et règles d’accès aux sources ;
+- budget maximal par cas et par bras (tokens ou autre unité disponible), nombre maximal d’appels et plafond de durée ;
+- ordre de génération randomisé et graine conservée ;
+- règles de gestion des erreurs, interruptions et données manquantes ;
+- barème et règle d’arbitrage ;
+- identité/indépendance des évaluateurs, conservée séparément des réponses.
 
-Chaque dimension est notée de 0 à 4 selon un guide défini avant l’essai :
+Ne pas inventer les valeurs manquantes : inscrire « non disponible » ou bloquer le lancement jusqu’à décision. Les budgets doivent être identiques ou leurs écarts consignés explicitement. Aucun résultat ne doit être comparé si les conditions ne sont pas suffisamment comparables.
 
-- exactitude et respect du corrigé ;
-- validité des justifications et adéquation des sources ;
-- qualité des tentatives de réfutation et détection des contre-exemples ;
-- calibration : incertitudes, limites et refus de conclure quand il le faut ;
-- traçabilité : possibilité de reconstruire les opérations et provenances ;
-- conservation des désaccords et des hypothèses concurrentes.
+## 5. Génération
 
-Les évaluateurs comptent séparément les affirmations factuelles non étayées, les erreurs matérielles et les contre-exemples pertinents manqués. Une réponse plus longue ou comportant plus de rôles ne reçoit aucun crédit par elle-même.
+Pour chaque cas :
+1. lancer A, B et C dans des sessions séparées et réinitialisées ;
+2. randomiser l’ordre des bras par cas ;
+3. ne pas transmettre les réponses d’un bras à un autre ;
+4. utiliser le même énoncé et le même contexte initial ;
+5. capturer prompt exact, contexte, commit, modèle, outils, appels, tokens/coûts disponibles, durée, erreurs et sortie brute ;
+6. conserver la correspondance entre identifiants opaques et bras dans un fichier séparé, privé et non transmis aux évaluateurs.
 
-Le score global ne doit pas masquer les dimensions : publier chaque dimension et les comptages séparément. Le protocole ne fixe pas de pondération composite avant validation du guide.
+Aucun bras ne doit accéder au corrigé privé.
 
-## 6. Mesures opérationnelles
+## 6. Notation aveugle
 
-Pour chaque bras et chaque cas, enregistrer :
-- durée murale ;
-- nombre d’appels et d’outils ;
-- coût observé, ou « non disponible » ;
-- taux d’échec technique ;
-- nombre de perspectives planifiées, réellement exécutées et non exécutées ;
-- erreurs matérielles, affirmations non étayées et contre-exemples pertinents manqués.
+- Au moins deux évaluateurs réellement indépendants doivent noter chaque sortie.
+- Chaque évaluateur note les trois sorties de chaque cas, avec des identifiants opaques, sans connaître les bras ni les notes de l’autre.
+- Les évaluateurs ne doivent pas avoir participé à la conception des réponses évaluées ni avoir accès au corrigé secret pendant la génération.
+- Les notes initiales sont figées avant arbitrage et avant dévoilement des bras.
+- Les désaccords sont arbitrés selon une règle pré-enregistrée ; notes initiales et arbitrage restent séparés.
+- Si ces conditions ne sont pas réunies, qualifier l’évaluation de non aveugle ou non indépendante, jamais d’indépendante.
 
-Comparer les bras à budget comparable. Si les budgets diffèrent, présenter le compromis qualité/coût plutôt que d’attribuer tout écart à l’adaptativité.
+## 7. Grille et mesures
 
-## 7. Analyse et décision
+Chaque dimension est notée de 0 à 4 :
+- exactitude ;
+- justification et qualité des sources ;
+- réfutation et contre-exemples ;
+- calibration et reconnaissance des limites ;
+- traçabilité ;
+- préservation des désaccords et hypothèses concurrentes.
 
-- Analyse principale appariée par cas ; publier les résultats par strate et globalement.
-- Rapporter les effectifs, données manquantes, désaccords inter-évaluateurs et intervalles d’incertitude.
-- Ne pas traiter les cas d’un même domaine comme des observations nécessairement indépendantes.
-- Ne pas modifier le planificateur à partir du jeu tenu à l’écart. Toute adaptation crée une nouvelle version et exige un nouveau jeu de test.
-- Conclure séparément sur qualité, traçabilité, coût/latence et robustesse.
-- « Amélioration démontrée » exige un protocole préenregistré, un échantillon adéquat, une évaluation réellement aveugle et indépendante, et des résultats robustes. Sinon : « indéterminé » ou « signal exploratoire ».
+Compter séparément les affirmations non étayées, erreurs matérielles et contre-exemples manqués. La longueur et le nombre de rôles ne donnent aucun point en soi.
 
-## 8. Limites et état actuel
+Mesures opérationnelles : durée, appels/outils, tokens et coût si disponibles, échecs, perspectives planifiées/exécutées, erreurs et données manquantes. Publier chaque dimension séparément ; ne pas inventer de score composite ni de pondération après observation des résultats.
 
-Ce dépôt contient le protocole et un validateur structurel de notes. Il ne contient pas encore de jeu d’évaluation gelé, de sorties A/B/C, de notation indépendante ni de calcul de significativité. Le validateur vérifie la forme et la cohérence des enregistrements ; il ne juge pas la vérité d’une réponse et ne produit aucune certification RAVI-2.
+## 8. Analyse et conclusion
 
-Le module P1–P4 reste un prototype supervisé. Il n’exécute pas lui-même les bras A/B/C et ne lance pas de modèles.
+- Comparaison appariée par cas ; présenter chaque cas et chaque strate.
+- Décrire les effectifs, données manquantes, désaccords et incertitudes.
+- Ne pas traiter cinq cas hétérogènes comme un échantillon représentatif.
+- Distinguer qualité, coût/latence, traçabilité et robustesse.
+- Toute modification du planificateur après examen du jeu exige une nouvelle version de test indépendante.
+- Conclusion autorisée pour v0.1 : seulement « signal exploratoire » ou « indéterminé ». « Amélioration démontrée » exige un échantillon adéquat, un protocole pré-enregistré, des évaluateurs indépendants et des résultats robustes.
+
+## 9. Capacités et limites du validateur
+
+Le validateur v0.2 contrôle la structure des notes : trois sorties opaques par cas, au moins deux évaluateurs communs à toutes les sorties d’un cas, couverture des cas attendus, absence de doublons et valeurs numériques finies. Il ne vérifie pas l’identité réelle ou l’indépendance des évaluateurs, la randomisation, l’aveuglement, la qualité du corrigé ou la vérité des réponses. Il ne calcule aucune significativité et ne délivre aucune certification RAVI-2.
+
+Le prototype P1–P4 ne lance pas de modèles ni les bras A/B/C. La génération et la collecte doivent donc être conduites et consignées séparément.
