@@ -22,16 +22,16 @@ Les rôles de B et C sont des perspectives d’un même agent, non des agents in
 
 ## 3. Gel des cas et contamination du corrigé
 
-Le jeu pilote v0.1 contient cinq cas, un par strate. Il est trop petit pour estimer un effet de domaine ou une supériorité générale.
+Le jeu pilote v0.1 contient cinq cas, un par strate. Il est trop petit pour estimer un effet de domaine ou une supériorité générale. Un nouveau holdout v0.2 de cinq cas a maintenant été créé : [énoncés publics](evaluation/holdout_v0_2/cases.jsonl), [notice et règles de confidentialité](evaluation/holdout_v0_2/README.md), [engagement SHA-256](evaluation/holdout_v0_2/commitment.json). Son corrigé reste hors du dépôt public. La création du jeu ne signifie pas que la campagne a été lancée.
 
 **Alerte critique :** le corrigé v0.1 a été commité dans un dépôt public. Il doit être considéré comme compromis et ne peut plus servir de corrigé secret pour une évaluation véritablement aveugle. Le supprimer aujourd’hui ne supprimerait pas les copies, clones ou historiques déjà accessibles. Ne pas lancer une notation aveugle avec ce corrigé.
 
-Pour poursuivre un test réellement aveugle :
-1. créer un nouveau jeu v0.2 indépendant, sans réutiliser les énoncés exacts v0.1 ;
-2. garder le corrigé et les critères détaillés dans un espace privé non accessible aux systèmes évalués ni aux évaluateurs pendant la génération ;
-3. ne publier dans le dépôt public que les identifiants, la procédure et les empreintes cryptographiques du jeu/corrigé, jamais le corrigé ;
-4. faire vérifier le contenu et le corrigé par un responsable qui ne participe pas à la génération ni à la notation ;
-5. enregistrer les empreintes avant les essais et ne modifier ensuite ni cas, ni barème, ni prompts.
+Avant le lancement du holdout v0.2 :
+1. conserver le corrigé et les critères détaillés dans un espace privé, hors d'accès des systèmes évalués et des évaluateurs pendant la génération ;
+2. faire vérifier le contenu et le corrigé par un responsable qui ne participe ni à la génération ni à la notation ;
+3. compléter et geler la [fiche de pré-enregistrement](P5_PREREGISTRATION_TEMPLATE.md), sans inventer les valeurs manquantes ;
+4. confirmer les empreintes publiées dans le manifeste et ne modifier ensuite ni cas, ni corrigé, ni barème, ni prompts ;
+5. lancer seulement lorsque les trois bras, les budgets comparables et deux évaluateurs indépendants sont effectivement disponibles.
 
 Le jeu v0.1 peut rester un jeu de développement/public, mais ses résultats ne devront pas être présentés comme aveugles si les réponses de référence ont été exposées aux systèmes ou aux évaluateurs.
 
@@ -96,7 +96,7 @@ Mesures opérationnelles : durée, appels/outils, tokens et coût si disponibles
 - Ne pas traiter cinq cas hétérogènes comme un échantillon représentatif.
 - Distinguer qualité, coût/latence, traçabilité et robustesse.
 - Toute modification du planificateur après examen du jeu exige une nouvelle version de test indépendante.
-- Conclusion autorisée pour v0.1 : seulement « signal exploratoire » ou « indéterminé ». « Amélioration démontrée » exige un échantillon adéquat, un protocole pré-enregistré, des évaluateurs indépendants et des résultats robustes.
+- Avec cinq cas, v0.1 ou v0.2 ne peuvent produire qu'un signal exploratoire ou un verdict indéterminé ; aucune conclusion statistique générale n'est autorisée. « Amélioration démontrée » exige un échantillon adéquat, un protocole pré-enregistré, des évaluateurs indépendants et des résultats robustes.
 
 ## 9. Capacités et limites du validateur
 
