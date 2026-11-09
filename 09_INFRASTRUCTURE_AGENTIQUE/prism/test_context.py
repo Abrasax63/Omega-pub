@@ -43,6 +43,7 @@ class PrismContextTests(unittest.TestCase):
                 "known_ids": ["BR-01", "CL-DYN-01"],
             })
             bundle = prepare_contexts(root, plan)
+            self.assertEqual(bundle["mission"]["known_ids"], ["BR-01", "CL-DYN-01"])
             for package in bundle["packages"]:
                 records = {x["requested_id"]: x["retrieval"] for x in package["exact_retrievals"]}
                 self.assertEqual(records["BR-01"]["record_type"], "registered_index_entry")
