@@ -137,14 +137,28 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
         {"role": role, "reason": reasons[role]}
         for role in ROLE_ORDER if not active[role]
     ]
+    mission_context = {
+        "question": question.strip(),
+        "mission_type": mission_type,
+        "flags": flags,
+    }
+    for field in ("mission_id", "domain", "scope"):
+        if field in mission:
+            value = mission[field]
+            if not isinstance(value, str) or not value.strip():
+                raise MissionValidationError(f"'{field}' must be a non-empty string")
+            mission_context[field] = value.strip()
+    for field in ("exclusions", "known_ids", "constraints"):
+        if field in mission:
+            value = mission[field]
+            if not isinstance(value, list) or any(not isinstance(item, str) or not item.strip() for item in value):
+                raise MissionValidationError(f"'{field}' must be a list of non-empty strings")
+            mission_context[field] = list(dict.fromkeys(item.strip() for item in value))
+
     return {
         "planner": "omega-adaptive-prism",
         "planner_version": VERSION,
-        "mission": {
-            "question": question.strip(),
-            "mission_type": mission_type,
-            "flags": flags,
-        },
+        "mission": mission_context,
         "selection_policy": "explicit_rules_v1",
         "tasks": tasks,
         "inactive_roles": inactive,
