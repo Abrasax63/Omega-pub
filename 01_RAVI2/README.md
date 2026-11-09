@@ -86,3 +86,7 @@ Le lot 02 couvre la couverture de migration, l'audit PR #2, C4/L=2, la complexit
 - [Réconciliation des revues et audits historiques — lot 03 (10 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT03_2026-11-09.md)
 
 Le lot 03 réconcilie Discovery v0.2, Structural Graph v0.2, le benchmark de ranking, les cinq phases de contrats stricts v1.3 et les audits de recherche/restauration des cartes. Les couches de triage et de compatibilité interne restent distinctes de la preuve scientifique.
+
+- [Réconciliation des revues et audits historiques — lot 04 (10 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT04_2026-11-09.md)
+
+Le lot 04 couvre les 42 enregistrements SQLite sans carte individuelle, les récupérations et empreintes de sources, les rejeux historiques V19/Mealy, l'assemblage orienté D5/C5 et les certificats/revues Two Equal Gaps. Il conserve les limites de reproductibilité et l'originalité indéterminée.
