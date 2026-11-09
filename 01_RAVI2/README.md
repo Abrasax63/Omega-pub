@@ -72,3 +72,9 @@ Le lot 07 classe 11 briques originales sur les processus/mémoires prédictifs, 
 - [Réconciliation sémantique des briques — lot 08, règle 90, oscillations, opérateurs de Schrödinger et certificats NS (13 fichiers, 9 novembre 2026)](RECONCILIATION_SEMANTIQUE_BRIQUES_LOT08_2026-11-09.md)
 
 Le lot 08 classe les 13 briques originales restantes : une brique Règle 90, trois briques de construction oscillatoire/localisation, deux briques d'opérateurs de Schrödinger, six sous-certificats élémentaires Navier–Stokes et un assemblage composite. Les statuts demeurent historiques et non réaudités ; aucun calcul ou script n'a été rejoué.
+
+## Revues et audits historiques
+
+- [Réconciliation des revues et audits historiques — lot 01 (10 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT01_2026-11-09.md)
+
+Le lot 01 rapproche dix audits portant sur les correspondances SQLite/cartes, l'accessibilité et le quotient prédictif, les certifications Navier–Stokes, la correspondance OpenAI/Lei–Ren, V19–C5, l'observabilité temporelle et les 32 reconstitutions. Il conserve explicitement les limites historiques : aucune promotion de statut, aucun rejeu, aucune écriture SQLite.
