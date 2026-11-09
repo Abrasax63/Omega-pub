@@ -39,3 +39,5 @@ Le cas C4, L=2 est un pilote interne documenté dans le module mathématique. Il
 - [Registre initial des certificats et artefacts de vérification historiques (9 novembre 2026)](REGISTRE_CERTIFICATS_HISTORIQUES_2026-11-09.md)
 
 Ce registre est un inventaire documentaire partiel. Il ne constitue ni une nouvelle certification, ni une intégration complète des sources dans l'architecture agentique.
+
+- [Inventaire exhaustif des 185 artefacts historiques et empreintes Git (9 novembre 2026)](INVENTAIRE_EXHAUSTIF_CORPUS_HISTORIQUE_2026-11-09.md)
