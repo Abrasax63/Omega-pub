@@ -78,3 +78,7 @@ Le lot 08 classe les 13 briques originales restantes : une brique Règle 90, tro
 - [Réconciliation des revues et audits historiques — lot 01 (10 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT01_2026-11-09.md)
 
 Le lot 01 rapproche dix audits portant sur les correspondances SQLite/cartes, l'accessibilité et le quotient prédictif, les certifications Navier–Stokes, la correspondance OpenAI/Lei–Ren, V19–C5, l'observabilité temporelle et les 32 reconstitutions. Il conserve explicitement les limites historiques : aucune promotion de statut, aucun rejeu, aucune écriture SQLite.
+
+- [Réconciliation des revues et audits historiques — lot 02 (10 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT02_2026-11-09.md)
+
+Le lot 02 couvre la couverture de migration, l'audit PR #2, C4/L=2, la complexité en facteurs, le pont temps-détection, la traçabilité des 32 reconstitutions, les instantanés SQLite v32/v33 et le graphe de conjectures. Il conserve explicitement le désaccord historique sur le statut de P4/L+2.
