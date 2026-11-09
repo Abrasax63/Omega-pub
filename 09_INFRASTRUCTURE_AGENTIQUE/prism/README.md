@@ -152,3 +152,28 @@ Tests P4 :
 ```bash
 python -m unittest -v
 ```
+
+
+## P5 — Évaluation comparative A/B/C
+
+Le protocole préenregistrable est décrit dans
+[`P5_EVALUATION_COMPARATIVE.md`](../P5_EVALUATION_COMPARATIVE.md). Il compare
+A (réponse directe), B (prisme fixe) et C (routage adaptatif) sur un jeu tenu
+à l'écart, avec notation humaine aveugle, plusieurs évaluateurs, mesures de
+qualité, traçabilité, coût et latence.
+
+`evaluation.py` valide les enregistrements de notation (dimensions 0–4,
+comptages d'erreurs, identifiants opaques et unicité des évaluations). Il ne
+note pas les réponses, ne révèle pas les bras et ne produit aucun verdict
+scientifique. Les notes initiales et les arbitrages doivent rester séparés.
+
+**État P5 :** protocole et validateur ajoutés ; campagne non exécutée. Aucun
+jeu tenu à l'écart, résultat A/B/C, évaluateur indépendant ou gain démontré
+n'est revendiqué. Le jeu, les corrigés et la procédure d'arbitrage doivent être
+gelés avant toute collecte.
+
+Tests P5 :
+
+```bash
+python -m unittest -v
+```
