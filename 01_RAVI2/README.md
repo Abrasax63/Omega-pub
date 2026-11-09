@@ -41,3 +41,10 @@ Le cas C4, L=2 est un pilote interne documenté dans le module mathématique. Il
 Ce registre est un inventaire documentaire partiel. Il ne constitue ni une nouvelle certification, ni une intégration complète des sources dans l'architecture agentique.
 
 - [Inventaire exhaustif des 185 artefacts historiques et empreintes Git (9 novembre 2026)](INVENTAIRE_EXHAUSTIF_CORPUS_HISTORIQUE_2026-11-09.md)
+
+
+## Réconciliation sémantique par lots
+
+- [Réconciliation sémantique des briques — lot 01 (11 fichiers, 9 novembre 2026)](RECONCILIATION_SEMANTIQUE_BRIQUES_LOT01_2026-11-09.md)
+
+Ce premier lot classe le contenu de 11 fiches lues intégralement. Les statuts restent ceux déclarés par les sources et sont marqués non réaudités ; aucun script n'a été exécuté et aucune certification n'a été renouvelée. Les autres briques, revues et artefacts restent à traiter.
