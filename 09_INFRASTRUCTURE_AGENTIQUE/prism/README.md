@@ -122,3 +122,33 @@ Tests P4 :
 ```bash
 python -m unittest -v
 ```
+
+## P4 — Journal de provenance append-only
+
+`event_store.py` réutilise le schéma commun
+`schemas/research-event.schema.json` et son modèle d'événements. Le schéma
+a été étendu avec `previous_hash` et `event_hash` pour détecter les
+altérations et préserver l'ordre append-only.
+
+- `lifecycle_events(plan, context_bundle, run)` convertit le cycle P1/P2/P3
+  en événements conformes au schéma commun : planification, récupération du
+  contexte, perspectives et clôture.
+- Les événements gardent l'acteur, le rôle, le statut d'exécution, l'espace
+  épistémique, les références, les empreintes et les limites.
+- Les contenus bruts de mission, les documents du contexte et les sorties
+  textuelles ne sont pas copiés dans le journal ; seules leurs empreintes
+  peuvent être enregistrées.
+- `append_events(path, events)` vérifie le journal existant et rattache le
+  nouveau lot à sa dernière empreinte sans réécrire les lignes antérieures.
+- `read_ledger(path)` vérifie toute la chaîne.
+
+Le chemin est fourni explicitement par l'appelant. Aucun journal n'est écrit
+automatiquement dans le dépôt ou dans la mémoire scientifique. Une chaîne
+intègre atteste l'intégrité du journal, pas la vérité d'une perspective, son
+indépendance ou sa certification RAVI-2.
+
+Tests P4 :
+
+```bash
+python -m unittest -v
+```
