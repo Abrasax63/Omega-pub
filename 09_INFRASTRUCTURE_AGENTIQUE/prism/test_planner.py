@@ -61,6 +61,22 @@ class AdaptivePrismPlannerTests(unittest.TestCase):
                 with self.assertRaises(MissionValidationError):
                     plan_mission(mission)
 
+
+    def test_structured_context_metadata_is_preserved(self):
+        plan = plan_mission({
+            "question": "Établir le lemme",
+            "mission_type": "mathematical",
+            "mission_id": "M-17",
+            "domain": "dynamique finie",
+            "scope": "Cas binaires de longueur 3",
+            "exclusions": ["pas de simulation"],
+            "known_ids": ["CL-DYN-01", "CL-DYN-02", "CL-DYN-01"],
+            "constraints": ["lecture seule"],
+        })
+        self.assertEqual(plan["mission"]["mission_id"], "M-17")
+        self.assertEqual(plan["mission"]["known_ids"], ["CL-DYN-01", "CL-DYN-02"])
+        self.assertEqual(plan["mission"]["exclusions"], ["pas de simulation"])
+
     def test_same_input_produces_same_plan(self):
         mission = {"question": "Question générale", "mission_type": "general"}
         self.assertEqual(plan_mission(mission), plan_mission(mission))
