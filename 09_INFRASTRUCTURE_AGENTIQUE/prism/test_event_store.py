@@ -59,8 +59,9 @@ class EventLedgerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "events.jsonl"
             append_events(path, events[:2])
-            previous = verify_events(events[:2])["last_hash"]
-            second = self._rechain(events[2:], previous)
+            # A second independently built batch is automatically linked to
+            # the persisted tail; no caller-side hash manipulation is needed.
+            second = lifecycle_events(self.plan, self.bundle, self.run)
             append_events(path, second)
             loaded = read_ledger(path)
             self.assertTrue(loaded["valid"])
