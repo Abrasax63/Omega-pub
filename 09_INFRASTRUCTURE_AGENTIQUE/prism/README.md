@@ -65,3 +65,34 @@ python -m unittest -v
 
 Les tests d'intégration du workflow vérifient aussi le RCE, la passerelle MCP
 et les tests de fumée des index du dépôt.
+
+## P3 — Exécution supervisée et enregistrement
+
+`execution.py` ajoute un registre d'exécution supervisée. Il démarre une
+session à partir du plan P1 et du bundle P2, puis accepte uniquement les
+sorties explicitement fournies pour chaque rôle. Une perspective terminée doit
+contenir son texte réel ; une perspective bloquée ou non exécutée ne peut pas
+être accompagnée d'une sortie fictive.
+
+API :
+
+- `start_execution(plan, context_bundle)` vérifie la correspondance de la
+  mission et l'existence d'un paquet de contexte par rôle ;
+- `record_perspective(run, role, status=..., output=..., evidence_refs=...,
+  limitations=...)` enregistre une sortie ou un blocage explicite ;
+- `close_execution(run)` ferme le registre et calcule la couverture, sans
+  produire de synthèse ni de verdict scientifique.
+
+**Limites essentielles :** le module n'appelle aucun modèle, ne lance aucun
+agent externe et n'exécute aucun calcul. Les perspectives restent des angles
+de travail du même agent principal ChatGPT ; elles ne sont pas indépendantes.
+Le code enregistre les productions réelles de l'agent principal lorsqu'elles
+sont fournies, mais ne les génère pas lui-même. Le registre reste en mémoire :
+aucune persistance, écriture dans la bibliothèque, certification RAVI-2 ou
+validation scientifique n'est effectuée.
+
+Tests P3 :
+
+```bash
+python -m unittest -v
+```
