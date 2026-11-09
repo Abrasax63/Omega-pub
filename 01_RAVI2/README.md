@@ -98,3 +98,9 @@ Le lot 05 clôt les cinq derniers chemins de reviews de l'inventaire : fibre pai
 - [Réconciliation des revues et audits historiques — lot 06 (2 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT06_2026-11-09.md)
 
 Le lot 06 clôt les deux chemins restants : consolidation SQLite v33 et Discovery v0.1. Les 47 chemins du dossier `reviews/` de l'inventaire historique sont maintenant couverts par une lecture documentaire, en tenant compte des audits déjà lus avant les lots.
+
+## Synthèse transversale
+
+- [Synthèse transversale des 47 revues et audits historiques (9 novembre 2026)](SYNTHESE_TRANSVERSALE_REVUES_HISTORIQUES_2026-11-09.md)
+
+La synthèse distingue la couverture documentaire de la revalidation scientifique, hiérarchise les verrous et conserve P4/L+2 comme point prioritaire à réexaminer avant toute promotion des résultats V19 qui en dépendent.
