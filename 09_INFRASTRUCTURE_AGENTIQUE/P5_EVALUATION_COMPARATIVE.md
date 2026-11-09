@@ -2,7 +2,8 @@
 
 **Version :** 0.2 — durcissement pré-enregistrement  
 **Statut :** protocole préparé ; pilote non lancé ; aucune sortie A/B/C ni notation humaine  
-**Branche de correction :** `audit/p5-hardening-2026-11-09`  
+**Branche de travail :** `architecture/memoire-agentique-native-2026-11-05`  
+**Provenance du durcissement :** PR #9 (`audit/p5-hardening-2026-11-09`)  
 **Périmètre :** mesurer l’utilité du routage adaptatif, jamais certifier une vérité scientifique.
 
 ## 1. Question et hypothèse nulle
