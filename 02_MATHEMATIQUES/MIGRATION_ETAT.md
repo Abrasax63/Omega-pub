@@ -51,3 +51,54 @@ Les anciennes constructions Δτ_tr et les anciennes bornes τ mentionnées dans
 ## 6. Règle de clôture
 
 Une migration documentaire ne vaut pas certification scientifique. Les statuts sont conservés depuis les fiches sources seulement lorsque celles-ci sont disponibles ; les résumés et snapshots servent à retrouver les sources, pas à les remplacer.
+
+
+## 7. Complément du 5 novembre 2026 — pilote C4, L=2
+
+Le dossier C4 a progressé depuis l'état documentaire initial du 4 novembre. La note primaire interne V19(2), 359 lignes, a été retrouvée intégralement, relue et raccordée au contrat opérationnel C4, L=2.
+
+- Les huit classes C4O-00…07 sont reproduites par deux vérificateurs globaux.
+- Un vérificateur local indépendant contrôle la réduction temporelle L+2.
+- Le témoin simultané à 9 états et l'absence de témoin pour N=4,…,8 sont classés **CALCUL EXACT sous V19(2)** dans ce périmètre.
+- L'audit des quotients documente 49 congruences générées par deux méthodes ; seul le quotient discret à 9 états conserve les huit classes. Le script d'audit de quotients n'est pas revendiqué comme exécuté directement ; une réimplémentation séparée a été exécutée.
+- Originalité bibliographique : **INDÉTERMINÉE** ; formalisation Lean : **NON RÉALISÉE** ; publication : **EXPÉRIMENTAL**.
+
+Documents :
+- [Pilote C4 complet](defauts_recollement/PILOTE_EXTRACTION_C4_L2_2026-11-04.md)
+- [Raccord primaire V19(2)](defauts_recollement/RACCORD_PRIMAIRE_V19_C4_L2_2026-11-04.md)
+- [Audit des quotients](defauts_recollement/AUDIT_QUOTIENTS_TEMOIN9_C4_L2_2026-11-04.md)
+
+Ce complément ne modifie pas les réserves concernant CL-DYN-01/02/03/04, CL-H-01, CL-OBSINF-01, CL-REFL-01 et CL-HO-01. Le résultat C4 ne doit pas être généralisé à d'autres q ou L.
+
+
+## 7. Complément du 5 novembre 2026 — pilote C4, L=2
+
+Le dossier C4 a progressé depuis l'état documentaire initial du 4 novembre. La note primaire interne V19(2), 359 lignes, a été retrouvée intégralement, relue et raccordée au contrat opérationnel C4, L=2.
+
+- Les huit classes C4O-00…07 sont reproduites par deux vérificateurs globaux.
+- Un vérificateur local indépendant contrôle la réduction temporelle L+2.
+- Le témoin simultané à 9 états et l'absence de témoin pour N=4,…,8 sont classés **CALCUL EXACT sous V19(2)** dans ce périmètre.
+- L'audit des quotients documente 49 congruences générées par deux méthodes ; seul le quotient discret à 9 états conserve les huit classes. Le script d'audit de quotients n'est pas revendiqué comme exécuté directement ; une réimplémentation séparée a été exécutée.
+- Originalité bibliographique : **INDÉTERMINÉE** ; formalisation Lean : **NON RÉALISÉE** ; publication : **EXPÉRIMENTAL**.
+
+Documents :
+- [Pilote C4 complet](defauts_recollement/PILOTE_EXTRACTION_C4_L2_2026-11-04.md)
+- [Raccord primaire V19(2)](defauts_recollement/RACCORD_PRIMAIRE_V19_C4_L2_2026-11-04.md)
+- [Audit des quotients](defauts_recollement/AUDIT_QUOTIENTS_TEMOIN9_C4_L2_2026-11-04.md)
+
+Ce complément ne modifie pas les réserves concernant CL-DYN-01/02/03/04, CL-H-01, CL-OBSINF-01, CL-REFL-01 et CL-HO-01. Le résultat C4 ne doit pas être généralisé à d'autres q ou L.
+
+
+## 8. Complément du 5 novembre 2026 — audit V19 C5, L=3
+
+Le dossier C5/D5 a été transféré depuis la branche historique `migration/ravi2-ccs-public-2026-11-04` vers [l'audit C5, L=3](v19_c5/AUDIT_V19_C5_L3_2026-11-05.md), avec les CSV historiques, les exports réparés, le témoin U42, le script et le README de reproduction.
+
+- Catalogue fini rapporté : 3 341 diagrammes canoniques, 510 ombres propres, 13 classes D5 et 14 classes C5 orientées.
+- Paires : 2 lignes réparées sur 105.
+- Triples D5 : 26 lignes modifiées sur 455 ; les 3 paires sont distinctes après réparation.
+- Couverture orientée des témoins D5 : 455/560 ; les 105 combinaisons manquantes contiennent C5O-09.
+- Témoin U42 : 42 états ; le script source rapporte la vérification des 560 triples orientés.
+
+**Limites :** le lemme général de localité V19 n'est pas redémontré ligne par ligne ; aucune généralisation à d'autres q ou L n'est revendiquée ; originalité bibliographique indéterminée ; formalisation Lean non réalisée. Publication expérimentale uniquement.
+
+**Anomalie de provenance :** le JSON de rapport détaillé présent sur la branche historique est tronqué et invalide. Il n'a pas été copié sous son nom comme s'il était valide. Un résumé JSON distinct et valide est fourni ; le script migré a été corrigé pour écrire son rapport détaillé dans `research/data/v19_c5/`. La commande n'a pas été rejouée sur la tête actuelle de cette PR pendant cette migration.

@@ -103,8 +103,8 @@ Vous pouvez notamment demander une définition ou une clarification, signaler un
 
 **Pour commencer :**
 1. Consultez le [protocole de revue](REVIEW_PROTOCOL.md).
-2. Ouvrez une [discussion ou une question dans les Issues](../../issues).
-3. Pour une correction documentée, proposez une [Pull Request](../../pulls).
+2. Ouvrez une [discussion ou une question dans les Issues](https://github.com/Abrasax63/Omega-pub/issues).
+3. Pour une correction documentée, proposez une [Pull Request](https://github.com/Abrasax63/Omega-pub/pulls).
 4. Indiquez toujours le fichier, la version et l'énoncé précis que vous examinez.
 
 Les contributions peuvent être rédigées en français ou en anglais. Les échanges doivent rester argumentés, respectueux et vérifiables.
@@ -128,15 +128,15 @@ Le [protocole de revue](REVIEW_PROTOCOL.md) détaille cette procédure. Le nombr
 
 ## État actuel du dépôt
 
-L'architecture modulaire et ses documents de gouvernance sont désormais en place. **Les modules scientifiques sont initialisés, mais les résultats détaillés et leurs preuves restent à inventorier, vérifier et publier progressivement.**
-
-L'[index global](00_GOUVERNANCE/INDEX_GLOBAL.md) ne déclare aucun résultat scientifique détaillé publié à ce stade. Cette prudence évite de présenter comme accessible un travail qui ne l'est pas encore dans ce dépôt.
+L'architecture modulaire et ses documents de gouvernance sont en place. Deux fiches Règle 90 sont publiées à titre expérimental et un pilote C4, L=2 est maintenant documenté comme **CALCUL EXACT sous la définition primaire interne V19(2)**, avec publication **EXPÉRIMENTALE**. L'originalité bibliographique reste indéterminée et aucune formalisation Lean n'est revendiquée. Les autres résultats historiques sont migrés progressivement, sans promotion automatique de leur statut.
 
 
 ## Accès rapide
 
 - **Consulter les résultats :** [index global](00_GOUVERNANCE/INDEX_GLOBAL.md).
 - **Rechercher une brique :** [registre transversal](00_GOUVERNANCE/REGISTRE_TRANSVERSAL.md).
+- **Voir le pilote C4, L=2 :** [dossier, raccord V19(2) et scripts](02_MATHEMATIQUES/defauts_recollement/PILOTE_EXTRACTION_C4_L2_2026-11-04.md).
+- **Consulter le protocole d'extraction RAVI-2 :** [protocole](01_RAVI2/PROTOCOLE_EXTRACTION_METHODES.md).
 - **Comprendre les statuts :** [référentiel](00_GOUVERNANCE/STATUTS.md).
 - **Vérifier ou contribuer :** [protocole de revue](REVIEW_PROTOCOL.md).
 - **Ajouter une fiche :** [modèle de résultat](templates/RESULTAT.md).
