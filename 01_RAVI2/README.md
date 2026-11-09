@@ -82,3 +82,7 @@ Le lot 01 rapproche dix audits portant sur les correspondances SQLite/cartes, l'
 - [Réconciliation des revues et audits historiques — lot 02 (10 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT02_2026-11-09.md)
 
 Le lot 02 couvre la couverture de migration, l'audit PR #2, C4/L=2, la complexité en facteurs, le pont temps-détection, la traçabilité des 32 reconstitutions, les instantanés SQLite v32/v33 et le graphe de conjectures. Il conserve explicitement le désaccord historique sur le statut de P4/L+2.
+
+- [Réconciliation des revues et audits historiques — lot 03 (10 fichiers, 9 novembre 2026)](RECONCILIATION_REVUES_AUDITS_LOT03_2026-11-09.md)
+
+Le lot 03 réconcilie Discovery v0.2, Structural Graph v0.2, le benchmark de ranking, les cinq phases de contrats stricts v1.3 et les audits de recherche/restauration des cartes. Les couches de triage et de compatibilité interne restent distinctes de la preuve scientifique.
