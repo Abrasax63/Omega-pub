@@ -56,12 +56,12 @@ class PrismContextTests(unittest.TestCase):
             plan = plan_mission({
                 "question": "noyau période",
                 "mission_type": "mathematical",
-                "known_ids": ["BR-MISSING"],
+                "known_ids": ["MISSING-999"],
             })
             bundle = prepare_contexts(root, plan)
             retrieval = bundle["packages"][0]["exact_retrievals"][0]["retrieval"]
             self.assertFalse(retrieval["found"])
-            self.assertEqual(retrieval["id"], "BR-MISSING")
+            self.assertEqual(retrieval["id"], "MISSING-999")
 
     def test_each_role_gets_its_own_role_specific_search(self):
         with tempfile.TemporaryDirectory() as tmp:
