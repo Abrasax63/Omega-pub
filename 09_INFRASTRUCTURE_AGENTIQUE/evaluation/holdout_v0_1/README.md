@@ -7,7 +7,7 @@
 ## Fichiers
 - `cases.jsonl` : énoncés, livrables attendus et axes de notation.
 - `answer_key.jsonl` : éléments de correction et erreurs critiques. À conserver hors du contexte des systèmes évalués.
-- `SHA256SUMS.txt` : empreintes des deux fichiers.
+- Les commits Git ci-dessous fixent la version des fichiers ; les empreintes SHA-256 devront être calculées dans l'environnement de collecte avant le lancement.
 
 ## Avertissement de confidentialité
 Le dépôt est public. La séparation en fichiers ne rend donc PAS le corrigé secret : toute personne ayant accès à la branche peut le consulter. Pour une véritable évaluation aveugle, copier `answer_key.jsonl` dans un espace privé avant de soumettre les cas aux systèmes, puis retirer le corrigé du contexte des évaluateurs. Cette version est un pilote reproductible, pas un jeu de test secret.
