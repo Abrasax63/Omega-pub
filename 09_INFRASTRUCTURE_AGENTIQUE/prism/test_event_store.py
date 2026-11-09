@@ -61,7 +61,8 @@ class EventLedgerTests(unittest.TestCase):
             append_events(path, events[:2])
             # A second independently built batch is automatically linked to
             # the persisted tail; no caller-side hash manipulation is needed.
-            second = lifecycle_events(self.plan, self.bundle, self.run)
+            second = lifecycle_events(self.plan, self.bundle, self.run)[2:]
+            second = self._rechain(second, GENESIS)
             append_events(path, second)
             loaded = read_ledger(path)
             self.assertTrue(loaded["valid"])
