@@ -1,6 +1,6 @@
 # Télémétrie P5 — schéma de collecte
 
-**Version :** 0.1.0  
+**Version :** 0.2.0  
 **Statut :** schéma et validateur disponibles ; aucune collecte A/B/C lancée.
 
 ## Objet
@@ -59,7 +59,7 @@ Les tests utilisent uniquement des enregistrements synthétiques. Ils ne contact
 Il lit les compteurs `input_tokens`, `output_tokens` et
 `input_tokens_details.cached_tokens`, conserve l'identifiant de réponse et le modèle,
 et marque la source comme `provider_response` uniquement si les deux compteurs principaux
-sont présents. Sinon, les compteurs restent `null`.
+sont présents. Un usage absent reste `null`. Un usage partiel ou invalide est rejeté.
 
 La fonction `measure_call(call)` mesure le temps mural d'une fonction fournie par
 l'appelant et renvoie la réponse, l'heure UTC de début et la durée. Elle ne contacte
@@ -69,3 +69,26 @@ explicite n'est pas fournie.
 Les tests de l'adaptateur utilisent des réponses synthétiques. Ils ne prouvent pas
 encore la compatibilité avec une version précise du SDK en production ni une collecte
 sur une requête réelle. Aucun secret, appel réseau ou holdout n'est utilisé.
+
+## Consolidation du journal par appel
+
+L'identité d'un appel est `(experiment_id, call_id)`. Pour un pilote, le
+harnais fournit aussi `case_id`, `arm`, `repetition`, `operation_id` et
+`attempt`. Une reprise garde l'opération et incrémente la tentative. Les
+anciens enregistrements restent lisibles et une répétition non renseignée
+reste inconnue dans le résumé par exécution.
+
+Le contexte accepte le modèle demandé et la version vérifiée, le commit,
+les empreintes des prompts et de la configuration, ainsi que l'empreinte
+d'une décision de routage. Conserver les décisions et motifs exacts dans le
+registre d'exécution privé. L'empreinte sert à relier les deux traces. Le
+modèle retourné et les tokens viennent de la réponse fournisseur. La durée
+vient de l'horloge monotone du harnais. Un coût calculé référence un barème
+versionné. Les identifiants de requête et de réponse sont distincts.
+
+`summarize_calls(records, by_execution=True)` regroupe par campagne, bras,
+cas et répétition. La somme des durées d'appel peut différer du temps mural
+de l'exécution. Une mesure manquante rend le total correspondant inconnu.
+Un appel entier absent requiert un contrôle du manifeste de lancement.
+Le harnais reste chargé de journaliser les exceptions de transport, les
+timeouts et les reprises SDK, et de capturer les outils au point d'appel.
