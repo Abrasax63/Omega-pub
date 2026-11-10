@@ -117,3 +117,24 @@ d'annoncer des nombres vérifiés.
 **Aucune augmentation de qualité générale ni indépendance multiagent
 n'est revendiquée par cette PR.** L'extracteur lexical représente
 seulement une étape minimale, falsifiable et testable.
+
+## Résultats de la CI et contre-test de provenance
+
+La première CI [42918504617](https://github.com/Abrasax63/Omega-pub/actions/runs/42918504617)
+a réussi : **109 tests du Prisme**, cinq tests du RCE et six tests
+MCP, plus les contrôles des index. Les journaux confirment les **24/24**
+cas du langage documentaire contrôlé et les **96** entrées A/B/C/D
+créées **sans génération de réponse**.
+
+Le test négatif `test_forged_authority_metadata_can_cause_confident_error`
+montre un défaut épistémique précis. Dans le dossier fictif A-02,
+la règle officielle authentique indique 5 jours, mais si l'appelant
+modifie la notice en la marquant toujours `primary_notice` et y
+remplace 5 par 1, le système répond 1 jour sans détecter la falsification.
+Le contre-test **réussit quand il reproduit cette vulnérabilité** ;
+il ne constitue donc pas un test de sécurité passé. Pour franchir ce
+verrou, il faudra un contrôle de provenance indépendant de l'extracteur
+(signatures, identifiants de source externe, version et date de capture,
+corroboration et contestation explicite). Aucun contrôle d'authenticité
+n'est implémenté ou revendiqué par ce pilote.
+
