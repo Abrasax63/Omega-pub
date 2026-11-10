@@ -1,204 +1,141 @@
-# Spécification des tâches T1 et T3 — générateurs v0.1
+# Spécification T1/T3 — contrat expérimental v0.2
 
 **Date :** 10 novembre 2026  
 **Branche :** `work/benchmark-prisme-adaptatif-v0-1-2026-11-10`  
-**Statut :** spécification et pseudo-code ; aucun benchmark exécuté.
+**Statut :** définitions et contrat de génération précisés ; tests et benchmark non exécutés.
 
-## 1. Principe de conception
+## 1. Objet du pilote
 
-T1 et T3 doivent différer sur une seule propriété contrôlée : la déterminabilité à partir des données fournies.
+T1 et T3 isolent une différence : **les données visibles suffisent-elles à déterminer une réponse unique ?**
 
-- **T1 — déterminé :** toutes les données nécessaires sont présentes. Une procédure exacte permet de calculer une unique réponse.
-- **T3 — sous-déterminé :** au moins une donnée nécessaire est absente et plusieurs complétions compatibles conduisent à des réponses différentes. La réponse correcte consiste à signaler précisément l'information manquante, pas à deviner.
+- **T1 — déterminé :** toutes les données nécessaires sont visibles ; une seule réponse est compatible avec l'énoncé.
+- **T3 — sous-déterminé :** au moins une donnée nécessaire manque ; au moins deux complétions des données manquantes sont compatibles avec l'énoncé et conduisent à des réponses différentes.
 
-La difficulté de raisonnement ne doit pas être confondue avec le manque d'information. T1 peut avoir une chaîne de dépendances longue tout en restant déterminé ; T3 peut être très court tout en étant sous-déterminé.
+La longueur de la chaîne et la déterminabilité sont deux dimensions distinctes. Une tâche peut être longue et déterminée, ou courte et sous-déterminée.
 
-## 2. T1 — chaîne déterministe de dépendances
+## 2. Définition normative de T1
 
-### Définition
+Une instance T1 contient :
+- un entier initial (x_0) ;
+- une liste ordonnée non vide de transformations (f_i(x)=a_i x+b_i) ;
+- tous les coefficients (a_i,b_i) ;
+- la demande de calculer la valeur finale après application successive de toutes les transformations.
 
-Une tâche T1 fournit une valeur initiale entière (x_0), une suite ordonnée de transformations affines (f_i(x)=a_i x+b_i), et demande la valeur finale (x_k). Tous les coefficients et toutes les étapes sont fournis.
+Les coefficients et les étapes sont publics. La réponse de référence est calculée par récurrence :
+[
+x_i=a_i x_{i-1}+b_i,qquad i=1,ldots,k.
+]
+La réponse attendue est (x_k). Les entiers sont calculés exactement, sans arrondi.
 
-La référence exacte est obtenue en appliquant successivement les transformations, dans l'ordre indiqué. Il existe une unique valeur finale.
+### Exemple canonique T1
 
-### Exemple fixé
-
-Entrée :
 - (x_0=3)
 - (f_1(x)=2x+1)
 - (f_2(x)=3x-4)
 - (f_3(x)=x+5)
 
-Calcul de référence :
-- (x_1=2(3)+1=7)
-- (x_2=3(7)-4=17)
-- (x_3=17+5=22)
+Calcul : (x_1=7), (x_2=17), (x_3=22).  
+**Réponse de référence : 22.**
 
-Réponse attendue : **22**.
+Cet exemple teste une chaîne de dépendances explicite. Il ne constitue pas, à lui seul, un test du résultat mathématique de localité L+1/L+2.
 
-Cet exemple illustre une dépendance en chaîne, mais n'est pas en lui-même un test de localité L+1. Le benchmark Omega doit mesurer la profondeur de raisonnement à partir de la chaîne explicite, sans prétendre que les transformations affines réalisent le modèle orbital étudié en V19.
+## 3. Définition normative de T3
 
-### Pseudo-code du générateur
+Une instance T3 reprend une chaîne de transformations, mais au moins un paramètre indispensable est remplacé dans l'énoncé par une inconnue dont la valeur n'est soumise à aucune contrainte supplémentaire permettant de la déterminer.
 
-```text
-generate_T1(seed, k, coefficient_bound):
-    rng = Random(seed)
-    x = rng.integer(-coefficient_bound, coefficient_bound)
-    initial = x
-    steps = []
+Le générateur T3 v0.1 utilise le cas suivant :
+- (x_0) est public ;
+- (f_1(x)=a_1x+b_1) est entièrement publique ;
+- (f_2(x)=a_2x+b), avec (a_2) public et (b) explicitement signalé comme inconnu.
 
-    repeat k times:
-        a = rng.integer(-coefficient_bound, coefficient_bound)
-        while a == 0:
-            a = rng.integer(-coefficient_bound, coefficient_bound)
-        b = rng.integer(-coefficient_bound, coefficient_bound)
-        steps.append((a, b))
-        x = a*x + b
+Le système évalué ne doit pas deviner (b). Il doit signaler que la valeur finale n'est pas déterminable à partir des informations fournies, identifier (b), puis demander sa valeur ou donner une réponse conditionnelle.
 
-    task = {
-        "type": "T1",
-        "initial": initial,
-        "steps": steps,
-        "question": "Quelle est la valeur finale ?"
-    }
-    oracle = replay_exactly(initial, steps)
-    return task, oracle
-```
+### Exemple canonique T3
 
-### Contrôles du générateur
-
-- La graine et tous les paramètres sont enregistrés.
-- L'oracle recalcule la réponse depuis l'entrée sérialisée, sans lire la réponse produite par le générateur.
-- Un test indépendant vérifie le résultat par substitution arrière ou par une seconde implémentation.
-- Les cas (k=1), (k=2), chaîne longue, coefficients négatifs et coefficient (a=1) sont inclus.
-- Éviter les valeurs trop grandes : fixer une borne et détecter les dépassements si une implémentation à entiers bornés est utilisée.
-
-## 3. T3 — information indispensable absente
-
-### Définition
-
-Une tâche T3 fournit une relation (y=ax+b), avec (a), (b) et (y) connus, mais omet (x). Si (a=0), cette omission ne rend pas nécessairement (x) déterminable ; pour éviter les cas dégénérés, le générateur impose (a\ne0). La valeur de (x) est alors mathématiquement déterminée par les données, donc ce n'est PAS un bon T3.
-
-Pour construire un vrai T3, on fournit plutôt (y=ax+b) avec (a\ne0), mais on omet la valeur de (y) ou de (b), sans autre contrainte qui la fixe. Plusieurs valeurs finales restent compatibles.
-
-### Exemple fixé
-
-Entrée :
 - (x_0=3)
-- (f_1(x)=2x+1)
-- seconde transformation annoncée sous la forme (f_2(x)=3x+b)
-- la valeur de (b) n'est pas fournie.
-
-Question : « Quelle est la valeur après la deuxième transformation ? »
+- (f_1(x)=2x+1), donc (x_1=7)
+- (f_2(x)=3x+b), avec (b) non fourni
 
 Deux complétions compatibles :
-- si (b=0), résultat (3(7)+0=21) ;
-- si (b=4), résultat (3(7)+4=25).
+- (b=0) donne (21) ;
+- (b=4) donne (25).
 
-Les deux réponses sont compatibles avec l'énoncé. La sortie correcte est donc : **impossible à déterminer sans connaître (b)**. L'assistant doit demander la valeur de (b), ou fournir une réponse conditionnelle explicite.
+Puisque (21
+e25), l'énoncé ne détermine pas une valeur finale unique.  
+**Réponse de référence : sous-déterminé ; le paramètre manquant est (b).**
 
-### Pseudo-code du générateur
+Formellement, pour une instance donnée, le validateur doit exhiber deux valeurs admissibles (b_1\ne b_2) telles que les sorties correspondantes soient différentes. Les témoins sont conservés dans l'oracle privé, jamais dans l'entrée du système évalué.
 
-```text
-generate_T3(seed, coefficient_bound):
-    rng = Random(seed)
-    x0 = rng.integer(-coefficient_bound, coefficient_bound)
-    a1 = rng.nonzero_integer(-coefficient_bound, coefficient_bound)
-    b1 = rng.integer(-coefficient_bound, coefficient_bound)
-    a2 = rng.nonzero_integer(-coefficient_bound, coefficient_bound)
-    b_hidden = rng.integer(-coefficient_bound, coefficient_bound)
+## 4. Contrat public/privé — règle impérative anti-fuite
 
-    x1 = a1*x0 + b1
-    visible_steps = [(a1, b1), ("affine", a2, "UNKNOWN")]
-    task = {
-        "type": "T3",
-        "initial": x0,
-        "visible_steps": visible_steps,
-        "question": "Quelle est la valeur après la deuxième transformation ?"
-    }
+Chaque tâche possède deux paquets séparés.
 
-    witness_1 = a2*x1 + b_hidden
-    alternative_b = b_hidden + 1
-    witness_2 = a2*x1 + alternative_b
+**Paquet public**, seul paquet transmis au système évalué :
+- identifiant opaque de tâche ;
+- famille T1 ou T3 ;
+- énoncé textuel ;
+- paramètres effectivement visibles dans l'énoncé ;
+- version du générateur et paramètres de génération non révélateurs.
 
-    assert witness_1 != witness_2
-    assert both_completions_match_visible_input(task, b_hidden, alternative_b)
+**Paquet privé**, réservé au validateur :
+- graine aléatoire ;
+- réponse exacte T1, ou statut sous-déterminé T3 ;
+- paramètres cachés ;
+- deux complétions témoins et leurs sorties ;
+- éléments de provenance nécessaires à la reproduction.
 
-    oracle = {
-        "status": "UNDERDETERMINED",
-        "missing": "b de la deuxième transformation",
-        "witness_answers": [witness_1, witness_2]
-    }
-    return task, oracle
-```
+**Interdiction :** la graine, les paramètres cachés, les réponses et les témoins ne doivent apparaître ni dans le prompt, ni dans les métadonnées publiques, ni dans les noms de fichiers ou identifiants transmis au système. La graine peut permettre de reconstruire les tirages : elle est donc privée, même si elle n'est pas elle-même la réponse.
 
-### Contrôles du générateur
+Le paquet public et le paquet privé doivent être sérialisés et stockés séparément. L'évaluateur ne doit jamais transmettre le paquet privé au modèle, à son routeur ou à un agent auxiliaire.
 
-- L'oracle conserve deux complétions distinctes qui satisfont toutes les données visibles.
-- Les deux complétions doivent produire des réponses différentes.
-- Le paramètre caché ne doit apparaître ni dans l'énoncé ni dans les métadonnées transmises au système évalué.
-- La référence attendue est le statut « sous-déterminé » et l'identification de la variable manquante.
-- Un contrôle anti-fuite vérifie que la graine, le paramètre caché et les témoins ne sont pas inclus dans le prompt.
+## 5. Contrat de l'oracle et des validateurs
 
-## 4. Contrat commun des données
+### Oracle T1
+L'oracle recalcule (x_k) à partir des seuls paramètres publics, par une procédure indépendante du chemin de génération. Il ne doit pas simplement recopier une valeur calculée pendant la génération.
 
-Chaque instance doit être sérialisée avec deux objets séparés :
+### Oracle T3
+L'oracle :
+1. conserve deux valeurs distinctes admissibles du paramètre omis ;
+2. reconstruit les deux complétions complètes ;
+3. vérifie que chacune respecte toutes les données visibles ;
+4. calcule les deux sorties ;
+5. rejette l'instance si les sorties sont égales.
 
-```json
-{
-  "task_id": "T1-<seed>-<index>",
-  "family": "T1",
-  "prompt": "...",
-  "public_parameters": {},
-  "oracle_private": {
-    "expected_status": "DETERMINED",
-    "expected_answer": 22
-  },
-  "generation": {
-    "seed": 123,
-    "generator_version": "0.1"
-  }
-}
-```
+Le verdict T3 est fondé sur l'existence de deux complétions témoins, et non sur la présence d'une chaîne de caractères « UNKNOWN ».
 
-Pour T3, `oracle_private.expected_status` vaut `UNDERDETERMINED`, `expected_answer` est nul, et `missing_information` nomme le paramètre omis. Les témoins de complétion restent privés pour la notation.
+### Tests obligatoires avant tout lot
+1. L'exemple canonique T1 donne 22.
+2. L'exemple canonique T3 admet les sorties 21 et 25.
+3. Même graine et mêmes paramètres produisent la même instance.
+4. La graine n'est jamais présente dans le paquet public.
+5. Les paramètres cachés et témoins T3 ne sont jamais présents dans le paquet public.
+6. Deux complétions T3 satisfont les mêmes données visibles et donnent des sorties différentes.
+7. Un T3 dont les deux témoins donnent la même sortie est rejeté.
+8. L'oracle T1 recalcule la réponse à partir de l'instance sérialisée, indépendamment du générateur.
+9. Les cas limites incluent (k=1), (k=2), une chaîne plus longue, des coefficients négatifs et (a_i=1).
 
-Le prompt public et l'oracle privé doivent être stockés séparément pendant l'évaluation afin d'éviter toute fuite de la réponse.
+## 6. Notation
 
-## 5. Barème de notation minimal
+**T1 — 2 points**
+- 1 point : réponse finale exacte ;
+- 1 point : calcul ou justification cohérente avec les transformations fournies.
 
-### T1
-- 1 point : réponse numérique exacte.
-- 1 point : étapes ou justification cohérentes avec les données.
-- 0 point si la réponse est erronée ou si le système refuse sans raison.
+**T3 — 3 points**
+- 1 point : détection de l'indétermination ;
+- 1 point : identification de (b) comme donnée manquante ;
+- 1 point : demande de précision ou réponse conditionnelle correcte.
 
-### T3
-- 1 point : détecte que l'information ne suffit pas.
-- 1 point : identifie le paramètre manquant (b).
-- 1 point : demande cette information ou donne une réponse conditionnelle correcte.
-- 0 point si une valeur unique est inventée ou affirmée sans hypothèse.
+Une valeur unique affirmée sans hypothèse sur (b) vaut zéro pour les critères concernés. La détection de l'indétermination et l'identification précise de l'information manquante sont notées séparément.
 
-Noter séparément la détection et la formulation : un système peut détecter l'indétermination sans identifier précisément ce qui manque.
+## 7. Portée et limites
 
-## 6. Tests unitaires obligatoires avant génération en lot
+Ce pilote teste la déterminabilité, le calcul en chaîne et la discipline face à une information absente. Il ne teste pas encore :
+- la recherche documentaire ;
+- les contradictions entre sources ;
+- la preuve mathématique ;
+- la validité générale du routage Omega ;
+- le lien théorique entre les résultats L+1/L+2 et le nombre d'étapes de vérification.
 
-1. L'exemple T1 ci-dessus produit exactement 22.
-2. L'exemple T3 ci-dessus admet au moins deux réponses compatibles, 21 et 25.
-3. Modifier le paramètre caché de T3 modifie le résultat sans modifier le prompt public.
-4. Aucune donnée privée de l'oracle ne fuit dans le prompt.
-5. Même graine + mêmes paramètres = même instance.
-6. Graine différente : les instances peuvent différer, sans exiger que chaque tirage soit unique.
-7. Les validateurs rejettent tout T3 dont les deux complétions produisent le même résultat.
+Les transformations affines sont ici un gabarit de benchmark contrôlé, pas une traduction du modèle orbital V19.
 
-## 7. Limites et prochaine étape
-
-Ces deux familles constituent un pilote minimal de déterminabilité, pas une évaluation complète de l'intelligence ni une validation du routage adaptatif. Elles ne testent pas encore la recherche documentaire, les contradictions, ni les preuves mathématiques V19.
-
-Avant tout benchmark comparatif :
-1. implémenter le générateur et l'oracle dans deux modules séparés ;
-2. exécuter les tests unitaires ci-dessus ;
-3. vérifier l'absence de fuite entre prompt et oracle ;
-4. figer une petite batterie pilote ;
-5. seulement ensuite, exécuter les configurations A, B et C dans les mêmes conditions.
-
-**Verdict actuel :** définitions T1/T3 et pseudo-code spécifiés. Aucun code de générateur exécuté ; aucun score de benchmark disponible.
+**État au 10 novembre 2026 :** définitions normatives et règles anti-fuite fixées dans ce document. Les tests logiciels et le benchmark A/B/C restent non exécutés ; aucun résultat expérimental n'est revendiqué.
