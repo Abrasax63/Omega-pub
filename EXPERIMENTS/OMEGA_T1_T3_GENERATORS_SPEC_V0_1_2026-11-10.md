@@ -1,8 +1,8 @@
-# Spécification T1/T3 — contrat expérimental v0.2
+# Spécification T1/T3 — contrat expérimental v0.3
 
 **Date :** 10 novembre 2026  
 **Branche :** `work/benchmark-prisme-adaptatif-v0-1-2026-11-10`  
-**Statut :** définitions et contrat public/privé précisés ; 12 tests unitaires réussis en CI ; revue indépendante et benchmark non réalisés.
+**Statut :** rendus canoniques et validateur prompt/paramètres implémentés ; nouveaux tests ajoutés ; résultat CI du commit courant à vérifier ; revue indépendante et benchmark non réalisés.
 
 ## 1. Objet du pilote
 
@@ -22,9 +22,11 @@ Une instance T1 contient :
 - la demande de calculer la valeur finale après application successive de toutes les transformations.
 
 Les coefficients et les étapes sont publics. La réponse de référence est calculée par récurrence :
+
 [
 x_i=a_i x_{i-1}+b_i,qquad i=1,ldots,k.
 ]
+
 La réponse attendue est (x_k). Les entiers sont calculés exactement, sans arrondi.
 
 ### Exemple canonique T1
@@ -43,7 +45,7 @@ Cet exemple teste une chaîne de dépendances explicite. Il ne constitue pas, à
 
 Une instance T3 reprend une chaîne de transformations, mais au moins un paramètre indispensable est remplacé dans l'énoncé par une inconnue dont la valeur n'est soumise à aucune contrainte supplémentaire permettant de la déterminer.
 
-Le générateur T3 v0.1 utilise le cas suivant :
+Le générateur T3 utilise le cas suivant :
 - (x_0) est public ;
 - (f_1(x)=a_1x+b_1) est entièrement publique ;
 - (f_2(x)=a_2x+b), avec (a_2) public et (b) explicitement signalé comme inconnu.
@@ -64,7 +66,7 @@ Puisque (21
 e25), l'énoncé ne détermine pas une valeur finale unique.  
 **Réponse de référence : sous-déterminé ; le paramètre manquant est (b).**
 
-Formellement, pour une instance donnée, le validateur doit exhiber deux valeurs admissibles (b_1
+Formellement, le validateur doit exhiber deux valeurs admissibles (b_1
 e b_2) telles que les sorties correspondantes soient différentes. Les témoins sont conservés dans l'oracle privé, jamais dans l'entrée du système évalué.
 
 ## 4. Contrat public/privé — règle impérative anti-fuite
@@ -72,7 +74,7 @@ e b_2) telles que les sorties correspondantes soient différentes. Les témoins 
 Chaque tâche possède deux paquets séparés.
 
 **Paquet public**, seul paquet transmis au système évalué :
-- identifiant opaque de tâche ;
+- identifiant de tâche ;
 - famille T1 ou T3 ;
 - énoncé textuel ;
 - paramètres effectivement visibles dans l'énoncé ;
@@ -92,9 +94,11 @@ Le paquet public et le paquet privé doivent être sérialisés et stockés sép
 ## 5. Contrat de l'oracle et des validateurs
 
 ### Oracle T1
+
 L'oracle recalcule (x_k) à partir des seuls paramètres publics, par une procédure indépendante du chemin de génération. Il ne doit pas simplement recopier une valeur calculée pendant la génération.
 
 ### Oracle T3
+
 L'oracle :
 1. conserve deux valeurs distinctes admissibles du paramètre omis ;
 2. reconstruit les deux complétions complètes ;
@@ -103,6 +107,21 @@ L'oracle :
 5. rejette l'instance si les sorties sont égales.
 
 Le verdict T3 est fondé sur l'existence de deux complétions témoins, et non sur la présence d'une chaîne de caractères « UNKNOWN ».
+
+### Rendus canoniques et cohérence du prompt
+
+Le code expose désormais :
+- `render_t1_prompt(public_parameters)` ;
+- `render_t3_prompt(public_parameters)` ;
+- `validate_prompt_consistency(public_payload)`.
+
+Les deux rendus reconstruisent le texte exclusivement à partir des paramètres publics. Le rendu T3 ne lit jamais le paramètre caché ni les témoins.
+
+Le validateur sélectionne le rendu selon la famille et compare le texte reconstruit au prompt transmis, caractère par caractère. Il retourne `False` si la famille est inconnue, si les champs ou paramètres sont absents ou mal formés, ou si le texte diffère.
+
+Les générateurs utilisent eux-mêmes ces fonctions canoniques. Les tests de mutation vérifient qu'une modification isolée du prompt ou des paramètres, la suppression d'une étape T1 ou la modification du nom du paramètre manquant T3 est rejetée.
+
+**Portée précise :** ce contrôle établit la cohérence interne entre le prompt et les paramètres publics fournis. Il ne prouve pas que ces paramètres satisfont une spécification externe, ne constitue pas un audit exhaustif des fuites et ne remplace pas une revue indépendante de l'oracle.
 
 ### Tests obligatoires avant tout lot
 
@@ -114,7 +133,9 @@ Le verdict T3 est fondé sur l'existence de deux complétions témoins, et non s
 6. Deux complétions T3 satisfont les mêmes données visibles et donnent des sorties différentes.
 7. Un T3 dont les deux témoins donnent la même sortie est rejeté.
 8. L'oracle T1 recalcule la réponse à partir de l'instance sérialisée, indépendamment du générateur.
-9. Les cas limites incluent (k=1), (k=2), une chaîne plus longue, des coefficients négatifs et (a_i=1).
+9. Le prompt T1/T3 correspond exactement au rendu canonique des paramètres publics après sérialisation.
+10. Les mutations du prompt et des paramètres sont rejetées explicitement.
+11. Les cas limites incluent (k=1), (k=2), une chaîne plus longue, des coefficients négatifs et (a_i=1).
 
 ## 6. Notation
 
@@ -140,4 +161,4 @@ Ce pilote teste la déterminabilité, le calcul en chaîne et la discipline face
 
 Les transformations affines sont ici un gabarit de benchmark contrôlé, pas une traduction du modèle orbital V19.
 
-**État au 10 novembre 2026 :** les définitions et règles anti-fuite sont spécifiées ; les 12 tests unitaires présents ont réussi en CI (run 42795937582). La revue indépendante, les contrôles complémentaires de cohérence prompt/paramètres et le benchmark A/B/C ne sont pas réalisés.
+**État au 10 novembre 2026 :** les rendus canoniques et le validateur de cohérence sont implémentés. Dix nouveaux tests ont été ajoutés aux douze tests précédemment exécutés avec succès en CI. Le résultat CI associé au commit courant reste à vérifier. Les cas limites forcés, l'audit exhaustif des fuites, la revue indépendante et le benchmark A/B/C ne sont pas réalisés.
