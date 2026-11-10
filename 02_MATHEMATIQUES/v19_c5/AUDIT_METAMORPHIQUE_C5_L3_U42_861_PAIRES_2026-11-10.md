@@ -1,7 +1,7 @@
 # Audit métamorphique exhaustif — C5, L=3, U42, 861 paires
 
 **Date :** 10 novembre 2026  
-**Statut :** EXPÉRIMENTAL — CI à exécuter.
+**Statut :** CALCUL FINI REPRODUIT — CI SUCCÈS (run 42787543460, 10 novembre 2026).
 
 ## Périmètre
 
@@ -24,3 +24,14 @@ Même si tous les tests passent, cela ne démontre pas le lemme général de loc
 Le solveur par propagation est distinct du DSU, mais partage les définitions mathématiques et les données. Il ne valide donc pas indépendamment les définitions et ne constitue pas une preuve formelle.
 
 Aucun résultat n'est promu dans la bibliothèque certifiée. Aucune fusion n'est effectuée.
+
+
+## Résultat de reproduction CI
+
+Le workflow GitHub Actions [run 42787543460](https://github.com/Abrasax63/Omega-pub/actions/runs/42787543460) a terminé avec **SUCCESS** sous Python 3.12. L'étape exhaustive « Exhaustive 861-pair metamorphic audit » est passée.
+
+Les assertions du script ont donc été satisfaites sur les 861 paires : égalité global/local par DSU (861/861), égalité global/local par propagation de graphe (861/861), accord des deux solveurs (861/861), distribution des tailles d'ombres attendue et couverture des 14 classes avec leurs effectifs U42 archivés.
+
+La CI parallèle du témoin ponctuel antérieur a également terminé avec succès (run 42787542891).
+
+**Interprétation bornée :** résultat reproduit sur un seul endomorphisme U42 et les 861 paires. Ce n'est pas une preuve du lemme général L+2, ni une vérification des 560 triples comme entités distinctes, ni une validation indépendante des définitions.
