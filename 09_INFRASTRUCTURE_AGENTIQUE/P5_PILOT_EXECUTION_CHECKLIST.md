@@ -22,7 +22,7 @@ Ne pas réutiliser comme holdout aveugle les cas v0.1 déjà exposés dans l'his
 | G1 | Corrigé privé corrigé, relu et cohérent avec les définitions des cinq cas | **PARTIEL : EXPL vérifié ; énoncés exacts absents pour audit complet** |
 | G2 | Empreinte SHA-256 recalculée sur les octets exacts du corrigé final | **SATISFAIT** |
 | G3 | Manifeste public mis à jour avec ID, version et empreintes autorisées, sans contenu secret | **SATISFAIT** |
-| G4 | Cinq énoncés v0.3 présents, distincts du matériel public antérieur et absence de fuite vérifiée | **PARTIEL : v0.3 créé ; audit anti-fuite v0.1 non certifié** |
+| G4 | Cinq énoncés v0.3 présents, distincts du matériel public antérieur et absence de fuite vérifiée | **BLOQUÉ : COMPUTE et EXPL très proches de v0.1 ; ADV proche ; remplacements requis** |
 | G5 | Modèles, snapshots, paramètres et prompts A/B/C explicitement fixés | NON RENSEIGNÉ |
 | G6 | Budget commun par cas/bras et mesures réellement accessibles définis | NON RENSEIGNÉ |
 | G7 | Ordre randomisé, graine protégée et table d'aveuglement séparée | NON RENSEIGNÉ |
@@ -121,7 +121,7 @@ Les énoncés originaux v0.2 n'ayant pas été retrouvés, un candidat v0.3 sép
 - cas où une vérification indépendante détecte une erreur plausible ;
 - cas où l'outil ou la source externe est indisponible et où l'abstention est préférable.
 
-Les contrôles initiaux (structure JSONL, identifiants, fibres/cycles, contre-modèles et source RFC) sont consignés dans `evaluation/holdout_v0_3/AUDIT_INITIAL.md`. L'indépendance anti-fuite par rapport à v0.1 et la revue humaine indépendante restent à faire. Le corrigé v0.3 reste privé ; seul son SHA-256 est publié dans le manifeste.
+Les contrôles initiaux (structure JSONL, identifiants, fibres/cycles, contre-modèles et source RFC) sont consignés dans `evaluation/holdout_v0_3/AUDIT_INITIAL.md`. L'audit comparatif v0.1/v0.3 a identifié trois proches voisins conceptuels (COMPUTE, EXPL, ADV). Voir `evaluation/holdout_v0_3/AUDIT_ANTI_FUITE_V0_1.md`. G4 est BLOQUÉE jusqu'au remplacement de ces cas et à une revue indépendante. Le corrigé v0.3 reste privé ; seul son SHA-256 est publié dans le manifeste.
 
 ## 8. État de travail au 2026-11-10
 
@@ -133,6 +133,6 @@ Les contrôles initiaux (structure JSONL, identifiants, fibres/cycles, contre-mo
 - Notation humaine : non exécutée.
 - G4 : BLOQUÉE ; G5–G10 : non satisfaites ou non vérifiées.\n- Audit intermédiaire : `evaluation/holdout_v0_2/AUDIT_INTERMEDIAIRE.md`.
 - Analyse des décisions adaptatives : schéma de collecte préparé ; aucune donnée observée.
-- P5 v0.3 : cinq cas candidats créés ; corrigé privé conservé hors dépôt ; anti-fuite v0.1 et revue indépendante non certifiées.
+- P5 v0.3 : cinq cas candidats créés ; trois proches voisins conceptuels de v0.1 identifiés ; G4 BLOQUÉE ; corrigé privé conservé hors dépôt.
 
-**Verdict :** `PILOT_NOT_READY`. v0.2 demeure non auditable faute d'énoncés originaux ; v0.3 est un candidat nouvellement créé, pas encore gelé. Cela ne constitue ni une validation expérimentale, ni une certification de l'architecture Omega.
+**Verdict :** `PILOT_NOT_READY`. v0.2 demeure non auditable faute d'énoncés originaux ; v0.3 est un candidat à réviser car trois cas sont trop proches de v0.1. Cela ne constitue ni une validation expérimentale, ni une certification de l'architecture Omega.
