@@ -73,6 +73,36 @@ def _boolean(mission: dict[str, Any], key: str, default: bool) -> bool:
     return value
 
 
+def _next_action(context: Any) -> dict[str, str]:
+    """Choose an action from explicitly supplied evidence about the decision."""
+    allowed = {"decision_basis", "blocking_uncertainty", "verification", "verification_effect", "clarification"}
+    if not isinstance(context, dict) or context.keys() - allowed:
+        raise MissionValidationError("'decision_context' must contain only supported fields")
+    if any(not isinstance(value, str) or not value.strip() for value in context.values()):
+        raise MissionValidationError("decision context fields must be non-empty strings")
+    if ("verification" in context) != ("verification_effect" in context):
+        raise MissionValidationError("a verification must state what result could change the decision")
+    basis = context.get("decision_basis")
+    blocker = context.get("blocking_uncertainty")
+    if bool(basis) == bool(blocker):
+        raise MissionValidationError("supply exactly one decision basis or blocking uncertainty")
+
+    if basis is not None:
+        if "verification" in context or "clarification" in context:
+            raise MissionValidationError("a verification or clarification requires a blocking uncertainty")
+        return {"action": "answer", "reason": basis.strip()}
+
+    if "verification" in context:
+        return {
+            "action": "verify", "reason": blocker.strip(),
+            "next_step": context["verification"].strip(),
+            "decision_effect": context["verification_effect"].strip(),
+        }
+    if "clarification" in context:
+        return {"action": "ask", "reason": blocker.strip(), "next_step": context["clarification"].strip()}
+    return {"action": "insufficient_evidence", "reason": blocker.strip()}
+
+
 def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
     """Return a deterministic plan from an explicit, bounded mission object.
 
@@ -80,6 +110,7 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
     requires_proof, requires_computation, requires_literature, exploratory,
     claims_to_test. Type defaults can be overridden explicitly by these flags.
     Optional deliverables replace type defaults without changing role selection.
+    An optional decision_context adds a recommended next action without executing it.
     """
     if not isinstance(mission, dict):
         raise MissionValidationError("mission must be an object")
@@ -187,7 +218,7 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
                 raise MissionValidationError(f"'{field}' must be a list of non-empty strings")
             mission_context[field] = list(dict.fromkeys(item.strip() for item in value))
 
-    return {
+    plan = {
         "planner": "omega-adaptive-prism",
         "planner_version": VERSION,
         "mission": mission_context,
@@ -210,3 +241,6 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
             "ne pas lancer plus de deux nouvelles expériences décisives pour un même verrou."
         ),
     }
+    if "decision_context" in mission:
+        plan["next_action"] = _next_action(mission["decision_context"])
+    return plan

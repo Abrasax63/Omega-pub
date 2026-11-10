@@ -177,3 +177,17 @@ Tests P5 :
 ```bash
 python -m unittest -v
 ```
+
+### Prochaine action à partir d'un contexte de décision
+
+Une mission peut fournir `decision_context`. Une `decision_basis` seule
+propose de répondre. Une `blocking_uncertainty` propose une vérification
+si `verification` et `verification_effect` sont fournis, une question si
+`clarification` est fournie, ou un constat de preuves insuffisantes sinon.
+Une vérification déclarée disponible a priorité sur la clarification.
+Le plan retourne l'action, sa raison et l'étape concrète le cas échéant.
+Les missions sans ce contexte conservent leur sortie précédente.
+
+Le prototype utilise des faits explicitement structurés. Il ne déduit pas
+la disponibilité des preuves depuis le texte, ne vérifie pas les affirmations
+de l'appelant et n'exécute aucune action.
