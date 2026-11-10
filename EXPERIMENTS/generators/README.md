@@ -1,4 +1,4 @@
-# Générateurs T1/T3 — v0.2
+# Générateurs T1/T3 — v0.3
 
 ## Fichiers
 
@@ -11,10 +11,16 @@
 - `render_t1_prompt(public_parameters)` reconstruit le prompt T1 depuis les paramètres publics.
 - `render_t3_prompt(public_parameters)` reconstruit le prompt T3 sans accéder au paramètre caché.
 - `validate_prompt_consistency(public_payload)` compare exactement le prompt transmis au rendu canonique correspondant à la famille.
-- Les générateurs utilisent eux-mêmes ces fonctions de rendu : la génération et la validation partagent donc un format canonique unique, tandis que les tests de mutation vérifient que les divergences entre texte et paramètres sont rejetées.
+- Les générateurs utilisent eux-mêmes ces fonctions de rendu ; les tests de mutation vérifient que les divergences entre texte et paramètres sont rejetées.
 - Le validateur retourne `False` pour les familles inconnues, les champs absents, les paramètres mal formés ou un prompt divergent.
 
-## Exécution
+## Exécution CI
+
+Le workflow [run 42801786605](https://github.com/Abrasax63/Omega-pub/actions/runs/42801786605), Python 3.12.16, a exécuté **22 tests : 22 réussis**. Les logs contiennent `Ran 22 tests` puis `OK`.
+
+Deux tests supplémentaires de cas limites forcés (profondeurs T1 et coefficients affines limites) ont été ajoutés après ce run. Leur résultat CI n'est pas encore confirmé. Le fichier contient donc actuellement 24 méthodes de test, dont 22 couvertes par le run cité.
+
+## Reproduction
 
 Depuis la racine du dépôt :
 
@@ -24,24 +30,11 @@ python -m unittest discover -s EXPERIMENTS/generators -p 'test_*.py' -v
 
 Le workflow GitHub Actions `.github/workflows/t1-t3-generators.yml` exécute cette commande sous Python 3.12.
 
-## Couverture
-
-Les 12 tests de la version précédente ont réussi sur le run [42795937582](https://github.com/Abrasax63/Omega-pub/actions/runs/42795937582).
-
-Dix nouveaux tests sont maintenant ajoutés pour :
-- la cohérence canonique T1 et T3 ;
-- l'aller-retour JSON public T1/T3 et privé T3 ;
-- le recalcul de l'oracle T1 depuis les données publiques désérialisées ;
-- les mutations du prompt et des paramètres ;
-- la suppression d'une étape T1 et la mutation du champ manquant T3.
-
-Le fichier contient donc 22 méthodes de test. Le résultat CI correspondant au commit qui ajoute ces tests doit être consulté avant de déclarer cette nouvelle version validée.
-
 ## Limites restantes
 
-- Les cas limites forcés (`k=1`, `k=2`, coefficients négatifs, `a_i=1`, `b_i=0`) restent à compléter.
-- L'audit exhaustif des fuites dans les identifiants, fichiers, journaux et erreurs reste à faire.
+- Audit exhaustif des fuites dans les identifiants, fichiers, journaux et erreurs : à faire.
 - Le validateur de prompt ne remplace pas un validateur exhaustif du schéma public/privé.
+- Revue indépendante du contrat et des oracles : à faire.
 - Aucun benchmark A/B/C n'a été exécuté ; aucune supériorité d'Omega n'est établie.
 
 ## Règle anti-fuite
