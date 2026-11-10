@@ -31,8 +31,13 @@ Le dépôt est organisé en modules scientifiques séparés, reliés par un socl
 | [06_CALCUL_SCIENTIFIQUE](06_CALCUL_SCIENTIFIQUE/) | Programmes, simulations, données et reproductions |
 | [07_REVUES_INDEPENDANTES](07_REVUES_INDEPENDANTES/) | Critiques, contre-exemples et réponses |
 | [08_ARCHIVES](08_ARCHIVES/) | Versions et dossiers conservés pour traçabilité |
+| [09_INFRASTRUCTURE_AGENTIQUE](09_INFRASTRUCTURE_AGENTIQUE/) | Mémoire scientifique partagée, contexte agentique, provenance et propositions contrôlées |
 
 La création d'un module ne certifie aucun résultat. Les dossiers sont alimentés progressivement après vérification de leur contenu, de leur provenance et de leur statut.
+
+## Infrastructure agentique native
+
+Le module [09_INFRASTRUCTURE_AGENTIQUE](09_INFRASTRUCTURE_AGENTIQUE/) spécifie l'intégration du multi-agent à la mémoire scientifique commune : consultation des résultats internes et externes, paquets de contexte versionnés, provenance des interventions, prévention des confirmations circulaires et dépôt de propositions sans promotion automatique des statuts. Il s'agit d'une architecture proposée, non d'un service agentique déjà déployé.
 
 ## RAVI-2 — Méthode de recherche et de vérification adversariale
 
