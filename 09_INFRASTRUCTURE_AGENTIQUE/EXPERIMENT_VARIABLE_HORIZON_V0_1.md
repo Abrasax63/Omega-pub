@@ -85,3 +85,55 @@ des journaux CI.**
 
 Aucun effet sur main, aucune promotion en bibliothèque certifiée,
 aucune preuve de gain scientifique.
+
+
+## Mesures CI vérifiées — 10 novembre 2026
+
+La [CI 42916399373](https://github.com/Abrasax63/Omega-pub/actions/runs/42916399373)
+a validé 94 tests du Prisme après mise à jour d'un ancien test qui
+interdisait la profondeur 3. Les 480 comparaisons exactes indépendantes
+ont réussi. Parmi 120 scénarios synthétiques, la profondeur 3 réduit
+strictement l'objectif par rapport à 2 dans **3 scénarios**.
+
+La [CI 42916623839](https://github.com/Abrasax63/Omega-pub/actions/runs/42916623839)
+a ensuite validé **96 tests du Prisme**, les tests RCE/MCP et les
+smoke tests des index ; elle reproduit les 480 comparaisons et la
+répétition sur sources publiques.
+
+### Petit pilote sur faits externes, non aveugle
+
+Le fichier `prism/public_source_pilot.py` propose **huit questions réelles
+à réponse vérifiable**, issues de sources primaires :
+
+- RFC 9110, §13.1.3 : priorité d'If-None-Match sur If-Modified-Since,
+  et cas d'une méthode POST ;
+- RFC 9110, §13.1.4 : priorité d'If-Match sur If-Unmodified-Since ;
+- RFC 3986, §5.2.4 et §5.4.1 : résolution des références relatives
+  et suppression des segments de chemin ;
+- documentation Python 3.11 du modèle de données : relation bool/int,
+  et distinction entre `isinstance` et égalité exacte de type.
+
+Références primaires, stables et consultables :
+https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.3
+https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.4
+https://www.rfc-editor.org/rfc/rfc3986.html#section-5.2.4
+https://www.rfc-editor.org/rfc/rfc3986.html#section-5.4.1
+https://docs.python.org/3.11/reference/datamodel.html#the-standard-type-hierarchy
+
+La sélection de la consultation primaire est correcte **8/8 par
+construction du modèle** ; quatre vérités sont de plus vérifiées
+directement par le runtime Python. Lorsque la source primaire n'est
+plus disponible et que le résumé est non informatif, le planificateur
+s'abstient.
+
+**Limitation décisive :** ni les documents RFC/Python ni le Web ne
+sont réellement consultés par Omega au cours de cette simulation.
+La connaissance des bonnes réponses et des observations conditionnelles
+est codée à l'avance. Ces faits sont externes, mais ce benchmark
+n'est **pas une épreuve indépendante de compétence, ni un holdout**,
+et ne prouve pas une amélioration de précision.
+
+La suite pertinente est un protocole P5 gelé sur des cas réels
+**non vus**, avec accès à des outils d'observation réels, déroulement
+conditionnel et vérification des décisions finales par un tiers. Ne
+pas avancer le statut CORE avant cette étape.
