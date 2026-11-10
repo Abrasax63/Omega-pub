@@ -1,4 +1,4 @@
-""""Deterministic, explainable role planner for the Omega adaptive prism.
+"""Deterministic, explainable role planner for the Omega adaptive prism.
 
 P1 only plans work. It does not call models, execute tasks, write memory, or
 claim that role perspectives are independent agents.
