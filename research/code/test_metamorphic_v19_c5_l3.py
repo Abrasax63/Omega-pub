@@ -65,8 +65,9 @@ def shadow_dsu(F, pair, cycle, horizon, allowed=None, equality=True):
 
     def find(x):
         if parent[x] != x:
-            root = find(parent[x])
-            parity[x] ^= parity[parent[x]]
+            old_parent = parent[x]
+            root = find(old_parent)
+            parity[x] ^= parity[old_parent]
             parent[x] = root
         return parent[x], parity[x]
 
