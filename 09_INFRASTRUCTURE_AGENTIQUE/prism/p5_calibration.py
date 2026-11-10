@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from analysis import ARMS, analyze_files
 from evaluation import DIMENSIONS
+from p5_dispatch import DispatchLedger
 from planner import ROLE_ORDER, ROLE_QUESTIONS, plan_mission
 
 CASE_ID = "P5V2-FORMAL-001"
@@ -44,7 +45,7 @@ def reconcile(dispatch, records):
     return summarize_calls(records, by_execution=True)["execution_summaries"]
 
 
-def run_arm(arm, prompt, route, provider, dispatch, records):
+def run_arm(arm, prompt, route, provider, dispatch, records, *, ledger=None):
     from openai_responses_adapter import build_openai_responses_record
 
     remaining_tokens = BUDGET["tokens"]
@@ -53,7 +54,10 @@ def run_arm(arm, prompt, route, provider, dispatch, records):
         if remaining_tokens <= 0 or remaining_seconds <= 0:
             break
         call_id = f"calibration-{arm}-{attempt}"
-        dispatch.append((EXPERIMENT, CASE_ID, arm, 1, "generate", attempt, call_id))
+        identity = (EXPERIMENT, CASE_ID, arm, 1, "generate", attempt, call_id)
+        if ledger is not None:
+            ledger.reserve(identity)
+        dispatch.append(identity)
         response, elapsed, tools = provider(
             arm, attempt, prompt, max_tokens=remaining_tokens,
             timeout=remaining_seconds, max_tools=BUDGET["tools"],
@@ -71,6 +75,8 @@ def run_arm(arm, prompt, route, provider, dispatch, records):
         remaining_seconds -= elapsed
         if remaining_tokens < 0 or remaining_seconds < 0 or tools > BUDGET["tools"]:
             raise CalibrationError("execution exceeded its budget")
+        if ledger is not None:
+            ledger.finish(identity, record)
         if record["status"] == "completed":
             return
         if record["status"] != "interrupted":
@@ -91,7 +97,9 @@ def simulated_provider(arm, attempt, prompt, *, max_tokens, timeout, max_tools):
     }, 0.25, 0)
 
 
-def checked_analysis(dispatch, records, notes, key, output, ratings_sha256):
+def checked_analysis(dispatch, records, notes, key, output, ratings_sha256, *, ledger=None):
+    if ledger is not None:
+        ledger.verify_results(records)
     summaries = reconcile(dispatch, records)
     report = analyze_files(
         notes, key, output, expected_case_ids={CASE_ID}, ratings_sha256=ratings_sha256,
@@ -100,7 +108,12 @@ def checked_analysis(dispatch, records, notes, key, output, ratings_sha256):
             "executions": summaries, "ratings": report}
 
 
-def exercise():
+def exercise(provider=simulated_provider):
+    with TemporaryDirectory() as directory:
+        return _exercise(provider, DispatchLedger(Path(directory) / "events.jsonl", EXPERIMENT))
+
+
+def _exercise(provider, ledger):
     cases = Path(__file__).resolve().parents[1] / "evaluation/holdout_v0_2/cases.jsonl"
     case = next(row for row in map(json.loads, cases.read_text(encoding="utf-8").splitlines())
                 if row["case_id"] == CASE_ID)
@@ -117,7 +130,7 @@ def exercise():
         route = routes[arm]
         perspectives = [{field: item[field] for field in ("role", "question")} for item in route]
         run_arm(arm, {"question": case["prompt"], "perspectives": perspectives}, route,
-                simulated_provider, dispatch, records)
+                provider, dispatch, records, ledger=ledger)
 
     mappings, ratings = [], []
     for index, arm in enumerate(reversed(order)):
@@ -150,7 +163,7 @@ def exercise():
             read_key.assert_not_called()
         if output.exists():
             raise CalibrationError("analysis was written despite the missing call")
-        report = checked_analysis(dispatch, records, *args)
+        report = checked_analysis(dispatch, records, *args, ledger=ledger)
 
     retry = next(row for row in report["executions"] if row["arm"] == "C")
     if retry["status_counts"] != {"completed": 1, "interrupted": 1}:
