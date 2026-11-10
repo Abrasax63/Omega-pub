@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from hashlib import sha256
 from random import Random
 from typing import Any
 
@@ -78,7 +79,7 @@ def generate_t1(seed: int, k: int = 3, coefficient_bound: int = 5) -> GeneratedT
         "Quelle est la valeur finale ?"
     )
     return GeneratedTask(
-        task_id=f"T1-{seed}-{k}",
+        task_id="T1-" + sha256(prompt.encode("utf-8")).hexdigest()[:12],
         family="T1",
         prompt=prompt,
         public_parameters={"initial": initial, "steps": [list(s) for s in steps]},
@@ -111,7 +112,7 @@ def generate_t3(seed: int, coefficient_bound: int = 5) -> GeneratedTask:
         "Quelle est la valeur après la deuxième transformation ?"
     )
     return GeneratedTask(
-        task_id=f"T3-{seed}",
+        task_id="T3-" + sha256(prompt.encode("utf-8")).hexdigest()[:12],
         family="T3",
         prompt=prompt,
         public_parameters={
