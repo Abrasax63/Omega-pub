@@ -55,19 +55,27 @@ def run_arm(arm, prompt, route, provider, dispatch, records, *, ledger=None):
             break
         call_id = f"calibration-{arm}-{attempt}"
         identity = (EXPERIMENT, CASE_ID, arm, 1, "generate", attempt, call_id)
-        if ledger is not None:
-            ledger.reserve(identity)
+        recovered = ledger.recover_payload(identity) if ledger is not None else None
         dispatch.append(identity)
-        response, elapsed, tools = provider(
-            arm, attempt, prompt, max_tokens=remaining_tokens,
-            timeout=remaining_seconds, max_tools=BUDGET["tools"],
-        )
-        record = build_openai_responses_record(
-            response, experiment_id=EXPERIMENT, case_id=CASE_ID, arm=arm, call_id=call_id,
-            started_at="2026-01-01T00:00:00Z", elapsed_seconds=elapsed, tool_calls=tools,
-            context={"repetition": 1, "operation_id": "generate", "attempt": attempt,
-                     "prompt_sha256": digest(prompt), "routing_decision_sha256": digest(route)},
-        )
+        if recovered is not None:
+            record = recovered["row"]
+            elapsed, tools = record["elapsed_seconds"], record["tool_calls"]
+            if (record["prompt_sha256"] != digest(prompt)
+                    or record["routing_decision_sha256"] != digest(route)):
+                raise CalibrationError("stored attempt used a different prompt or route")
+        else:
+            if ledger is not None:
+                ledger.reserve(identity)
+            response, elapsed, tools = provider(
+                arm, attempt, prompt, max_tokens=remaining_tokens,
+                timeout=remaining_seconds, max_tools=BUDGET["tools"],
+            )
+            record = build_openai_responses_record(
+                response, experiment_id=EXPERIMENT, case_id=CASE_ID, arm=arm, call_id=call_id,
+                started_at="2026-01-01T00:00:00Z", elapsed_seconds=elapsed, tool_calls=tools,
+                context={"repetition": 1, "operation_id": "generate", "attempt": attempt,
+                         "prompt_sha256": digest(prompt), "routing_decision_sha256": digest(route)},
+            )
         records.append(record)
         if record["input_tokens"] is None or record["output_tokens"] is None or tools is None:
             raise CalibrationError("budget consumption unknown")
@@ -75,8 +83,8 @@ def run_arm(arm, prompt, route, provider, dispatch, records, *, ledger=None):
         remaining_seconds -= elapsed
         if remaining_tokens < 0 or remaining_seconds < 0 or tools > BUDGET["tools"]:
             raise CalibrationError("execution exceeded its budget")
-        if ledger is not None:
-            ledger.finish(identity, record)
+        if ledger is not None and recovered is None:
+            ledger.finish_payload(identity, record, response)
         if record["status"] == "completed":
             return
         if record["status"] != "interrupted":
@@ -93,6 +101,7 @@ def simulated_provider(arm, attempt, prompt, *, max_tokens, timeout, max_tools):
     return ({
         "status": "incomplete" if interrupted else "completed",
         "model": "simulated-p5-v1",
+        "output_text": None if interrupted else "Réponse synthétique de calibration.",
         "usage": {"input_tokens": input_tokens, "output_tokens": output_tokens},
     }, 0.25, 0)
 

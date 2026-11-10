@@ -105,14 +105,15 @@ rapport. Une seconde injection contrôle le rejet d'un dépassement de
 tokens pour chaque bras.
 
 Sur le même checkout, `python p5_http_calibration.py` exerce le transport HTTP
-sur loopback. Le processus s'arrête après réception HTTP et avant validation
-de la télémétrie. Un nouveau processus retrouve la tentative en état
-indéterminé et s'arrête sans nouvelle requête. Le test couvre aussi un délai
-de lecture HTTP et la réduction du budget après la première tentative de C.
+sur loopback. Un arrêt avant publication du fichier laisse une tentative
+indéterminée qui bloque l'analyse. Un arrêt après publication durable et
+avant l'événement terminal permet de récupérer la réponse et la télémétrie
+sans rappeler le fournisseur. Le registre P4 fixe l'empreinte du contenu
+avant publication et le rejeu vérifie cette empreinte avant de terminer la
+tentative. Le test couvre aussi le délai de lecture HTTP et le budget de C.
 
-Pour un pilote réel, il reste à brancher le SDK et contrôler ses reprises,
-persister les lignes de télémétrie et les sorties dans un espace privé,
-appliquer les plafonds du client réel et définir la réconciliation humaine
-des envois dont l'issue est inconnue. Le registre durable conserve des
-empreintes et ne permet pas de reconstruire une réponse perdue. Le verrou
-et la synchronisation de répertoire de ce prototype ciblent POSIX/Linux.
+Les fichiers de réponse et télémétrie de cet essai sont synthétiques et
+stockés dans un répertoire temporaire. Le pilote réel exige un espace
+privé contrôlé, la validation du SDK et de ses reprises, et une procédure
+pour résoudre les envois qui restent indéterminés. Le verrou et la
+synchronisation du prototype ciblent POSIX/Linux.

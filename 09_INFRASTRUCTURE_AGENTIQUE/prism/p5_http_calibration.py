@@ -28,6 +28,13 @@ def http_provider(port, arm, attempt, prompt, *, max_tokens, timeout, max_tools)
 
 def worker(port, path, action):
     ledger = DispatchLedger(path, EXPERIMENT)
+    arm = "A" if action in {"after-write", "recover"} else "C"
+    append = ledger._append
+
+    def stop_before_terminal(identity, row=None, **kwargs):
+        if row is not None and action == "after-write":
+            os._exit(79)
+        append(identity, row, **kwargs)
 
     def send(*args, **kwargs):
         response = http_provider(port, *args, **kwargs)
@@ -36,8 +43,16 @@ def worker(port, path, action):
         return response
 
     try:
-        run_arm("C", {"question": "P5 crash fixture", "perspectives": []}, [],
-                send, [], [], ledger=ledger)
+        records = []
+        with patch.object(ledger, "_append", side_effect=stop_before_terminal):
+            run_arm(arm, {"question": "P5 crash fixture", "perspectives": []}, [],
+                    send, [], records, ledger=ledger)
+        if action == "recover":
+            ledger.verify_results(records)
+            identity = (EXPERIMENT, records[0]["case_id"], arm, 1, "generate", 1, "calibration-A-1")
+            assert ledger.recover_payload(identity)["response"]["output_text"] == (
+                "Réponse synthétique de calibration."
+            )
     except DispatchError as exc:
         if action != "resume" or "unknown outcome" not in str(exc):
             raise
@@ -94,6 +109,15 @@ def main():
                     raise AssertionError("uncertain attempt was accepted")
                 load_key.assert_not_called()
 
+            after_path = Path(folder) / "after.jsonl"
+            after_command = [sys.executable, __file__, str(port), str(after_path)]
+            before = len(calls)
+            after_exit = subprocess.run(after_command + ["after-write"], timeout=10).returncode
+            assert after_exit == 79
+            assert calls[before:] == [("A", 1, 256, 2.0)]
+            recover_exit = subprocess.run(after_command + ["recover"], timeout=10).returncode
+            assert recover_exit == 0 and len(calls) == before + 1
+
             hold.set()
             try:
                 http_provider(port, "A", 1, {"perspectives": []},
@@ -104,7 +128,8 @@ def main():
                 raise AssertionError("client accepted a response beyond its timeout")
             assert calls[-1] == ("A", 1, 256, 0.2)
             print(json.dumps({"checks": report["checks"], "crash_exit": crash_exit, "resume_exit": resume_exit,
-                              "server_saw_one_crash_request": True, "timeout_enforced": True},
+                              "server_saw_one_crash_request": True, "timeout_enforced": True,
+                              "after_write_exit": after_exit, "recovered_without_resending": True},
                              sort_keys=True))
         finally:
             release.set()
