@@ -60,8 +60,7 @@ Deux complétions compatibles :
 - $b=0$ donne $21$ ;
 - $b=4$ donne $25$.
 
-Puisque (21
-e25), l'énoncé ne détermine pas une valeur finale unique.  
+Puisque $21\\ne25$, l'énoncé ne détermine pas une valeur finale unique.  
 **Réponse de référence : sous-déterminé ; le paramètre manquant est $b$.**
 
 Formellement, pour une instance donnée, le validateur doit exhiber deux valeurs admissibles $b_1\ne b_2$ telles que les sorties correspondantes soient différentes. Les témoins sont conservés dans l'oracle privé, jamais dans l'entrée du système évalué.
