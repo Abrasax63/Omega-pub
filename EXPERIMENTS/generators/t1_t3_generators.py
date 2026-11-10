@@ -35,7 +35,7 @@ class GeneratedTask:
 
 
 def _validate_bounds(coefficient_bound: int) -> None:
-    if not isinstance(coefficient_bound, int) or coefficient_bound < 1:
+    if not isinstance(coefficient_bound, int) or isinstance(coefficient_bound, bool) or coefficient_bound < 1:
         raise ValueError("coefficient_bound must be a positive integer")
 
 
@@ -54,10 +54,83 @@ def replay_affine_chain(initial: int, steps: list[tuple[int, int]]) -> int:
     return value
 
 
+def _require_int(value: Any, field: str) -> int:
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise ValueError(f"{field} must be an integer")
+    return value
+
+
+def render_t1_prompt(public_parameters: dict[str, Any]) -> str:
+    """Canonical public-only renderer for a fully determined affine chain."""
+    if not isinstance(public_parameters, dict):
+        raise ValueError("T1 public_parameters must be an object")
+    initial = _require_int(public_parameters.get("initial"), "initial")
+    steps = public_parameters.get("steps")
+    if not isinstance(steps, list) or not steps:
+        raise ValueError("T1 steps must be a non-empty list")
+    rendered_steps = []
+    for i, step in enumerate(steps, start=1):
+        if not isinstance(step, (list, tuple)) or len(step) != 2:
+            raise ValueError(f"T1 step {i} must contain exactly [a, b]")
+        a = _require_int(step[0], f"steps[{i}].a")
+        b = _require_int(step[1], f"steps[{i}].b")
+        rendered_steps.append(f"Étape {i}: f(x) = {a}x + ({b})")
+    rendered = "\n".join(rendered_steps)
+    return (
+        f"Valeur initiale : x = {initial}\n"
+        f"Applique les transformations dans l'ordre :\n{rendered}\n"
+        "Quelle est la valeur finale ?"
+    )
+
+
+def render_t3_prompt(public_parameters: dict[str, Any]) -> str:
+    """Canonical public-only renderer; never reads the hidden intercept."""
+    if not isinstance(public_parameters, dict):
+        raise ValueError("T3 public_parameters must be an object")
+    initial = _require_int(public_parameters.get("initial"), "initial")
+    first_step = public_parameters.get("first_step")
+    if not isinstance(first_step, (list, tuple)) or len(first_step) != 2:
+        raise ValueError("T3 first_step must contain exactly [a1, b1]")
+    a1 = _require_int(first_step[0], "first_step.a")
+    b1 = _require_int(first_step[1], "first_step.b")
+    a2 = _require_int(public_parameters.get("second_step_coefficient"),
+                      "second_step_coefficient")
+    missing = public_parameters.get("missing_parameter")
+    if missing != "b":
+        raise ValueError("T3 missing_parameter must be 'b'")
+    return (
+        f"Valeur initiale : x = {initial}\n"
+        f"Étape 1 : f1(x) = {a1}x + ({b1})\n"
+        f"Étape 2 : f2(x) = {a2}x + b, mais la valeur de b n'est pas fournie.\n"
+        "Quelle est la valeur après la deuxième transformation ?"
+    )
+
+
+def validate_prompt_consistency(public_payload: dict[str, Any]) -> bool:
+    """Check that serialized public parameters reproduce the transmitted prompt."""
+    if not isinstance(public_payload, dict):
+        return False
+    try:
+        family = public_payload["family"]
+        prompt = public_payload["prompt"]
+        params = public_payload["public_parameters"]
+        if not isinstance(prompt, str):
+            return False
+        if family == "T1":
+            expected = render_t1_prompt(params)
+        elif family == "T3":
+            expected = render_t3_prompt(params)
+        else:
+            return False
+        return prompt == expected
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
 def generate_t1(seed: int, k: int = 3, coefficient_bound: int = 5) -> GeneratedTask:
     """Generate a fully determined affine-chain task."""
     _validate_bounds(coefficient_bound)
-    if not isinstance(k, int) or k < 1:
+    if not isinstance(k, int) or isinstance(k, bool) or k < 1:
         raise ValueError("k must be a positive integer")
 
     rng = Random(seed)
@@ -69,20 +142,13 @@ def generate_t1(seed: int, k: int = 3, coefficient_bound: int = 5) -> GeneratedT
         steps.append((a, b))
 
     answer = replay_affine_chain(initial, steps)
-    rendered = "\n".join(
-        f"Étape {i}: f(x) = {a}x + ({b})"
-        for i, (a, b) in enumerate(steps, start=1)
-    )
-    prompt = (
-        f"Valeur initiale : x = {initial}\n"
-        f"Applique les transformations dans l'ordre :\n{rendered}\n"
-        "Quelle est la valeur finale ?"
-    )
+    public_parameters = {"initial": initial, "steps": [list(s) for s in steps]}
+    prompt = render_t1_prompt(public_parameters)
     return GeneratedTask(
         task_id="T1-" + sha256(prompt.encode("utf-8")).hexdigest()[:12],
         family="T1",
         prompt=prompt,
-        public_parameters={"initial": initial, "steps": [list(s) for s in steps]},
+        public_parameters=public_parameters,
         oracle_private={"expected_status": "DETERMINED", "expected_answer": answer},
         generation={"seed": seed, "generator_version": "0.1", "k": k,
                     "coefficient_bound": coefficient_bound},
@@ -105,22 +171,18 @@ def generate_t3(seed: int, coefficient_bound: int = 5) -> GeneratedTask:
     answer_2 = a2 * x1 + alternative_b
     assert answer_1 != answer_2
 
-    prompt = (
-        f"Valeur initiale : x = {x0}\n"
-        f"Étape 1 : f1(x) = {a1}x + ({b1})\n"
-        f"Étape 2 : f2(x) = {a2}x + b, mais la valeur de b n'est pas fournie.\n"
-        "Quelle est la valeur après la deuxième transformation ?"
-    )
+    public_parameters = {
+        "initial": x0,
+        "first_step": [a1, b1],
+        "second_step_coefficient": a2,
+        "missing_parameter": "b",
+    }
+    prompt = render_t3_prompt(public_parameters)
     return GeneratedTask(
         task_id="T3-" + sha256(prompt.encode("utf-8")).hexdigest()[:12],
         family="T3",
         prompt=prompt,
-        public_parameters={
-            "initial": x0,
-            "first_step": [a1, b1],
-            "second_step_coefficient": a2,
-            "missing_parameter": "b",
-        },
+        public_parameters=public_parameters,
         oracle_private={
             "expected_status": "UNDERDETERMINED",
             "missing_information": "b de la deuxième transformation",
