@@ -40,7 +40,7 @@ def forced_edges(F):
     )
 
 
-def shadow(F, x, y, cycle):
+def shadow(F, x, y, cycle, trajectory_equality=True):
     """Énumération globale directe des colorations binaires."""
     n = len(F)
     forced = forced_edges(F)
@@ -55,7 +55,8 @@ def shadow(F, x, y, cycle):
     for coloring in product((0, 1), repeat=n):
         if any(coloring[u] == coloring[v] for u, v in forced):
             continue
-        if any(coloring[u] != coloring[v] for u, v in requirements):
+        if any((coloring[u] == coloring[v]) != trajectory_equality
+               for u, v in requirements):
             continue
         mask = sum(coloring[cycle[i]] << i for i in range(4))
         out.add(mask)
@@ -183,6 +184,23 @@ def check_state_relabelings():
     print("STATE_RELABELING: PASS (36 transpositions de S_9, 8 classes chacune)")
 
 
+def check_negative_control():
+    # Mutation volontaire du contrat : remplacer les égalités de trajectoire
+    # par des inégalités. Le témoin de référence ne doit plus être reproduit.
+    mutated = tuple(
+        shadow(T, x, y, CYCLE, trajectory_equality=False)
+        for x, y in PAIRS
+    )
+    exact_matches = sum(
+        got == expected for got, expected in zip(mutated, TARGETS)
+    )
+    assert exact_matches == 1, (
+        f"Le contrôle négatif aurait dû reproduire exactement 1/8 ombres, "
+        f"pas {exact_matches}/8"
+    )
+    print("NEGATIVE_CONTROL: PASS (contrat muté égalité -> inégalité : 1/8 seulement)")
+
+
 def check_cycle_origin():
     for shift in range(4):
         cycle2 = tuple(CYCLE[(i + shift) % 4] for i in range(4))
@@ -212,6 +230,7 @@ def main():
     check_base_witness()
     check_state_relabelings()
     check_independent_solver()
+    check_negative_control()
     check_cycle_origin()
     check_global_color_complement()
     print("METAMORPHIC_C4: ALL CHECKS PASSED")
