@@ -19,10 +19,10 @@ Ne pas réutiliser comme holdout aveugle les cas v0.1 déjà exposés dans l'his
 
 | Porte | Condition vérifiable | État |
 |---|---|---|
-| G1 | Corrigé privé corrigé, relu et cohérent avec les définitions des cas | **SATISFAIT pour P5V2-EXPL-001** |
+| G1 | Corrigé privé corrigé, relu et cohérent avec les définitions des cinq cas | **PARTIEL : EXPL vérifié ; énoncés exacts absents pour audit complet** |
 | G2 | Empreinte SHA-256 recalculée sur les octets exacts du corrigé final | **SATISFAIT** |
 | G3 | Manifeste public mis à jour avec ID, version et empreintes autorisées, sans contenu secret | **SATISFAIT** |
-| G4 | Cas v0.2 distincts du matériel v0.1 public et absence de fuite vérifiée | À AUDITER |
+| G4 | Cas v0.2 distincts du matériel v0.1 public et absence de fuite vérifiée | **BLOQUÉ : cases.jsonl v0.2 absent ; audit intermédiaire créé** |
 | G5 | Modèles, snapshots, paramètres et prompts A/B/C explicitement fixés | NON RENSEIGNÉ |
 | G6 | Budget commun par cas/bras et mesures réellement accessibles définis | NON RENSEIGNÉ |
 | G7 | Ordre randomisé, graine protégée et table d'aveuglement séparée | NON RENSEIGNÉ |
@@ -131,7 +131,7 @@ Les nouveaux cas doivent être écrits indépendamment des sorties du pilote, pu
 - Manifeste public : créé dans `evaluation/holdout_v0_2/manifest.json`.
 - Pilote A/B/C : non exécuté.
 - Notation humaine : non exécutée.
-- G4–G10 : non satisfaites ou non vérifiées.
+- G4 : BLOQUÉE ; G5–G10 : non satisfaites ou non vérifiées.\n- Audit intermédiaire : `evaluation/holdout_v0_2/AUDIT_INTERMEDIAIRE.md`.
 - Analyse des décisions adaptatives : schéma de collecte préparé ; aucune donnée observée.
 - P5 v0.3 : exigences de conception uniquement ; aucun cas finalisé.
 
