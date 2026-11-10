@@ -157,9 +157,17 @@ def analyze_dataset(ratings, blind_key, *, expected_case_ids=None):
 
 
 def analyze_files(ratings_path, blind_key_path, output_path, *, expected_case_ids=None):
+    # Validate and freeze the blinded ratings before opening the unblinding key.
+    ratings = load_jsonl(ratings_path)
+    try:
+        validate_dataset(ratings, expected_case_ids=expected_case_ids)
+    except EvaluationRecordError as exc:
+        raise AnalysisInputError(str(exc)) from exc
+
+    blind_key = load_blind_key(blind_key_path)
     result = analyze_dataset(
-        load_jsonl(ratings_path),
-        load_blind_key(blind_key_path),
+        ratings,
+        blind_key,
         expected_case_ids=expected_case_ids,
     )
     Path(output_path).write_text(
