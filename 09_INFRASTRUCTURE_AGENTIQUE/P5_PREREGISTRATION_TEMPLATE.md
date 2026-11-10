@@ -92,3 +92,45 @@
 
 **Décision de lancement :** EN ATTENTE / AUTORISÉ / BLOQUÉ  
 **Justification :**
+
+## Profil proposé pour le premier pilote P5
+
+**Statut :** projet public à compléter et à geler dans un registre privé.
+Aucun modèle, prompt de production, budget chiffré ni évaluateur n'est validé.
+
+- **Unité d'analyse.** Cinq cas privés inédits, deux répétitions par cas et
+  par bras, soit 30 sorties attendues. Utiliser le même snapshot fournisseur
+  pour A, B et C et inscrire la référence vérifiée dans le registre. A reçoit
+  la tâche sans Prisme, B utilise une liste de rôles figée, C applique le
+  routage adaptatif. Enregistrer les prompts exacts et les versions effectives
+  du planificateur et des outils. Comparer trois configurations du même
+  modèle via le même canal d'exécution.
+- **Équité.** Fixer avant lancement les mêmes plafonds de tokens cumulés,
+  d'appels, de durée et de reprises. Compter le coût de l'orchestration et
+  des outils. Réinitialiser l'historique et l'état mutable à chaque exécution.
+  Même instantané documentaire et mêmes accès pour les trois bras. Aucun
+  réseau ni outil non listé. Les paramètres non supportés sont consignés.
+- **Ordre.** Tirer l'ordre des bras dans chaque bloc (cas, répétition) via
+  une graine et une version d'algorithme consignées en privé. Attribuer
+  indépendamment des identifiants opaques aux sorties et mélanger leur ordre
+  de présentation. Exclure les métadonnées révélant bras, route, coût ou durée
+  du paquet de notation. Documenter les indices de style qui subsistent.
+- **Arrêt et manquants.** Arrêter au budget fixé ou à un incident de secret,
+  d'identité ou de journalisation. Enregistrer tous les échecs. Aucun
+  remplacement après notation. Une sortie manquante empêche l'analyse
+  principale complète et déclenche un rapport d'incident avec le dénominateur.
+  Les mesures opérationnelles manquantes restent inconnues.
+- **Notation.** Deux évaluateurs indépendants notent toutes les sorties de
+  chaque cas sur les six dimensions 0–4. Geler le barème et les notes
+  initiales, puis journaliser les arbitrages à part avant décodage. Un tiers
+  arbitre les désaccords matériels. Rapporter aussi les notes initiales.
+- **Critères.** Exactitude C−A et C−B en critères principaux descriptifs.
+  B−A, réfutation, calibration, justification, traçabilité, désaccords,
+  erreurs et efficacité sont secondaires. Montrer les différences par
+  cas et les cas défavorables. Garder qualité et ressources séparées.
+  L'échantillon de cinq cas sert à un pilote descriptif.
+- **Jonction technique.** La clé privée relie les sorties opaques à
+  (cas, bras, répétition). Le journal relie ce triplet, dans une campagne,
+  aux appels et tentatives. Vérifier l'inventaire des exécutions contre
+  le manifeste avant de rapprocher les résumés opérationnels des notes.
+  Conserver journal, corrigé, notes gelées et clé dans des espaces séparés.

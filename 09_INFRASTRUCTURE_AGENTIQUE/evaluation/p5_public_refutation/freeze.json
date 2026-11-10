@@ -1,0 +1,60 @@
+{
+  "case_id": "P5V2-ADV-001",
+  "public_reference_commit": "3e5e57345fa241512c3cac88170bc40abd0451a5",
+  "mission": {
+    "question": "Un rapport affirme : « Si une fonction totale f:X→X sur un ensemble fini X vérifie f(0)=1, f(1)=2 et f(2)=3 pour quatre états distincts 0,1,2,3∈X, alors f est nécessairement injective sur X : les images observées étant distinctes, aucune collision n'est possible. » Audite l'affirmation. Donne un verdict, puis construis deux extensions totales sur le même ensemble fini contenant exactement ces trois transitions : l'une injective et l'autre non injective. Vérifie explicitement les propriétés annoncées et identifie le saut logique du rapport.",
+    "mission_type": "mathematical",
+    "requires_computation": false
+  },
+  "common_instruction": "Réponds en français en 120 mots maximum. N’utilise aucun outil ni source externe. Applique les perspectives indiquées, puis fournis une réponse unifiée.",
+  "prompts": {
+    "B": {
+      "question": "Un rapport affirme : « Si une fonction totale f:X→X sur un ensemble fini X vérifie f(0)=1, f(1)=2 et f(2)=3 pour quatre états distincts 0,1,2,3∈X, alors f est nécessairement injective sur X : les images observées étant distinctes, aucune collision n'est possible. » Audite l'affirmation. Donne un verdict, puis construis deux extensions totales sur le même ensemble fini contenant exactement ces trois transitions : l'une injective et l'autre non injective. Vérifie explicitement les propriétés annoncées et identifie le saut logique du rapport.",
+      "perspectives": [
+        {
+          "role": "refuter",
+          "question": "Quelle hypothèse centrale pourrait être fausse, et quel contre-exemple ou test la réfuterait ?"
+        },
+        {
+          "role": "formalist",
+          "question": "Quelles définitions, hypothèses, quantificateurs et étapes logiques doivent être explicités ?"
+        },
+        {
+          "role": "computational",
+          "question": "Quel calcul, cas fini ou test reproductible pourrait réellement changer le verdict ?"
+        },
+        {
+          "role": "bibliographer",
+          "question": "Quelles sources primaires et objections publiées faut-il vérifier pour établir l'état de l'art ?"
+        },
+        {
+          "role": "researcher",
+          "question": "Quelles sont les pistes concurrentes, les inconnues et le prochain verrou à fort gain d'information ?"
+        }
+      ]
+    },
+    "C": {
+      "question": "Un rapport affirme : « Si une fonction totale f:X→X sur un ensemble fini X vérifie f(0)=1, f(1)=2 et f(2)=3 pour quatre états distincts 0,1,2,3∈X, alors f est nécessairement injective sur X : les images observées étant distinctes, aucune collision n'est possible. » Audite l'affirmation. Donne un verdict, puis construis deux extensions totales sur le même ensemble fini contenant exactement ces trois transitions : l'une injective et l'autre non injective. Vérifie explicitement les propriétés annoncées et identifie le saut logique du rapport.",
+      "perspectives": [
+        {
+          "role": "refuter",
+          "question": "Quelle hypothèse centrale pourrait être fausse, et quel contre-exemple ou test la réfuterait ?"
+        },
+        {
+          "role": "formalist",
+          "question": "Quelles définitions, hypothèses, quantificateurs et étapes logiques doivent être explicités ?"
+        }
+      ]
+    }
+  },
+  "order": [
+    "B",
+    "C"
+  ],
+  "method": "Une rédaction par bras dans la même session ChatGPT déjà exposée au corrigé, sans appel séparé et sans notation aveugle.",
+  "criteria": {
+    "verdict": "Réfute la nécessité de l’injectivité, sans déduire la non-injectivité pour toute extension.",
+    "witnesses": "Deux tables totales sur le même domaine, compatibles avec les observations, vérifiées par verdict_certificate.",
+    "diagnosis": "Distingue injectivité sur le domaine observé et injectivité globale."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "B": {
+    "injective": [1, 2, 3, 0],
+    "noninjective": [1, 2, 3, 1],
+    "text": "L’affirmation est fausse. Sur X = {0, 1, 2, 3}, la table (1, 2, 3, 0), lue dans l’ordre des états, donne une permutation : ses quatre images sont distinctes. La table (1, 2, 3, 1) définit aussi une fonction totale avec les trois transitions imposées, mais les états 0 et 3 ont tous deux pour image 1. Les observations prouvent seulement que la restriction aux états 0, 1 et 2 est injective. L’image de l’état 3 reste libre. L’injectivité globale est donc compatible avec les observations, sans en découler."
+  },
+  "C": {
+    "injective": [1, 2, 3, 0],
+    "noninjective": [1, 2, 3, 2],
+    "text": "L’injectivité n’est pas forcée. Prenons X = {0, 1, 2, 3}. En fixant f(3) = 0, on obtient les quatre images distinctes 1, 2, 3 et 0. En fixant plutôt f(3) = 2, on obtient une collision entre 1 et 3. Ces deux fonctions sont totales et prolongent exactement les mêmes trois transitions. L’erreur du rapport est de passer de l’injectivité de la restriction à {0, 1, 2} à celle de la fonction entière, alors qu’un état non observé peut avoir une image déjà observée."
+  }
+}

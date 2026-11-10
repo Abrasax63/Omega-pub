@@ -97,6 +97,68 @@ class AdaptivePrismPlannerTests(unittest.TestCase):
         self.assertEqual(plan["mission"]["known_ids"], ["CL-DYN-01", "CL-DYN-02"])
         self.assertEqual(plan["mission"]["exclusions"], ["pas de simulation"])
 
+    def test_explicit_deliverables_override_defaults_without_changing_roles(self):
+        mission = {"question": "Quel délai appliquer ?", "mission_type": "documentary"}
+        default = plan_mission(mission)
+        custom = plan_mission({**mission, "deliverables": [" Délai. ", "Source.", "Délai."]})
+        self.assertEqual(default["deliverable_source"], "mission_type")
+        self.assertIn("passage décisif", default["deliverables"][0])
+        self.assertEqual(custom["deliverable_source"], "mission")
+        self.assertEqual(custom["deliverables"], ["Délai.", "Source."])
+        self.assertEqual(default["tasks"], custom["tasks"])
+        self.assertEqual(default["inactive_roles"], custom["inactive_roles"])
+
+    def test_invalid_deliverables_are_rejected(self):
+        for invalid in (None, "", [], [""], ["ok", 1]):
+            with self.subTest(deliverables=invalid):
+                with self.assertRaises(MissionValidationError):
+                    plan_mission({"question": "Q", "mission_type": "general", "deliverables": invalid})
+
+    def test_next_action_changes_when_the_decisive_date_is_missing(self):
+        mission = {"question": "Quelle notice s'applique ?", "mission_type": "documentary"}
+        known = plan_mission({**mission, "decision_context": {
+            "decision_basis": "La date est attestée et la clause de transition la couvre.",
+        }})
+        missing = plan_mission({**mission, "decision_context": {
+            "blocking_uncertainty": "La date de réception manque.",
+            "clarification": "Quelle est la date de réception ?",
+        }})
+        self.assertEqual(known["next_action"]["action"], "answer")
+        self.assertEqual(missing["next_action"]["action"], "ask")
+        self.assertEqual(known["tasks"], missing["tasks"])
+        self.assertEqual(known["deliverables"], missing["deliverables"])
+
+    def test_next_action_changes_when_comparable_data_become_available(self):
+        mission = {"question": "Peut-on attribuer la baisse ?", "mission_type": "exploratory"}
+        context = {"blocking_uncertainty": "La comparaison porte sur des populations différentes."}
+        absent = plan_mission({**mission, "decision_context": context})
+        present = plan_mission({**mission, "decision_context": {
+            **context, "verification": "Comparer les deux périodes sur la population commune.",
+            "verification_effect": "Une baisse absente à périmètre égal ferait abandonner l’attribution.",
+        }})
+        self.assertEqual(absent["next_action"]["action"], "insufficient_evidence")
+        self.assertEqual(present["next_action"]["action"], "verify")
+        self.assertEqual(absent["tasks"], present["tasks"])
+
+    def test_invalid_context_does_not_produce_a_recommendation(self):
+        for context in ({}, None, {"decision_basis": "A", "blocking_uncertainty": "B"},
+                        {"decision_basis": "A", "verification": "V"},
+                        {"blocking_uncertainty": "B", "verification": "  "},
+                        {"blocking_uncertainty": "B", "verification": "V"},
+                        {"blocking_uncertainty": "B", "unknown": "X"}):
+            with self.subTest(context=context):
+                with self.assertRaises(MissionValidationError):
+                    plan_mission({"question": "Q", "mission_type": "general", "decision_context": context})
+
+    def test_available_verification_precedes_clarification(self):
+        plan = plan_mission({"question": "Q", "mission_type": "general", "decision_context": {
+            "blocking_uncertainty": "La date manque dans le résumé.",
+            "verification": "Lire le registre accessible.",
+            "verification_effect": "La date détermine quelle version appliquer.",
+            "clarification": "Demander la date.",
+        }})
+        self.assertEqual(plan["next_action"]["next_step"], "Lire le registre accessible.")
+
     def test_same_input_produces_same_plan(self):
         mission = {"question": "Question générale", "mission_type": "general"}
         self.assertEqual(plan_mission(mission), plan_mission(mission))

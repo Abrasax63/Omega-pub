@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -225,7 +226,7 @@ def verify_events(events: list[dict[str, Any]], *, previous_hash: str = GENESIS)
     return {"valid": True, "event_count": len(events), "last_hash": expected}
 
 
-def append_events(path: Path, events: list[dict[str, Any]]) -> dict[str, Any]:
+def append_events(path: Path, events: list[dict[str, Any]], *, durable: bool = False) -> dict[str, Any]:
     """Append a verified batch to JSONL; never truncate or rewrite prior events."""
     path = Path(path)
     if not events:
@@ -257,6 +258,14 @@ def append_events(path: Path, events: list[dict[str, Any]]) -> dict[str, Any]:
         with path.open("a", encoding="utf-8", newline="") as handle:
             handle.write(rendered)
             handle.flush()
+            if durable:
+                os.fsync(handle.fileno())
+        if durable:
+            directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
     except OSError as exc:
         raise EventLedgerError(f"cannot append ledger: {exc}") from exc
     return {"appended": len(events), "last_hash": state["last_hash"], "path": str(path)}
