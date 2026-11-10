@@ -1,0 +1,23 @@
+name: Omega metamorphic C5 L3
+
+on:
+  push:
+    paths:
+      - "research/code/test_metamorphic_v19_c5_l3.py"
+      - ".github/workflows/omega-metamorphic-c5-l3.yml"
+  pull_request:
+    paths:
+      - "research/code/test_metamorphic_v19_c5_l3.py"
+      - ".github/workflows/omega-metamorphic-c5-l3.yml"
+  workflow_dispatch:
+
+jobs:
+  metamorphic-c5:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run independent C5 metamorphic checks (revision 2)
+        run: python research/code/test_metamorphic_v19_c5_l3.py
