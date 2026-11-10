@@ -52,6 +52,22 @@ class T3Tests(unittest.TestCase):
             self.assertNotEqual(witnesses[0]["b"], witnesses[1]["b"])
             self.assertNotEqual(witnesses[0]["answer"], witnesses[1]["answer"])
 
+    def test_validator_rejects_forged_witness_answer(self):
+        task = generate_t3(321)
+        oracle = dict(task.oracle_private)
+        witnesses = [dict(w) for w in oracle["witness_completions"]]
+        witnesses[0]["answer"] += 1
+        oracle["witness_completions"] = witnesses
+        corrupted = type(task)(
+            task_id=task.task_id,
+            family=task.family,
+            prompt=task.prompt,
+            public_parameters=task.public_parameters,
+            oracle_private=oracle,
+            generation=task.generation,
+        )
+        self.assertFalse(validate_t3(corrupted))
+
     def test_validator_rejects_equal_outputs(self):
         task = generate_t3(123)
         oracle = dict(task.oracle_private)
