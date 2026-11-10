@@ -1,4 +1,4 @@
-"""Deterministic, explainable role planner for the Omega adaptive prism.
+""""Deterministic, explainable role planner for the Omega adaptive prism.
 
 P1 only plans work. It does not call models, execute tasks, write memory, or
 claim that role perspectives are independent agents.
@@ -73,7 +73,7 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
         "requires_proof": mission_type == "mathematical",
         "requires_computation": mission_type == "computational",
         "requires_literature": mission_type == "documentary",
-        "exploratory": mission_type == "exploratory",
+        "exploratory": mission_type in ("exploratory", "general"),
         "claims_to_test": True,
     }
     flags = {key: _boolean(mission, key, default) for key, default in defaults.items()}
@@ -82,7 +82,7 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
     active["formalist"] = flags["requires_proof"]
     active["computational"] = flags["requires_computation"]
     active["bibliographer"] = flags["requires_literature"]
-    active["researcher"] = flags["exploratory"] or mission_type == "general"
+    active["researcher"] = flags["exploratory"]
 
     reasons = {
         "refuter": (
@@ -106,9 +106,9 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
             "Désactivé : aucune vérification bibliographique n'est demandée."
         ),
         "researcher": (
-            "Activé : la mission est exploratoire ou générale et nécessite une cartographie des pistes."
+            "Activé : l'indicateur exploratoire est actif (par type de mission ou déclaration explicite)."
             if active["researcher"] else
-            "Désactivé : la mission est suffisamment ciblée pour ne pas demander une cartographie exploratoire."
+            "Désactivé : le routage ne demande pas de cartographie exploratoire."
         ),
     }
 
