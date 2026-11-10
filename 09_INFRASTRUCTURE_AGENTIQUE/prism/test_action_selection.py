@@ -99,5 +99,32 @@ class NextActionValueTests(unittest.TestCase):
                     select_action(case)
 
 
+    def test_cost_change_reverses_preferred_action(self):
+        case = next(c for c in make_cases() if c["case_id"] == "mathematical-06")
+        self.assertEqual(select_action(case)["action"], "ask")
+        case["checks"][1]["cost_milli"] = 100
+        self.assertEqual(select_action(case)["action"], "verify")
+
+    def test_two_stage_information_can_defeat_one_step_greedy(self):
+        # Both measurements alone keep one A and one B in each outcome
+        # class. Jointly, their outcome pairs identify all hypotheses.
+        case = copy.deepcopy(make_cases()[1])
+        for i, h in enumerate(case["hypotheses"]):
+            h["decision"] = "A" if i < 2 else "B"
+        case["checks"][0]["observations"] = ["x", "y", "x", "y"]
+        case["checks"][0]["cost_milli"] = 1
+        case["checks"][1]["observations"] = ["x", "y", "y", "x"]
+        case["checks"][1]["cost_milli"] = 1
+        self.assertEqual(select_action(case)["action"], "insufficient_evidence")
+        pairs = list(zip(case["checks"][0]["observations"],
+                         case["checks"][1]["observations"]))
+        self.assertEqual(len(set(pairs)), len(case["hypotheses"]))
+        self.assertEqual(_reference_choice(case, "best"),
+                         ("insufficient_evidence", None))
+        # One-step abstention here is a documented limitation, not success
+        # of a multi-step optimizer: the two inexpensive tests together
+        # would identify the right decision.
+
+
 if __name__ == "__main__":
     unittest.main()
