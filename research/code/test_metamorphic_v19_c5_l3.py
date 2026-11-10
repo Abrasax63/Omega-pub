@@ -34,8 +34,8 @@ def forced_edges(F):
     )
 
 
-def trajectory_prefix(F, pair, horizon):
-    visible = set(CYCLE)
+def trajectory_prefix(F, pair, horizon, cycle):
+    visible = set(cycle)
     for start in pair:
         x = start
         for _ in range(horizon + 1):  # t = 0,...,L+2 inclusive
@@ -172,7 +172,7 @@ def check_source_witness():
 
 
 def check_global_locality_and_solvers():
-    visible = trajectory_prefix(T, PAIR, L)
+    visible = trajectory_prefix(T, PAIR, L, CYCLE)
     global_dsu = shadow_dsu(T, PAIR, CYCLE, L)
     local_dsu = shadow_dsu(T, PAIR, CYCLE, L, visible)
     global_bfs = shadow_bfs(T, PAIR, CYCLE, L)
@@ -196,7 +196,7 @@ def check_all_state_transpositions():
         F2 = conjugate(T, sigma)
         C2 = tuple(sigma[v] for v in CYCLE)
         P2 = tuple(sigma[v] for v in PAIR)
-        visible2 = trajectory_prefix(F2, P2, L)
+        visible2 = trajectory_prefix(F2, P2, L, C2)
         g = shadow_dsu(F2, P2, C2, L)
         l = shadow_dsu(F2, P2, C2, L, visible2)
         assert g == l, ("global/local mismatch after relabel", a, b)
