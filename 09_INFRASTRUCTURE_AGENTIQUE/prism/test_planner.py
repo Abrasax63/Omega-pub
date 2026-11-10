@@ -32,15 +32,27 @@ class AdaptivePrismPlannerTests(unittest.TestCase):
         roles = [task["role"] for task in plan["tasks"]]
         self.assertEqual(roles, ["refuter", "formalist", "computational", "bibliographer"])
 
-    def test_inactive_roles_have_reasons(self):
+    def test_explicit_exploratory_flag_can_disable_general_default(self):
+        plan = plan_mission({
+            "question": "Répondre à une question générale ciblée",
+            "mission_type": "general",
+            "exploratory": False,
+        })
+        roles = [task["role"] for task in plan["tasks"]]
+        self.assertEqual(roles, ["refuter"])
+        inactive = {item["role"]: item["reason"] for item in plan["inactive_roles"]}
+        self.assertIn("Désactivé", inactive["researcher"])
+
+    def test_inactive_roles_have_reasons_and_unneeded_roles_are_omitted(self):
         plan = plan_mission({
             "question": "Un calcul seulement",
             "mission_type": "computational",
             "claims_to_test": False,
         })
+        roles = [task["role"] for task in plan["tasks"]]
+        self.assertEqual(roles, ["computational"])
         inactive = {item["role"]: item["reason"] for item in plan["inactive_roles"]}
-        self.assertIn("refuter", inactive)
-        self.assertIn("bibliographer", inactive)
+        self.assertEqual(set(inactive), {"refuter", "formalist", "bibliographer", "researcher"})
         self.assertTrue(all(reason for reason in inactive.values()))
 
     def test_no_duplicate_roles_and_all_tasks_are_unexecuted(self):
@@ -49,6 +61,15 @@ class AdaptivePrismPlannerTests(unittest.TestCase):
         self.assertEqual(len(roles), len(set(roles)))
         self.assertTrue(all(task["execution_status"] == "not_executed" for task in plan["tasks"]))
         self.assertTrue(all(task["independence"] == "role_perspective_only" for task in plan["tasks"]))
+
+    def test_every_active_role_has_question_failure_and_stop_conditions(self):
+        plan = plan_mission({"question": "Établir le résultat sous hypothèses H", "mission_type": "mathematical"})
+        self.assertEqual(plan["mission"]["question"], "Établir le résultat sous hypothèses H")
+        for task in plan["tasks"]:
+            self.assertTrue(task["question"])
+            self.assertTrue(task["activation_reason"])
+            self.assertTrue(task["failure_criterion"])
+            self.assertTrue(task["stop_condition"])
 
     def test_boolean_flags_are_strictly_validated(self):
         with self.assertRaises(MissionValidationError):
@@ -60,7 +81,6 @@ class AdaptivePrismPlannerTests(unittest.TestCase):
             with self.subTest(mission=mission):
                 with self.assertRaises(MissionValidationError):
                     plan_mission(mission)
-
 
     def test_structured_context_metadata_is_preserved(self):
         plan = plan_mission({
