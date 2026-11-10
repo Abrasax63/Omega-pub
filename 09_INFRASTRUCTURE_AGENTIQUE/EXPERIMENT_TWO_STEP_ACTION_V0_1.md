@@ -93,6 +93,49 @@ Il lui fournit seulement le contexte de la **première** action et restitue
 la politique conditionnelle comme objet distinct. Rien n'est exécuté,
 aucun modèle n'est appelé, aucune mémoire scientifique n'est modifiée.
 
+## Résultats et contre-tests après exécution CI
+
+L'exécution [42912451824](https://github.com/Abrasax63/Omega-pub/actions/runs/42912451824)
+a réussi : 81 tests du Prisme, ainsi que les tests RCE/MCP et les smoke tests.
+
+Résultats **exacts dans ces modèles fictifs** :
+
+- 24 nouveaux scénarios construits : profondeur 2 strictement meilleure
+  dans 8 cas ; égalité dans 16 cas ;
+- 96 scénarios synthétiques à graine fixe : profondeur 2 strictement
+  meilleure dans 34 cas ; égalité dans 62 cas ;
+- 120/120 concordances avec la recherche exhaustive indépendante ;
+- aucune mesure de qualité réelle, aucun appel de modèle externe.
+
+Le fait qu'une profondeur 2 optimisée ne soit jamais inférieure à
+une profondeur 1 est garanti **dans le modèle** : toutes les politiques
+de profondeur 1 restent réalisables à profondeur 2. Ce n'est pas une
+preuve de fiabilité des hypothèses, ni un effet expérimental généralisable.
+
+### Nouvelles falsifications adversariales
+
+**Modèle d'observations erroné.** Dans le cas de synergie à quatre hypothèses
+A,A,B,B, le modèle annonce deux contrôles complémentaires avec coût 0,01
+chacun : perte prévue 0,02. Si, en réalité, le second contrôle duplique le
+premier, les deux résultats restent inutiles pour trancher : même avec
+une décision réoptimisée à posteriori sur les vraies observations, le
+risque de classification vaut 0,5 et les deux coûts sont payés.
+Perte réelle minimale 0,52, **supérieure à l'abstention immédiate 0,5**.
+Ce contre-exemple démontre que l'optimisation n'est pas robuste à
+une fausse modélisation de la valeur informative des contrôles.
+
+**Synergie de longueur trois.** Sur huit hypothèses équiprobables de
+trois bits, la décision est leur parité. Un ou deux tests qui révèlent
+des bits laissent la décision parfaitement indéterminée. Les trois bits
+ensemble la déterminent. La stratégie de profondeur 2 s'abstient donc
+malgré une stratégie informative à trois tests de coût très faible.
+Ce contre-exemple montre que **deux étapes ne sont pas suffisantes en
+général**.
+
+Ces deux contre-tests ont été intégrés au module de tests : ils ne sont
+pas inclus dans les 120 scénarios du tableau comparatif et ne doivent
+pas être comptés comme des gains supplémentaires.
+
 ## Risques et limites
 
 - La valeur attendue est exacte **conditionnellement au modèle fourni**.
