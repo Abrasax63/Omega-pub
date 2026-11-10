@@ -62,6 +62,85 @@ def shadow(F, x, y, cycle):
     return frozenset(out)
 
 
+class ParityDSU:
+    """Résolution indépendante des contraintes binaires par union-find à parité."""
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.parity = [0] * n
+
+    def find(self, x):
+        if self.parent[x] != x:
+            root = self.find(self.parent[x])
+            self.parity[x] ^= self.parity[self.parent[x]]
+            self.parent[x] = root
+        return self.parent[x]
+
+    def relation(self, x):
+        root = self.find(x)
+        return root, self.parity[x]
+
+    def union(self, a, b, required_xor):
+        ra, xa = self.relation(a)
+        rb, xb = self.relation(b)
+        if ra == rb:
+            return (xa ^ xb) == required_xor
+        self.parent[rb] = ra
+        self.parity[rb] = xa ^ xb ^ required_xor
+        return True
+
+
+def shadow_by_parity_dsu(F, x, y, cycle):
+    """Même contrat, autre algorithme : propagation des égalités/inégalités."""
+    n = len(F)
+    dsu = ParityDSU(n)
+    for a, b in forced_edges(F):
+        if not dsu.union(a, b, 1):
+            return frozenset()
+    a, b = x, y
+    for _ in range(2):
+        if a != b and not dsu.union(a, b, 0):
+            return frozenset()
+        a, b = F[a], F[b]
+
+    roots = [dsu.relation(cycle[i]) for i in range(4)]
+    out = set()
+    for mask in range(16):
+        valid = True
+        for i in range(4):
+            for j in range(i + 1, 4):
+                ri, pi = roots[i]
+                rj, pj = roots[j]
+                if ri == rj and (((mask >> i) & 1) ^ ((mask >> j) & 1)) != (pi ^ pj):
+                    valid = False
+                    break
+            if not valid:
+                break
+        if valid:
+            out.add(mask)
+    return frozenset(out)
+
+
+def check_independent_solver():
+    # Contrôle différentiel sur le témoin et ses 36 images par transposition.
+    n = len(T)
+    tested = 0
+    systems = [(T, list(range(n)))]
+    for u, v in combinations(range(n), 2):
+        sigma = list(range(n))
+        sigma[u], sigma[v] = sigma[v], sigma[u]
+        systems.append((conjugate(T, sigma), sigma))
+    for F, sigma in systems:
+        cycle = tuple(sigma[x] for x in CYCLE)
+        pairs = tuple((sigma[x], sigma[y]) for x, y in PAIRS)
+        for x, y in pairs:
+            brute = shadow(F, x, y, cycle)
+            dsu = shadow_by_parity_dsu(F, x, y, cycle)
+            assert brute == dsu, ("Désaccord brute-force / DSU", sigma, (x, y))
+            tested += 1
+    assert tested == 37 * 8
+    print("INDEPENDENT_SOLVER: PASS (brute-force = parity-DSU sur 296 ombres)")
+
+
 def rotate_cycle_mask(mask, shift):
     """Coordonnées du masque après remplacement de C par T^shift(C)."""
     return sum(
@@ -132,6 +211,7 @@ def main():
     assert tuple(T[i] for i in CYCLE) == (1, 2, 3, 0)
     check_base_witness()
     check_state_relabelings()
+    check_independent_solver()
     check_cycle_origin()
     check_global_color_complement()
     print("METAMORPHIC_C4: ALL CHECKS PASSED")
