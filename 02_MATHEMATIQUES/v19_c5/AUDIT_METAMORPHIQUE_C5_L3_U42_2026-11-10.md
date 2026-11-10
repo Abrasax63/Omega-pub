@@ -55,7 +55,33 @@ Workflow : \`.github/workflows/omega-metamorphic-c5-l3.yml\`
 
 Le script vérifie explicitement la taille 42, le cycle, la paire (0,20) et les premiers pas de trajectoire du témoin archivé. Il ne lit pas de données externes au runtime : les constantes sont recopiées depuis les entrées versionnées afin de rendre l'exécution CI autonome. Les références des sources sont consignées dans le présent rapport.
 
-## 5. Portée et limites
+## 5. Résultat CI
+
+Exécution finale vérifiée :
+- GitHub Actions run [42787168454](https://github.com/Abrasax63/Omega-pub/actions/runs/42787168454)
+- commit testé : `2d568d9eb77acd761ba898557be4f6968c11e74a`
+- Python : 3.12.16
+- conclusion : **SUCCESS**
+
+Sortie vérifiée :
+```text
+SOURCE_WITNESS: PASS (U42, C5, L=3, pair (0,20), C5O-13)
+GLOBAL_LOCAL: PASS (global = prefix L+2; |shadow|=16, visible_states=8)
+DUAL_SOLVER: PASS (parity-DSU = graph propagation)
+STATE_RELABELING: PASS (861 transpositions of S_42)
+CYCLE_ORIGIN: PASS (5 origins, exact mask rotation)
+COLOR_COMPLEMENT: PASS (C5 shadow invariant under c -> 1-c)
+NEGATIVE_CONTROL: PASS (equality->inequality mutation detected; correct=16 masks, mutated=16 masks)
+METAMORPHIC_C5_L3: ALL CHECKS PASSED
+```
+
+Le contrôle négatif produit le même cardinal (16) pour les deux ensembles, mais les ensembles de masques sont différents ; le test compare les ensembles, pas seulement leurs tailles.
+
+### Corrections révélées pendant le test
+
+Les premières exécutions ont échoué et ont été conservées dans l'historique CI. Elles ont révélé deux défauts du banc, non du résultat mathématique : une mauvaise gestion du retour récursif dans la compression de chemin DSU, puis l'oubli de transporter le cycle distingué lors du renommage des états. Les deux défauts ont été corrigés. La dernière exécution réussie porte sur le commit indiqué ci-dessus.
+
+## 6. Portée et limites
 
 - Le contrôle porte sur une seule paire C5O-13 dans U42, pas sur les 560 triples.
 - Les 861 transpositions sont testées explicitement ; le programme n'énumère pas les \(42!\) permutations.
@@ -64,8 +90,8 @@ Le script vérifie explicitement la taille 42, le cycle, la paire (0,20) et les 
 - Le test négatif vérifie une mutation déterminée ; il ne mesure pas la couverture générale des défauts.
 - Aucune preuve Lean nouvelle n'est ajoutée et aucun statut théorique n'est promu.
 
-## 6. Verdict attendu
+## 7. Verdict
 
-Si le workflow passe, le statut sera : **CALCUL EXACT / TEST AUTOMATISÉ RÉUSSI sur le témoin U42, paire C5O-13, L=3**.
+**CALCUL EXACT / TEST AUTOMATISÉ RÉUSSI** sur le témoin U42, paire C5O-13, L=3, dans le périmètre précis de ce programme.
 
-Si une divergence global/local ou entre solveurs apparaît, elle devra être conservée comme contre-exemple expérimental et auditée avant toute correction. Aucun résultat ne sera remplacé silencieusement.
+Aucune promotion du lemme général L+2, aucune mise à jour de la bibliothèque scientifique certifiée et aucune modification des résultats antérieurs.
