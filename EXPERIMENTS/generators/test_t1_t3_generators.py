@@ -36,6 +36,7 @@ class T3Tests(unittest.TestCase):
         self.assertNotIn("witness_completions", public_text)
         self.assertNotIn(str(task.oracle_private["witness_completions"]), public_text)
         self.assertNotIn("987", public_text)
+        self.assertNotIn("T3-987", public_text)
         self.assertEqual(task.evaluation_payload()["generation_private"]["seed"], 987)
 
     def test_seed_reproducibility(self):
