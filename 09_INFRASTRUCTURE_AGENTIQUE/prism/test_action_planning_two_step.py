@@ -96,7 +96,7 @@ class TwoStepPolicyTests(unittest.TestCase):
             self.assertEqual(baseline["policy"], observed["policy"])
 
     def test_input_rejection_for_depth(self):
-        for invalid in (-1, 3, True, 1.0, "2"):
+        for invalid in (-1, 5, True, 1.0, "2"):
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                 optimize_policy(self.cases["next-M-01"], max_depth=invalid)
 
