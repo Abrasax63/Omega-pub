@@ -50,3 +50,22 @@ Les tests utilisent uniquement des enregistrements synthétiques. Ils ne contact
 - Le calcul de coût par grille tarifaire n'est pas implémenté.
 - Aucune métrique n'a été collectée sur des missions réelles.
 - Aucun gain d'efficience n'est démontré par ce schéma seul.
+
+
+## Adaptateur OpenAI Responses API (premier connecteur)
+
+`prism/openai_responses_adapter.py` transforme une réponse Responses API déjà obtenue
+(en mapping ou objet SDK exposant `model_dump()`) en enregistrement du schéma commun.
+Il lit les compteurs `input_tokens`, `output_tokens` et
+`input_tokens_details.cached_tokens`, conserve l'identifiant de réponse et le modèle,
+et marque la source comme `provider_response` uniquement si les deux compteurs principaux
+sont présents. Sinon, les compteurs restent `null`.
+
+La fonction `measure_call(call)` mesure le temps mural d'une fonction fournie par
+l'appelant et renvoie la réponse, l'heure UTC de début et la durée. Elle ne contacte
+aucun fournisseur. Le coût reste indisponible (`null`) tant qu'une source de coût
+explicite n'est pas fournie.
+
+Les tests de l'adaptateur utilisent des réponses synthétiques. Ils ne prouvent pas
+encore la compatibilité avec une version précise du SDK en production ni une collecte
+sur une requête réelle. Aucun secret, appel réseau ou holdout n'est utilisé.
