@@ -183,3 +183,20 @@ Les données brutes, le journal et le plan exact restent dans le répertoire
 privé. Les plafonds de tokens de génération ne sont pas un plafond
 monétaire. La facturation du prévol et les tarifs du snapshot sont à
 vérifier avant l'exécution réelle.
+
+### Séparer les livrables du routage
+
+Le planificateur P1 fournit une liste `deliverables` et son origine
+(`mission` ou `mission_type`). Une liste explicite de la mission remplace
+les valeurs par défaut. Modifier cette liste ne change aucune activation
+de rôle. Les valeurs par défaut proviennent du type déclaré de la mission.
+
+L'option `--explicit-deliverables` du cas documentaire ajoute le même
+bloc de livrables aux deux bras. Elle est consignée avec les consignes
+exactes. Sans cette option, le prompt historique reste disponible.
+
+Pour évaluer un gain de routage, donner les mêmes livrables aussi au bras
+direct et choisir des cas où le verdict change si une vérification manque.
+Privilégier un score de décision correcte avant de compter la complétude
+de la justification. Les tests du harnais établissent la comparabilité
+des entrées, sans évaluer la qualité d'une réponse de modèle.

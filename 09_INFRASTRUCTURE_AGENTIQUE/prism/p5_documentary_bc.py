@@ -29,15 +29,19 @@ INSTRUCTIONS = ("Réponds en français en 120 mots maximum. Utilise uniquement l
                 "fournis. Applique les perspectives indiquées puis donne une réponse unifiée.")
 
 
-def inputs_by_arm():
+def inputs_by_arm(*, explicit_deliverables=False):
     plan = plan_mission({"question": QUESTION, "mission_type": "documentary"})
     roles = {"B": ROLE_ORDER, "C": [task["role"] for task in plan["tasks"]]}
-    return {arm: QUESTION + "\n\nPerspectives :\n" + "\n".join(
+    common = QUESTION
+    if explicit_deliverables:
+        common += "\n\nLivrables :\n" + "\n".join(f"- {item}" for item in plan["deliverables"])
+    return {arm: common + "\n\nPerspectives :\n" + "\n".join(
         f"- {role} : {ROLE_QUESTIONS[role]}" for role in selected
     ) for arm, selected in roles.items()}
 
 
-def run(directory, client, *, model, token_cap, output_cap, simulated):
+def run(directory, client, *, model, token_cap, output_cap, simulated,
+        explicit_deliverables=False):
     from openai_responses_adapter import build_openai_responses_record
 
     if not 0 < output_cap < token_cap:
@@ -46,13 +50,14 @@ def run(directory, client, *, model, token_cap, output_cap, simulated):
     if any((parent / ".git").exists() for parent in root.resolve().parents):
         raise ValueError("keep grading keys and raw runs outside Git checkouts")
     root.mkdir(mode=0o700)  # New path only: an interrupted run cannot be silently replayed.
-    inputs = inputs_by_arm()
+    inputs = inputs_by_arm(explicit_deliverables=explicit_deliverables)
     order = ["B", "C"]
     SystemRandom().shuffle(order)
     frozen = {
         "mode": "simulation" if simulated else "live", "model": model,
         "instructions": INSTRUCTIONS, "inputs": inputs, "run_order": order,
         "token_cap_per_arm": token_cap, "output_cap_per_arm": output_cap,
+        "explicit_deliverables": explicit_deliverables,
     }
     frozen_bytes = (json.dumps(frozen, ensure_ascii=False, indent=2) + "\n").encode()
     (root / "run-private.json").write_bytes(frozen_bytes)
@@ -110,6 +115,7 @@ def main():
     parser.add_argument("--model", required=True, help="exact, versioned provider model ID")
     parser.add_argument("--token-cap", type=int, required=True, help="total input/output tokens per arm")
     parser.add_argument("--output-cap", type=int, required=True, help="output tokens per arm")
+    parser.add_argument("--explicit-deliverables", action="store_true")
     parser.add_argument("--live", action="store_true", help="allow two preflight and two generation API requests")
     args = parser.parse_args()
     if not args.live or not os.environ.get("OPENAI_API_KEY"):
@@ -119,7 +125,7 @@ def main():
     with OpenAI(base_url="https://api.openai.com/v1", max_retries=0,
                 http_client=DefaultHttpxClient(trust_env=False, follow_redirects=False)) as client:
         run(args.directory, client, model=args.model, token_cap=args.token_cap,
-            output_cap=args.output_cap, simulated=False)
+            output_cap=args.output_cap, simulated=False, explicit_deliverables=args.explicit_deliverables)
 
 
 if __name__ == "__main__":

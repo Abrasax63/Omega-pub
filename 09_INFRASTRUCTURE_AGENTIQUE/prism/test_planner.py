@@ -97,6 +97,23 @@ class AdaptivePrismPlannerTests(unittest.TestCase):
         self.assertEqual(plan["mission"]["known_ids"], ["CL-DYN-01", "CL-DYN-02"])
         self.assertEqual(plan["mission"]["exclusions"], ["pas de simulation"])
 
+    def test_explicit_deliverables_override_defaults_without_changing_roles(self):
+        mission = {"question": "Quel délai appliquer ?", "mission_type": "documentary"}
+        default = plan_mission(mission)
+        custom = plan_mission({**mission, "deliverables": [" Délai. ", "Source.", "Délai."]})
+        self.assertEqual(default["deliverable_source"], "mission_type")
+        self.assertIn("passage décisif", default["deliverables"][0])
+        self.assertEqual(custom["deliverable_source"], "mission")
+        self.assertEqual(custom["deliverables"], ["Délai.", "Source."])
+        self.assertEqual(default["tasks"], custom["tasks"])
+        self.assertEqual(default["inactive_roles"], custom["inactive_roles"])
+
+    def test_invalid_deliverables_are_rejected(self):
+        for invalid in (None, "", [], [""], ["ok", 1]):
+            with self.subTest(deliverables=invalid):
+                with self.assertRaises(MissionValidationError):
+                    plan_mission({"question": "Q", "mission_type": "general", "deliverables": invalid})
+
     def test_same_input_produces_same_plan(self):
         mission = {"question": "Question générale", "mission_type": "general"}
         self.assertEqual(plan_mission(mission), plan_mission(mission))

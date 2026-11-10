@@ -19,6 +19,26 @@ VERSION = "0.1.0"
 ROLE_ORDER = ("refuter", "formalist", "computational", "bibliographer", "researcher")
 MISSION_TYPES = ("mathematical", "exploratory", "documentary", "computational", "general")
 
+DEFAULT_DELIVERABLES = {
+    "mathematical": (
+        "Énoncer le résultat et ses hypothèses.",
+        "Fournir une preuve ou un contre-exemple, ou signaler la lacune décisive.",
+    ),
+    "documentary": (
+        "Donner la conclusion qui s'applique et citer le passage décisif.",
+        "Signaler les conflits de sources et les informations nécessaires pour trancher.",
+    ),
+    "computational": (
+        "Donner le résultat et la décision qu'il implique, si une décision est demandée.",
+        "Indiquer les données et les étapes qui permettent de refaire le calcul.",
+    ),
+    "exploratory": (
+        "Distinguer les constats des explications possibles.",
+        "Proposer une observation ou un test qui départagerait ces explications.",
+    ),
+    "general": ("Donner une réponse directe et indiquer toute incertitude qui change la conclusion.",),
+}
+
 ROLE_QUESTIONS = {
     "refuter": "Quelle hypothèse centrale pourrait être fausse, et quel contre-exemple ou test la réfuterait ?",
     "formalist": "Quelles définitions, hypothèses, quantificateurs et étapes logiques doivent être explicités ?",
@@ -59,6 +79,7 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
     Required: non-empty 'question' and 'mission_type'. Optional boolean flags:
     requires_proof, requires_computation, requires_literature, exploratory,
     claims_to_test. Type defaults can be overridden explicitly by these flags.
+    Optional deliverables replace type defaults without changing role selection.
     """
     if not isinstance(mission, dict):
         raise MissionValidationError("mission must be an object")
@@ -66,8 +87,19 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(question, str) or not question.strip():
         raise MissionValidationError("'question' must be a non-empty string")
     mission_type = mission.get("mission_type")
-    if mission_type not in MISSION_TYPES:
+    if not isinstance(mission_type, str) or mission_type not in MISSION_TYPES:
         raise MissionValidationError(f"'mission_type' must be one of {MISSION_TYPES}")
+
+    deliverables = mission.get("deliverables")
+    if "deliverables" in mission:
+        if (not isinstance(deliverables, list) or not deliverables
+                or any(not isinstance(item, str) or not item.strip() for item in deliverables)):
+            raise MissionValidationError("'deliverables' must be a non-empty list of non-empty strings")
+        deliverables = list(dict.fromkeys(item.strip() for item in deliverables))
+        deliverable_source = "mission"
+    else:
+        deliverables = list(DEFAULT_DELIVERABLES[mission_type])
+        deliverable_source = "mission_type"
 
     defaults = {
         "requires_proof": mission_type == "mathematical",
@@ -160,6 +192,8 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
         "planner_version": VERSION,
         "mission": mission_context,
         "selection_policy": "explicit_rules_v1",
+        "deliverables": deliverables,
+        "deliverable_source": deliverable_source,
         "tasks": tasks,
         "inactive_roles": inactive,
         "execution_model": {

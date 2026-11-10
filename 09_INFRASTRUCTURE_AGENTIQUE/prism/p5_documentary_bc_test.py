@@ -7,7 +7,7 @@ import unittest
 import httpx2
 from openai import OpenAI
 
-from p5_documentary_bc import run
+from p5_documentary_bc import inputs_by_arm, run
 
 
 class DocumentaryBCTest(unittest.TestCase):
@@ -60,6 +60,18 @@ class DocumentaryBCTest(unittest.TestCase):
             order = json.loads((parent / "run-private.json").read_text())["run_order"]
             for label, arm in key.items():
                 self.assertEqual(packet["responses"][label], f"Texte synthétique {3 + order.index(arm)}.")
+
+    def test_deliverables_are_shared_and_leave_roles_unchanged(self):
+        baseline = inputs_by_arm()
+        explicit = inputs_by_arm(explicit_deliverables=True)
+        common = []
+        for arm in ("B", "C"):
+            base, roles = baseline[arm].split("\n\nPerspectives :", 1)
+            changed, changed_roles = explicit[arm].split("\n\nPerspectives :", 1)
+            self.assertEqual(roles, changed_roles)
+            self.assertTrue(changed.startswith(base + "\n\nLivrables :"))
+            common.append(changed)
+        self.assertEqual(*common)
 
     def test_over_budget_blocks_generation(self):
         with TemporaryDirectory() as directory:
