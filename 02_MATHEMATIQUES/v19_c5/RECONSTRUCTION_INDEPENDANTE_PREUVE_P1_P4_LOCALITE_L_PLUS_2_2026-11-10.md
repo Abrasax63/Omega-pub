@@ -1,7 +1,7 @@
 # Reconstruction indépendante — graphe forcé P1–P4 et localité L+2
 
 **Date :** 10 novembre 2026  
-**Statut :** preuve reconstruite ; contre-tests finis indépendants soumis à CI.  
+**Statut :** preuve reconstruite ; contre-tests finis indépendants reproduits par CI.  
 **Source de comparaison :** note primaire V19(2), §2–4. Aucun code V19 antérieur n'est importé par le nouveau vérificateur.
 
 ## 0. Cadre et conventions
@@ -114,8 +114,21 @@ Aucun contre-exemple n'est présumé : les comptes et l'absence de divergence ne
 - Critère singleton : **DÉMONTRÉ** par argument direct.
 - Structure P1–P4 : **DÉMONTRÉ** sous cohérence, preuve reconstruite ci-dessus.
 - Localité L+2 : **DÉMONTRÉ** sous cohérence et les conventions fixées, preuve reconstruite ci-dessus.
-- Contre-tests indépendants n≤6, L=2,3 : **EN ATTENTE DE CI**.
+- Contre-tests indépendants n≤6, L=2,3 : **CALCUL EXACT REPRODUIT — CI SUCCÈS** ([run 42788353900](https://github.com/Abrasax63/Omega-pub/actions/runs/42788353900)).
 - Généralisation à d'autres définitions/conventions : **INDÉTERMINÉ**.
 - Originalité bibliographique : **INDÉTERMINÉ**.
 
 Aucun résultat n'est ajouté à la bibliothèque certifiée et aucune branche n'est fusionnée.
+
+
+## 8. Résultat CI indépendant
+
+Le workflow [GitHub Actions run 42788353900](https://github.com/Abrasax63/Omega-pub/actions/runs/42788353900) a terminé avec **SUCCESS** le 10 novembre 2026 sous Python 3.12.
+
+Le script indépendant a reproduit :
+- les 29 742 endofonctions cohérentes pour 1≤n≤6, avec les comptes par taille annoncés ;
+- les seules tailles de composantes P1, P2, P3, P4 ;
+- 325 468 comparaisons global/local pour les horizons L=2 et L=3, sur tous les systèmes cohérents de taille n≤6 possédant un cycle q≥3 ;
+- aucune divergence entre l'ombre globale et l'ombre issue des préfixes L+2.
+
+Ce résultat est un contre-test fini exhaustif dans le domaine indiqué. Il ne remplace pas la preuve structurelle et ne vérifie pas les horizons L≥4 par calcul.
