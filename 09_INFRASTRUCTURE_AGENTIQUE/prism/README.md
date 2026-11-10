@@ -177,3 +177,7 @@ Tests P5 :
 ```bash
 python -m unittest -v
 ```
+
+## Télémétrie P5 — instrumentation préparatoire
+
+Le schéma par appel, son validateur et les limites de collecte sont décrits dans [`TELEMETRIE_P5.md`](../TELEMETRIE_P5.md). Le module `telemetry.py` valide les enregistrements et agrège séparément A/B/C sans assimiler les mesures absentes à zéro. Les tests `test_telemetry.py` utilisent exclusivement des données synthétiques. Aucun adaptateur fournisseur ou collecteur système n'est encore branché ; aucune campagne P5 n'est lancée.
