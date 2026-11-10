@@ -78,7 +78,7 @@ class P5AnalysisTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             ratings_path = Path(directory) / "ratings.jsonl"
             ratings_path.write_text(
-                "".join(json.dumps(row) + "\\n" for row in ratings[:-1]),
+                "".join(json.dumps(row) + "\n" for row in ratings[:-1]),
                 encoding="utf-8",
             )
             with patch("analysis.load_blind_key") as load_key:
