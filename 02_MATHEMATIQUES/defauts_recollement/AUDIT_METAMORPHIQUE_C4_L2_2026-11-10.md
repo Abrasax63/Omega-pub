@@ -2,7 +2,7 @@
 
 - **Date :** 2026-11-10
 - **Périmètre :** témoin C4 à 9 états, huit paires C4O-00…07
-- **Statut :** SIMULÉ / TEST AUTOMATISÉ RÉUSSI, périmètre fini uniquement
+- **Statut :** CALCUL EXACT / TEST AUTOMATISÉ RÉUSSI, périmètre fini uniquement
 - **Branche :** \`work/omega-metamorphic-c4-2026-11-10\`
 - **PR :** #13 (brouillon)
 
@@ -77,10 +77,15 @@ Exécution vérifiée :
 - Python : 3.12.16
 - conclusion : **SUCCESS**
 
+Le programme compare en outre deux algorithmes distincts — énumération exhaustive des 2^9 colorations et union-find à parité — sur le témoin et ses 36 images par transposition, soit 296 ombres comparées.
+
+Dernière exécution après cet ajout : [GitHub Actions run 42777476519](https://github.com/Abrasax63/Omega-pub/actions/runs/42777476519), conclusion SUCCESS.
+
 Sortie du programme :
 \`\`\`text
 BASE_WITNESS: PASS (8/8 ombres brutes)
 STATE_RELABELING: PASS (36 transpositions de S_9, 8 classes chacune)
+INDEPENDENT_SOLVER: PASS (brute-force = parity-DSU sur 296 ombres)
 CYCLE_ORIGIN: PASS (4 origines, relation de rotation exacte)
 COLOR_COMPLEMENT: PASS (8/8 ombres invariantes par c -> 1-c)
 METAMORPHIC_C4: ALL CHECKS PASSED
@@ -88,7 +93,7 @@ METAMORPHIC_C4: ALL CHECKS PASSED
 
 ## 6. Limites et interprétation
 
-- **SIMULÉ / TEST AUTOMATISÉ RÉUSSI** pour le témoin et les huit paires indiqués.
+- **CALCUL EXACT / TEST AUTOMATISÉ RÉUSSI** pour le témoin et les huit paires indiqués, par deux algorithmes distincts sur le sous-ensemble contrôlé.
 - Ce résultat ne prouve pas le théorème de petit modèle L+2 pour tous les systèmes.
 - Il ne prouve pas la minimalité globale N=9 au-delà du périmètre déjà établi.
 - Il ne remplace pas les vérificateurs globaux ou local, ni l'audit des quotients.
