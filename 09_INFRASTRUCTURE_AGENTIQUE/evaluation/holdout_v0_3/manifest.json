@@ -1,0 +1,20 @@
+{
+  "holdout_id": "P5-HOLDOUT-2026-11-10-v0.3",
+  "protocol_version": "0.3",
+  "status": "candidate_not_frozen",
+  "cases_file": "cases.jsonl",
+  "cases_count": 5,
+  "cases_sha256": "f017aa007c4f89a4790434c813b6174589ea39a0e86e42dd6fa93568cbcb343d",
+  "answer_key": {
+    "filename": "answer_key.private.v0.3.json",
+    "visibility": "private_not_in_repository",
+    "sha256": "e5ca5caba84ff3f5f6d11d01bcd4e23752f58b47e495af43f39f1561340907d1"
+  },
+  "provenance": {
+    "v0_2_original_statements_recovered": false,
+    "v0_3_authored_as_new_candidate": true,
+    "derived_from_v0_2_answer_key": false,
+    "independence_from_v0_1_certified": false
+  },
+  "pilot_authorized": false
+}
