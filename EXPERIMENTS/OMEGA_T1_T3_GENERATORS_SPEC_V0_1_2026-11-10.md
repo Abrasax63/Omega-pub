@@ -2,7 +2,7 @@
 
 **Date :** 10 novembre 2026  
 **Branche :** `work/benchmark-prisme-adaptatif-v0-1-2026-11-10`  
-**Statut :** rendus canoniques et validateur prompt/paramètres implémentés ; nouveaux tests ajoutés ; résultat CI du commit courant à vérifier ; revue indépendante et benchmark non réalisés.
+**Statut :** rendus canoniques et validateur prompt/paramètres implémentés ; 22 tests confirmés réussis en CI (run 42801786605) ; deux tests supplémentaires de cas limites ajoutés après ce run, CI à vérifier ; revue indépendante et benchmark non réalisés.
 
 ## 1. Objet du pilote
 
@@ -135,7 +135,7 @@ Les générateurs utilisent eux-mêmes ces fonctions canoniques. Les tests de mu
 8. L'oracle T1 recalcule la réponse à partir de l'instance sérialisée, indépendamment du générateur.
 9. Le prompt T1/T3 correspond exactement au rendu canonique des paramètres publics après sérialisation.
 10. Les mutations du prompt et des paramètres sont rejetées explicitement.
-11. Les cas limites incluent (k=1), (k=2), une chaîne plus longue, des coefficients négatifs et (a_i=1).
+11. Les cas limites incluent (k=1), (k=2), une chaîne plus longue, des coefficients négatifs, (a_i=1) et (b_i=0).
 
 ## 6. Notation
 
@@ -161,4 +161,4 @@ Ce pilote teste la déterminabilité, le calcul en chaîne et la discipline face
 
 Les transformations affines sont ici un gabarit de benchmark contrôlé, pas une traduction du modèle orbital V19.
 
-**État au 10 novembre 2026 :** les rendus canoniques et le validateur de cohérence sont implémentés. Dix nouveaux tests ont été ajoutés aux douze tests précédemment exécutés avec succès en CI. Le résultat CI associé au commit courant reste à vérifier. Les cas limites forcés, l'audit exhaustif des fuites, la revue indépendante et le benchmark A/B/C ne sont pas réalisés.
+**État au 10 novembre 2026 :** rendus canoniques et validateur implémentés ; 22 tests exécutés et réussis en CI (run 42801786605). Deux tests de cas limites forcés ont été ajoutés après ce run ; leur exécution CI reste à confirmer. L'audit exhaustif des fuites, la revue indépendante et le benchmark A/B/C ne sont pas réalisés.
