@@ -3,10 +3,12 @@ on:
   push:
     paths:
       - "research/code/audit_v19_forced_graph_locality_independent.py"
+      - "research/code/test_v19_locality_l_plus_1.py"
       - ".github/workflows/omega-v19-independent-locality.yml"
   pull_request:
     paths:
       - "research/code/audit_v19_forced_graph_locality_independent.py"
+      - "research/code/test_v19_locality_l_plus_1.py"
       - ".github/workflows/omega-v19-independent-locality.yml"
 jobs:
   exhaustive-independent-audit:
@@ -17,4 +19,4 @@ jobs:
         with:
           python-version: "3.12"
       - name: Exhaustive independent structural and locality audit
-        run: python research/code/audit_v19_forced_graph_locality_independent.py
+        run: python research/code/audit_v19_forced_graph_locality_independent.py && python research/code/test_v19_locality_l_plus_1.py
