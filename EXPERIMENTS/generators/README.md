@@ -1,19 +1,20 @@
-# Générateurs T1/T3 — v0.1
+# Générateurs T1/T3 — v0.2
 
 ## Fichiers
 
-- `t1_t3_generators.py` : génération des tâches et séparation des paquets public/privé.
+- `t1_t3_generators.py` : génération des tâches, rendus canoniques T1/T3 et séparation des paquets public/privé.
 - `test_t1_t3_generators.py` : tests unitaires `unittest`.
-- `../T1_T3_TEST_PLAN_V0_1_2026-11-10.md` : plan reproductible des contrôles existants et complémentaires.
+- `../T1_T3_TEST_PLAN_V0_1_2026-11-10.md` : plan reproductible, couverture présente et contrôles restants.
 
-## État vérifié au 10 novembre 2026
+## Rendus canoniques et validation
 
-- GitHub Actions : run [42795937582](https://github.com/Abrasax63/Omega-pub/actions/runs/42795937582), Python 3.12.
-- Résultat observé dans les logs : **12 tests exécutés, 12 réussis**.
-- Cela valide les tests unitaires présents dans ce commit uniquement.
-- Cela ne valide pas encore la cohérence automatique prompt/paramètres, les sérialisations public/privé de bout en bout, ni la comparaison A/B/C.
+- `render_t1_prompt(public_parameters)` reconstruit le prompt T1 depuis les paramètres publics.
+- `render_t3_prompt(public_parameters)` reconstruit le prompt T3 sans accéder au paramètre caché.
+- `validate_prompt_consistency(public_payload)` compare exactement le prompt transmis au rendu canonique correspondant à la famille.
+- Les générateurs utilisent eux-mêmes ces fonctions de rendu : la génération et la validation partagent donc un format canonique unique, tandis que les tests de mutation vérifient que les divergences entre texte et paramètres sont rejetées.
+- Le validateur retourne `False` pour les familles inconnues, les champs absents, les paramètres mal formés ou un prompt divergent.
 
-## Reproduction locale
+## Exécution
 
 Depuis la racine du dépôt :
 
@@ -21,23 +22,28 @@ Depuis la racine du dépôt :
 python -m unittest discover -s EXPERIMENTS/generators -p 'test_*.py' -v
 ```
 
-La commande ci-dessus est celle utilisée par le workflow CI. Le résultat local doit être consigné séparément du résultat CI.
+Le workflow GitHub Actions `.github/workflows/t1-t3-generators.yml` exécute cette commande sous Python 3.12.
 
-## Couverture actuellement présente
+## Couverture
 
-- T1 : exemple canonique (22), recalcul indépendant de l'oracle depuis les paramètres publics en mémoire, reproductibilité, diversité des graines et rejet d'une profondeur invalide.
-- T3 : exemples canoniques (21 et 25), vérification arithmétique des deux témoins, rejet de témoins falsifiés ou donnant la même sortie, sous-détermination sur 100 graines, reproductibilité et contrôle anti-fuite du paquet public.
-- Interface : `public_payload()` est destiné au système évalué ; `evaluation_payload()` reste privé pour l'évaluateur.
+Les 12 tests de la version précédente ont réussi sur le run [42795937582](https://github.com/Abrasax63/Omega-pub/actions/runs/42795937582).
 
-## Contrôles complémentaires non encore implémentés
+Dix nouveaux tests sont maintenant ajoutés pour :
+- la cohérence canonique T1 et T3 ;
+- l'aller-retour JSON public T1/T3 et privé T3 ;
+- le recalcul de l'oracle T1 depuis les données publiques désérialisées ;
+- les mutations du prompt et des paramètres ;
+- la suppression d'une étape T1 et la mutation du champ manquant T3.
 
-- Vérifier que le prompt rendu et les paramètres publics désérialisés décrivent exactement les mêmes équations.
-- Sérialiser puis relire les paquets public et privé avant validation de l'oracle.
-- Tester explicitement les cas limites de profondeur 1 et 2, coefficients négatifs, coefficients égaux à 1, zéros et grandes amplitudes.
-- Tester l'absence de fuite dans les fichiers, journaux, métadonnées et erreurs, pas seulement dans la représentation du paquet public.
+Le fichier contient donc 22 méthodes de test. Le résultat CI correspondant au commit qui ajoute ces tests doit être consulté avant de déclarer cette nouvelle version validée.
+
+## Limites restantes
+
+- Les cas limites forcés (`k=1`, `k=2`, coefficients négatifs, `a_i=1`, `b_i=0`) restent à compléter.
+- L'audit exhaustif des fuites dans les identifiants, fichiers, journaux et erreurs reste à faire.
+- Le validateur de prompt ne remplace pas un validateur exhaustif du schéma public/privé.
+- Aucun benchmark A/B/C n'a été exécuté ; aucune supériorité d'Omega n'est établie.
 
 ## Règle anti-fuite
 
 Ne jamais transmettre au modèle évalué le paquet privé, la graine, les paramètres cachés, les témoins ou les réponses de référence. Les identifiants publics sont dérivés de l'énoncé, pas directement de la graine.
-
-Les tests actuels valident une partie du générateur. Ils ne comparent pas ChatGPT seul, Omega à rôles fixes et Omega adaptatif.
