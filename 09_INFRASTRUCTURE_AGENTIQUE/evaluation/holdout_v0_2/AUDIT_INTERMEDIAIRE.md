@@ -38,12 +38,19 @@ Le contre-modèle fourni a été instancié explicitement. Le script confirme qu
 
 Les deux applications sont totales sur les quatre états. Les deux parcours partant de a1 projettent sur A→B→A. Le quotient macroscopique de T1 est déterministe ; celui de T2 ne l'est pas, car les successeurs observés des états d'une même fibre ne coïncident pas.
 
+### P5V2-ADV-001
+
+Les deux extensions ont été reconstruites sur le même ensemble X={0,1,2,3}. Elles préservent les trois valeurs fixées 0↦1, 1↦2, 2↦3. La première, avec 3↦0, est une permutation ; la seconde, avec 3↦1, présente la collision f(0)=f(3)=1. Le contrôle exact confirme injectivité de la première et non-injectivité de la seconde.
+
+### P5V2-DOC-001
+
+Contrôle de la source primaire effectué sur RFC 8259 §4. Le texte indique que les noms d'un objet SHOULD être uniques ; la grammaire ABNF autorise la répétition de membres sans encoder de contrainte d'unicité ; le comportement des récepteurs en présence de noms dupliqués est qualifié d'imprévisible et plusieurs comportements sont décrits. Le corrigé est conforme sur ces points. Source : https://www.rfc-editor.org/rfc/rfc8259.html#section-4.
+
 ## 3. Vérifications restant à faire
 
-- P5V2-DOC-001 : contrôler la formulation normative et les conclusions contre le texte primaire RFC 8259 §4.
-- P5V2-ADV-001 : reconstruire les deux extensions sur le même ensemble et vérifier formellement les propriétés annoncées.
 - Relire les cinq énoncés exacts et les confronter un à un au corrigé.
 - Auditer la proximité conceptuelle et les fuites possibles avec v0.1.
+- Obtenir ou reconstruire sous contrôle humain les énoncés manquants, sans les inférer automatiquement du corrigé.
 
 ## 4. Blocage principal découvert
 
