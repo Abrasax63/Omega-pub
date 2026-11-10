@@ -1,0 +1,20 @@
+name: Omega independent forced-graph and locality audit
+on:
+  push:
+    paths:
+      - "research/code/audit_v19_forced_graph_locality_independent.py"
+      - ".github/workflows/omega-v19-independent-locality.yml"
+  pull_request:
+    paths:
+      - "research/code/audit_v19_forced_graph_locality_independent.py"
+      - ".github/workflows/omega-v19-independent-locality.yml"
+jobs:
+  exhaustive-independent-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Exhaustive independent structural and locality audit
+        run: python research/code/audit_v19_forced_graph_locality_independent.py

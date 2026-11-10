@@ -1,0 +1,26 @@
+name: Omega metamorphic C5 L3 U42 all pairs
+on:
+  push:
+    paths:
+      - "research/code/test_metamorphic_v19_c5_u42_all_pairs.py"
+      - "research/code/test_metamorphic_v19_c5_l3.py"
+      - "research/data/v19_c5/V19_UNIVERSAL10_U42_2026-10-15.json"
+      - "research/data/v19_c5/V19_ORIENTED14_CLASSES_2026-10-15.csv"
+      - ".github/workflows/omega-metamorphic-c5-u42-all-pairs.yml"
+  pull_request:
+    paths:
+      - "research/code/test_metamorphic_v19_c5_u42_all_pairs.py"
+      - "research/code/test_metamorphic_v19_c5_l3.py"
+      - "research/data/v19_c5/V19_UNIVERSAL10_U42_2026-10-15.json"
+      - "research/data/v19_c5/V19_ORIENTED14_CLASSES_2026-10-15.csv"
+      - ".github/workflows/omega-metamorphic-c5-u42-all-pairs.yml"
+jobs:
+  exhaustive-u42:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Exhaustive 861-pair metamorphic audit
+        run: python research/code/test_metamorphic_v19_c5_u42_all_pairs.py
