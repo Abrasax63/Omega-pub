@@ -1,4 +1,4 @@
-# P5 — pipeline d'analyse descriptive v0.1
+# P5 — pipeline d'analyse descriptive v0.2
 
 **Statut :** outil préparatoire ; aucune donnée expérimentale réelle n'est incluse.
 **Compatibilité :** protocole P5 v0.2 et validateur de notes v0.2.
@@ -39,6 +39,7 @@ Depuis le dossier prism :
         ratings_path="/private/p5/ratings.jsonl",
         blind_key_path="/private/p5/blind_key.json",
         output_path="/private/p5/analysis.json",
+        ratings_sha256=frozen_ratings_digest,  # fourni par le registre privé du gel
         expected_case_ids={"case-01", "case-02", "case-03", "case-04", "case-05"},
     )
     print(result["validation"])
@@ -60,10 +61,16 @@ les résultats restent descriptifs et exploratoires.
 
 ## Garde-fous
 
-- Valider les notes avant d'ouvrir la clé.
+- Vérifier l'empreinte SHA-256 et la liste de cas pré-enregistrée, puis valider les
+  notes avant de lire la clé. L'empreinte doit venir du registre de gel privé,
+  conservé séparément avec contrôle d'accès et horodatage.
 - La clé doit couvrir exactement chaque couple cas/sortie opaque, sans doublon.
-- Chaque cas doit avoir exactement un résultat A, B et C.
-- Chaque évaluateur doit noter les trois sorties de chaque cas.
+- Chaque cas doit avoir exactement une sortie par bras et répétition.
+  Pour plusieurs répétitions, passer le nombre pré-enregistré avec
+  `repetitions=` et donner un entier de 1 à ce nombre dans chaque entrée
+  `repetition` de la clé privée. Les notes restent opaques.
+- Chaque évaluateur doit noter toutes les sorties d'un cas. Les répétitions
+  sont moyennées à l'intérieur du cas et ne gonflent pas le nombre de cas.
 - Les notes initiales et les arbitrages restent dans des fichiers séparés.
 - Ne pas moyenner les coûts, durées ou appels répétés dans les lignes de notation :
   ces mesures appartiennent au journal d'exécution, une ligne par exécution.

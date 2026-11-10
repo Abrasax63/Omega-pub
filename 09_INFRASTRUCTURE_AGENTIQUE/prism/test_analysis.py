@@ -1,4 +1,5 @@
 import json
+from hashlib import sha256
 import tempfile
 import unittest
 from pathlib import Path
@@ -24,8 +25,8 @@ def fixture():
         ("case-01", {"A": 2, "B": 3, "C": 4}),
         ("case-02", {"A": 3, "B": 3, "C": 2}),
     ):
-        for arm in ARMS:
-            output = case + "-" + arm + "-opaque"
+        for index, arm in enumerate(ARMS):
+            output = case + "-opaque-" + str(index)
             key.append({"case_id": case, "blind_output_id": output, "arm": arm})
             for evaluator in ("rater-1", "rater-2"):
                 ratings.append(rating(case, output, evaluator, scores[arm]))
@@ -45,6 +46,62 @@ class P5AnalysisTests(unittest.TestCase):
         self.assertEqual(row["mean_case_delta"], 0.5)
         self.assertEqual((row["positive_cases"], row["negative_cases"]), (1, 1))
         self.assertNotIn("composite_score", result)
+
+    def test_synthetic_frozen_file_round_trip_and_order_invariance(self):
+        ratings, key = fixture()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            notes = root / "synthetic.jsonl"
+            key_path = root / "key.json"
+            output = root / "report.json"
+            key_path.write_text(json.dumps({"mappings": key}), encoding="utf-8")
+            notes.write_text("".join(json.dumps(row) + "\n" for row in ratings), encoding="utf-8")
+            digest = sha256(notes.read_bytes()).hexdigest()
+            args = {"expected_case_ids": {"case-01", "case-02"}, "ratings_sha256": digest}
+            result = analyze_files(notes, key_path, output, **args)
+            self.assertEqual(result, json.loads(output.read_text(encoding="utf-8")))
+            self.assertEqual(result, analyze_files(notes, key_path, output, **args))
+            self.assertEqual(analyze_dataset(ratings, key), analyze_dataset(ratings[::-1], key[::-1]))
+            deltas = {(r["candidate"], r["reference"]): r["mean_case_delta"]
+                      for r in result["paired_comparisons"] if r["dimension"] == "accuracy"}
+            self.assertEqual(deltas, {("C", "A"): 0.5, ("C", "B"): 0.0, ("B", "A"): 0.5})
+            notes.write_bytes(notes.read_bytes().replace(b'"accuracy": 2', b'"accuracy": 1', 1))
+            with patch("analysis.load_blind_key") as load_key:
+                with self.assertRaisesRegex(AnalysisInputError, "SHA-256"):
+                    analyze_files(notes, key_path, output, **args)
+                load_key.assert_not_called()
+
+    def test_rejects_contaminated_or_ambiguous_rating_before_key_access(self):
+        ratings, _ = fixture()
+        first = json.dumps(ratings[0])
+        for line in (first[:-1] + ', "arm": "A"}',
+                     first[:-1] + ', "case_id": "case-01"}',
+                     first.replace('"rater-1"', '" rater-1"')):
+            with self.subTest(line=line), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                notes = root / "synthetic.jsonl"
+                notes.write_text(line + "\n" + "".join(json.dumps(row) + "\n" for row in ratings[1:]),
+                                 encoding="utf-8")
+                with patch("analysis.load_blind_key") as load_key:
+                    with self.assertRaises(AnalysisInputError):
+                        analyze_files(notes, root / "key.json", root / "report.json",
+                                      expected_case_ids={"case-01", "case-02"},
+                                      ratings_sha256=sha256(notes.read_bytes()).hexdigest())
+                    load_key.assert_not_called()
+
+    def test_repeated_blocks_require_unique_arm_repetition_pairs(self):
+        ratings, key = fixture()
+        repeated_ratings = ratings + [{**row, "blind_output_id": row["blind_output_id"] + "-extra"}
+                                      for row in ratings]
+        repeated_key = [{**row, "repetition": 1} for row in key] + [
+            {**row, "blind_output_id": row["blind_output_id"] + "-extra", "repetition": 2}
+            for row in key
+        ]
+        result = analyze_dataset(repeated_ratings, repeated_key, repetitions=2)
+        self.assertEqual(result["paired_comparisons"], analyze_dataset(ratings, key)["paired_comparisons"])
+        repeated_key[-1]["repetition"] = 1
+        with self.assertRaises(AnalysisInputError):
+            analyze_dataset(repeated_ratings, repeated_key, repetitions=2)
 
     def test_rejects_missing_blind_key_entry(self):
         ratings, key = fixture()
@@ -87,6 +144,8 @@ class P5AnalysisTests(unittest.TestCase):
                         ratings_path,
                         Path(directory) / "blind_key.json",
                         Path(directory) / "analysis.json",
+                        expected_case_ids={"case-01", "case-02"},
+                        ratings_sha256=sha256(ratings_path.read_bytes()).hexdigest(),
                     )
                 load_key.assert_not_called()
 

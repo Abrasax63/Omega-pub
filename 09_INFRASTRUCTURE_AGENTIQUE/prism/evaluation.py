@@ -33,7 +33,7 @@ def _finite_nonnegative_number(value: Any) -> bool:
     return (
         not isinstance(value, bool)
         and isinstance(value, (int, float))
-        and math.isfinite(value)
+        and (isinstance(value, int) or math.isfinite(value))
         and value >= 0
     )
 
@@ -44,8 +44,10 @@ def validate_record(record: dict[str, Any]) -> None:
     missing = REQUIRED - set(record)
     if missing:
         raise EvaluationRecordError("missing fields: " + ", ".join(sorted(missing)))
+    if set(record) - REQUIRED - {"cost_usd"}:
+        raise EvaluationRecordError("unexpected field in blinded rating")
     for field in ("case_id", "blind_output_id", "evaluator_id"):
-        if not isinstance(record[field], str) or not record[field].strip():
+        if not isinstance(record[field], str) or not record[field] or not record[field].isprintable() or any(c.isspace() for c in record[field]):
             raise EvaluationRecordError(f"{field} must be a non-empty string")
     scores = record["scores"]
     if not isinstance(scores, dict) or set(scores) != set(DIMENSIONS):
@@ -55,15 +57,15 @@ def validate_record(record: dict[str, Any]) -> None:
             raise EvaluationRecordError(f"{dimension} score must be an integer from 0 to 4")
     for field in ("unsupported_claims", "material_errors", "missed_counterexamples", "tool_calls"):
         value = record[field]
+        if field == "tool_calls" and value is None:
+            continue
         if isinstance(value, bool) or not isinstance(value, int) or value < 0:
             raise EvaluationRecordError(f"{field} must be a non-negative integer")
-    if not _finite_nonnegative_number(record["elapsed_seconds"]):
+    if record["elapsed_seconds"] is not None and not _finite_nonnegative_number(record["elapsed_seconds"]):
         raise EvaluationRecordError("elapsed_seconds must be a finite non-negative number")
     if "cost_usd" in record and record["cost_usd"] is not None:
         if not _finite_nonnegative_number(record["cost_usd"]):
             raise EvaluationRecordError("cost_usd must be null or a finite non-negative number")
-    if "adjudication" in record:
-        raise EvaluationRecordError("adjudication belongs in a separate post-rating record")
 
 
 def validate_dataset(
