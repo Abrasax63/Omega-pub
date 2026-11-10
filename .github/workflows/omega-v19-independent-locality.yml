@@ -8,6 +8,7 @@ on:
   pull_request:
     paths:
       - "research/code/audit_v19_forced_graph_locality_independent.py"
+      - "research/code/test_v19_locality_l_plus_1.py"
       - ".github/workflows/omega-v19-independent-locality.yml"
 jobs:
   exhaustive-independent-audit:
