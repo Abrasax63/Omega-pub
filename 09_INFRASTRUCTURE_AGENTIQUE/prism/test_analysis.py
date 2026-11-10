@@ -1,6 +1,10 @@
+import json
+import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
-from analysis import ARMS, AnalysisInputError, analyze_dataset
+from analysis import ARMS, AnalysisInputError, analyze_dataset, analyze_files
 from evaluation import DIMENSIONS
 
 
@@ -68,6 +72,23 @@ class P5AnalysisTests(unittest.TestCase):
         ratings, key = fixture()
         with self.assertRaises(AnalysisInputError):
             analyze_dataset(ratings[:-1], key)
+
+    def test_file_pipeline_validates_ratings_before_opening_blind_key(self):
+        ratings, _ = fixture()
+        with tempfile.TemporaryDirectory() as directory:
+            ratings_path = Path(directory) / "ratings.jsonl"
+            ratings_path.write_text(
+                "".join(json.dumps(row) + "\\n" for row in ratings[:-1]),
+                encoding="utf-8",
+            )
+            with patch("analysis.load_blind_key") as load_key:
+                with self.assertRaises(AnalysisInputError):
+                    analyze_files(
+                        ratings_path,
+                        Path(directory) / "blind_key.json",
+                        Path(directory) / "analysis.json",
+                    )
+                load_key.assert_not_called()
 
 
 if __name__ == "__main__":
