@@ -23,4 +23,4 @@ jobs:
         with:
           python-version: "3.12"
       - name: Exhaustive 861-pair metamorphic audit
-        run: python research/code/test_metamorphic_c5_u42_all_pairs.py
+        run: python research/code/test_metamorphic_v19_c5_u42_all_pairs.py
