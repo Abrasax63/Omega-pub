@@ -110,5 +110,62 @@ class TwoStepPolicyTests(unittest.TestCase):
             self.assertGreaterEqual(after, baseline)
 
 
+    def test_wrong_observation_model_can_make_two_steps_worse(self):
+        # The optimizer expects complementary tests, and chooses both.
+        # In the actual world the second test duplicates the first; there
+        # is no decision information, but both costs are paid.
+        from collections import Counter, defaultdict
+
+        assumed = copy.deepcopy(self.cases["next-M-01"])
+        planned = optimize_policy(assumed, max_depth=2)
+        self.assertEqual(planned["expected_total_loss"], "1/50")
+        self.assertTrue(all(
+            child["action"] == "ask"
+            for child in planned["policy"]["branches"].values()
+        ))
+        actual = copy.deepcopy(assumed)
+        actual["checks"][1]["observations"] = list(
+            actual["checks"][0]["observations"]
+        )
+        observed = defaultdict(Counter)
+        for i, h in enumerate(actual["hypotheses"]):
+            pair = tuple(c["observations"][i] for c in actual["checks"])
+            observed[pair][h["decision"]] += h["weight"]
+        missed = sum(sum(counts.values()) - max(counts.values())
+                     for counts in observed.values())
+        paid_cost = sum(c["cost_milli"] for c in actual["checks"])
+        actual_loss = Fraction(missed, 4) + Fraction(paid_cost, 1000)
+        self.assertEqual(actual_loss, Fraction(13, 25))
+        self.assertGreater(actual_loss, Fraction(1, 2))
+
+    def test_three_way_synergy_defeats_any_two_checks(self):
+        from itertools import product
+        case = copy.deepcopy(self.cases["next-M-01"])
+        bits = list(product((0, 1), repeat=3))
+        case["hypotheses"] = [
+            {"id": f"h{i}", "decision": "A" if sum(b) % 2 == 0 else "B",
+             "weight": 1}
+            for i, b in enumerate(bits)
+        ]
+        case["checks"] = [
+            {"id": f"bit-{j}", "action": "verify", "step": f"Read bit {j}",
+             "method": "synthetic_bit", "available": True, "cost_milli": 1,
+             "observations": [str(b[j]) for b in bits]}
+            for j in range(3)
+        ]
+        # Every observed pair leaves two opposite decision labels.
+        for j in range(3):
+            for k in range(j + 1, 3):
+                self.assertEqual(len({(b[j], b[k]) for b in bits}), 4)
+                for pair in {(b[j], b[k]) for b in bits}:
+                    matches = [sum(b) % 2 for b in bits if (b[j], b[k]) == pair]
+                    self.assertEqual(sorted(matches), [0, 1])
+        self.assertEqual(optimize_policy(case, max_depth=2)["action"],
+                         "insufficient_evidence")
+        self.assertEqual(len(set(bits)), 8)
+        # All three observations jointly reveal the parity decision.
+        # The planner is explicitly restricted to depth <= 2.
+
+
 if __name__ == "__main__":
     unittest.main()
