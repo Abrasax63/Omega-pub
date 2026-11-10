@@ -84,3 +84,25 @@ Le holdout v0.2 reste un pilote public, pas un test secret garanti. Le lancement
 attend un nouveau jeu non exposé, son corrigé privé vérifié, les prompts et budgets
 gelés, et deux évaluateurs réellement indépendants. Aucun accès au corrigé n'est
 requis pour exécuter le pipeline.
+
+## Calibration publique intégrée
+
+Dans un checkout réunissant les modifications des PR #20 et #21, exécuter
+`python p5_calibration.py` depuis `09_INFRASTRUCTURE_AGENTIQUE/prism`.
+Le script utilise uniquement le cas public `P5V2-FORMAL-001`, le planificateur
+P1 pour C, des rôles fixes pour B et un fournisseur simulé pour les trois bras.
+Les notes, les durées et les tokens sont des valeurs synthétiques. Les
+plafonds de l'essai sont deux appels, 256 tokens cumulés, deux secondes
+simulées et zéro outil par bras.
+
+Le manifeste en mémoire consigne l'identité de l'appel avant l'invocation
+du fournisseur simulé. Le rapprochement exige une correspondance exacte
+avec la télémétrie avant d'appliquer le pipeline d'analyse. L'essai retire
+la première tentative de C tout en gardant les trois bras présents.
+L'analyse doit alors s'arrêter avant de lire la clé et sans écrire de
+rapport. Une seconde injection contrôle le rejet d'un dépassement de
+tokens pour chaque bras.
+
+Ce script est un harnais de calibration. Pour un pilote réel, il faut
+encore un registre des envois durable, un contrôle des reprises du SDK,
+des plafonds appliqués par le client réel et une collecte réelle des sorties.
