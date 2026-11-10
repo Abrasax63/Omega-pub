@@ -1,0 +1,23 @@
+name: Omega metamorphic C4 L2
+
+on:
+  push:
+    paths:
+      - "02_MATHEMATIQUES/defauts_recollement/code/test_metamorphic_v19_c4_l2.py"
+      - ".github/workflows/omega-metamorphic-c4.yml"
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/defauts_recollement/code/test_metamorphic_v19_c4_l2.py"
+      - ".github/workflows/omega-metamorphic-c4.yml"
+  workflow_dispatch:
+
+jobs:
+  metamorphic-c4:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run independent metamorphic checks
+        run: python 02_MATHEMATIQUES/defauts_recollement/code/test_metamorphic_v19_c4_l2.py
