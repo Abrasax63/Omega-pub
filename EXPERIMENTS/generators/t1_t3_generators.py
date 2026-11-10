@@ -18,7 +18,10 @@ class GeneratedTask:
             "family": self.family,
             "prompt": self.prompt,
             "public_parameters": self.public_parameters,
-            "generation": self.generation,
+            "generation": {
+                key: value for key, value in self.generation.items()
+                if key != "seed"
+            },
         }
 
     def evaluation_payload(self) -> dict[str, Any]:
@@ -26,6 +29,7 @@ class GeneratedTask:
             "task_id": self.task_id,
             "family": self.family,
             "oracle_private": self.oracle_private,
+            "generation_private": {"seed": self.generation["seed"]},
         }
 
 
