@@ -13,10 +13,11 @@ class T1Tests(unittest.TestCase):
         for seed in range(100):
             task = generate_t1(seed)
             params = task.public_parameters
-            independent = replay_affine_chain(
-                params["initial"],
-                [tuple(step) for step in params["steps"]],
-            )
+            # Deliberately separate oracle implementation: do not call
+            # the generator's replay_affine_chain helper here.
+            independent = params["initial"]
+            for a, b in params["steps"]:
+                independent = a * independent + b
             self.assertEqual(independent, task.oracle_private["expected_answer"])
 
     def test_seed_reproducibility(self):
