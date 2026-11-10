@@ -134,3 +134,21 @@ des tokens du fournisseur. Le harnais contrôle le cumul sur l'usage
 effectivement rapporté. Le délai SDK testé est un délai de lecture, pas
 un chronomètre global de campagne. Le pilote exige encore de valider
 la méthode de budget d'entrée et le modèle choisis.
+
+### Cas public de réfutation
+
+Exécuter `python p5_refutation_calibration.py` depuis `prism`. Ce contrôle
+utilise `P5V2-ADV-001` et fonctionne sans SDK. Sur quatre états, les tables
+(1, 2, 3, 0) et (1, 2, 3, 1) réalisent respectivement une permutation et
+une collision entre 0 et 3. Les trois transitions observées sont communes.
+Sur n états, les n−3 images restantes sont libres, donnant n^(n−3)
+extensions. Pour rester injectives, elles doivent permuter les n−3 images
+encore libres, donnant (n−3)! extensions. Le script confronte ces comptes
+à l'énumération exhaustive de 4 à 7 états et rejette cinq certificats invalides.
+
+B reprend les cinq rôles fixes de la calibration. C reçoit le même énoncé
+avec le type mathématique et active réfutation et formalisation. Un second
+passage, avec le seul indicateur de calcul explicite modifié, active aussi
+le rôle computationnel. Ce contrôle mesure le routage, sans génération ni
+notation de réponses de modèle. Pour une future comparaison de qualité,
+figer l'encodage de la mission avant de produire les réponses.
