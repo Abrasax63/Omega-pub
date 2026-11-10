@@ -1,0 +1,12 @@
+{
+  "holdout_id": "P5-HOLDOUT-2026-11-09-v0.2",
+  "protocol_version": "0.2",
+  "answer_key": {
+    "visibility": "private",
+    "filename": "answer_key.private.json",
+    "sha256": "4963c72faafbab9bc0abfdb963b3de6e3142f4e9ea1307af88f4358e27ee043a"
+  },
+  "case_id": "P5V2-EXPL-001",
+  "correction_status": "corrected_and_independently_checked",
+  "note": "This manifest publishes only the digest. The private answer key and its contents must not be committed to the public repository."
+}
