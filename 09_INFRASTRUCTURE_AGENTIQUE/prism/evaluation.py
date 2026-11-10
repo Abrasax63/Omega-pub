@@ -30,12 +30,12 @@ class EvaluationRecordError(ValueError):
 
 
 def _finite_nonnegative_number(value: Any) -> bool:
-    return (
-        not isinstance(value, bool)
-        and isinstance(value, (int, float))
-        and math.isfinite(value)
-        and value >= 0
-    )
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0:
+        return False
+    try:
+        return math.isfinite(value)
+    except (OverflowError, TypeError, ValueError):
+        return False
 
 
 def validate_record(record: dict[str, Any]) -> None:
@@ -80,8 +80,24 @@ def validate_dataset(
     """
     if not isinstance(records, list) or not records:
         raise EvaluationRecordError("records must be a non-empty list")
-    if expected_outputs_per_case < 1 or minimum_evaluators < 2:
-        raise EvaluationRecordError("expected_outputs_per_case must be >=1 and minimum_evaluators >=2")
+    if (
+        isinstance(expected_outputs_per_case, bool)
+        or not isinstance(expected_outputs_per_case, int)
+        or expected_outputs_per_case < 1
+    ):
+        raise EvaluationRecordError("expected_outputs_per_case must be a positive integer")
+    if (
+        isinstance(minimum_evaluators, bool)
+        or not isinstance(minimum_evaluators, int)
+        or minimum_evaluators < 2
+    ):
+        raise EvaluationRecordError("minimum_evaluators must be an integer >=2")
+    if expected_case_ids is not None:
+        if not isinstance(expected_case_ids, set) or any(
+            not isinstance(case_id, str) or not case_id.strip()
+            for case_id in expected_case_ids
+        ):
+            raise EvaluationRecordError("expected_case_ids must be a set of non-empty strings")
 
     seen: set[tuple[str, str, str]] = set()
     by_case: dict[str, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
