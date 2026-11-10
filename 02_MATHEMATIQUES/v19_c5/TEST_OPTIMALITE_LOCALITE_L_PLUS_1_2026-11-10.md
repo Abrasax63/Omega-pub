@@ -51,3 +51,10 @@ Le lemme orbital de la preuve L+2 mentionne une transition pouvant nécessiter t
 - Suffisance universelle de L+1 : **INDÉTERMINÉE**.
 - Optimalité universelle de L+2 : **INDÉTERMINÉE**.
 - Aucun ajout à la bibliothèque certifiée ; aucune fusion.
+
+
+## Reproduction CI
+
+Le workflow GitHub Actions [run 42788979270](https://github.com/Abrasax63/Omega-pub/actions/runs/42788979270) a terminé avec **SUCCESS** sous Python 3.12. Il exécute successivement l'audit indépendant L+2 existant puis le nouveau script L+1. Le nouveau script a donc été exécuté dans la CI ; les assertions de comptes et l'absence de divergence ont passé.
+
+Cette CI confirme la reproduction du test fini décrit ici. Elle ne modifie pas le statut logique : la suffisance universelle de L+1 et l'optimalité universelle de L+2 restent **INDÉTERMINÉES**.
