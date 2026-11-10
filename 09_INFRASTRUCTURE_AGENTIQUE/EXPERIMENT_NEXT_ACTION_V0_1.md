@@ -79,6 +79,28 @@ l'optimisation est définie par le même modèle qui sert à évaluer le résult
 Les scénarios sont construits pour couvrir les décisions et la comparaison
 avec le contrôle ; il ne s'agit pas d'une fréquence observée dans la nature.
 
+## Test négatif : deux vérifications peuvent se compléter
+
+Un contre-exemple à toute prétention d'optimalité multi-étapes est maintenant
+inclus aux tests. Quatre hypothèses équiprobables portent les décisions
+(A,A,B,B). Les observations simulées sont :
+
+- contrôle 1 : (x,y,x,y) ;
+- contrôle 2 : (x,y,y,x).
+
+Chaque contrôle pris séparément laisse exactement une possibilité A et une
+possibilité B par résultat ; **son gain décisionnel immédiat est nul**.
+Le prototype à un pas renvoie donc `insufficient_evidence` malgré des
+coûts positifs très faibles. Pourtant, la paire des deux résultats identifie
+chaque hypothèse : un programme à deux étapes trouverait la décision avec
+certitude. Ce test établit une **limite constructive** du mécanisme actuel ;
+il ne s'agit pas d'une erreur de son implémentation à un pas.
+
+Un autre test fait varier le coût de la clarification dans le scénario
+d'arbitrage : lorsque son coût augmente, la préférence passe de `ask`
+à `verify`. Ce changement valide la sensibilité de la règle aux paramètres
+annoncés, et non leur justesse dans le monde réel.
+
 ## Étape réellement discriminante suivante
 
 1. Geler avant collecte 24 nouveaux problèmes **indépendants**, avec
