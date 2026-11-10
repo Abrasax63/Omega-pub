@@ -152,3 +152,34 @@ passage, avec le seul indicateur de calcul explicite modifié, active aussi
 le rôle computationnel. Ce contrôle mesure le routage, sans génération ni
 notation de réponses de modèle. Pour une future comparaison de qualité,
 figer l'encodage de la mission avant de produire les réponses.
+
+### Essai documentaire B/C automatisé
+
+Le cas public K-17 confronte deux notices fictives à une consigne interne.
+Le barème vérifie la clause de transition citée, les deux délais
+conditionnels, l'erreur du message interne et la date de réception manquante.
+
+Sur le checkout combiné, avec le SDK 3.49.0 installé, exécuter
+`python p5_documentary_bc_test.py` depuis `prism`. Le SDK utilise un
+transport HTTP simulé. Une exécution complète fait deux comptages
+d'entrée, puis deux générations sans historique et sans outil.
+Un budget insuffisant bloque la génération. Un écart de comptage entre
+prévol et réponse bloque le paquet de notation.
+
+Après autorisation de dépense, choisir un snapshot de modèle qui accepte
+les deux opérations Responses et renseigner la clé dans l'environnement.
+La commande de lancement est :
+
+```sh
+python p5_documentary_bc.py /chemin/prive/k17-essai \
+  --live --model SNAPSHOT --token-cap PLAFOND_TOTAL --output-cap PLAFOND_SORTIE
+```
+
+Utiliser un répertoire neuf hors de tout checkout Git. Transmettre seulement
+`grading.json` au correcteur, qui fige sa notation avant de recevoir
+`key-private.json`. L'ordre des requêtes et l'attribution X/Y sont tirés
+séparément. Les sorties elles-mêmes peuvent parfois suggérer un bras.
+Les données brutes, le journal et le plan exact restent dans le répertoire
+privé. Les plafonds de tokens de génération ne sont pas un plafond
+monétaire. La facturation du prévol et les tarifs du snapshot sont à
+vérifier avant l'exécution réelle.
