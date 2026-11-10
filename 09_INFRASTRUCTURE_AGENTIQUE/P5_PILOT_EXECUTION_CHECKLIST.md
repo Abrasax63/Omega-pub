@@ -1,7 +1,7 @@
 # P5 — préparation du pilote A/B/C et audit du holdout
 
 **Date :** 2026-11-10  
-**Protocole de référence :** P5 v0.2  
+**Protocole candidat :** P5 v0.3 (v0.2 non auditable)  
 **Branche de travail :** `audit/p5-hardening-2026-11-09`  
 **Statut :** préparation méthodologique ; pilote NON LANCÉ ; holdout NON GELÉ.
 
@@ -22,7 +22,7 @@ Ne pas réutiliser comme holdout aveugle les cas v0.1 déjà exposés dans l'his
 | G1 | Corrigé privé corrigé, relu et cohérent avec les définitions des cinq cas | **PARTIEL : EXPL vérifié ; énoncés exacts absents pour audit complet** |
 | G2 | Empreinte SHA-256 recalculée sur les octets exacts du corrigé final | **SATISFAIT** |
 | G3 | Manifeste public mis à jour avec ID, version et empreintes autorisées, sans contenu secret | **SATISFAIT** |
-| G4 | Cas v0.2 distincts du matériel v0.1 public et absence de fuite vérifiée | **BLOQUÉ : cases.jsonl v0.2 absent ; audit intermédiaire créé** |
+| G4 | Cinq énoncés v0.3 présents, distincts du matériel public antérieur et absence de fuite vérifiée | **PARTIEL : v0.3 créé ; audit anti-fuite v0.1 non certifié** |
 | G5 | Modèles, snapshots, paramètres et prompts A/B/C explicitement fixés | NON RENSEIGNÉ |
 | G6 | Budget commun par cas/bras et mesures réellement accessibles définis | NON RENSEIGNÉ |
 | G7 | Ordre randomisé, graine protégée et table d'aveuglement séparée | NON RENSEIGNÉ |
@@ -108,9 +108,9 @@ Le pilote doit répondre d'abord à ces questions :
 - Le validateur détecte-t-il les jeux de notes incomplets ou déséquilibrés ?
 - Le protocole révèle-t-il des modes d'échec du Prisme, pas seulement ses réussites ?
 
-## 7. P5 v0.3 — exigences de conception, pas encore un jeu de test
+## 7. P5 v0.3 — candidat créé, non gelé
 
-La version v0.3 devra être conçue après l'analyse du pilote, mais ses cas ne devront pas être dérivés en reformulant simplement les cinq cas v0.2. Prévoir plusieurs cas par strate et des variantes indépendantes :
+Les énoncés originaux v0.2 n'ayant pas été retrouvés, un candidat v0.3 séparé a été créé dans `evaluation/holdout_v0_3/`. Il n'est pas dérivé des corrigés v0.2. Les cinq cas couvrent les strates formelle, calcul exact, documentation RFC 3986, quotient observé et contre-exemple adversarial. Le jeu reste candidat :
 
 - preuve avec quantificateurs et hypothèses proches mais non équivalentes ;
 - calcul fini avec vérification croisée et cas limite ;
@@ -121,7 +121,7 @@ La version v0.3 devra être conçue après l'analyse du pilote, mais ses cas ne 
 - cas où une vérification indépendante détecte une erreur plausible ;
 - cas où l'outil ou la source externe est indisponible et où l'abstention est préférable.
 
-Les nouveaux cas doivent être écrits indépendamment des sorties du pilote, puis contrôlés contre les fuites et les ambiguïtés. Le corrigé et les barèmes restent privés jusqu'à la fin de l'évaluation.
+Les contrôles initiaux (structure JSONL, identifiants, fibres/cycles, contre-modèles et source RFC) sont consignés dans `evaluation/holdout_v0_3/AUDIT_INITIAL.md`. L'indépendance anti-fuite par rapport à v0.1 et la revue humaine indépendante restent à faire. Le corrigé v0.3 reste privé ; seul son SHA-256 est publié dans le manifeste.
 
 ## 8. État de travail au 2026-11-10
 
@@ -133,6 +133,6 @@ Les nouveaux cas doivent être écrits indépendamment des sorties du pilote, pu
 - Notation humaine : non exécutée.
 - G4 : BLOQUÉE ; G5–G10 : non satisfaites ou non vérifiées.\n- Audit intermédiaire : `evaluation/holdout_v0_2/AUDIT_INTERMEDIAIRE.md`.
 - Analyse des décisions adaptatives : schéma de collecte préparé ; aucune donnée observée.
-- P5 v0.3 : exigences de conception uniquement ; aucun cas finalisé.
+- P5 v0.3 : cinq cas candidats créés ; corrigé privé conservé hors dépôt ; anti-fuite v0.1 et revue indépendante non certifiées.
 
-**Verdict :** `PILOT_NOT_READY`. G1–G3 sont satisfaites pour la correction examinée ; cela ne constitue ni un gel global du holdout, ni une validation expérimentale, ni une certification de l'architecture Omega.
+**Verdict :** `PILOT_NOT_READY`. v0.2 demeure non auditable faute d'énoncés originaux ; v0.3 est un candidat nouvellement créé, pas encore gelé. Cela ne constitue ni une validation expérimentale, ni une certification de l'architecture Omega.
