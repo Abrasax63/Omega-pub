@@ -1,4 +1,3 @@
-import copy
 import json
 import unittest
 
@@ -63,6 +62,26 @@ class T1Tests(unittest.TestCase):
         lines = payload["prompt"].splitlines()
         payload["prompt"] = "\n".join(lines[:-2] + lines[-1:])
         self.assertFalse(validate_prompt_consistency(payload))
+
+    def test_forced_depth_and_affine_edge_cases(self):
+        for depth in (1, 2, 5):
+            task = generate_t1(700 + depth, k=depth)
+            self.assertEqual(len(task.public_parameters["steps"]), depth)
+            self.assertTrue(validate_prompt_consistency(task.public_payload()))
+        parameters = {"initial": -2, "steps": [[1, 0], [-3, -2]]}
+        payload = {
+            "family": "T1",
+            "prompt": (
+                "Valeur initiale : x = -2\n"
+                "Applique les transformations dans l'ordre :\n"
+                "Étape 1: f(x) = 1x + (0)\n"
+                "Étape 2: f(x) = -3x + (-2)\n"
+                "Quelle est la valeur finale ?"
+            ),
+            "public_parameters": parameters,
+        }
+        self.assertTrue(validate_prompt_consistency(payload))
+        self.assertEqual(replay_affine_chain(-2, [(1, 0), (-3, -2)]), 4)
 
 
 class T3Tests(unittest.TestCase):
@@ -160,6 +179,26 @@ class T3Tests(unittest.TestCase):
         payload = generate_t3(53).public_payload()
         payload["public_parameters"]["missing_parameter"] = "a2"
         self.assertFalse(validate_prompt_consistency(payload))
+
+    def test_forced_missing_intercept_edge_case(self):
+        payload = {
+            "family": "T3",
+            "prompt": (
+                "Valeur initiale : x = -2\n"
+                "Étape 1 : f1(x) = -3x + (0)\n"
+                "Étape 2 : f2(x) = 1x + b, mais la valeur de b n'est pas fournie.\n"
+                "Quelle est la valeur après la deuxième transformation ?"
+            ),
+            "public_parameters": {
+                "initial": -2,
+                "first_step": [-3, 0],
+                "second_step_coefficient": 1,
+                "missing_parameter": "b",
+            },
+        }
+        self.assertTrue(validate_prompt_consistency(payload))
+        x1 = -3 * -2 + 0
+        self.assertNotEqual(1 * x1 + 0, 1 * x1 + 1)
 
 
 if __name__ == "__main__":
