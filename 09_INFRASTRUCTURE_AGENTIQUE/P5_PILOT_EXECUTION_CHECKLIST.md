@@ -1,15 +1,17 @@
 # P5 — préparation du pilote A/B/C et audit du holdout
 
-**Date :** 2026-11-09  
+**Date :** 2026-11-10  
 **Protocole de référence :** P5 v0.2  
 **Branche de travail :** `audit/p5-hardening-2026-11-09`  
 **Statut :** préparation méthodologique ; pilote NON LANCÉ ; holdout NON GELÉ.
 
 ## 1. Décision de sécurité expérimentale
 
-Aucun bras A/B/C ne doit être exécuté tant que les conditions de gel ne sont pas satisfaites. Le corrigé privé v0.2 a fait l'objet d'un signalement d'incohérence sur le cas exploratoire `P5V2-EXPL-001`. La correction de contenu, le recalcul de l'empreinte et la mise à jour du manifeste restent à effectuer et à vérifier ensemble.
+Le cas privé `P5V2-EXPL-001` a été corrigé. Les parcours microscopiques sont désormais distingués par système : T1 suit `a1→b1→a1`, T2 suit `a1→b1→a2`. Les deux se projettent sur la trace observée `A→B→A`. Le fichier JSON corrigé a été relu et contrôlé par un script indépendant : transitions des parcours, projection, totalité des applications et cohérence des transitions macroscopiques déclarées.
 
-Ne pas publier le corrigé, un extrait du corrigé, les parcours attendus, ni une empreinte calculée sur une version non validée. Ne pas réutiliser comme holdout aveugle les cas v0.1 déjà exposés dans l'historique public.
+L'empreinte SHA-256 du fichier privé corrigé est publiée dans le manifeste public `evaluation/holdout_v0_2/manifest.json`. Le corrigé et ses parcours attendus restent strictement privés ; seul le digest est public.
+
+Ne pas réutiliser comme holdout aveugle les cas v0.1 déjà exposés dans l'historique public.
 
 **Règle anti-contamination :** aucun résultat, aucune note et aucun retour issu du pilote ne peut servir à modifier le planificateur, les prompts, les rôles ou les règles de routage avant le gel complet des sorties et des notes. Toute modification ultérieure crée une version candidate distincte et impose un jeu de test indépendant.
 
@@ -17,9 +19,9 @@ Ne pas publier le corrigé, un extrait du corrigé, les parcours attendus, ni un
 
 | Porte | Condition vérifiable | État |
 |---|---|---|
-| G1 | Corrigé privé corrigé, relu et cohérent avec les définitions des cas | BLOQUÉ |
-| G2 | Empreinte SHA-256 recalculée sur les octets exacts du corrigé final | EN ATTENTE |
-| G3 | Manifeste public mis à jour avec ID, version et empreintes autorisées, sans contenu secret | EN ATTENTE |
+| G1 | Corrigé privé corrigé, relu et cohérent avec les définitions des cas | **SATISFAIT pour P5V2-EXPL-001** |
+| G2 | Empreinte SHA-256 recalculée sur les octets exacts du corrigé final | **SATISFAIT** |
+| G3 | Manifeste public mis à jour avec ID, version et empreintes autorisées, sans contenu secret | **SATISFAIT** |
 | G4 | Cas v0.2 distincts du matériel v0.1 public et absence de fuite vérifiée | À AUDITER |
 | G5 | Modèles, snapshots, paramètres et prompts A/B/C explicitement fixés | NON RENSEIGNÉ |
 | G6 | Budget commun par cas/bras et mesures réellement accessibles définis | NON RENSEIGNÉ |
@@ -28,7 +30,7 @@ Ne pas publier le corrigé, un extrait du corrigé, les parcours attendus, ni un
 | G9 | Barème, arbitrage et gestion des données manquantes gelés | À FINALISER |
 | G10 | Tests du validateur réussis sur données synthétiques positives et négatives | À REPRODUIRE |
 
-Le lancement est interdit tant qu'une porte critique est BLOQUÉE ou NON RENSEIGNÉE. Une valeur inconnue doit rester explicitement inconnue : ne pas la remplacer par une hypothèse implicite.
+Le lancement est interdit tant qu'une porte critique est BLOQUÉE ou NON RENSEIGNÉE. La satisfaction de G1–G3 ne vaut pas gel global du holdout.
 
 ## 3. Plan de collecte A/B/C
 
@@ -121,14 +123,16 @@ La version v0.3 devra être conçue après l'analyse du pilote, mais ses cas ne 
 
 Les nouveaux cas doivent être écrits indépendamment des sorties du pilote, puis contrôlés contre les fuites et les ambiguïtés. Le corrigé et les barèmes restent privés jusqu'à la fin de l'évaluation.
 
-## 8. État de travail au 2026-11-09
+## 8. État de travail au 2026-11-10
 
 - Protocole v0.2 et validateur : présents dans la PR #9 en brouillon.
+- Corrigé privé : correction de P5V2-EXPL-001 effectuée et contrôlée.
+- SHA-256 privé : recalculé sur les octets exacts ; digest publié sans divulguer le corrigé.
+- Manifeste public : créé dans `evaluation/holdout_v0_2/manifest.json`.
 - Pilote A/B/C : non exécuté.
 - Notation humaine : non exécutée.
-- Corrigé v0.2 : anomalie signalée ; correction et empreinte finale non vérifiées.
-- Manifeste : mise à jour finale en attente.
-- Analyse des décisions adaptatives : schéma de collecte préparé ici ; aucune donnée observée.
+- G4–G10 : non satisfaites ou non vérifiées.
+- Analyse des décisions adaptatives : schéma de collecte préparé ; aucune donnée observée.
 - P5 v0.3 : exigences de conception uniquement ; aucun cas finalisé.
 
-**Verdict :** `PILOT_NOT_READY`. Ce document prépare la collecte et les critères ; il ne constitue ni un gel du holdout, ni une validation expérimentale, ni une certification de l'architecture Omega.
+**Verdict :** `PILOT_NOT_READY`. G1–G3 sont satisfaites pour la correction examinée ; cela ne constitue ni un gel global du holdout, ni une validation expérimentale, ni une certification de l'architecture Omega.
