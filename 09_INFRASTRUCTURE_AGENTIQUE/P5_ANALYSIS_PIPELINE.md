@@ -117,3 +117,20 @@ stockés dans un répertoire temporaire. Le pilote réel exige un espace
 privé contrôlé, la validation du SDK et de ses reprises, et une procédure
 pour résoudre les envois qui restent indéterminés. Le verrou et la
 synchronisation du prototype ciblent POSIX/Linux.
+
+### Calibration du SDK Responses
+
+Dans le checkout combiné, installer le SDK dans un environnement de test
+isolé avec `python -m pip install openai==3.49.0`, puis lancer
+`python p5_sdk_calibration.py` depuis `prism`. Le SDK parle à un serveur
+local avec une clé factice et un transport sans proxy ni redirection.
+Le test vérifie le plafond de sortie envoyé, le délai de lecture, et
+l'absence de réessai implicite après HTTP 500 ou expiration. Après HTTP
+500, le harnais conserve la tentative en état indéterminé au redémarrage.
+
+Le client réserve une enveloppe d'entrée et transmet le reste comme
+plafond de sortie. L'enveloppe d'entrée n'est pas un comptage préalable
+des tokens du fournisseur. Le harnais contrôle le cumul sur l'usage
+effectivement rapporté. Le délai SDK testé est un délai de lecture, pas
+un chronomètre global de campagne. Le pilote exige encore de valider
+la méthode de budget d'entrée et le modèle choisis.

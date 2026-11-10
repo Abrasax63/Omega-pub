@@ -84,7 +84,8 @@ def run_arm(arm, prompt, route, provider, dispatch, records, *, ledger=None):
         if remaining_tokens < 0 or remaining_seconds < 0 or tools > BUDGET["tools"]:
             raise CalibrationError("execution exceeded its budget")
         if ledger is not None and recovered is None:
-            ledger.finish_payload(identity, record, response)
+            payload = response if isinstance(response, dict) else response.model_dump(mode="json")
+            ledger.finish_payload(identity, record, payload)
         if record["status"] == "completed":
             return
         if record["status"] != "interrupted":
