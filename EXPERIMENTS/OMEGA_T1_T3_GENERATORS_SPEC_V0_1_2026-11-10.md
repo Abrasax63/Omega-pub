@@ -57,8 +57,8 @@ Le système évalué ne doit pas deviner $b$. Il doit signaler que la valeur fin
 - $f_2(x)=3x+b$, avec $b$ non fourni
 
 Deux complétions compatibles :
-- $b=0$ donne (21) ;
-- $b=4$ donne (25).
+- $b=0$ donne $21$ ;
+- $b=4$ donne $25$.
 
 Puisque (21
 e25), l'énoncé ne détermine pas une valeur finale unique.  
