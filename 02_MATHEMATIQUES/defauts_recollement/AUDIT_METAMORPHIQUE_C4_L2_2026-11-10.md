@@ -81,11 +81,16 @@ Le programme compare en outre deux algorithmes distincts — énumération exhau
 
 Dernière exécution après cet ajout : [GitHub Actions run 42777476519](https://github.com/Abrasax63/Omega-pub/actions/runs/42777476519), conclusion SUCCESS.
 
+Le contrôle négatif confirme que la mutation « égalité de trajectoire → inégalité » ne reproduit qu'une seule des huit ombres de référence (1/8), alors que le contrat correct les reproduit toutes.
+
+Dernière exécution, incluant ce contrôle négatif : [GitHub Actions run 42777580523](https://github.com/Abrasax63/Omega-pub/actions/runs/42777580523), job terminé avec SUCCESS.
+
 Sortie du programme :
 \`\`\`text
 BASE_WITNESS: PASS (8/8 ombres brutes)
 STATE_RELABELING: PASS (36 transpositions de S_9, 8 classes chacune)
 INDEPENDENT_SOLVER: PASS (brute-force = parity-DSU sur 296 ombres)
+NEGATIVE_CONTROL: PASS (contrat muté égalité -> inégalité : 1/8 seulement)
 CYCLE_ORIGIN: PASS (4 origines, relation de rotation exacte)
 COLOR_COMPLEMENT: PASS (8/8 ombres invariantes par c -> 1-c)
 METAMORPHIC_C4: ALL CHECKS PASSED
@@ -102,7 +107,7 @@ METAMORPHIC_C4: ALL CHECKS PASSED
 
 ## 7. Suite proposée
 
-1. Ajouter des tests de mutation volontaire : modifier une arête forcée, inverser une égalité de trajectoire ou permuter incorrectement les coordonnées du cycle ; vérifier que le banc échoue.
+1. Étendre les contrôles négatifs à d'autres mutations : supprimer une arête forcée ou permuter incorrectement les coordonnées du cycle ; vérifier que le banc les détecte.
 2. Étendre ensuite le générateur à d'autres témoins déjà validés, sans extrapoler depuis C4.
 3. Ne considérer une généralisation qu'après comparaison avec les définitions primaires et une vérification indépendante.
 
