@@ -1,7 +1,10 @@
+import copy
+import json
 import unittest
 
 from t1_t3_generators import (
     generate_t1, generate_t3, replay_affine_chain, validate_t3,
+    validate_prompt_consistency,
 )
 
 
@@ -13,8 +16,6 @@ class T1Tests(unittest.TestCase):
         for seed in range(100):
             task = generate_t1(seed)
             params = task.public_parameters
-            # Deliberately separate oracle implementation: do not call
-            # the generator's replay_affine_chain helper here.
             independent = params["initial"]
             for a, b in params["steps"]:
                 independent = a * independent + b
@@ -30,6 +31,38 @@ class T1Tests(unittest.TestCase):
     def test_depth_must_be_positive(self):
         with self.assertRaises(ValueError):
             generate_t1(1, k=0)
+
+    def test_canonical_prompt_matches_public_parameters(self):
+        for seed in range(25):
+            self.assertTrue(validate_prompt_consistency(generate_t1(seed).public_payload()))
+
+    def test_json_round_trip_preserves_t1_public_contract_and_oracle(self):
+        for seed in range(25):
+            task = generate_t1(seed)
+            public = json.loads(json.dumps(task.public_payload(), ensure_ascii=False))
+            evaluation = json.loads(json.dumps(task.evaluation_payload()))
+            self.assertTrue(validate_prompt_consistency(public))
+            params = public["public_parameters"]
+            value = params["initial"]
+            for a, b in params["steps"]:
+                value = a * value + b
+            self.assertEqual(value, evaluation["oracle_private"]["expected_answer"])
+
+    def test_prompt_mutation_is_rejected(self):
+        payload = generate_t1(41).public_payload()
+        payload["prompt"] = payload["prompt"].replace("Étape 1: f(x) = ", "Étape 1: f(x) = 999", 1)
+        self.assertFalse(validate_prompt_consistency(payload))
+
+    def test_parameter_mutation_is_rejected(self):
+        payload = generate_t1(42).public_payload()
+        payload["public_parameters"]["steps"][0][0] += 1
+        self.assertFalse(validate_prompt_consistency(payload))
+
+    def test_deleted_or_reordered_step_prompt_is_rejected(self):
+        payload = generate_t1(43).public_payload()
+        lines = payload["prompt"].splitlines()
+        payload["prompt"] = "\n".join(lines[:-2] + lines[-1:])
+        self.assertFalse(validate_prompt_consistency(payload))
 
 
 class T3Tests(unittest.TestCase):
@@ -59,11 +92,8 @@ class T3Tests(unittest.TestCase):
         witnesses[0]["answer"] += 1
         oracle["witness_completions"] = witnesses
         corrupted = type(task)(
-            task_id=task.task_id,
-            family=task.family,
-            prompt=task.prompt,
-            public_parameters=task.public_parameters,
-            oracle_private=oracle,
+            task_id=task.task_id, family=task.family, prompt=task.prompt,
+            public_parameters=task.public_parameters, oracle_private=oracle,
             generation=task.generation,
         )
         self.assertFalse(validate_t3(corrupted))
@@ -75,11 +105,8 @@ class T3Tests(unittest.TestCase):
         witnesses[1]["answer"] = witnesses[0]["answer"]
         oracle["witness_completions"] = witnesses
         corrupted = type(task)(
-            task_id=task.task_id,
-            family=task.family,
-            prompt=task.prompt,
-            public_parameters=task.public_parameters,
-            oracle_private=oracle,
+            task_id=task.task_id, family=task.family, prompt=task.prompt,
+            public_parameters=task.public_parameters, oracle_private=oracle,
             generation=task.generation,
         )
         self.assertFalse(validate_t3(corrupted))
@@ -101,6 +128,38 @@ class T3Tests(unittest.TestCase):
 
     def test_seed_reproducibility(self):
         self.assertEqual(generate_t3(123), generate_t3(123))
+
+    def test_canonical_prompt_matches_public_parameters(self):
+        for seed in range(25):
+            self.assertTrue(validate_prompt_consistency(generate_t3(seed).public_payload()))
+
+    def test_json_round_trip_preserves_t3_public_contract_and_private_witnesses(self):
+        for seed in range(25):
+            task = generate_t3(seed)
+            public = json.loads(json.dumps(task.public_payload(), ensure_ascii=False))
+            evaluation = json.loads(json.dumps(task.evaluation_payload()))
+            self.assertTrue(validate_prompt_consistency(public))
+            self.assertTrue(validate_t3(type(task)(
+                task_id=task.task_id, family=task.family, prompt=task.prompt,
+                public_parameters=public["public_parameters"],
+                oracle_private=evaluation["oracle_private"],
+                generation={**task.generation},
+            )))
+
+    def test_prompt_mutation_is_rejected(self):
+        payload = generate_t3(51).public_payload()
+        payload["prompt"] = payload["prompt"].replace("f2(x) = ", "f2(x) = 999", 1)
+        self.assertFalse(validate_prompt_consistency(payload))
+
+    def test_parameter_mutation_is_rejected(self):
+        payload = generate_t3(52).public_payload()
+        payload["public_parameters"]["second_step_coefficient"] += 1
+        self.assertFalse(validate_prompt_consistency(payload))
+
+    def test_missing_parameter_mutation_is_rejected(self):
+        payload = generate_t3(53).public_payload()
+        payload["public_parameters"]["missing_parameter"] = "a2"
+        self.assertFalse(validate_prompt_consistency(payload))
 
 
 if __name__ == "__main__":
