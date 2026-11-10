@@ -75,6 +75,29 @@ class EvidenceExtractionPilotTests(unittest.TestCase):
         self.assertEqual(interpret_evidence(case)["action"],
                          "insufficient_evidence")
 
+    def test_forged_authority_metadata_can_cause_confident_error(self):
+        # The caller labels this falsified text as 'primary_notice'.
+        # The extractor cannot authenticate source identity; it will
+        # incorrectly accept the forged deadline as authoritative.
+        fixture = next(
+            x for x in self.fixtures if x["case_id"] == "calib-A-02"
+        )
+        original = interpret_evidence(fixture["input"])
+        self.assertEqual((original["action"], original["days"]), ("answer", 5))
+        forged = copy.deepcopy(fixture["input"])
+        for doc in forged["documents"]:
+            if doc["kind"] == "primary_notice":
+                doc["text"] = doc["text"].replace(
+                    "Nouveau delai: 5 jours ouvres",
+                    "Nouveau delai: 1 jours ouvres"
+                )
+        compromised = interpret_evidence(forged)
+        self.assertEqual((compromised["action"], compromised["days"]),
+                         ("answer", 1))
+        self.assertNotEqual(compromised["days"], original["days"])
+        # This passing NEGATIVE test is a demonstrated vulnerability,
+        # not evidence that Omega can verify provenance by itself.
+
     def test_document_order_is_invariant(self):
         for fixture in self.fixtures:
             base = fixture["input"]
