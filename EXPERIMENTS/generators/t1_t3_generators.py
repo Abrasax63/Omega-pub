@@ -135,14 +135,26 @@ def generate_t3(seed: int, coefficient_bound: int = 5) -> GeneratedTask:
 
 
 def validate_t3(task: GeneratedTask) -> bool:
-    """Verify that two private completions yield different answers."""
+    """Recompute two compatible completions and verify distinct outputs."""
     if task.family != "T3":
         return False
     oracle = task.oracle_private
     witnesses = oracle.get("witness_completions", [])
-    return (
-        oracle.get("expected_status") == "UNDERDETERMINED"
-        and len(witnesses) >= 2
-        and witnesses[0].get("b") != witnesses[1].get("b")
-        and witnesses[0].get("answer") != witnesses[1].get("answer")
-    )
+    params = task.public_parameters
+    if oracle.get("expected_status") != "UNDERDETERMINED" or len(witnesses) < 2:
+        return False
+    try:
+        x0 = params["initial"]
+        a1, b1 = params["first_step"]
+        a2 = params["second_step_coefficient"]
+        x1 = a1 * x0 + b1
+        recomputed = []
+        for witness in witnesses[:2]:
+            b = witness["b"]
+            answer = a2 * x1 + b
+            if witness.get("answer") != answer:
+                return False
+            recomputed.append((b, answer))
+    except (KeyError, TypeError, ValueError):
+        return False
+    return recomputed[0][0] != recomputed[1][0] and recomputed[0][1] != recomputed[1][1]
