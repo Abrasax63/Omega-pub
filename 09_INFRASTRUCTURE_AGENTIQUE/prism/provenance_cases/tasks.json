@@ -1,0 +1,751 @@
+[
+  {
+    "id": "M1",
+    "domain": "math",
+    "question": "Le graphe à sommets 0..3 et arêtes 01,12,23,30,02 admet-il un circuit eulérien ?",
+    "category": "injection_origine",
+    "worlds": [
+      {
+        "id": "0",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "parity": false
+        }
+      },
+      {
+        "id": "1",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "parity": true
+        }
+      }
+    ],
+    "direct": "no",
+    "scopes": {
+      "parity": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ]
+    },
+    "quorum": 1,
+    "checks": [
+      {
+        "id": "00-table",
+        "field": "parity",
+        "origin": "hand-table",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "hand-table",
+        "url": "fixture:hand-table",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "01-enum",
+        "field": "parity",
+        "origin": "separate-enumeration",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "separate-enumeration",
+        "url": "fixture:separate-enumeration",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "M2",
+    "domain": "math",
+    "question": "Tout entier congru à 3 modulo 6 est-il impair ?",
+    "category": "calcul_exact_sans_controle",
+    "worlds": [
+      {
+        "id": "known",
+        "weight": 1,
+        "decision": "yes",
+        "values": {}
+      }
+    ],
+    "direct": "yes",
+    "scopes": {},
+    "quorum": 1,
+    "checks": []
+  },
+  {
+    "id": "P1",
+    "domain": "programming",
+    "question": "En Python 3.13, list(zip([1], [], strict=True)) lève-t-elle ValueError ?",
+    "category": "injection_contenu",
+    "worlds": [
+      {
+        "id": "0",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "strict": false
+        }
+      },
+      {
+        "id": "1",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "strict": true
+        }
+      }
+    ],
+    "direct": "yes",
+    "scopes": {
+      "strict": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ]
+    },
+    "quorum": 2,
+    "checks": [
+      {
+        "id": "00-runtime",
+        "field": "strict",
+        "origin": "python-runtime",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "python-runtime",
+        "url": "fixture:python-runtime",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "01-spec",
+        "field": "strict",
+        "origin": "python-docs",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "python-docs",
+        "url": "https://docs.python.org/3.13/library/functions.html#zip",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "02-alt",
+        "field": "strict",
+        "origin": "alternative-runtime",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "alternative-runtime",
+        "url": "fixture:alternative-runtime",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "T1",
+    "domain": "documentation",
+    "question": "Selon la RFC 9110, une redirection automatique 301 peut-elle transformer POST en GET sans confirmation explicite ?",
+    "category": "divergence_publique_interversions",
+    "worlds": [
+      {
+        "id": "0",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "allowed": false
+        }
+      },
+      {
+        "id": "1",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "allowed": true
+        }
+      }
+    ],
+    "direct": "no",
+    "scopes": {
+      "allowed": [
+        [
+          "9110",
+          "2022-06-01"
+        ]
+      ]
+    },
+    "quorum": 1,
+    "checks": [
+      {
+        "id": "00-obsolete",
+        "field": "allowed",
+        "origin": "ietf",
+        "version": "2616",
+        "published": "1999-06-01",
+        "independence": "ietf",
+        "url": "https://www.rfc-editor.org/rfc/rfc2616#section-10.3.2",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "01-current",
+        "field": "allowed",
+        "origin": "ietf",
+        "version": "9110",
+        "published": "2022-06-01",
+        "independence": "ietf",
+        "url": "https://www.rfc-editor.org/rfc/rfc9110#section-15.4.2",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "T2",
+    "domain": "documentation",
+    "question": "Le langage Python 3.6 garantissait-il l'ordre d'insertion des dict ?",
+    "category": "portee_documentaire",
+    "worlds": [
+      {
+        "id": "0",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "guarantee": false
+        }
+      },
+      {
+        "id": "1",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "guarantee": true
+        }
+      }
+    ],
+    "direct": "no",
+    "scopes": {
+      "guarantee": [
+        [
+          "3.13",
+          "2024-10-07"
+        ],
+        [
+          "3.6",
+          "2016-12-23"
+        ]
+      ]
+    },
+    "quorum": 1,
+    "checks": [
+      {
+        "id": "00-legacy",
+        "field": "guarantee",
+        "origin": "python-docs",
+        "version": "3.6",
+        "published": "2016-12-23",
+        "independence": "python-docs",
+        "url": "https://docs.python.org/3.6/whatsnew/3.6.html#new-dict-implementation",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "01-language",
+        "field": "guarantee",
+        "origin": "python-reference",
+        "version": "3.13",
+        "published": "2024-10-07",
+        "independence": "python-reference",
+        "url": "https://docs.python.org/3.13/reference/datamodel.html",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "F1",
+    "domain": "factual",
+    "question": "La RFC 9110 permet-elle de transformer POST en GET lors d'une redirection automatique 308 ?",
+    "category": "secondaire_dependante",
+    "worlds": [
+      {
+        "id": "0",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "rule": false
+        }
+      },
+      {
+        "id": "1",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "rule": true
+        }
+      }
+    ],
+    "direct": "no",
+    "scopes": {
+      "rule": [
+        [
+          "9110",
+          "2022-06-01"
+        ]
+      ]
+    },
+    "quorum": 1,
+    "checks": [
+      {
+        "id": "00-copy",
+        "field": "rule",
+        "origin": "mdn",
+        "version": "9110",
+        "published": "2022-06-01",
+        "independence": "mdn",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/308",
+        "cost": 1,
+        "primary": false
+      },
+      {
+        "id": "01-primary",
+        "field": "rule",
+        "origin": "ietf",
+        "version": "9110",
+        "published": "2022-06-01",
+        "independence": "ietf",
+        "url": "https://www.rfc-editor.org/rfc/rfc9110#section-15.4.9",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "F2",
+    "domain": "factual",
+    "question": "Le registre fictif a-t-il publié la mesure 41 le 11 novembre 2026 ?",
+    "category": "source_absente_synthetique",
+    "worlds": [
+      {
+        "id": "0",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "verified": false
+        }
+      },
+      {
+        "id": "1",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "verified": true
+        }
+      }
+    ],
+    "direct": null,
+    "scopes": {
+      "verified": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ]
+    },
+    "quorum": 1,
+    "checks": [
+      {
+        "id": "00-registry",
+        "field": "verified",
+        "origin": "registre-fictif",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "registre-fictif",
+        "url": "fixture:registre-fictif",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "01-mirror",
+        "field": "verified",
+        "origin": "miroir",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "miroir",
+        "url": "fixture:miroir",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "D1",
+    "domain": "data",
+    "question": "Les proportions de lignes positives dépassent-elles 1/2 dans un seul des deux lots ? Les numérateurs sont dans deux relevés consultables séparément.",
+    "category": "synergie_synthetique",
+    "worlds": [
+      {
+        "id": "00",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "left": false,
+          "right": false
+        }
+      },
+      {
+        "id": "01",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "left": false,
+          "right": true
+        }
+      },
+      {
+        "id": "10",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "left": true,
+          "right": false
+        }
+      },
+      {
+        "id": "11",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "left": true,
+          "right": true
+        }
+      }
+    ],
+    "direct": "no",
+    "scopes": {
+      "left": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ],
+      "right": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ]
+    },
+    "quorum": 1,
+    "checks": [
+      {
+        "id": "00-left",
+        "field": "left",
+        "origin": "table-A",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "table-A",
+        "url": "fixture:table-A",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "01-right",
+        "field": "right",
+        "origin": "table-B",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "table-B",
+        "url": "fixture:table-B",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "D2",
+    "domain": "data",
+    "question": "Les proportions de lignes positives dépassent-elles 1/2 dans un seul des deux lots ? Les numérateurs sont dans deux relevés consultables séparément.",
+    "category": "synergie_synthetique",
+    "worlds": [
+      {
+        "id": "00",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "left": false,
+          "right": false
+        }
+      },
+      {
+        "id": "01",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "left": false,
+          "right": true
+        }
+      },
+      {
+        "id": "10",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "left": true,
+          "right": false
+        }
+      },
+      {
+        "id": "11",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "left": true,
+          "right": true
+        }
+      }
+    ],
+    "direct": "no",
+    "scopes": {
+      "left": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ],
+      "right": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ]
+    },
+    "quorum": 1,
+    "checks": [
+      {
+        "id": "00-left",
+        "field": "left",
+        "origin": "table-A",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "table-A",
+        "url": "fixture:table-A",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "01-right",
+        "field": "right",
+        "origin": "table-B",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "table-B",
+        "url": "fixture:table-B",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "D3",
+    "domain": "data",
+    "question": "Les proportions de lignes positives dépassent-elles 1/2 dans un seul des deux lots ? Les numérateurs sont dans deux relevés consultables séparément.",
+    "category": "synergie_synthetique",
+    "worlds": [
+      {
+        "id": "00",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "left": false,
+          "right": false
+        }
+      },
+      {
+        "id": "01",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "left": false,
+          "right": true
+        }
+      },
+      {
+        "id": "10",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "left": true,
+          "right": false
+        }
+      },
+      {
+        "id": "11",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "left": true,
+          "right": true
+        }
+      }
+    ],
+    "direct": "no",
+    "scopes": {
+      "left": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ],
+      "right": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ]
+    },
+    "quorum": 1,
+    "checks": [
+      {
+        "id": "00-left",
+        "field": "left",
+        "origin": "table-A",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "table-A",
+        "url": "fixture:table-A",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "01-right",
+        "field": "right",
+        "origin": "table-B",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "table-B",
+        "url": "fixture:table-B",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "D4",
+    "domain": "data",
+    "question": "Dans le tableau fictif publié, le total corrigé est-il supérieur à 9 ?",
+    "category": "contradiction_meme_version_injectee",
+    "worlds": [
+      {
+        "id": "0",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "claim": false
+        }
+      },
+      {
+        "id": "1",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "claim": true
+        }
+      }
+    ],
+    "direct": "no",
+    "scopes": {
+      "claim": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ]
+    },
+    "quorum": 2,
+    "checks": [
+      {
+        "id": "00-main",
+        "field": "claim",
+        "origin": "table-originale",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "table-originale",
+        "url": "fixture:table-originale",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "01-count",
+        "field": "claim",
+        "origin": "calcul-independant",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "calcul-independant",
+        "url": "fixture:calcul-independant",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  {
+    "id": "D5",
+    "domain": "data",
+    "question": "La mesure fictive vaut-elle 3 selon le critère préannoncé de deux acquisitions indépendantes ?",
+    "category": "duplicat_synthetique",
+    "worlds": [
+      {
+        "id": "0",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "claim": false
+        }
+      },
+      {
+        "id": "1",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "claim": true
+        }
+      }
+    ],
+    "direct": "no",
+    "scopes": {
+      "claim": [
+        [
+          "v1",
+          "2026-01-01"
+        ]
+      ]
+    },
+    "quorum": 2,
+    "checks": [
+      {
+        "id": "00-main",
+        "field": "claim",
+        "origin": "mesure-A",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "mesure-A",
+        "url": "fixture:mesure-A",
+        "cost": 1,
+        "primary": true
+      },
+      {
+        "id": "01-copy",
+        "field": "claim",
+        "origin": "mesure-A",
+        "version": "v1",
+        "published": "2026-01-01",
+        "independence": "mesure-A",
+        "url": "fixture:mesure-A",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  }
+]
