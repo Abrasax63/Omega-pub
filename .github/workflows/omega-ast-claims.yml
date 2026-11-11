@@ -36,6 +36,10 @@ jobs:
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
         run: |
           python ast_claim_versioning.py --source-repo "${{ runner.temp }}/flask-ast" --json-output "${{ runner.temp }}/omega-ast-ledger.json"
+      - name: Independently recompute every frozen AST claim, selection and historical certificate
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python ast_claim_independent_crosscheck.py "${{ runner.temp }}/flask-ast" "${{ runner.temp }}/omega-ast-ledger.json"
       - name: Archive all exact syntax claims, decisions and historical certificates
         if: success()
         uses: actions/upload-artifact@v4
