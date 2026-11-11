@@ -69,7 +69,7 @@ Validation de base du raccordement :
 
 Tests supplémentaires :
 - [GitHub Actions #43077525962](https://github.com/Abrasax63/Omega-pub/actions/runs/43077525962) — **SUCCESS**, 202 tests dont le vérificateur indépendant à 900 cas ;
-- [GitHub Actions #43077677141](https://github.com/Abrasax63/Omega-pub/actions/runs/43077677141) — **SUCCESS**, **204 tests du Prisme**, dont le prix du garde-fou calculé en fractions exactes, plus les intégrations RCE/MCP et les contrôles d'index.
+- [GitHub Actions #43077677141](https://github.com/Abrasax63/Omega-pub/actions/runs/43077677141) — **SUCCESS**, 204 tests du Prisme, dont le prix du garde-fou calculé en fractions exactes.\n- [GitHub Actions #43078453200](https://github.com/Abrasax63/Omega-pub/actions/runs/43078453200) — **SUCCESS, 205 tests du Prisme**, six tests MCP, contrôles RCE/index réussis. Le dernier test ajoute des limites strictes de **64 états / 64 sondes listées** à l'entrée JSON facultative pour prévenir un coût quadratique non borné. Ce bornage est une mesure de sûreté, pas une hypothèse scientifique sur l'exhaustivité des sondes.
 
 Pour reproduire depuis `09_INFRASTRUCTURE_AGENTIQUE/prism` :
 
