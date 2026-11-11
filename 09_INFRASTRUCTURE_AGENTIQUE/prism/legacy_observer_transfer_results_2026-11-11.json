@@ -1,0 +1,81 @@
+{
+  "w04": {
+    "scope": "public exhaustive finite model, not model/LLM validation",
+    "n": 3,
+    "probe_count": 2,
+    "partitions": 5,
+    "policies": 32,
+    "results": {
+      "cases": 4000,
+      "terminal_underinformative": 848,
+      "nontrivial_cycles": 0,
+      "repaired_with_one_extra_probe": 848,
+      "fixed_two_probes_full": 4000
+    },
+    "first_witness": {
+      "probe_a": [
+        0,
+        0,
+        0
+      ],
+      "probe_b": [
+        0,
+        0,
+        1
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "policy": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "terminal": [
+        0,
+        0,
+        0
+      ],
+      "other_probe_index": 1
+    }
+  },
+  "w06": {
+    "initial": [
+      0,
+      0,
+      1,
+      1
+    ],
+    "new_task": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "capacity": 2,
+    "example": {
+      "decision": "replace",
+      "current_blocks": 2,
+      "target_blocks": 2,
+      "joint_blocks": 4,
+      "capacity": 2,
+      "why": "Monotone refinement cannot fit; nonmonotone replacement can."
+    },
+    "all_pairs_of_2_block_partitions": 49,
+    "decisions": {
+      "keep": 7,
+      "replace": 42
+    }
+  },
+  "limitations": [
+    "no real LLM or oracle grading",
+    "no source-authenticity check",
+    "probe semantics assumed exact",
+    "fixed two-probe oracle also achieves full closure",
+    "not a causal advantage over optimal adaptive baselines"
+  ]
+}
