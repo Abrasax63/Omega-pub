@@ -1,0 +1,79 @@
+[
+  {
+    "repo": "psf/requests",
+    "number": 7051,
+    "url": "https://github.com/psf/requests/pull/7051",
+    "head_sha": "b4e6874e922831256c9a76f9f1025a74d4b180de",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "requirements-dev.txt",
+      "src/requests/cookies.py",
+      "tests/test_cookies_benchmark.py",
+      "tests/test_requests.py"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "psf/requests",
+    "number": 7499,
+    "url": "https://github.com/psf/requests/pull/7499",
+    "head_sha": "2e620c71fd5750ca6784c5c37dcb3fd094ef0286",
+    "merged": false,
+    "touched_tests": false,
+    "changed_filenames": [
+      "docs/user/advanced.rst"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "psf/requests",
+    "number": 5220,
+    "url": "https://github.com/psf/requests/pull/5220",
+    "head_sha": "6df6aa7a634ed6ec960e4abc81a9762a65a97727",
+    "merged": false,
+    "touched_tests": false,
+    "changed_filenames": [
+      "requests/adapters.py"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "psf/requests",
+    "number": 6991,
+    "url": "https://github.com/psf/requests/pull/6991",
+    "head_sha": "1688e65119a0de5e9434702fb3805fc7cfeb8a41",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "src/requests/auth.py",
+      "tests/test1.py"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "psf/requests",
+    "number": 7023,
+    "url": "https://github.com/psf/requests/pull/7023",
+    "head_sha": "47fdbfb923c9ce0c9cfb456d6aab235cde404d4c",
+    "merged": false,
+    "touched_tests": false,
+    "changed_filenames": [
+      "docs/user/quickstart.rst"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "psf/requests",
+    "number": 6675,
+    "url": "https://github.com/psf/requests/pull/6675",
+    "head_sha": "991d81d055358a0d1e88e3365003fb296e2ffefa",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "src/requests/utils.py",
+      "tests/test_utils.py"
+    ],
+    "info_verified": true
+  }
+]

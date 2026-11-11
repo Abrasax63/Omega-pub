@@ -1,0 +1,125 @@
+[
+  {
+    "repo": "python/cpython",
+    "number": 161266,
+    "url": "https://github.com/python/cpython/pull/161266",
+    "head_sha": "605a229997ea8a8a6a12f2f09e06426a96b6b132",
+    "merged": false,
+    "touched_tests": false,
+    "changed_filenames": [
+      "Makefile.pre.in",
+      "Misc/NEWS.d/next/Security/2026-11-02-18-30-09.gh-issue-161192.2ScSRO.rst",
+      "Modules/expat/ascii.h",
+      "Modules/expat/entities.h",
+      "Modules/expat/expat.h",
+      "Modules/expat/expat_external.h",
+      "Modules/expat/internal.h",
+      "Modules/expat/refresh.sh",
+      "Modules/expat/xcs.c",
+      "Modules/expat/xcs.h",
+      "Modules/expat/xmlparse.c",
+      "Modules/expat/xmltok.h",
+      "Modules/expat/xmltok_impl.c",
+      "PCbuild/_elementtree.vcxproj",
+      "PCbuild/_elementtree.vcxproj.filters",
+      "PCbuild/pyexpat.vcxproj",
+      "PCbuild/pyexpat.vcxproj.filters"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "python/cpython",
+    "number": 161728,
+    "url": "https://github.com/python/cpython/pull/161728",
+    "head_sha": "dad645daa2de1d1ccb1a905627ab0bf56dd23b8f",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "Doc/c-api/init_config.rst",
+      "Doc/library/sys.rst",
+      "Doc/using/cmdline.rst",
+      "Lib/gzip.py",
+      "Lib/runpy.py",
+      "Lib/tarfile.py",
+      "Lib/test/support/__init__.py",
+      "Lib/test/test_runpy.py",
+      "Lib/test/test_sys.py",
+      "Lib/test/test_zipfile.py",
+      "Lib/zipfile.py",
+      "Misc/NEWS.d/next/Security/2026-11-07-15-56-47.gh-issue-161705.OjDK2d.rst",
+      "Modules/main.c",
+      "Python/pathconfig.c",
+      "Python/sysmodule.c"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "python/cpython",
+    "number": 161727,
+    "url": "https://github.com/python/cpython/pull/161727",
+    "head_sha": "b6b7c67e86ec8b24c120413c939581083a861f8a",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "Doc/c-api/init_config.rst",
+      "Doc/library/sys.rst",
+      "Doc/using/cmdline.rst",
+      "Lib/gzip.py",
+      "Lib/runpy.py",
+      "Lib/tarfile.py",
+      "Lib/test/support/__init__.py",
+      "Lib/test/test_runpy.py",
+      "Lib/test/test_sys.py",
+      "Lib/test/test_zipfile/test_core.py",
+      "Lib/zipfile/__init__.py",
+      "Misc/NEWS.d/next/Security/2026-11-07-15-56-47.gh-issue-161705.OjDK2d.rst",
+      "Modules/main.c",
+      "Python/pathconfig.c",
+      "Python/sysmodule.c"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "python/cpython",
+    "number": 155070,
+    "url": "https://github.com/python/cpython/pull/155070",
+    "head_sha": "04a3ebbcfaf387297427c5416dba39ff9130e767",
+    "merged": true,
+    "touched_tests": true,
+    "changed_filenames": [
+      "Lib/multiprocessing/shared_memory.py",
+      "Lib/test/_test_multiprocessing.py",
+      "Misc/NEWS.d/next/Library/2026-08-02-08-43-20.gh-issue-155003.VVy9Z_.rst"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "python/cpython",
+    "number": 161162,
+    "url": "https://github.com/python/cpython/pull/161162",
+    "head_sha": "494a2ea70f6ce2a421a970ba0e2637a40c04cc7d",
+    "merged": false,
+    "touched_tests": false,
+    "changed_filenames": [
+      "Doc/faq/library.rst",
+      "Doc/howto/free-threading-extensions.rst",
+      "Doc/howto/free-threading-python.rst",
+      "Doc/library/threading.rst"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "python/cpython",
+    "number": 160875,
+    "url": "https://github.com/python/cpython/pull/160875",
+    "head_sha": "b9e9d9c66b7ea1cc49637268322fda5d90dc7bfa",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "Lib/test/test_compile.py",
+      "Misc/NEWS.d/next/Core_and_Builtins/2026-10-29-09-15-27.gh-issue-160789.nyRBTE.rst",
+      "Python/codegen.c"
+    ],
+    "info_verified": true
+  }
+]

@@ -1,0 +1,395 @@
+{
+  "status": "ACTUAL_GITHUB_RECORDS_PUBLIC_PROSPECTIVE_COHORT",
+  "preregister_commit": "8cc991b1d734b280825ce10a73458aacc3f06c7a",
+  "policy_source_commit": "b3b36a1a290892c8bd2ee22212a6b9f44677d04c",
+  "capture_complete_utc": "2026-11-11T15:02:27.241Z",
+  "source_notes": "Values collected from GitHub get_pr_info and list_pr_changed_filenames; secondary fetch_pr confirmed merged and head SHA for all 24. Both are GitHub, not independent providers. Collection completed after policy and cohort freeze. Titles were seen before freeze for selection and the cohort is nonrandom.",
+  "cases": [
+    {
+      "repo": "python/cpython",
+      "number": 161266,
+      "url": "https://github.com/python/cpython/pull/161266",
+      "head_sha": "605a229997ea8a8a6a12f2f09e06426a96b6b132",
+      "merged": false,
+      "touched_tests": false,
+      "changed_filenames": [
+        "Makefile.pre.in",
+        "Misc/NEWS.d/next/Security/2026-11-02-18-30-09.gh-issue-161192.2ScSRO.rst",
+        "Modules/expat/ascii.h",
+        "Modules/expat/entities.h",
+        "Modules/expat/expat.h",
+        "Modules/expat/expat_external.h",
+        "Modules/expat/internal.h",
+        "Modules/expat/refresh.sh",
+        "Modules/expat/xcs.c",
+        "Modules/expat/xcs.h",
+        "Modules/expat/xmlparse.c",
+        "Modules/expat/xmltok.h",
+        "Modules/expat/xmltok_impl.c",
+        "PCbuild/_elementtree.vcxproj",
+        "PCbuild/_elementtree.vcxproj.filters",
+        "PCbuild/pyexpat.vcxproj",
+        "PCbuild/pyexpat.vcxproj.filters"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "python/cpython",
+      "number": 161728,
+      "url": "https://github.com/python/cpython/pull/161728",
+      "head_sha": "dad645daa2de1d1ccb1a905627ab0bf56dd23b8f",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "Doc/c-api/init_config.rst",
+        "Doc/library/sys.rst",
+        "Doc/using/cmdline.rst",
+        "Lib/gzip.py",
+        "Lib/runpy.py",
+        "Lib/tarfile.py",
+        "Lib/test/support/__init__.py",
+        "Lib/test/test_runpy.py",
+        "Lib/test/test_sys.py",
+        "Lib/test/test_zipfile.py",
+        "Lib/zipfile.py",
+        "Misc/NEWS.d/next/Security/2026-11-07-15-56-47.gh-issue-161705.OjDK2d.rst",
+        "Modules/main.c",
+        "Python/pathconfig.c",
+        "Python/sysmodule.c"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "python/cpython",
+      "number": 161727,
+      "url": "https://github.com/python/cpython/pull/161727",
+      "head_sha": "b6b7c67e86ec8b24c120413c939581083a861f8a",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "Doc/c-api/init_config.rst",
+        "Doc/library/sys.rst",
+        "Doc/using/cmdline.rst",
+        "Lib/gzip.py",
+        "Lib/runpy.py",
+        "Lib/tarfile.py",
+        "Lib/test/support/__init__.py",
+        "Lib/test/test_runpy.py",
+        "Lib/test/test_sys.py",
+        "Lib/test/test_zipfile/test_core.py",
+        "Lib/zipfile/__init__.py",
+        "Misc/NEWS.d/next/Security/2026-11-07-15-56-47.gh-issue-161705.OjDK2d.rst",
+        "Modules/main.c",
+        "Python/pathconfig.c",
+        "Python/sysmodule.c"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "python/cpython",
+      "number": 155070,
+      "url": "https://github.com/python/cpython/pull/155070",
+      "head_sha": "04a3ebbcfaf387297427c5416dba39ff9130e767",
+      "merged": true,
+      "touched_tests": true,
+      "changed_filenames": [
+        "Lib/multiprocessing/shared_memory.py",
+        "Lib/test/_test_multiprocessing.py",
+        "Misc/NEWS.d/next/Library/2026-08-02-08-43-20.gh-issue-155003.VVy9Z_.rst"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "python/cpython",
+      "number": 161162,
+      "url": "https://github.com/python/cpython/pull/161162",
+      "head_sha": "494a2ea70f6ce2a421a970ba0e2637a40c04cc7d",
+      "merged": false,
+      "touched_tests": false,
+      "changed_filenames": [
+        "Doc/faq/library.rst",
+        "Doc/howto/free-threading-extensions.rst",
+        "Doc/howto/free-threading-python.rst",
+        "Doc/library/threading.rst"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "python/cpython",
+      "number": 160875,
+      "url": "https://github.com/python/cpython/pull/160875",
+      "head_sha": "b9e9d9c66b7ea1cc49637268322fda5d90dc7bfa",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "Lib/test/test_compile.py",
+        "Misc/NEWS.d/next/Core_and_Builtins/2026-10-29-09-15-27.gh-issue-160789.nyRBTE.rst",
+        "Python/codegen.c"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "python/cpython",
+      "number": 161755,
+      "url": "https://github.com/python/cpython/pull/161755",
+      "head_sha": "722f6d5f883e149fc1daa8b05c2dc0ad6115aa12",
+      "merged": true,
+      "touched_tests": true,
+      "changed_filenames": [
+        "Lib/asyncio/base_tasks.py",
+        "Lib/test/test_asyncio/test_tasks.py",
+        "Misc/NEWS.d/next/Library/2026-11-02-13-11-30.gh-issue-161166.zfFDlW.rst"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "python/cpython",
+      "number": 152702,
+      "url": "https://github.com/python/cpython/pull/152702",
+      "head_sha": "56ea2d3ca833ad1d6ce1020f0da1925c11a008f5",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "Doc/library/textwrap.rst",
+        "Doc/whatsnew/3.16.rst",
+        "Lib/idlelib/idle_test/test_calltip.py",
+        "Lib/test/test_textwrap.py",
+        "Lib/textwrap.py",
+        "Misc/NEWS.d/next/Library/2026-07-25-10-16-22.gh-issue-154686.Cz9Xpw.rst"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6155,
+      "url": "https://github.com/pallets/flask/pull/6155",
+      "head_sha": "be443e138604cdcbfafeb48403dd99a02d0be3c3",
+      "merged": false,
+      "touched_tests": false,
+      "changed_filenames": [
+        "docs/deploying/index.rst"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6156,
+      "url": "https://github.com/pallets/flask/pull/6156",
+      "head_sha": "de4bfddc479749f0667d116473b799e18753fd11",
+      "merged": false,
+      "touched_tests": false,
+      "changed_filenames": [
+        "docs/deploying/index.rst"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6147,
+      "url": "https://github.com/pallets/flask/pull/6147",
+      "head_sha": "c9da3e453482453db862e16b632bee2c3fd4de62",
+      "merged": false,
+      "touched_tests": false,
+      "changed_filenames": [
+        "CHANGES.rst",
+        "docs/deploying/index.rst"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6145,
+      "url": "https://github.com/pallets/flask/pull/6145",
+      "head_sha": "56f3db172de7f3e843a3ebf048f6f475ef700b40",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "src/flask/json/provider.py",
+        "tests/test_json.py"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6144,
+      "url": "https://github.com/pallets/flask/pull/6144",
+      "head_sha": "80d2383dfc43ece6ec9e460b63dc7f2f997d3732",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "CHANGES.rst",
+        "src/flask/sansio/app.py",
+        "src/flask/sansio/scaffold.py",
+        "tests/test_basic.py"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6142,
+      "url": "https://github.com/pallets/flask/pull/6142",
+      "head_sha": "6ba862ab97b8d566d91db460a0e9b3388f9df6fb",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "src/flask/config.py",
+        "tests/test_config.py"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6124,
+      "url": "https://github.com/pallets/flask/pull/6124",
+      "head_sha": "6d5b099e8f36f357bfecee8b721a4323e411dc0d",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "src/flask/helpers.py",
+        "tests/test_helpers.py"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6043,
+      "url": "https://github.com/pallets/flask/pull/6043",
+      "head_sha": "fbdfa2927f69d05b4a1c9c3cf2162fcc94d6e3c3",
+      "merged": false,
+      "touched_tests": false,
+      "changed_filenames": [
+        "docs/errorhandling.rst",
+        "docs/views.rst"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "psf/requests",
+      "number": 7586,
+      "url": "https://github.com/psf/requests/pull/7586",
+      "head_sha": "9820a0c297d4c3e3f7359b617b5082f24c63c79e",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "src/requests/utils.py",
+        "tests/test_utils.py"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "psf/requests",
+      "number": 7049,
+      "url": "https://github.com/psf/requests/pull/7049",
+      "head_sha": "c3a9cc8cbb31a3107b1ca6ae752e32c8dbec36be",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "src/requests/api.py",
+        "src/requests/cookies.py",
+        "tests/test_requests.py"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "psf/requests",
+      "number": 7051,
+      "url": "https://github.com/psf/requests/pull/7051",
+      "head_sha": "b4e6874e922831256c9a76f9f1025a74d4b180de",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "requirements-dev.txt",
+        "src/requests/cookies.py",
+        "tests/test_cookies_benchmark.py",
+        "tests/test_requests.py"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "psf/requests",
+      "number": 7499,
+      "url": "https://github.com/psf/requests/pull/7499",
+      "head_sha": "2e620c71fd5750ca6784c5c37dcb3fd094ef0286",
+      "merged": false,
+      "touched_tests": false,
+      "changed_filenames": [
+        "docs/user/advanced.rst"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "psf/requests",
+      "number": 5220,
+      "url": "https://github.com/psf/requests/pull/5220",
+      "head_sha": "6df6aa7a634ed6ec960e4abc81a9762a65a97727",
+      "merged": false,
+      "touched_tests": false,
+      "changed_filenames": [
+        "requests/adapters.py"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "psf/requests",
+      "number": 6991,
+      "url": "https://github.com/psf/requests/pull/6991",
+      "head_sha": "1688e65119a0de5e9434702fb3805fc7cfeb8a41",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "src/requests/auth.py",
+        "tests/test1.py"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "psf/requests",
+      "number": 7023,
+      "url": "https://github.com/psf/requests/pull/7023",
+      "head_sha": "47fdbfb923c9ce0c9cfb456d6aab235cde404d4c",
+      "merged": false,
+      "touched_tests": false,
+      "changed_filenames": [
+        "docs/user/quickstart.rst"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    },
+    {
+      "repo": "psf/requests",
+      "number": 6675,
+      "url": "https://github.com/psf/requests/pull/6675",
+      "head_sha": "991d81d055358a0d1e88e3365003fb296e2ffefa",
+      "merged": false,
+      "touched_tests": true,
+      "changed_filenames": [
+        "src/requests/utils.py",
+        "tests/test_utils.py"
+      ],
+      "info_verified": true,
+      "metadata_crosscheck_same_merged_and_sha": true
+    }
+  ]
+}

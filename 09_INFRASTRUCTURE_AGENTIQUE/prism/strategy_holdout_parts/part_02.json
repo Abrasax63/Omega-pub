@@ -1,0 +1,83 @@
+[
+  {
+    "repo": "pallets/flask",
+    "number": 6144,
+    "url": "https://github.com/pallets/flask/pull/6144",
+    "head_sha": "80d2383dfc43ece6ec9e460b63dc7f2f997d3732",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "CHANGES.rst",
+      "src/flask/sansio/app.py",
+      "src/flask/sansio/scaffold.py",
+      "tests/test_basic.py"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "pallets/flask",
+    "number": 6142,
+    "url": "https://github.com/pallets/flask/pull/6142",
+    "head_sha": "6ba862ab97b8d566d91db460a0e9b3388f9df6fb",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "src/flask/config.py",
+      "tests/test_config.py"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "pallets/flask",
+    "number": 6124,
+    "url": "https://github.com/pallets/flask/pull/6124",
+    "head_sha": "6d5b099e8f36f357bfecee8b721a4323e411dc0d",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "src/flask/helpers.py",
+      "tests/test_helpers.py"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "pallets/flask",
+    "number": 6043,
+    "url": "https://github.com/pallets/flask/pull/6043",
+    "head_sha": "fbdfa2927f69d05b4a1c9c3cf2162fcc94d6e3c3",
+    "merged": false,
+    "touched_tests": false,
+    "changed_filenames": [
+      "docs/errorhandling.rst",
+      "docs/views.rst"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "psf/requests",
+    "number": 7586,
+    "url": "https://github.com/psf/requests/pull/7586",
+    "head_sha": "9820a0c297d4c3e3f7359b617b5082f24c63c79e",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "src/requests/utils.py",
+      "tests/test_utils.py"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "psf/requests",
+    "number": 7049,
+    "url": "https://github.com/psf/requests/pull/7049",
+    "head_sha": "c3a9cc8cbb31a3107b1ca6ae752e32c8dbec36be",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "src/requests/api.py",
+      "src/requests/cookies.py",
+      "tests/test_requests.py"
+    ],
+    "info_verified": true
+  }
+]
