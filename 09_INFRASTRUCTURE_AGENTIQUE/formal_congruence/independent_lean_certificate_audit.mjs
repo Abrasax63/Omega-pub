@@ -28,6 +28,7 @@ const canonical=value=>
  value!==null&&typeof value==="object"?
  Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):
  value;
+const same=(a,b)=>JSON.stringify(canonical(a))===JSON.stringify(canonical(b));
 const hash=value=>crypto.createHash("sha256")
  .update(JSON.stringify(canonical(value)),"utf8").digest("hex");
 const models=items=>U.filter(n=>items.every(c=>n%c.m===c.r));
@@ -69,7 +70,7 @@ for(const scenario of corpus.scenarios){
   if(row.step!==step||row.split!==scenario.split)
     throw Error("revision metadata mismatched");
   const current=Object.fromEntries([...active].sort().map(id=>[id,versions[id]]));
-  if(JSON.stringify(row.active)!==JSON.stringify(current))
+  if(!same(row.active,current))
     throw Error("stale or forged current source versions");
   const full=Object.values(current);
   const globallyConsistent=models(full).length>0;
@@ -94,13 +95,13 @@ for(const scenario of corpus.scenarios){
    for(const key of out.proof_keys){
      const prior=archive[key];
      if(!prior||prior.query_id!==qid||prior.kind!==verdict||
-        JSON.stringify(prior.query)!==JSON.stringify(q))
+        !same(prior.query,q))
        throw Error("forged or mislabeled proof certificate");
      const names=prior.source_ids;
      if(!names.length||names.length>3||!subset(names,Object.keys(current)))
        throw Error("inactive or overlarge source used");
      const assumed=names.map(x=>current[x]);
-     if(JSON.stringify(assumed)!==JSON.stringify(prior.premises))
+     if(!same(assumed,prior.premises))
        throw Error("certificate from outdated source version");
      if(category(assumed,q)!==verdict)
        throw Error("invalid modular proof support");
