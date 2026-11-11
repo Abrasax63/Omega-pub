@@ -1,0 +1,36 @@
+name: Omega ASlib external benchmark
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/aslib_external_benchmark.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_aslib_external_harness.py"
+      - ".github/workflows/omega-aslib-external.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  measured-aslib-cross-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify offline benchmark harness
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_aslib_external_harness
+      - name: Evaluate official ten CV folds using Git-SHA-verified ASlib records
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python aslib_external_benchmark.py --cache-dir "${{ runner.temp }}/aslib-pms-data" --json-output "${{ runner.temp }}/aslib-pms-summary.json"
+      - name: Archive exact ledger and source provenance
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aslib-pms-external-cv-ledger
+          path: "${{ runner.temp }}/aslib-pms-summary.json"
+          if-no-files-found: error
