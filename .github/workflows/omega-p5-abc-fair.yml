@@ -6,6 +6,8 @@ on:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_abc_fair_preflight.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_abc_fair_independent.mjs"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_abc_fair_preflight.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_abc_budget_gate.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_abc_budget_gate.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_ABC_FAIR_PREREG_2026-11-11.md"
       - ".github/workflows/omega-p5-abc-fair.yml"
   workflow_dispatch:
@@ -24,7 +26,7 @@ jobs:
           python-version: "3.12"
       - name: Verify preregistered public source blob and no privileged C data
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
-        run: python -m unittest -v test_p5_abc_fair_preflight
+        run: python -m unittest -v test_p5_abc_fair_preflight test_p5_abc_budget_gate
       - name: Generate public prompts only — zero AI model calls
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
         run: |
