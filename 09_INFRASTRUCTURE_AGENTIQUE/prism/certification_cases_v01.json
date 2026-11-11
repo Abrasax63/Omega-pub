@@ -1,0 +1,905 @@
+{
+  "status": "PUBLIC_GENERATED_NOT_BLIND",
+  "data_frozen_before_solver": "2026-11-11",
+  "source_base_pr": 34,
+  "protocol": "All test observations, oracle outcomes and method results must remain unseen by training and solver optimization; only the train partition is available for fitting. Codes may implement task semantics, so the assessment is not blind.",
+  "normative_source": "https://www.rfc-editor.org/rfc/rfc9110#section-13.1.3",
+  "notes": "Forty-eight distinct task parameters, no semantic duplicates across train/test in this corpus. The RFC header predicate checks eligibility of If-Modified-Since under method and If-None-Match conditions. Simulator outages are not disclosed to policies until a method is tried.",
+  "cases": [
+    {
+      "id": "CERT-MATH-mod-00",
+      "domain": "math",
+      "kind": "mod",
+      "params": {
+        "a": 12,
+        "b": 4,
+        "m": 4
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-MATH-mod-01",
+      "domain": "math",
+      "kind": "mod",
+      "params": {
+        "a": 11,
+        "b": 5,
+        "m": 3
+      },
+      "partition": "train",
+      "simulated_outage": "formal"
+    },
+    {
+      "id": "CERT-MATH-mod-02",
+      "domain": "math",
+      "kind": "mod",
+      "params": {
+        "a": 9,
+        "b": 3,
+        "m": 3
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-MATH-mod-03",
+      "domain": "math",
+      "kind": "mod",
+      "params": {
+        "a": 14,
+        "b": 7,
+        "m": 7
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-MATH-mod-04",
+      "domain": "math",
+      "kind": "mod",
+      "params": {
+        "a": 10,
+        "b": 2,
+        "m": 4
+      },
+      "partition": "test",
+      "simulated_outage": "formal"
+    },
+    {
+      "id": "CERT-MATH-mod-05",
+      "domain": "math",
+      "kind": "mod",
+      "params": {
+        "a": 15,
+        "b": 10,
+        "m": 5
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-MATH-euler-00",
+      "domain": "math",
+      "kind": "euler",
+      "params": {
+        "edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-MATH-euler-01",
+      "domain": "math",
+      "kind": "euler",
+      "params": {
+        "edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-MATH-euler-02",
+      "domain": "math",
+      "kind": "euler",
+      "params": {
+        "edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": "formal"
+    },
+    {
+      "id": "CERT-MATH-euler-03",
+      "domain": "math",
+      "kind": "euler",
+      "params": {
+        "edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            0,
+            2
+          ]
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-MATH-euler-04",
+      "domain": "math",
+      "kind": "euler",
+      "params": {
+        "edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            0
+          ]
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": "formal"
+    },
+    {
+      "id": "CERT-MATH-euler-05",
+      "domain": "math",
+      "kind": "euler",
+      "params": {
+        "edges": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            0
+          ]
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-PROGRAMMING-map-00",
+      "domain": "programming",
+      "kind": "map",
+      "params": {
+        "mapping": [
+          2,
+          3,
+          4,
+          0,
+          1
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-PROGRAMMING-map-01",
+      "domain": "programming",
+      "kind": "map",
+      "params": {
+        "mapping": [
+          2,
+          3,
+          3,
+          0,
+          1
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": "compute"
+    },
+    {
+      "id": "CERT-PROGRAMMING-map-02",
+      "domain": "programming",
+      "kind": "map",
+      "params": {
+        "mapping": [
+          4,
+          0,
+          3,
+          1,
+          2
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-PROGRAMMING-map-03",
+      "domain": "programming",
+      "kind": "map",
+      "params": {
+        "mapping": [
+          0,
+          3,
+          2,
+          1,
+          1
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-PROGRAMMING-map-04",
+      "domain": "programming",
+      "kind": "map",
+      "params": {
+        "mapping": [
+          0,
+          4,
+          2,
+          3,
+          1
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": "compute"
+    },
+    {
+      "id": "CERT-PROGRAMMING-map-05",
+      "domain": "programming",
+      "kind": "map",
+      "params": {
+        "mapping": [
+          2,
+          2,
+          0,
+          1,
+          4
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-PROGRAMMING-zip-00",
+      "domain": "programming",
+      "kind": "zip",
+      "params": {
+        "left": [
+          8,
+          9
+        ],
+        "right": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-PROGRAMMING-zip-01",
+      "domain": "programming",
+      "kind": "zip",
+      "params": {
+        "left": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "right": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-PROGRAMMING-zip-02",
+      "domain": "programming",
+      "kind": "zip",
+      "params": {
+        "left": [
+          99
+        ],
+        "right": [
+          22,
+          44,
+          55
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": "source"
+    },
+    {
+      "id": "CERT-PROGRAMMING-zip-03",
+      "domain": "programming",
+      "kind": "zip",
+      "params": {
+        "left": [
+          3,
+          4,
+          5
+        ],
+        "right": [
+          10,
+          11,
+          12
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-PROGRAMMING-zip-04",
+      "domain": "programming",
+      "kind": "zip",
+      "params": {
+        "left": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "right": [
+          3,
+          4
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-PROGRAMMING-zip-05",
+      "domain": "programming",
+      "kind": "zip",
+      "params": {
+        "left": [
+          10,
+          11
+        ],
+        "right": [
+          22,
+          44
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": "source"
+    },
+    {
+      "id": "CERT-DATA-ratio-00",
+      "domain": "data",
+      "kind": "ratio",
+      "params": {
+        "a": [
+          4,
+          7
+        ],
+        "b": [
+          3,
+          7
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DATA-ratio-01",
+      "domain": "data",
+      "kind": "ratio",
+      "params": {
+        "a": [
+          2,
+          7
+        ],
+        "b": [
+          5,
+          9
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": "compute"
+    },
+    {
+      "id": "CERT-DATA-ratio-02",
+      "domain": "data",
+      "kind": "ratio",
+      "params": {
+        "a": [
+          13,
+          17
+        ],
+        "b": [
+          10,
+          16
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DATA-ratio-03",
+      "domain": "data",
+      "kind": "ratio",
+      "params": {
+        "a": [
+          4,
+          12
+        ],
+        "b": [
+          3,
+          9
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DATA-ratio-04",
+      "domain": "data",
+      "kind": "ratio",
+      "params": {
+        "a": [
+          10,
+          13
+        ],
+        "b": [
+          11,
+          14
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": "compute"
+    },
+    {
+      "id": "CERT-DATA-ratio-05",
+      "domain": "data",
+      "kind": "ratio",
+      "params": {
+        "a": [
+          5,
+          6
+        ],
+        "b": [
+          4,
+          5
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DATA-simpson-00",
+      "domain": "data",
+      "kind": "simpson",
+      "params": {
+        "a": [
+          [
+            8,
+            10
+          ],
+          [
+            15,
+            100
+          ]
+        ],
+        "b": [
+          [
+            70,
+            100
+          ],
+          [
+            0,
+            10
+          ]
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": "formal"
+    },
+    {
+      "id": "CERT-DATA-simpson-01",
+      "domain": "data",
+      "kind": "simpson",
+      "params": {
+        "a": [
+          [
+            8,
+            10
+          ],
+          [
+            8,
+            10
+          ]
+        ],
+        "b": [
+          [
+            7,
+            10
+          ],
+          [
+            7,
+            10
+          ]
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DATA-simpson-02",
+      "domain": "data",
+      "kind": "simpson",
+      "params": {
+        "a": [
+          [
+            18,
+            20
+          ],
+          [
+            9,
+            90
+          ]
+        ],
+        "b": [
+          [
+            70,
+            100
+          ],
+          [
+            1,
+            20
+          ]
+        ]
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DATA-simpson-03",
+      "domain": "data",
+      "kind": "simpson",
+      "params": {
+        "a": [
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            20
+          ]
+        ],
+        "b": [
+          [
+            7,
+            10
+          ],
+          [
+            11,
+            20
+          ]
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DATA-simpson-04",
+      "domain": "data",
+      "kind": "simpson",
+      "params": {
+        "a": [
+          [
+            16,
+            20
+          ],
+          [
+            5,
+            30
+          ]
+        ],
+        "b": [
+          [
+            35,
+            50
+          ],
+          [
+            1,
+            20
+          ]
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DATA-simpson-05",
+      "domain": "data",
+      "kind": "simpson",
+      "params": {
+        "a": [
+          [
+            18,
+            20
+          ],
+          [
+            9,
+            50
+          ]
+        ],
+        "b": [
+          [
+            70,
+            100
+          ],
+          [
+            1,
+            20
+          ]
+        ]
+      },
+      "partition": "test",
+      "simulated_outage": "formal"
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-00",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "GET",
+        "has_ims": true,
+        "has_inm": false
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-01",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "GET",
+        "has_ims": true,
+        "has_inm": true
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-02",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "POST",
+        "has_ims": true,
+        "has_inm": false
+      },
+      "partition": "train",
+      "simulated_outage": "source"
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-03",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "GET",
+        "has_ims": false,
+        "has_inm": true
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-04",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "POST",
+        "has_ims": false,
+        "has_inm": false
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-05",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "HEAD",
+        "has_ims": false,
+        "has_inm": true
+      },
+      "partition": "train",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-06",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "HEAD",
+        "has_ims": true,
+        "has_inm": true
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-07",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "POST",
+        "has_ims": true,
+        "has_inm": true
+      },
+      "partition": "test",
+      "simulated_outage": "source"
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-08",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "HEAD",
+        "has_ims": true,
+        "has_inm": false
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-09",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "HEAD",
+        "has_ims": false,
+        "has_inm": false
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-10",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "GET",
+        "has_ims": false,
+        "has_inm": false
+      },
+      "partition": "test",
+      "simulated_outage": null
+    },
+    {
+      "id": "CERT-DOCUMENTATION-header-11",
+      "domain": "documentation",
+      "kind": "header",
+      "params": {
+        "method": "POST",
+        "has_ims": false,
+        "has_inm": true
+      },
+      "partition": "test",
+      "simulated_outage": null
+    }
+  ]
+}
