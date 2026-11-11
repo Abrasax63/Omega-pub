@@ -1,0 +1,50 @@
+name: Omega WPMS cost-sensitive transfer
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/aslib_wpms_cost_sensitive.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_aslib_wpms_cost_sensitive.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/aslib_wpms_paired_audit.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/aslib_wpms_independent_crosscheck.mjs"
+      - ".github/workflows/omega-aslib-wpms-transfer.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  historical-aslib-wpms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test predeclared cost-aware lookahead and no leakage
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_aslib_wpms_cost_sensitive
+      - name: Reproduce all 10 official CV folds from pinned WPMS data
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python aslib_wpms_cost_sensitive.py --cache-dir "${{ runner.temp }}/aslib-wpms-data" --json-output "${{ runner.temp }}/aslib-wpms-results.json"
+      - name: Independently recalculate SBS, KNN and oracle results in JavaScript
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          node aslib_wpms_independent_crosscheck.mjs "${{ runner.temp }}/aslib-wpms-data" "${{ runner.temp }}/aslib-wpms-results.json"
+      - name: Independently re-train both cost-aware trees in JavaScript
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          node aslib_wpms_tree_independent.mjs "${{ runner.temp }}/aslib-wpms-data" "${{ runner.temp }}/aslib-wpms-results.json"
+      - name: Run post-result paired-trace diagnostics without fitting policies
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python aslib_wpms_paired_audit.py "${{ runner.temp }}/aslib-wpms-results.json"
+      - name: Archive complete per-instance predictions and CV diagnostics
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: omega-wpms-cost-sensitive-ledger
+          path: "${{ runner.temp }}/aslib-wpms-results.json"
+          if-no-files-found: error
