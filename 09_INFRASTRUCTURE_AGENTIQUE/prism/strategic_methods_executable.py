@@ -103,7 +103,7 @@ def oracle(t):
 
 def formal(t):
     k,p=t["kind"],t["params"]
-    if k=="mod":return oracle(t),"divisibility of coefficient and constant"
+    if k=="mod":return (p["a"]%p["m"]==0 and p["b"]%p["m"]==0),"divisibility of coefficient and constant"
     if k=="euler":return _euler_theorem(p["edges"]),"Euler criterion of degree and connectivity"
     if k=="map":
         v=p["mapping"]
