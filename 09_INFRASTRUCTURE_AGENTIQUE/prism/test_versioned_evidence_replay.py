@@ -146,7 +146,7 @@ class VersionedEvidenceTests(unittest.TestCase):
         self.assertEqual(FIRST_PARENT_COMMITS,41)
         self.assertEqual(RECHECK_BUDGET,8)
         self.assertEqual(sha256(b"example").hexdigest(),
-                         "50d858e0985ecc7f60418aaf0cc5ab587f42c2570a9d9cead4039da90e66e")
+                         "50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c")
 
 
 if __name__=="__main__":
