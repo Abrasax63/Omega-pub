@@ -110,6 +110,8 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
     requires_proof, requires_computation, requires_literature, exploratory,
     claims_to_test. Type defaults can be overridden explicitly by these flags.
     Optional deliverables replace type defaults without changing role selection.
+    Optional observer_audit adds read-only checks on explicit finite partitions;
+    it never changes the tasks, execution model or next_action.
     An optional decision_context adds a recommended next action without executing it.
     """
     if not isinstance(mission, dict):
@@ -243,4 +245,15 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
     }
     if "decision_context" in mission:
         plan["next_action"] = _next_action(mission["decision_context"])
+    if "observer_audit" in mission:
+        # Explicitly opt-in, advisory only. Recovered legacy guards do not
+        # authorize model execution, certify evidence, or alter next_action.
+        from observer_guard_bridge import (
+            ObserverAuditValidationError, inspect_observer_evidence,
+        )
+        try:
+            plan["observer_audit"] = inspect_observer_evidence(
+                mission["observer_audit"])
+        except ObserverAuditValidationError as exc:
+            raise MissionValidationError(str(exc)) from exc
     return plan
