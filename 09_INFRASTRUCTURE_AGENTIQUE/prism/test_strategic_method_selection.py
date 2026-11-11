@@ -73,6 +73,12 @@ class StrategyMethodTests(unittest.TestCase):
             self.assertEqual(len({x["method"] for x in trace}),len(trace))
             if answer is not None:
                 self.assertEqual(answer, "yes" if oracle(task) else "no")
+            # Post-result exploratory parity: give Omega the SAME visible
+            # subtype as the subtype-fixed policy.
+            answer_kind, trace_kind = execute_omega(task,fitdata["omega_kind"][task["kind"]])
+            self.assertLessEqual(len(trace_kind),2)
+            if answer_kind is not None:
+                self.assertEqual(answer_kind, "yes" if oracle(task) else "no")
 
     def test_method_change_after_unavailable_check_and_negative_truth(self):
         case=next(x for x in self.cases if x["id"]=="P5")
@@ -93,6 +99,9 @@ class StrategyMethodTests(unittest.TestCase):
         for domain in a["omega"]:
             self.assertEqual(a["omega"][domain]["policy"],
                              b["omega"][domain]["policy"])
+        for kind in a["omega_kind"]:
+            self.assertEqual(a["omega_kind"][kind]["policy"],
+                             b["omega_kind"][kind]["policy"])
 
     def test_no_score_from_posterior_without_actual_certificate(self):
         case=next(x for x in self.cases if x["id"]=="S4")
@@ -115,7 +124,7 @@ class StrategyMethodTests(unittest.TestCase):
             self.assertEqual(s["correct"]+s["wrong"]+s["abstain"],16)
             self.assertLessEqual(s["calls"],32)
             self.assertEqual(s["wrong"],0)
-        self.assertEqual(len(result["records"]),80)
+        self.assertEqual(len(result["records"]),96)
         import json
         print("STRAT002_CI_SUMMARY "+json.dumps({"summary":result["summary"],"fit":result["fit"]},
                                                 sort_keys=True,ensure_ascii=False))
