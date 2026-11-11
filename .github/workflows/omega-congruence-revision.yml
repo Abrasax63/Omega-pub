@@ -1,0 +1,47 @@
+name: Omega congruence proof revision and ATMS controls
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/congruence_proof_revision.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/congruence_revision_cases_v01.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_congruence_proof_revision.py"
+      - ".github/workflows/omega-congruence-revision.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  modular-proof-revision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Refutation and independent oracle tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_congruence_proof_revision
+      - name: Reproduce all frozen modular revisions and record certificates
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from congruence_proof_revision import replay
+          result=replay()
+          Path("congruence_revision_ledger.json").write_text(
+              json.dumps(result,ensure_ascii=False,indent=2,sort_keys=True),
+              encoding="utf-8")
+          print("CONG001_SUMMARY "+json.dumps(result["summaries"],sort_keys=True))
+          PY
+      - name: Publish exact synthetic proof traces
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-congruence-proof-revision-ledger
+          path: 09_INFRASTRUCTURE_AGENTIQUE/prism/congruence_revision_ledger.json
+          if-no-files-found: error
