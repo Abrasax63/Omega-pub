@@ -116,6 +116,17 @@ def validate_inputs(path,manifest_path):
     return cases,manifest
 
 def build_triplet(case):
+    if not isinstance(case,dict) or set(case)!={
+            "case_id","question","mission_type","documents"}:
+        raise ValueError("only frozen non-oracular case fields may be used")
+    _check_text(case["question"],"question")
+    if case["mission_type"] not in MISSION_TYPES:
+        raise ValueError("unknown mission type")
+    if not isinstance(case["documents"],list):
+        raise ValueError("invalid private documents")
+    for doc in case["documents"]:
+        if not isinstance(doc,dict) or set(doc)!={"id","kind","text"}:
+            raise ValueError("private document contains hidden metadata")
     shared={
         "question":case["question"],
         "mission_type":case["mission_type"],
