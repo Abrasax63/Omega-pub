@@ -53,6 +53,7 @@ const count=(key,split,delta=1)=>{
 };
 const seen=new Set();
 for(const scenario of corpus.scenarios){
+ const initialAnswers={};
  let active=new Set(scenario.initial);
  let versions=JSON.parse(JSON.stringify(scenario.sources));
  const statesFor=events.filter(x=>x.scenario===scenario.id);
@@ -86,8 +87,14 @@ for(const scenario of corpus.scenarios){
    const out=row.queries[qid];
    if(!out)throw Error("missing goal");
    const verdict=category(full,q);
+   if(step===0)initialAnswers[qid]=verdict;
+   count("no_revision_status_mismatches",scenario.split,initialAnswers[qid]!==verdict?1:0);
+   count("no_revision_false_confident_claims",scenario.split,
+     ["entailed","refuted"].includes(initialAnswers[qid])&&initialAnswers[qid]!==verdict?1:0);
    if(verdict!==out.status)
     throw Error("invalid global verdict "+scenario.id+" "+step+" "+qid);
+   if(!same(row.no_revision_verdicts,initialAnswers))
+     throw Error("preregistered no-revision baseline outputs inconsistent");
    if(!globallyConsistent&&(out.proof_keys.length||
       out.status!=="inconsistent_environment"))
     throw Error("logical explosion was promoted");
