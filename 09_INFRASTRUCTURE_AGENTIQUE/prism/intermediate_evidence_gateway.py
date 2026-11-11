@@ -99,8 +99,12 @@ def run_check(task,action):
 def independent_verify(task,receipt):
     """Second computation of truth and elementary certificate provenance."""
     outcome=receipt["outcome"]
+    if outcome.startswith("route:"):
+        return (outcome == _route_from_payload(task["payload"]) and
+                receipt["certificate"] is None)
     if outcome not in ("yes","no"):
-        return receipt["certificate"] is None
+        return (outcome in ("unknown:unsupported","unknown:outage") and
+                receipt["certificate"] is None)
     c=receipt["certificate"]
     if not isinstance(c,dict):
         return False
