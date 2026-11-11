@@ -97,6 +97,18 @@ class StrategyBenchmarkTests(unittest.TestCase):
             self.assertEqual(stats["FIXED_BEST"]["sum_total_loss_exact"],
                              s["fixed_schedule_optimum_loss_sum"])
 
+    def test_cli_json_result_serialization_and_split_metadata(self):
+        result=evaluate(self.cases)
+        serialized=json.dumps(result,sort_keys=True)
+        reread=json.loads(serialized)
+        self.assertEqual(len(reread["ledger"]),4*60*5)
+        for case in self.cases["scenario_list"]:
+            self.assertEqual(reread["scenarios"][case["id"]]["split"],
+                             case["split"])
+        self.assertEqual(
+            sum(1 for t in reread["ledger"] if t["split"]=="test"),
+            2*60*5)
+
     def test_invalid_inputs_rejected(self):
         raw=deepcopy(self.cases["scenario_list"][0])
         for bad in [
