@@ -266,7 +266,7 @@ def evaluate(data):
         all_traces.extend({"scenario":s.name,"split":s.split_name,**trace}
                           for items in traces.values() for trace in items)
         scored[s.name]={
-            "split":s.split,
+            "split":s.split_name,
             "n_probes":s.n,
             "n_queries":len(s.qmasks),
             "best_fixed_probe_order":[s.probes[i]["id"] for i in order],
