@@ -273,22 +273,19 @@ def evaluate(repo_path: Path):
             if prior_actual[c]!="parse_error"
             and actual[c]!="parse_error")
         observed_syntax_changes+=change_count
-        declaration_deltas+=sum(
+        declaration_change_count=sum(
             prior_actual[c]!=actual[c] for c in claims
             if not c.endswith("::module_ast")
             and prior_actual[c]!="parse_error"
             and actual[c]!="parse_error")
+        declaration_deltas+=declaration_change_count
         prior_actual=actual
         events.append({
             "step":step,"split":"calibration" if step<=20 else "test",
             "commit":target,
             "source_changed_paths":len(changed&set(paths)),
             "exact_fact_deltas":change_count,
-            "new_decl_signature_deltas":sum(
-                1 for c in claims if not c.endswith("::module_ast")
-                and ((current_source[claims[c]] is None)
-                     or ("_parse_error" not in current_source[claims[c]]
-                         and c.rsplit("::",1)[-1] not in current_source[claims[c]]))),
+            "declaration_fact_deltas":declaration_change_count,
             "rechecks":{k:list(v) for k,v in chosen.items()},
             "scores":scores,
         })
@@ -328,7 +325,7 @@ def evaluate(repo_path: Path):
         "n_changed_python_file_events_with_same_module_ast":
             source_revisions_with_unchanged_module_ast,
         "n_test_declaration_fact_deltas":sum(
-            x["exact_fact_deltas"] for x in events[20:]),
+            x["declaration_fact_deltas"] for x in events[20:]),
         "n_source_file_changes_in_test":sum(
             x["source_changed_paths"] for x in events[20:]),
         "summaries":{"calibration":summary(events[:20]),
