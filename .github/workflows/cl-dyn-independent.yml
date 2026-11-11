@@ -1,0 +1,23 @@
+name: Independent CL-DYN finite audit
+
+on:
+  push:
+    branches:
+      - audit/cl-dyn-independent-2026-11-11
+  pull_request:
+    paths:
+      - research/code/test_independent_binary_spectra.py
+      - 02_MATHEMATIQUES/defauts_recollement/spectres_binaires_2026-11-11/AUDIT_INDEPENDANT_2026-11-11.md
+      - .github/workflows/cl-dyn-independent.yml
+
+jobs:
+  run-independent-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify all finite CL-DYN audit checks
+        run: python research/code/test_independent_binary_spectra.py
