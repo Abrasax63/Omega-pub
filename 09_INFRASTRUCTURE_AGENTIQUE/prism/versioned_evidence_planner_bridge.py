@@ -35,7 +35,7 @@ def _fields(obj: Any, required: set[str], label: str):
 def _path(text: Any, label: str):
     if not isinstance(text,str) or not text or len(text)>MAX_PATH_CHARS:
         raise VersionedEvidenceInputError(f"{label}: invalid path length or type")
-    if (text.startswith("/") or "\" in text or
+    if (text.startswith("/") or chr(92) in text or
         any(part in ("", ".", "..") for part in text.split("/")) or
         any(ord(ch)<32 or ord(ch)==127 for ch in text)):
         raise VersionedEvidenceInputError(f"{label}: unsafe or noncanonical path")
