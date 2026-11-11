@@ -1,0 +1,83 @@
+[
+  {
+    "repo": "python/cpython",
+    "number": 161755,
+    "url": "https://github.com/python/cpython/pull/161755",
+    "head_sha": "722f6d5f883e149fc1daa8b05c2dc0ad6115aa12",
+    "merged": true,
+    "touched_tests": true,
+    "changed_filenames": [
+      "Lib/asyncio/base_tasks.py",
+      "Lib/test/test_asyncio/test_tasks.py",
+      "Misc/NEWS.d/next/Library/2026-11-02-13-11-30.gh-issue-161166.zfFDlW.rst"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "python/cpython",
+    "number": 152702,
+    "url": "https://github.com/python/cpython/pull/152702",
+    "head_sha": "56ea2d3ca833ad1d6ce1020f0da1925c11a008f5",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "Doc/library/textwrap.rst",
+      "Doc/whatsnew/3.16.rst",
+      "Lib/idlelib/idle_test/test_calltip.py",
+      "Lib/test/test_textwrap.py",
+      "Lib/textwrap.py",
+      "Misc/NEWS.d/next/Library/2026-07-25-10-16-22.gh-issue-154686.Cz9Xpw.rst"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "pallets/flask",
+    "number": 6155,
+    "url": "https://github.com/pallets/flask/pull/6155",
+    "head_sha": "be443e138604cdcbfafeb48403dd99a02d0be3c3",
+    "merged": false,
+    "touched_tests": false,
+    "changed_filenames": [
+      "docs/deploying/index.rst"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "pallets/flask",
+    "number": 6156,
+    "url": "https://github.com/pallets/flask/pull/6156",
+    "head_sha": "de4bfddc479749f0667d116473b799e18753fd11",
+    "merged": false,
+    "touched_tests": false,
+    "changed_filenames": [
+      "docs/deploying/index.rst"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "pallets/flask",
+    "number": 6147,
+    "url": "https://github.com/pallets/flask/pull/6147",
+    "head_sha": "c9da3e453482453db862e16b632bee2c3fd4de62",
+    "merged": false,
+    "touched_tests": false,
+    "changed_filenames": [
+      "CHANGES.rst",
+      "docs/deploying/index.rst"
+    ],
+    "info_verified": true
+  },
+  {
+    "repo": "pallets/flask",
+    "number": 6145,
+    "url": "https://github.com/pallets/flask/pull/6145",
+    "head_sha": "56f3db172de7f3e843a3ebf048f6f475ef700b40",
+    "merged": false,
+    "touched_tests": true,
+    "changed_filenames": [
+      "src/flask/json/provider.py",
+      "tests/test_json.py"
+    ],
+    "info_verified": true
+  }
+]
