@@ -1,0 +1,31 @@
+name: T1-T3 generator tests
+
+on:
+  push:
+    branches:
+      - work/benchmark-prisme-adaptatif-v0-1-2026-11-10
+    paths:
+      - 'EXPERIMENTS/generators/**'
+      - '.github/workflows/t1-t3-generators.yml'
+  pull_request:
+    branches:
+      - architecture/memoire-agentique-native-2026-11-05
+    paths:
+      - 'EXPERIMENTS/generators/**'
+      - '.github/workflows/t1-t3-generators.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run unit tests
+        run: python -m unittest discover -s EXPERIMENTS/generators -p 'test_*.py' -v
