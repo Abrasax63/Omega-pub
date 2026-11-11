@@ -184,6 +184,11 @@ def preflight(public_cases=None):
     cases=public_cases if public_cases is not None else get_rows()
     if len(cases)!=24:
         raise ValueError("frozen public calibration requires 24 tasks")
+    # Explicit caller-supplied data must not bypass the verified source hash.
+    # This prevents post-preregistration changes to a label, attack or question
+    # being silently treated as the same historical calibration population.
+    if canonical(cases)!=canonical(get_rows()):
+        raise ValueError("public cases changed from frozen source data")
     requests=[]
     coverage=Counter()
     role_counts=Counter()
