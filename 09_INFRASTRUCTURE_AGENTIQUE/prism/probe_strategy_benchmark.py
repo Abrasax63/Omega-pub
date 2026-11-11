@@ -56,7 +56,7 @@ class Scenario:
         check_case(s)
         self.case=s
         self.name=s["id"]
-        self.split=s["split"]
+        self.split_name=s["split"]
         self.probes=s["probes"]
         self.costs=tuple(p["cost"] for p in self.probes)
         self.pmasks=tuple(mask_for(p) for p in self.probes)
@@ -263,7 +263,7 @@ def evaluate(data):
         if any(stats["ADAPTIVE_DP_EXACT"]["sum_total_loss_exact"]>
                stats[arm]["sum_total_loss_exact"] for arm in ARMS):
             raise AssertionError("optimal adaptive was worse than an admissible arm")
-        all_traces.extend({"scenario":s.name,"split":s.split,**trace}
+        all_traces.extend({"scenario":s.name,"split":s.split_name,**trace}
                           for items in traces.values() for trace in items)
         scored[s.name]={
             "split":s.split,
