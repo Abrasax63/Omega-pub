@@ -122,6 +122,27 @@ class ObserverGuardBridgeTests(unittest.TestCase):
             with self.subTest(x=x), self.assertRaises(MissionValidationError):
                 plan_mission({**self.MISSION,"observer_audit":x})
 
+    def test_limits_guard_against_unbounded_quadratic_work(self):
+        from observer_guard_bridge import MAX_STATES,MAX_LISTED_PROBES
+        self.assertEqual((MAX_STATES,MAX_LISTED_PROBES),(64,64))
+        with self.assertRaises(MissionValidationError):
+            plan_mission({**self.MISSION,"observer_audit":{"reconfiguration":{
+                "current_partition":[0]*65,
+                "target_partition":[0]*65,"capacity":2}}})
+        with self.assertRaises(MissionValidationError):
+            plan_mission({**self.MISSION,"observer_audit":{"termination":{
+                "current_partition":[0,0,0],
+                "selected_probe_partition":[0,0,0],
+                "listed_probe_partitions":[[0,0,0]]*65,
+                "declared_exhaustive":False}}})
+        valid=plan_mission({**self.MISSION,"observer_audit":{"termination":{
+            "current_partition":[0]*64,
+            "selected_probe_partition":[0]*64,
+            "listed_probe_partitions":[[0]*64],
+            "declared_exhaustive":False}}})
+        self.assertEqual(valid["observer_audit"]["termination"]["status"],
+                         "closure_unknown")
+
     def test_legacy_guard_budget_and_full_reference(self):
         z=run_audit()
         s=z["primary"]
