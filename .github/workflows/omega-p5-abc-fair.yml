@@ -1,0 +1,44 @@
+name: Omega P5 A-B-C fair-input benchmark preflight
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_abc_fair_preflight.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_abc_fair_independent.mjs"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_abc_fair_preflight.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_abc_budget_gate.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_abc_budget_gate.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_ABC_FAIR_PREREG_2026-11-11.md"
+      - ".github/workflows/omega-p5-abc-fair.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fair-inputs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify preregistered public source blob and no privileged C data
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_p5_abc_fair_preflight test_p5_abc_budget_gate
+      - name: Generate public prompts only — zero AI model calls
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_abc_fair_preflight.py --output "${{ runner.temp }}/omega-p5-abc-prompts-only.json"
+      - name: Independently verify all 144 requests in Node
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          node p5_abc_fair_independent.mjs p5_multidomain_public_cases_2026-11-11.json "${{ runner.temp }}/omega-p5-abc-prompts-only.json"
+      - name: Archive verified prompt packet, not model responses or private keys
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-p5-abc-public-preflight-NOT_RUN
+          path: "${{ runner.temp }}/omega-p5-abc-prompts-only.json"
+          if-no-files-found: error
