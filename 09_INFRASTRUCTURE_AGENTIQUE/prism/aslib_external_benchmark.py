@@ -76,7 +76,7 @@ def read_arff(raw):
             if s.upper().startswith("@ATTRIBUTE "):
                 attrs.append(s.split(None,2)[1].strip("'\""))
         else:
-            row=next(csv.reader([s],skipinitialspace=True))
+            row=next(csv.reader([s],skipinitialspace=True,quotechar="'"))
             if len(row)!=len(attrs):
                 raise ValueError("ARFF width mismatch "+str((len(row),len(attrs))))
             rows.append(dict(zip(attrs,row)))
