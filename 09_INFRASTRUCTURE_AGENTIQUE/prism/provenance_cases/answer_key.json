@@ -1,0 +1,50 @@
+{
+  "M1": {
+    "decision": "no",
+    "rationale": "Les degrés de 0 et 2 valent 3. Le décompte indépendant donne (3,2,3,2)."
+  },
+  "M2": {
+    "decision": "yes",
+    "rationale": "6k+3=2(3k+1)+1."
+  },
+  "P1": {
+    "decision": "yes",
+    "rationale": "L'évaluation locale lève ValueError. La documentation définit ce comportement."
+  },
+  "T1": {
+    "decision": "yes",
+    "rationale": "RFC 2616 §10.3.2 exigeait confirmation hors GET/HEAD. RFC 9110 §15.4.2 autorise redirection automatique et POST→GET."
+  },
+  "T2": {
+    "decision": "no",
+    "rationale": "L'ordre était un détail de CPython 3.6, devenu garantie du langage en 3.7."
+  },
+  "F1": {
+    "decision": "no",
+    "rationale": "RFC 9110 §15.4.9 impose de conserver la méthode. MDN reprend cette exigence."
+  },
+  "F2": {
+    "decision": null,
+    "rationale": "La source et l'instantané daté manquent. Une copie non traçable ne tranche pas."
+  },
+  "D1": {
+    "decision": "no",
+    "rationale": "Comparer 2×numérateur à 4 puis appliquer XOR."
+  },
+  "D2": {
+    "decision": "yes",
+    "rationale": "Comparer 2×numérateur à 4 puis appliquer XOR."
+  },
+  "D3": {
+    "decision": "yes",
+    "rationale": "Comparer 2×numérateur à 4 puis appliquer XOR."
+  },
+  "D4": {
+    "decision": null,
+    "rationale": "Deux sources de même portée livrent des constats opposés ; aucune n'est arbitrée."
+  },
+  "D5": {
+    "decision": null,
+    "rationale": "Les deux chemins partagent une seule acquisition. Le verdict sur la mesure reste insuffisant."
+  }
+}

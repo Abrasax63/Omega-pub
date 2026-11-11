@@ -1,0 +1,12 @@
+{
+  "merged": {
+    "correct": 12,
+    "calls": 17,
+    "cases": 12
+  },
+  "touched_tests": {
+    "correct": 12,
+    "calls": 15,
+    "cases": 12
+  }
+}

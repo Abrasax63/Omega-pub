@@ -1,0 +1,279 @@
+{
+  "M1": {
+    "00-table": {
+      "id": "00-table",
+      "field": "parity",
+      "origin": "copie-injectee",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "hand-table",
+      "url": "fixture:hand-table",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    },
+    "01-enum": {
+      "id": "01-enum",
+      "field": "parity",
+      "origin": "separate-enumeration",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "separate-enumeration",
+      "url": "fixture:separate-enumeration",
+      "cost": 1,
+      "primary": true,
+      "value": false
+    }
+  },
+  "M2": {},
+  "P1": {
+    "00-runtime": {
+      "id": "00-runtime",
+      "field": "strict",
+      "origin": "python-runtime",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "python-runtime",
+      "url": "fixture:python-runtime",
+      "cost": 1,
+      "primary": true,
+      "value": false
+    },
+    "01-spec": {
+      "id": "01-spec",
+      "field": "strict",
+      "origin": "python-docs",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "python-docs",
+      "url": "https://docs.python.org/3.13/library/functions.html#zip",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    },
+    "02-alt": null
+  },
+  "T1": {
+    "00-obsolete": {
+      "id": "00-obsolete",
+      "field": "allowed",
+      "origin": "ietf",
+      "version": "2616",
+      "published": "1999-06-01",
+      "independence": "ietf",
+      "url": "https://www.rfc-editor.org/rfc/rfc2616#section-10.3.2",
+      "cost": 1,
+      "primary": true,
+      "value": false
+    },
+    "01-current": {
+      "id": "01-current",
+      "field": "allowed",
+      "origin": "ietf",
+      "version": "9110",
+      "published": "2022-06-01",
+      "independence": "ietf",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110#section-15.4.2",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    }
+  },
+  "T2": {
+    "00-legacy": {
+      "id": "00-legacy",
+      "field": "guarantee",
+      "origin": "python-docs",
+      "version": "3.6",
+      "published": "2016-12-23",
+      "independence": "python-docs",
+      "url": "https://docs.python.org/3.6/whatsnew/3.6.html#new-dict-implementation",
+      "cost": 1,
+      "primary": true,
+      "value": false
+    },
+    "01-language": {
+      "id": "01-language",
+      "field": "guarantee",
+      "origin": "python-reference",
+      "version": "3.13",
+      "published": "2024-10-07",
+      "independence": "python-reference",
+      "url": "https://docs.python.org/3.13/reference/datamodel.html",
+      "cost": 1,
+      "primary": true,
+      "value": false
+    }
+  },
+  "F1": {
+    "00-copy": {
+      "id": "00-copy",
+      "field": "rule",
+      "origin": "mdn",
+      "version": "9110",
+      "published": "2022-06-01",
+      "independence": "ietf",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/308",
+      "cost": 1,
+      "primary": false,
+      "value": false
+    },
+    "01-primary": {
+      "id": "01-primary",
+      "field": "rule",
+      "origin": "ietf",
+      "version": "9110",
+      "published": "2022-06-01",
+      "independence": "ietf",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110#section-15.4.9",
+      "cost": 1,
+      "primary": true,
+      "value": false
+    }
+  },
+  "F2": {
+    "00-registry": null,
+    "01-mirror": {
+      "id": "01-mirror",
+      "field": "verified",
+      "origin": "registre-fictif",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "miroir",
+      "url": "fixture:miroir",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    }
+  },
+  "D1": {
+    "00-left": {
+      "id": "00-left",
+      "field": "left",
+      "origin": "table-A",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "table-A",
+      "url": "fixture:table-A",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    },
+    "01-right": {
+      "id": "01-right",
+      "field": "right",
+      "origin": "table-B",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "table-B",
+      "url": "fixture:table-B",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    }
+  },
+  "D2": {
+    "00-left": {
+      "id": "00-left",
+      "field": "left",
+      "origin": "table-A",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "table-A",
+      "url": "fixture:table-A",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    },
+    "01-right": {
+      "id": "01-right",
+      "field": "right",
+      "origin": "table-B",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "table-B",
+      "url": "fixture:table-B",
+      "cost": 1,
+      "primary": true,
+      "value": false
+    }
+  },
+  "D3": {
+    "00-left": {
+      "id": "00-left",
+      "field": "left",
+      "origin": "table-A",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "table-A",
+      "url": "fixture:table-A",
+      "cost": 1,
+      "primary": true,
+      "value": false
+    },
+    "01-right": {
+      "id": "01-right",
+      "field": "right",
+      "origin": "table-B",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "table-B",
+      "url": "fixture:table-B",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    }
+  },
+  "D4": {
+    "00-main": {
+      "id": "00-main",
+      "field": "claim",
+      "origin": "table-originale",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "table-originale",
+      "url": "fixture:table-originale",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    },
+    "01-count": {
+      "id": "01-count",
+      "field": "claim",
+      "origin": "calcul-independant",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "calcul-independant",
+      "url": "fixture:calcul-independant",
+      "cost": 1,
+      "primary": true,
+      "value": false
+    }
+  },
+  "D5": {
+    "00-main": {
+      "id": "00-main",
+      "field": "claim",
+      "origin": "mesure-A",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "mesure-A",
+      "url": "fixture:mesure-A",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    },
+    "01-copy": {
+      "id": "01-copy",
+      "field": "claim",
+      "origin": "mesure-A",
+      "version": "v1",
+      "published": "2026-01-01",
+      "independence": "mesure-A",
+      "url": "fixture:mesure-A",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    }
+  }
+}
