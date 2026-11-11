@@ -16,6 +16,13 @@ from legacy_observer_transfer import (
 )
 
 
+# Bounded input: the recovered refinement predicate compares all pairs of
+# states. Unbounded user-provided arrays could turn a read-only audit into
+# an excessive quadratic computation. This does NOT imply scientific validity.
+MAX_STATES = 64
+MAX_LISTED_PROBES = 64
+
+
 class ObserverAuditValidationError(ValueError):
     """Missing or malformed declarative observer evidence."""
 
@@ -33,6 +40,9 @@ def _fields(obj: Any, *, required: set[str], allowed: set[str], label: str) -> d
 def _partition(raw: Any, label: str) -> tuple[int, ...]:
     if not isinstance(raw, list) or not raw:
         raise ObserverAuditValidationError(f"{label} must be a non-empty array")
+    if len(raw) > MAX_STATES:
+        raise ObserverAuditValidationError(
+            f"{label} exceeds safe finite audit bound ({MAX_STATES} states)")
     if any(type(item) is not int or item < 0 for item in raw):
         raise ObserverAuditValidationError(
             f"{label} must contain only nonnegative integer block labels")
@@ -54,6 +64,9 @@ def _termination(payload: Any) -> dict[str, Any]:
     raw_available = data["listed_probe_partitions"]
     if not isinstance(raw_available, list) or not raw_available:
         raise ObserverAuditValidationError("listed_probe_partitions must be nonempty")
+    if len(raw_available) > MAX_LISTED_PROBES:
+        raise ObserverAuditValidationError(
+            f"listed_probe_partitions exceeds safe bound ({MAX_LISTED_PROBES})")
     available = tuple(_partition(q, f"listed_probe_partitions[{i}]")
                       for i, q in enumerate(raw_available))
     if type(data["declared_exhaustive"]) is not bool:
