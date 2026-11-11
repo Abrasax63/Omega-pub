@@ -28,7 +28,7 @@ REMOTE = ("https://raw.githubusercontent.com/coseal/aslib_data/"
 BLOBS = {
     "feature_values.arff": "ef97a20a998cba9002d8c0f930ae310c4a2d7010",
     "algorithm_runs.arff": "7be2ed941a53def90d1c79aef34de0e26df1b1ad",
-    "cv.arff": "a06e7fdcbfb8c12bc23adfdf95ba50c017311a32",
+    "cv.arff": "0a2fb78356a0cccf06a1d9482531c5bfe1ba6990",
     "feature_costs.arff": "d4d0ac15240d41bdab6cb5c47b88b612cec815be",
     "description.txt": "b09e4355e9e7602b7ee3f489ead7d60803b2d835",
 }
