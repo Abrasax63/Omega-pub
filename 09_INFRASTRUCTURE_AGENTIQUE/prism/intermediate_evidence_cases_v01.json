@@ -1,0 +1,1546 @@
+{
+  "title": "Frozen opaque evidence envelopes, STRAT-004",
+  "status": "PUBLIC_CONSTRUCTED_NOT_BLIND",
+  "date": "2026-11-11",
+  "previous_experiment_pr": 35,
+  "evaluation_scope": "Only opaque id and check receipts are visible to selectors. The payload and simulated_outage are accessible to the execution layer and scorer, NOT policy fitting on a target.",
+  "source_notes": "HTTP truth from RFC 9110 301,302,307,308 sections; other cases exact arithmetic/graph computations. No external LLM or live requests during replay.",
+  "cases": [
+    {
+      "id": "IE-001",
+      "partition": "train",
+      "payload": {
+        "coefficients": {
+          "a": 14,
+          "b": 7,
+          "m": 7
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-002",
+      "partition": "train",
+      "payload": {
+        "coefficients": {
+          "a": 24,
+          "b": 17,
+          "m": 8
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-003",
+      "partition": "train",
+      "payload": {
+        "coefficients": {
+          "a": 36,
+          "b": 27,
+          "m": 9
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-004",
+      "partition": "train",
+      "payload": {
+        "coefficients": {
+          "a": 50,
+          "b": 41,
+          "m": 10
+        }
+      },
+      "simulated_outage": true
+    },
+    {
+      "id": "IE-005",
+      "partition": "train",
+      "payload": {
+        "coefficients": {
+          "a": 66,
+          "b": 11,
+          "m": 11
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-006",
+      "partition": "train",
+      "payload": {
+        "coefficients": {
+          "a": 49,
+          "b": 15,
+          "m": 7
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-007",
+      "partition": "train",
+      "payload": {
+        "coefficients": {
+          "a": 64,
+          "b": 24,
+          "m": 8
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-008",
+      "partition": "train",
+      "payload": {
+        "coefficients": {
+          "a": 81,
+          "b": 37,
+          "m": 9
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-009",
+      "partition": "test",
+      "payload": {
+        "coefficients": {
+          "a": 100,
+          "b": 10,
+          "m": 10
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-010",
+      "partition": "test",
+      "payload": {
+        "coefficients": {
+          "a": 121,
+          "b": 23,
+          "m": 11
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-011",
+      "partition": "test",
+      "payload": {
+        "coefficients": {
+          "a": 84,
+          "b": 21,
+          "m": 7
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-012",
+      "partition": "test",
+      "payload": {
+        "coefficients": {
+          "a": 104,
+          "b": 33,
+          "m": 8
+        }
+      },
+      "simulated_outage": true
+    },
+    {
+      "id": "IE-013",
+      "partition": "test",
+      "payload": {
+        "coefficients": {
+          "a": 126,
+          "b": 9,
+          "m": 9
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-014",
+      "partition": "test",
+      "payload": {
+        "coefficients": {
+          "a": 150,
+          "b": 21,
+          "m": 10
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-015",
+      "partition": "test",
+      "payload": {
+        "coefficients": {
+          "a": 176,
+          "b": 33,
+          "m": 11
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-016",
+      "partition": "test",
+      "payload": {
+        "coefficients": {
+          "a": 119,
+          "b": 29,
+          "m": 7
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-017",
+      "partition": "train",
+      "payload": {
+        "graph": {
+          "n": 9,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              0
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-018",
+      "partition": "train",
+      "payload": {
+        "graph": {
+          "n": 10,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-019",
+      "partition": "train",
+      "payload": {
+        "graph": {
+          "n": 11,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              10,
+              0
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-020",
+      "partition": "train",
+      "payload": {
+        "graph": {
+          "n": 12,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              10,
+              11
+            ]
+          ]
+        }
+      },
+      "simulated_outage": true
+    },
+    {
+      "id": "IE-021",
+      "partition": "train",
+      "payload": {
+        "graph": {
+          "n": 13,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              10,
+              11
+            ],
+            [
+              11,
+              12
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-022",
+      "partition": "train",
+      "payload": {
+        "graph": {
+          "n": 14,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              10,
+              11
+            ],
+            [
+              11,
+              12
+            ],
+            [
+              12,
+              13
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-023",
+      "partition": "train",
+      "payload": {
+        "graph": {
+          "n": 9,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              0
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-024",
+      "partition": "train",
+      "payload": {
+        "graph": {
+          "n": 10,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-025",
+      "partition": "test",
+      "payload": {
+        "graph": {
+          "n": 11,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              10,
+              0
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-026",
+      "partition": "test",
+      "payload": {
+        "graph": {
+          "n": 12,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              10,
+              11
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-027",
+      "partition": "test",
+      "payload": {
+        "graph": {
+          "n": 13,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              10,
+              11
+            ],
+            [
+              11,
+              12
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-028",
+      "partition": "test",
+      "payload": {
+        "graph": {
+          "n": 14,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              10,
+              11
+            ],
+            [
+              11,
+              12
+            ],
+            [
+              12,
+              13
+            ]
+          ]
+        }
+      },
+      "simulated_outage": true
+    },
+    {
+      "id": "IE-029",
+      "partition": "test",
+      "payload": {
+        "graph": {
+          "n": 9,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              0
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-030",
+      "partition": "test",
+      "payload": {
+        "graph": {
+          "n": 10,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-031",
+      "partition": "test",
+      "payload": {
+        "graph": {
+          "n": 11,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              10,
+              0
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-032",
+      "partition": "test",
+      "payload": {
+        "graph": {
+          "n": 12,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              10,
+              11
+            ]
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-033",
+      "partition": "train",
+      "payload": {
+        "rates": {
+          "a": [
+            4,
+            13
+          ],
+          "b": [
+            3,
+            13
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-034",
+      "partition": "train",
+      "payload": {
+        "rates": {
+          "a": [
+            4,
+            15
+          ],
+          "b": [
+            5,
+            15
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-035",
+      "partition": "train",
+      "payload": {
+        "rates": {
+          "a": [
+            6,
+            17
+          ],
+          "b": [
+            5,
+            17
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-036",
+      "partition": "train",
+      "payload": {
+        "rates": {
+          "a": [
+            6,
+            19
+          ],
+          "b": [
+            7,
+            19
+          ]
+        }
+      },
+      "simulated_outage": true
+    },
+    {
+      "id": "IE-037",
+      "partition": "train",
+      "payload": {
+        "rates": {
+          "a": [
+            8,
+            21
+          ],
+          "b": [
+            7,
+            21
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-038",
+      "partition": "train",
+      "payload": {
+        "rates": {
+          "a": [
+            8,
+            23
+          ],
+          "b": [
+            9,
+            23
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-039",
+      "partition": "train",
+      "payload": {
+        "rates": {
+          "a": [
+            10,
+            25
+          ],
+          "b": [
+            9,
+            25
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-040",
+      "partition": "train",
+      "payload": {
+        "rates": {
+          "a": [
+            10,
+            27
+          ],
+          "b": [
+            11,
+            27
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-041",
+      "partition": "test",
+      "payload": {
+        "rates": {
+          "a": [
+            12,
+            29
+          ],
+          "b": [
+            11,
+            29
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-042",
+      "partition": "test",
+      "payload": {
+        "rates": {
+          "a": [
+            12,
+            31
+          ],
+          "b": [
+            13,
+            31
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-043",
+      "partition": "test",
+      "payload": {
+        "rates": {
+          "a": [
+            14,
+            33
+          ],
+          "b": [
+            13,
+            33
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-044",
+      "partition": "test",
+      "payload": {
+        "rates": {
+          "a": [
+            14,
+            35
+          ],
+          "b": [
+            15,
+            35
+          ]
+        }
+      },
+      "simulated_outage": true
+    },
+    {
+      "id": "IE-045",
+      "partition": "test",
+      "payload": {
+        "rates": {
+          "a": [
+            16,
+            37
+          ],
+          "b": [
+            15,
+            37
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-046",
+      "partition": "test",
+      "payload": {
+        "rates": {
+          "a": [
+            16,
+            39
+          ],
+          "b": [
+            17,
+            39
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-047",
+      "partition": "test",
+      "payload": {
+        "rates": {
+          "a": [
+            18,
+            41
+          ],
+          "b": [
+            17,
+            41
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-048",
+      "partition": "test",
+      "payload": {
+        "rates": {
+          "a": [
+            18,
+            43
+          ],
+          "b": [
+            19,
+            43
+          ]
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-049",
+      "partition": "train",
+      "payload": {
+        "http_status": {
+          "status": 301,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-050",
+      "partition": "train",
+      "payload": {
+        "http_status": {
+          "status": 307,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-051",
+      "partition": "train",
+      "payload": {
+        "http_status": {
+          "status": 302,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-052",
+      "partition": "train",
+      "payload": {
+        "http_status": {
+          "status": 308,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": true
+    },
+    {
+      "id": "IE-053",
+      "partition": "train",
+      "payload": {
+        "http_status": {
+          "status": 301,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-054",
+      "partition": "train",
+      "payload": {
+        "http_status": {
+          "status": 307,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-055",
+      "partition": "train",
+      "payload": {
+        "http_status": {
+          "status": 302,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-056",
+      "partition": "train",
+      "payload": {
+        "http_status": {
+          "status": 308,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-057",
+      "partition": "test",
+      "payload": {
+        "http_status": {
+          "status": 301,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-058",
+      "partition": "test",
+      "payload": {
+        "http_status": {
+          "status": 307,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-059",
+      "partition": "test",
+      "payload": {
+        "http_status": {
+          "status": 302,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-060",
+      "partition": "test",
+      "payload": {
+        "http_status": {
+          "status": 308,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": true
+    },
+    {
+      "id": "IE-061",
+      "partition": "test",
+      "payload": {
+        "http_status": {
+          "status": 301,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-062",
+      "partition": "test",
+      "payload": {
+        "http_status": {
+          "status": 307,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-063",
+      "partition": "test",
+      "payload": {
+        "http_status": {
+          "status": 302,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    },
+    {
+      "id": "IE-064",
+      "partition": "test",
+      "payload": {
+        "http_status": {
+          "status": 308,
+          "method": "POST",
+          "target": "allowed_change_to_GET"
+        }
+      },
+      "simulated_outage": false
+    }
+  ]
+}
