@@ -5,6 +5,7 @@ on:
     paths:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/aslib_external_benchmark.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_aslib_external_harness.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/aslib_independent_crosscheck.mjs"
       - ".github/workflows/omega-aslib-external.yml"
   workflow_dispatch:
 
@@ -27,6 +28,10 @@ jobs:
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
         run: |
           python aslib_external_benchmark.py --cache-dir "${{ runner.temp }}/aslib-pms-data" --json-output "${{ runner.temp }}/aslib-pms-summary.json"
+      - name: Independently cross-check official-fold results with JavaScript
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          node aslib_independent_crosscheck.mjs "${{ runner.temp }}/aslib-pms-data" "${{ runner.temp }}/aslib-pms-summary.json"
       - name: Archive exact ledger and source provenance
         if: success()
         uses: actions/upload-artifact@v4
