@@ -84,7 +84,8 @@ def fit(training):
         "global":best_fixed(training),
         "domain":{k:best_fixed(v) for k,v in sorted(by_domain.items())},
         "kind":{k:best_fixed(v) for k,v in sorted(by_kind.items())},
-        "omega":{k:fit_omega(v,k) for k,v in sorted(by_domain.items())}
+        "omega":{k:fit_omega(v,k) for k,v in sorted(by_domain.items())},
+        "omega_kind":{k:fit_omega(v,"kind-"+k) for k,v in sorted(by_kind.items())}
     }
 
 def evaluate():
@@ -104,6 +105,7 @@ def evaluate():
             "B_domain_fixed":execute_order(task,policies["domain"][task["domain"]]),
             "D_simple_fallback":execute_order(task,policies["domain"][task["domain"]]),
             "C_omega":execute_omega(task,policies["omega"][task["domain"]]),
+            "C_omega_subtype_exploratory":execute_omega(task,policies["omega_kind"][task["kind"]]),
             "F_subtype_fixed":execute_order(task,policies["kind"][task["kind"]])
         }
         truth="yes" if oracle(task) else "no"
@@ -128,6 +130,9 @@ def evaluate():
         "fit":{"global":list(policies["global"]),
                "domain":{k:list(v) for k,v in policies["domain"].items()},
                "kind":{k:list(v) for k,v in policies["kind"].items()},
+               "omega_subtype":{k:{"first":v["policy"].get("check_id"),
+                                   "loss":v["expected_total_loss"]}
+                                for k,v in policies["omega_kind"].items()},
                "omega":{k:{"first":v["policy"].get("check_id"),
                            "loss":v["expected_total_loss"]}
                         for k,v in policies["omega"].items()}},
