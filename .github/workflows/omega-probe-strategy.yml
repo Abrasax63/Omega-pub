@@ -1,0 +1,42 @@
+name: Omega exact adaptive proof-probe experiment
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/probe_strategy_benchmark.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_probe_strategy_benchmark.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/probe_strategy_cases_2026-11-11.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/probe_strategy_independent.mjs"
+      - ".github/workflows/omega-probe-strategy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-policy-comparison:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Frozen cases, policy regressions and certificate negative tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_probe_strategy_benchmark
+      - name: Recompute all 60 worlds, strong fixed order and exact adaptive optimum
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python probe_strategy_benchmark.py --json-output "${{ runner.temp }}/omega-probe-strategy.json"
+      - name: Validate every decision against independent JS DP and fixed baseline
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          node probe_strategy_independent.mjs probe_strategy_cases_2026-11-11.json "${{ runner.temp }}/omega-probe-strategy.json"
+      - name: Archive all per-world traces and verified policies
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-exact-probe-strategy-results
+          path: "${{ runner.temp }}/omega-probe-strategy.json"
+          if-no-files-found: error
