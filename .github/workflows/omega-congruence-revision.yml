@@ -6,6 +6,7 @@ on:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/congruence_proof_revision.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/congruence_revision_cases_v01.json"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_congruence_proof_revision.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/congruence_independent_crosscheck.mjs"
       - ".github/workflows/omega-congruence-revision.yml"
   workflow_dispatch:
 
@@ -38,6 +39,10 @@ jobs:
               encoding="utf-8")
           print("CONG001_SUMMARY "+json.dumps(result["summaries"],sort_keys=True))
           PY
+      - name: Independently recompute every modular verdict and alternative proof with Node
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          node congruence_independent_crosscheck.mjs congruence_revision_cases_v01.json congruence_revision_ledger.json
       - name: Publish exact synthetic proof traces
         if: success()
         uses: actions/upload-artifact@v4
