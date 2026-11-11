@@ -155,6 +155,15 @@ class EvidenceLedger:
             raise ValueError("not initialized")
         scope = set(self.paths)
         relevant = changed_paths & scope
+        # A claimed diff can be truncated or fabricated. Cross-check the
+        # changed-path manifest against the separately read Git trees before
+        # allowing any policy to reuse current certificates. This validates
+        # Git-internal consistency, NOT who authored or signed the commit.
+        actual_metadata_changes = {
+            p for p in scope if previous_tree.get(p) != target_tree.get(p)
+        }
+        if relevant != actual_metadata_changes:
+            raise ValueError("Git changed-path manifest disagrees with source trees")
 
         if self.name == "no_refresh":
             chosen = []
