@@ -110,7 +110,7 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
     requires_proof, requires_computation, requires_literature, exploratory,
     claims_to_test. Type defaults can be overridden explicitly by these flags.
     Optional deliverables replace type defaults without changing role selection.
-    Optional observer_audit adds read-only checks on explicit finite partitions;
+    Optional source_revision_audit identifies potential stale path dependencies\n    without fetching or authenticating source data; read-only and opt-in.\n    Optional observer_audit adds read-only checks on explicit finite partitions;
     it never changes the tasks, execution model or next_action.
     An optional decision_context adds a recommended next action without executing it.
     """
@@ -255,5 +255,16 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
             plan["observer_audit"] = inspect_observer_evidence(
                 mission["observer_audit"])
         except ObserverAuditValidationError as exc:
+            raise MissionValidationError(str(exc)) from exc
+    if "source_revision_audit" in mission:
+        # Revision advice is opt-in and relies exclusively on unverified
+        # caller-provided paths. It never authenticates Git or certifies truth.
+        from versioned_evidence_planner_bridge import (
+            VersionedEvidenceInputError, audit_reported_source_change,
+        )
+        try:
+            plan["source_revision_audit"] = audit_reported_source_change(
+                mission["source_revision_audit"])
+        except VersionedEvidenceInputError as exc:
             raise MissionValidationError(str(exc)) from exc
     return plan
