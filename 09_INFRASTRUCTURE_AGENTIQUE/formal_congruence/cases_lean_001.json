@@ -1,0 +1,269 @@
+{
+  "id": "OMEGA-LEAN-001",
+  "type": "public_synthetic_versioned_modular_theorems",
+  "source_model": "x is an integer n>=0, all moduli divide 60",
+  "common_modulus": 60,
+  "lean_toolchain": "leanprover/lean4:v4.26.0",
+  "scenarios": [
+    {
+      "id": "ALT",
+      "split": "calibration",
+      "sources": {
+        "A": {
+          "r": 2,
+          "m": 6
+        },
+        "B": {
+          "r": 8,
+          "m": 12
+        },
+        "C": {
+          "r": 2,
+          "m": 3
+        }
+      },
+      "initial": [
+        "A",
+        "B"
+      ],
+      "goals": {
+        "G3": {
+          "r": 2,
+          "m": 3
+        },
+        "G2": {
+          "r": 0,
+          "m": 2
+        },
+        "G6": {
+          "r": 2,
+          "m": 6
+        }
+      },
+      "events": [
+        {
+          "op": "retract",
+          "id": "A"
+        },
+        {
+          "op": "retract",
+          "id": "B"
+        },
+        {
+          "op": "activate",
+          "id": "A"
+        },
+        {
+          "op": "activate",
+          "id": "C"
+        }
+      ]
+    },
+    {
+      "id": "CONTRA",
+      "split": "calibration",
+      "sources": {
+        "E": {
+          "r": 0,
+          "m": 2
+        },
+        "O": {
+          "r": 1,
+          "m": 2
+        },
+        "Q": {
+          "r": 0,
+          "m": 4
+        },
+        "B": {
+          "r": 8,
+          "m": 12
+        }
+      },
+      "initial": [
+        "E"
+      ],
+      "goals": {
+        "G0": {
+          "r": 0,
+          "m": 2
+        },
+        "G1": {
+          "r": 1,
+          "m": 2
+        },
+        "G4": {
+          "r": 0,
+          "m": 4
+        },
+        "G3": {
+          "r": 2,
+          "m": 3
+        }
+      },
+      "events": [
+        {
+          "op": "activate",
+          "id": "O"
+        },
+        {
+          "op": "retract",
+          "id": "O"
+        },
+        {
+          "op": "activate",
+          "id": "Q"
+        },
+        {
+          "op": "activate",
+          "id": "B"
+        },
+        {
+          "op": "retract",
+          "id": "E"
+        }
+      ]
+    },
+    {
+      "id": "SOURCE_REVISION",
+      "split": "test",
+      "sources": {
+        "A": {
+          "r": 2,
+          "m": 6
+        },
+        "B": {
+          "r": 8,
+          "m": 12
+        },
+        "C": {
+          "r": 0,
+          "m": 2
+        }
+      },
+      "initial": [
+        "A",
+        "B"
+      ],
+      "goals": {
+        "G3": {
+          "r": 2,
+          "m": 3
+        },
+        "G6": {
+          "r": 2,
+          "m": 6
+        },
+        "G2": {
+          "r": 0,
+          "m": 2
+        },
+        "G12": {
+          "r": 8,
+          "m": 12
+        }
+      },
+      "events": [
+        {
+          "op": "replace",
+          "id": "A",
+          "value": {
+            "r": 1,
+            "m": 6
+          }
+        },
+        {
+          "op": "retract",
+          "id": "B"
+        },
+        {
+          "op": "replace",
+          "id": "A",
+          "value": {
+            "r": 2,
+            "m": 6
+          }
+        },
+        {
+          "op": "activate",
+          "id": "C"
+        },
+        {
+          "op": "activate",
+          "id": "B"
+        }
+      ]
+    },
+    {
+      "id": "ALTERNATIVE_BRANCHES",
+      "split": "test",
+      "sources": {
+        "A": {
+          "r": 2,
+          "m": 6
+        },
+        "B": {
+          "r": 8,
+          "m": 12
+        },
+        "D": {
+          "r": 2,
+          "m": 3
+        },
+        "O": {
+          "r": 1,
+          "m": 2
+        }
+      },
+      "initial": [
+        "A",
+        "B",
+        "D"
+      ],
+      "goals": {
+        "G3": {
+          "r": 2,
+          "m": 3
+        },
+        "G2": {
+          "r": 0,
+          "m": 2
+        },
+        "G6": {
+          "r": 2,
+          "m": 6
+        },
+        "G4": {
+          "r": 0,
+          "m": 4
+        }
+      },
+      "events": [
+        {
+          "op": "retract",
+          "id": "A"
+        },
+        {
+          "op": "retract",
+          "id": "B"
+        },
+        {
+          "op": "activate",
+          "id": "O"
+        },
+        {
+          "op": "retract",
+          "id": "O"
+        },
+        {
+          "op": "activate",
+          "id": "B"
+        },
+        {
+          "op": "retract",
+          "id": "D"
+        }
+      ]
+    }
+  ]
+}
