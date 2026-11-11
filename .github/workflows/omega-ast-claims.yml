@@ -1,0 +1,49 @@
+name: Omega real Flask AST fact-versioning transfer
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/ast_claim_versioning.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_ast_claim_versioning.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/ast_claim_independent_crosscheck.py"
+      - ".github/workflows/omega-ast-claims.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-evidence-cv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify exact syntax-claim contract and adversarial edge cases
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_ast_claim_versioning
+      - name: Fetch exact frozen upstream Flask first-parent history
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init -q "${{ runner.temp }}/flask-ast"
+          git -C "${{ runner.temp }}/flask-ast" remote add origin https://github.com/pallets/flask.git
+          git -C "${{ runner.temp }}/flask-ast" fetch -q --no-tags --depth=180 origin 49943b5a94413a530761350f04e896f76e8d620e
+          test "$(git -C "${{ runner.temp }}/flask-ast" rev-list --first-parent --max-count=41 49943b5a94413a530761350f04e896f76e8d620e | wc -l | tr -d ' ')" = "41"
+      - name: Replay frozen source revisions and evaluate AST certification
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python ast_claim_versioning.py --source-repo "${{ runner.temp }}/flask-ast" --json-output "${{ runner.temp }}/omega-ast-ledger.json"
+      - name: Independently recompute every frozen AST claim, selection and historical certificate
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python ast_claim_independent_crosscheck.py "${{ runner.temp }}/flask-ast" "${{ runner.temp }}/omega-ast-ledger.json"
+      - name: Archive all exact syntax claims, decisions and historical certificates
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-ast-claim-versioning-ledger
+          path: "${{ runner.temp }}/omega-ast-ledger.json"
+          if-no-files-found: error
