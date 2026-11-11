@@ -342,6 +342,10 @@ def evaluate_repo(repo: Path):
         "llm_calls":0,
         "external_solver_executions":0,
         "selected_paths":paths,
+        "archived_omega_certificates":{
+            key:list(records)
+            for key,records in policies["omega_ledger_8"].historical.items()
+        },
         "events":events,
     }
 
