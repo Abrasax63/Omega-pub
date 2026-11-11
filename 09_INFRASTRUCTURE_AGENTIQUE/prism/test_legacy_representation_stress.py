@@ -21,6 +21,16 @@ class LegacyObserverStressTests(unittest.TestCase):
         self.assertTrue(report["no_distinct_advantage_over_identity_check_baseline"])
         for cap,rows in report["counts_by_capacity"].items():
             self.assertEqual(sum(rows.values()),225,(cap,rows))
+        expected={
+            "1":{"keep":1,"replace":14,"infeasible":210},
+            "2":{"keep":15,"refine":7,"replace":98,"infeasible":105},
+            "3":{"keep":45,"refine":67,"replace":98,"infeasible":15},
+            "4":{"keep":60,"refine":165},
+        }
+        self.assertEqual(report["counts_by_capacity"],expected)
+        import json
+        print("LEGACY_900_INDEPENDENT_CLASSIFICATION "+
+              json.dumps(report["counts_by_capacity"],sort_keys=True))
 
     def test_equivalence_partition_generator_and_orthogonal_example(self):
         rels=partitions_as_equivalence_sets()
