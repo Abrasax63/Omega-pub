@@ -14,3 +14,5 @@ Ce dossier rassemble les sources de contenu retrouvées pour les anciens résult
 Les deux scripts delta_gluing proviennent de l'archive historique DELTA_H_STRATEGIE_COUVERTURE_REPRODUCTIBLE_2026-09-29.zip. Le rejeu du 4 novembre a terminé delta_gluing_audit.py ; delta_gluing_crosscheck.py n'a été exécuté que partiellement et a expiré sur le domaine N=4,q=3. Voir la réconciliation pour les nombres exacts et les limites.
 
 Aucun de ces fichiers n'est une carte CL-DYN originale. Aucun statut n'est promu.
+
+- [Résultats et contrôles du 11 novembre — spectres finis binaires](spectres_binaires_2026-11-11/index.md)
