@@ -1,0 +1,91 @@
+{
+  "task": {
+    "id": "T3",
+    "domain": "documentation",
+    "question": "La RFC 9110 autorise-t-elle un agent utilisateur à passer de POST à GET lors d’une redirection 301 ?",
+    "category": "divergence_publique_meme_question",
+    "worlds": [
+      {
+        "id": "0",
+        "weight": 1,
+        "decision": "no",
+        "values": {
+          "rule": false
+        }
+      },
+      {
+        "id": "1",
+        "weight": 1,
+        "decision": "yes",
+        "values": {
+          "rule": true
+        }
+      }
+    ],
+    "direct": "no",
+    "scopes": {
+      "rule": [
+        [
+          "9110",
+          "2022-06-01"
+        ]
+      ]
+    },
+    "quorum": 1,
+    "checks": [
+      {
+        "id": "00-copy",
+        "field": "rule",
+        "origin": "mdn",
+        "version": "9110",
+        "published": "2022-06-01",
+        "independence": "mdn",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/308",
+        "cost": 1,
+        "primary": false
+      },
+      {
+        "id": "01-primary",
+        "field": "rule",
+        "origin": "ietf",
+        "version": "9110",
+        "published": "2022-06-01",
+        "independence": "ietf",
+        "url": "https://www.rfc-editor.org/rfc/rfc9110#section-15.4.2",
+        "cost": 1,
+        "primary": true
+      }
+    ]
+  },
+  "observations": {
+    "00-copy": {
+      "id": "00-copy",
+      "field": "rule",
+      "origin": "mdn",
+      "version": "9110",
+      "published": "2022-06-01",
+      "independence": "ietf",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/308",
+      "cost": 1,
+      "primary": false,
+      "value": false
+    },
+    "01-primary": {
+      "id": "01-primary",
+      "field": "rule",
+      "origin": "ietf",
+      "version": "9110",
+      "published": "2022-06-01",
+      "independence": "ietf",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110#section-15.4.2",
+      "cost": 1,
+      "primary": true,
+      "value": true
+    }
+  },
+  "expected": "yes",
+  "criterion": "Le texte normatif visé fait autorité. Une abstention reste un verdict manqué.",
+  "protocol": "Cas complémentaire exploratoire figé après la v0.1 et avant son propre rejeu. Même protocole, budget 2, aucune agrégation au score v0.1.",
+  "sources": "La page MDN 308 affirme à propos de 301 que la méthode doit être conservée. La RFC 9110 §15.4.2 autorise POST vers GET. La page MDN dédiée à 301 confirme cette possibilité. Les captures structurées sont des annotations et non des reçus cryptographiques.",
+  "secondary_crosscheck": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/301"
+}
