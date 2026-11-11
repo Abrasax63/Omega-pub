@@ -1,0 +1,50 @@
+name: Omega external versioned-evidence replay
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/versioned_evidence_replay.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_versioned_evidence_replay.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/versioned_evidence_crosscheck.mjs"
+      - ".github/workflows/omega-versioned-evidence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  versioned-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Independent synthetic adverse cases and unchanged contract
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_versioned_evidence_replay
+      - name: Fetch exact externally pinned public Git history
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init -q "${{ runner.temp }}/flask-evidence"
+          git -C "${{ runner.temp }}/flask-evidence" remote add origin https://github.com/pallets/flask.git
+          git -C "${{ runner.temp }}/flask-evidence" fetch -q --no-tags --depth=180 origin 49943b5a94413a530761350f04e896f76e8d620e
+          test "$(git -C "${{ runner.temp }}/flask-evidence" rev-parse --verify '49943b5a94413a530761350f04e896f76e8d620e^{commit}')" = "49943b5a94413a530761350f04e896f76e8d620e"
+          test "$(git -C "${{ runner.temp }}/flask-evidence" rev-list --first-parent --max-count=41 49943b5a94413a530761350f04e896f76e8d620e | wc -l | tr -d ' ')" = "41"
+      - name: Revalidate source versions from 40 real commit transitions
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python versioned_evidence_replay.py --source-repo "${{ runner.temp }}/flask-evidence" --json-output "${{ runner.temp }}/omega-versioned-evidence-ledger.json"
+      - name: Independently verify causal changes, budgets and archived versions in JavaScript
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          node versioned_evidence_crosscheck.mjs "${{ runner.temp }}/flask-evidence" "${{ runner.temp }}/omega-versioned-evidence-ledger.json"
+      - name: Archive full external data provenance and policy decisions
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-versioned-evidence-real-git-ledger
+          path: "${{ runner.temp }}/omega-versioned-evidence-ledger.json"
+          if-no-files-found: error
