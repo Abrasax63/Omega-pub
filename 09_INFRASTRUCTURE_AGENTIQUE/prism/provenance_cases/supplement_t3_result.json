@@ -1,0 +1,182 @@
+{
+  "case": "T3",
+  "expected": "yes",
+  "arms": {
+    "A_direct": {
+      "decision": "no",
+      "trace": [],
+      "correct": false
+    },
+    "B_fixed": {
+      "decision": null,
+      "reason": "budget_exhausted",
+      "risk": "1/2",
+      "trace": [
+        {
+          "check": "00-copy",
+          "risk_before": "1/2",
+          "issue": null,
+          "receipt": {
+            "id": "00-copy",
+            "field": "rule",
+            "origin": "mdn",
+            "version": "9110",
+            "published": "2022-06-01",
+            "independence": "ietf",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/308",
+            "cost": 1,
+            "primary": false,
+            "value": false
+          },
+          "risk_after": "1/2",
+          "conflicts_after": []
+        },
+        {
+          "check": "01-primary",
+          "risk_before": "1/2",
+          "issue": null,
+          "receipt": {
+            "id": "01-primary",
+            "field": "rule",
+            "origin": "ietf",
+            "version": "9110",
+            "published": "2022-06-01",
+            "independence": "ietf",
+            "url": "https://www.rfc-editor.org/rfc/rfc9110#section-15.4.2",
+            "cost": 1,
+            "primary": true,
+            "value": true
+          },
+          "risk_after": "1/2",
+          "conflicts_after": [
+            "rule"
+          ]
+        }
+      ],
+      "correct": false
+    },
+    "C_omega": {
+      "decision": "no",
+      "reason": "determined",
+      "risk": "0",
+      "trace": [
+        {
+          "check": "00-copy",
+          "risk_before": "1/2",
+          "issue": null,
+          "receipt": {
+            "id": "00-copy",
+            "field": "rule",
+            "origin": "mdn",
+            "version": "9110",
+            "published": "2022-06-01",
+            "independence": "ietf",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/308",
+            "cost": 1,
+            "primary": false,
+            "value": false
+          },
+          "risk_after": "0",
+          "conflicts_after": []
+        }
+      ],
+      "correct": false
+    },
+    "D_provenance": {
+      "decision": null,
+      "reason": "budget_exhausted",
+      "risk": "1/2",
+      "trace": [
+        {
+          "check": "00-copy",
+          "risk_before": "1/2",
+          "issue": null,
+          "receipt": {
+            "id": "00-copy",
+            "field": "rule",
+            "origin": "mdn",
+            "version": "9110",
+            "published": "2022-06-01",
+            "independence": "ietf",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/308",
+            "cost": 1,
+            "primary": false,
+            "value": false
+          },
+          "risk_after": "1/2",
+          "conflicts_after": []
+        },
+        {
+          "check": "01-primary",
+          "risk_before": "1/2",
+          "issue": null,
+          "receipt": {
+            "id": "01-primary",
+            "field": "rule",
+            "origin": "ietf",
+            "version": "9110",
+            "published": "2022-06-01",
+            "independence": "ietf",
+            "url": "https://www.rfc-editor.org/rfc/rfc9110#section-15.4.2",
+            "cost": 1,
+            "primary": true,
+            "value": true
+          },
+          "risk_after": "1/2",
+          "conflicts_after": [
+            "rule"
+          ]
+        }
+      ],
+      "correct": false
+    },
+    "E_greedy": {
+      "decision": null,
+      "reason": "budget_exhausted",
+      "risk": "1/2",
+      "trace": [
+        {
+          "check": "00-copy",
+          "risk_before": "1/2",
+          "issue": null,
+          "receipt": {
+            "id": "00-copy",
+            "field": "rule",
+            "origin": "mdn",
+            "version": "9110",
+            "published": "2022-06-01",
+            "independence": "ietf",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/308",
+            "cost": 1,
+            "primary": false,
+            "value": false
+          },
+          "risk_after": "1/2",
+          "conflicts_after": []
+        },
+        {
+          "check": "01-primary",
+          "risk_before": "1/2",
+          "issue": null,
+          "receipt": {
+            "id": "01-primary",
+            "field": "rule",
+            "origin": "ietf",
+            "version": "9110",
+            "published": "2022-06-01",
+            "independence": "ietf",
+            "url": "https://www.rfc-editor.org/rfc/rfc9110#section-15.4.2",
+            "cost": 1,
+            "primary": true,
+            "value": true
+          },
+          "risk_after": "1/2",
+          "conflicts_after": [
+            "rule"
+          ]
+        }
+      ],
+      "correct": false
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "status": "calibration_publique",
+  "python": "3.12.14",
+  "model_calls": 0,
+  "live_calls": 0,
+  "max_consultations": 2,
+  "summary": {
+    "A_direct": {
+      "correct": 6,
+      "wrong": 5,
+      "confident_errors": 5,
+      "justified_abstentions": 1,
+      "missed_decisions": 0,
+      "consultations": 0,
+      "score": 7
+    },
+    "B_fixed": {
+      "correct": 8,
+      "wrong": 0,
+      "confident_errors": 0,
+      "justified_abstentions": 3,
+      "missed_decisions": 1,
+      "consultations": 21,
+      "score": 11
+    },
+    "C_omega": {
+      "correct": 6,
+      "wrong": 6,
+      "confident_errors": 6,
+      "justified_abstentions": 0,
+      "missed_decisions": 0,
+      "consultations": 15,
+      "score": 6
+    },
+    "D_provenance": {
+      "correct": 8,
+      "wrong": 0,
+      "confident_errors": 0,
+      "justified_abstentions": 3,
+      "missed_decisions": 1,
+      "consultations": 21,
+      "score": 11
+    },
+    "E_greedy": {
+      "correct": 5,
+      "wrong": 0,
+      "confident_errors": 0,
+      "justified_abstentions": 3,
+      "missed_decisions": 4,
+      "consultations": 15,
+      "score": 8
+    }
+  },
+  "task_sha256": "cf7ff1497224087cd25883cc240d8701ffc61d98dd1d22bcb9d1f255f151a248"
+}

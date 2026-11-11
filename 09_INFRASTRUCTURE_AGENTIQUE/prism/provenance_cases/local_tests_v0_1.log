@@ -1,0 +1,10 @@
+----------------------------------------------------------------------
+Ran 87 tests in 0.896s
+
+OK
+TWO-STEP DECISION: 24 authored + 96 seeded, authored improvements=8, seeded improvements=34; all exact exhaustive oracle matches; no model calls.
+SYNTHETIC NEXT ACTION: 24/24 exact-reference matches; first-positive control 20/24; zero model calls.
+P5 EVIDENCE: 24/24 controlled-language public calibration (not a holdout or LLM comparison).
+P5 FOUR-ARM: 24 x 4 = 96 frozen input requests; zero model outputs, zero graded responses.
+PUBLIC-SOURCE REHEARSAL: 8/8 source-check selections, 4 executable fact cross-checks; NOT model or blind evaluation
+VARIABLE-HORIZON: 120 synthetic models x 4 depths; depth3-vs2 strict improvements=3; 480 exact independent oracle agreements.
