@@ -1,0 +1,445 @@
+{
+  "experiment": "CONG-001",
+  "date": "2026-11-11",
+  "status": "PUBLIC_SYNTHETIC_NONBLIND",
+  "universe": {
+    "variable": "x",
+    "residue_domain": "integers modulo 60",
+    "meaning": "Each premise has x congruent r modulo m; all moduli divide 60",
+    "modulus": 60
+  },
+  "scenarios": [
+    {
+      "id": "CONG-A-alternative",
+      "split": "calibration",
+      "premises": {
+        "A": {
+          "r": 2,
+          "m": 6
+        },
+        "B": {
+          "r": 8,
+          "m": 12
+        },
+        "C": {
+          "r": 2,
+          "m": 3
+        },
+        "D": {
+          "r": 1,
+          "m": 2
+        },
+        "E": {
+          "r": 2,
+          "m": 4
+        },
+        "F": {
+          "r": 1,
+          "m": 3
+        }
+      },
+      "queries": {
+        "q1": {
+          "r": 2,
+          "m": 3
+        },
+        "q2": {
+          "r": 0,
+          "m": 2
+        },
+        "q3": {
+          "r": 2,
+          "m": 6
+        },
+        "q4": {
+          "r": 8,
+          "m": 12
+        },
+        "q5": {
+          "r": 1,
+          "m": 3
+        }
+      },
+      "initial": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "op": "retract",
+          "id": "A"
+        },
+        {
+          "op": "retract",
+          "id": "B"
+        },
+        {
+          "op": "activate",
+          "id": "C"
+        },
+        {
+          "op": "activate",
+          "id": "D"
+        },
+        {
+          "op": "activate",
+          "id": "A"
+        },
+        {
+          "op": "retract",
+          "id": "D"
+        },
+        {
+          "op": "activate",
+          "id": "E"
+        },
+        {
+          "op": "retract",
+          "id": "E"
+        },
+        {
+          "op": "activate",
+          "id": "B"
+        },
+        {
+          "op": "activate",
+          "id": "F"
+        },
+        {
+          "op": "retract",
+          "id": "F"
+        }
+      ]
+    },
+    {
+      "id": "CONG-B-conflict",
+      "split": "calibration",
+      "premises": {
+        "A": {
+          "r": 1,
+          "m": 4
+        },
+        "B": {
+          "r": 3,
+          "m": 6
+        },
+        "C": {
+          "r": 3,
+          "m": 4
+        },
+        "D": {
+          "r": 0,
+          "m": 3
+        },
+        "E": {
+          "r": 1,
+          "m": 2
+        },
+        "F": {
+          "r": 0,
+          "m": 2
+        }
+      },
+      "queries": {
+        "q1": {
+          "r": 1,
+          "m": 2
+        },
+        "q2": {
+          "r": 3,
+          "m": 6
+        },
+        "q3": {
+          "r": 1,
+          "m": 4
+        },
+        "q4": {
+          "r": 0,
+          "m": 2
+        },
+        "q5": {
+          "r": 9,
+          "m": 12
+        }
+      },
+      "initial": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "op": "activate",
+          "id": "C"
+        },
+        {
+          "op": "retract",
+          "id": "C"
+        },
+        {
+          "op": "activate",
+          "id": "D"
+        },
+        {
+          "op": "activate",
+          "id": "F"
+        },
+        {
+          "op": "retract",
+          "id": "F"
+        },
+        {
+          "op": "retract",
+          "id": "A"
+        },
+        {
+          "op": "activate",
+          "id": "C"
+        },
+        {
+          "op": "retract",
+          "id": "B"
+        },
+        {
+          "op": "activate",
+          "id": "E"
+        },
+        {
+          "op": "activate",
+          "id": "A"
+        },
+        {
+          "op": "retract",
+          "id": "C"
+        }
+      ]
+    },
+    {
+      "id": "CONG-C-multi-moduli",
+      "split": "test",
+      "premises": {
+        "A": {
+          "r": 14,
+          "m": 20
+        },
+        "B": {
+          "r": 2,
+          "m": 3
+        },
+        "C": {
+          "r": 4,
+          "m": 5
+        },
+        "D": {
+          "r": 2,
+          "m": 4
+        },
+        "E": {
+          "r": 14,
+          "m": 30
+        },
+        "F": {
+          "r": 1,
+          "m": 2
+        },
+        "G": {
+          "r": 1,
+          "m": 3
+        }
+      },
+      "queries": {
+        "q1": {
+          "r": 2,
+          "m": 3
+        },
+        "q2": {
+          "r": 4,
+          "m": 5
+        },
+        "q3": {
+          "r": 2,
+          "m": 4
+        },
+        "q4": {
+          "r": 14,
+          "m": 60
+        },
+        "q5": {
+          "r": 1,
+          "m": 2
+        },
+        "q6": {
+          "r": 14,
+          "m": 30
+        }
+      },
+      "initial": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "op": "activate",
+          "id": "E"
+        },
+        {
+          "op": "retract",
+          "id": "A"
+        },
+        {
+          "op": "retract",
+          "id": "E"
+        },
+        {
+          "op": "activate",
+          "id": "C"
+        },
+        {
+          "op": "activate",
+          "id": "D"
+        },
+        {
+          "op": "activate",
+          "id": "F"
+        },
+        {
+          "op": "retract",
+          "id": "F"
+        },
+        {
+          "op": "activate",
+          "id": "A"
+        },
+        {
+          "op": "activate",
+          "id": "G"
+        },
+        {
+          "op": "retract",
+          "id": "G"
+        },
+        {
+          "op": "retract",
+          "id": "B"
+        },
+        {
+          "op": "activate",
+          "id": "E"
+        }
+      ]
+    },
+    {
+      "id": "CONG-D-contradictory-revisions",
+      "split": "test",
+      "premises": {
+        "A": {
+          "r": 0,
+          "m": 4
+        },
+        "B": {
+          "r": 3,
+          "m": 5
+        },
+        "C": {
+          "r": 8,
+          "m": 20
+        },
+        "D": {
+          "r": 2,
+          "m": 4
+        },
+        "E": {
+          "r": 0,
+          "m": 2
+        },
+        "F": {
+          "r": 1,
+          "m": 2
+        },
+        "G": {
+          "r": 3,
+          "m": 10
+        }
+      },
+      "queries": {
+        "q1": {
+          "r": 0,
+          "m": 4
+        },
+        "q2": {
+          "r": 3,
+          "m": 5
+        },
+        "q3": {
+          "r": 8,
+          "m": 20
+        },
+        "q4": {
+          "r": 2,
+          "m": 4
+        },
+        "q5": {
+          "r": 0,
+          "m": 2
+        },
+        "q6": {
+          "r": 18,
+          "m": 20
+        }
+      },
+      "initial": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "op": "activate",
+          "id": "C"
+        },
+        {
+          "op": "retract",
+          "id": "A"
+        },
+        {
+          "op": "activate",
+          "id": "D"
+        },
+        {
+          "op": "activate",
+          "id": "F"
+        },
+        {
+          "op": "retract",
+          "id": "F"
+        },
+        {
+          "op": "activate",
+          "id": "A"
+        },
+        {
+          "op": "retract",
+          "id": "D"
+        },
+        {
+          "op": "retract",
+          "id": "C"
+        },
+        {
+          "op": "activate",
+          "id": "G"
+        },
+        {
+          "op": "retract",
+          "id": "G"
+        },
+        {
+          "op": "activate",
+          "id": "C"
+        },
+        {
+          "op": "retract",
+          "id": "B"
+        }
+      ]
+    }
+  ]
+}
