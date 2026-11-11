@@ -77,9 +77,9 @@ for(let f=1;f<=10;f++){
       return {id:i,dist:sum,dist8:small};
     });
     const ranked=neighbors.slice().sort((a,b)=>a.dist-b.dist||
-      a.id.localeCompare(b.id));
+      (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
     const ranked8=neighbors.slice().sort((a,b)=>a.dist8-b.dist8||
-      a.id.localeCompare(b.id));
+      (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
     for(const k of [1,5,15])
       measure("KNN"+k,id,chosen(ranked.slice(0,k).map(x=>x.id)),true);
     measure("KNN5_small",id,chosen(ranked8.slice(0,5).map(x=>x.id)),true);
