@@ -5,6 +5,7 @@ on:
     paths:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/aslib_wpms_cost_sensitive.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_aslib_wpms_cost_sensitive.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/aslib_wpms_paired_audit.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/aslib_wpms_independent_crosscheck.mjs"
       - ".github/workflows/omega-aslib-wpms-transfer.yml"
   workflow_dispatch:
@@ -28,6 +29,14 @@ jobs:
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
         run: |
           python aslib_wpms_cost_sensitive.py --cache-dir "${{ runner.temp }}/aslib-wpms-data" --json-output "${{ runner.temp }}/aslib-wpms-results.json"
+      - name: Independently recalculate SBS, KNN and oracle results in JavaScript
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          node aslib_wpms_independent_crosscheck.mjs "${{ runner.temp }}/aslib-wpms-data" "${{ runner.temp }}/aslib-wpms-results.json"
+      - name: Run post-result paired-trace diagnostics without fitting policies
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python aslib_wpms_paired_audit.py "${{ runner.temp }}/aslib-wpms-results.json"
       - name: Archive complete per-instance predictions and CV diagnostics
         uses: actions/upload-artifact@v4
         if: success()
