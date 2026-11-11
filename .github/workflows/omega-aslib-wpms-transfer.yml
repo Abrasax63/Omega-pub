@@ -33,6 +33,10 @@ jobs:
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
         run: |
           node aslib_wpms_independent_crosscheck.mjs "${{ runner.temp }}/aslib-wpms-data" "${{ runner.temp }}/aslib-wpms-results.json"
+      - name: Independently re-train both cost-aware trees in JavaScript
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          node aslib_wpms_tree_independent.mjs "${{ runner.temp }}/aslib-wpms-data" "${{ runner.temp }}/aslib-wpms-results.json"
       - name: Run post-result paired-trace diagnostics without fitting policies
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
         run: |
