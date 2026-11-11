@@ -1,0 +1,54 @@
+name: Omega Lean kernel proof dependencies
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/formal_congruence/**"
+      - ".github/workflows/omega-lean-proof-revision.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  formal-congruence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate frozen cases and support-graph invariants before Lean
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/formal_congruence
+        run: python -m unittest -v test_lean_proof_revision
+      - name: Install pinned independent Lean 4 kernel
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "${{ runner.temp }}/elan-init.sh"
+          sh "${{ runner.temp }}/elan-init.sh" -y --no-modify-path --default-toolchain leanprover/lean4:v4.26.0
+          "${HOME}/.elan/bin/lean" --version
+          "${HOME}/.elan/bin/lean" --version | grep -F 'Lean (version 4.26.0,'
+      - name: Compile all actual theorem dependency chains and negative controls
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/formal_congruence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python lean_proof_revision.py \
+            --lean "${HOME}/.elan/bin/lean" \
+            --output "${{ runner.temp }}/omega-lean-001-results.json" \
+            --proof-directory "${{ runner.temp }}/omega-lean-proof-sources"
+      - name: Independently audit all statuses and versioned source supports
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/formal_congruence
+        run: |
+          node independent_lean_certificate_audit.mjs cases_lean_001.json "${{ runner.temp }}/omega-lean-001-results.json"
+      - name: Archive exact Lean sources, proof status, costs and revisions
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-lean-001-verified-theorem-chains
+          path: |
+            ${{ runner.temp }}/omega-lean-001-results.json
+            ${{ runner.temp }}/omega-lean-proof-sources/*.lean
+          if-no-files-found: error
