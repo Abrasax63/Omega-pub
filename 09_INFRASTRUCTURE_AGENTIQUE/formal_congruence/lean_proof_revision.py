@@ -217,6 +217,7 @@ def evaluate(corpus,lean,outdir):
     summaries=defaultdict(Counter)
     recorded=[]
     for scenario in scenarios:
+        initial_unrevised_status={}
         for state in states(scenario):
             active=state["active"]
             scenario_id=state["scenario"]
@@ -232,6 +233,12 @@ def evaluate(corpus,lean,outdir):
                 status=symbolic_kind(active.values(),q)
                 if oracle!=status:
                     raise AssertionError(f"CRT disagrees with finite oracle {scenario_id}:{state['step']}:{qid}")
+                if state["step"]==0:
+                    initial_unrevised_status[qid]=status
+                previous_answer=initial_unrevised_status[qid]
+                summaries[split]["no_revision_status_mismatches"]+=(previous_answer!=status)
+                summaries[split]["no_revision_false_confident_claims"]+=(
+                    previous_answer in ("entailed","refuted") and previous_answer!=status)
                 if not consistent and status!="inconsistent_environment":
                     raise AssertionError("explosion risk")
                 supports=[]
@@ -296,7 +303,9 @@ def evaluate(corpus,lean,outdir):
                         key in caches["omega_proof_ledger"])
             recorded.append({**state,"consistent":consistent,
                              "conflicting_pairs":conflict,
-                             "queries":result,"active_certificate_keys":sorted(prepared)})
+                             "queries":result,
+                             "no_revision_verdicts":dict(initial_unrevised_status),
+                             "active_certificate_keys":sorted(prepared)})
             summaries[split]["states"]+=1
     # Counters are accumulated globally; correct split calls additionally
     # derived from the events, but do not claim per-split runtime costs.
