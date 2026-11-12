@@ -222,22 +222,28 @@ class DecisionPolicy:
 
     def observe(self,view,verification):
         if self.budget_left<=0:raise AssertionError("budget overspend")
-        self.budget_left-=1
-        if set(verification)!={"resolved","model_correct"}:
+        if not isinstance(verification,dict) or set(verification)!={"resolved","model_correct"}:
             raise ValueError("invalid verifier feedback keys")
-        if verification["model_correct"] is not None and not verification["resolved"]:
+        if type(verification["resolved"]) is not bool:
+            raise ValueError("resolved must be boolean")
+        if verification["resolved"] and type(verification["model_correct"]) is not bool:
+            raise ValueError("a resolved verification must report model correctness")
+        if not verification["resolved"] and verification["model_correct"] is not None:
             raise ValueError("oracle leaked on unresolved verification")
+        self.budget_left-=1
         self.feedback[view["stratum"]].append(dict(verification))
-        previous=self.alarms
+        before=set(self.last_alarm_bucket)
         if self.name=="omega_candidate":
             self._estimates(view)
-            self.alarms=sum(1 for x in self.last_alarm_bucket)
+            newly_active=set(self.last_alarm_bucket)-before
+            self.alarms+=len(newly_active)
+        else:newly_active=set()
         self.logs.append({
             "id":view["id"],"resolved":verification["resolved"],
             "model_correct":verification["model_correct"],
             "budget_remaining":self.budget_left,
-            "alarms_active":self.alarms,
-            "alarm_new":self.alarms>previous,
+            "alarms_total":self.alarms,
+            "alarm_new":bool(newly_active),
         })
 
 def _evaluation_sequence(all_rows):
