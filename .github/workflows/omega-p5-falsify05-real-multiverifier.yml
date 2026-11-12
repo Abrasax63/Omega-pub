@@ -1,0 +1,90 @@
+name: Omega P5 FALSIFY-05 REAL multi-vendor ClaimDB verifier acquisition vs exact empirical Bellman
+
+# The complete 40+MB historical model corpus is expensive to redownload.
+# First validated source-backed run: https://github.com/Abrasax63/Omega-pub/actions/runs/43263585438
+# Explicit manual reruns only, no automatic repeated LFS downloads on report edits.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-external-noisy-verifiers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: omega
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: No-model tests for information leakage, budget and finite Bellman
+        working-directory: omega/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_falsify05_real_multiverifier
+          python -m py_compile p5_falsify05_real_multiverifier.py
+      - name: Ensure Git LFS is installed
+        run: git lfs version || (sudo apt-get update -qq && sudo apt-get install -y git-lfs)
+      - uses: actions/checkout@v4
+        with:
+          repository: claimdb/claimdb
+          ref: e06c3a22cc14a8ef6858bb5d40bca7925241b98d
+          path: claimdb_data
+          lfs: true
+          sparse-checkout: |
+            final-benchmark/test-public.jsonl
+            experiments/public/no_tools/gpt-5-mini.jsonl
+            experiments/public/gpt-5-nano.jsonl
+            experiments/public/gemini-2.5-flash.jsonl
+            experiments/public/claude-haiku-4-5.jsonl
+          sparse-checkout-cone-mode: false
+      - name: Verify all five exact ORIGINAL source SHA256, reject LFS pointers or substitutions
+        run: |
+          cd claimdb_data
+          test "$(sha256sum final-benchmark/test-public.jsonl | cut -d' ' -f1)" = "b87d7062307cfcf5ae862bf03bd7e82f7123ff39cf0b69d3dc5cc25caaaea810"
+          test "$(sha256sum experiments/public/no_tools/gpt-5-mini.jsonl | cut -d' ' -f1)" = "552531cba335298816a998f7a2b6fb548d9cd0eb7f9b47e5d1272809620a9aa6"
+          test "$(sha256sum experiments/public/gpt-5-nano.jsonl | cut -d' ' -f1)" = "c41127fc6a5d1105f582ec876dccec2c685ecd3a01a651ac4033d9c6058816c0"
+          test "$(sha256sum experiments/public/gemini-2.5-flash.jsonl | cut -d' ' -f1)" = "8c2107a3f9cea8bfd37a8305441541c3566627640f47f7d63d3bdd93a3fc5b4c"
+          test "$(sha256sum experiments/public/claude-haiku-4-5.jsonl | cut -d' ' -f1)" = "2bf7a999dd853a16e5aa40e6fbf65879952d076fbdfa02968c3e80e4f3fa2130"
+          echo "FALSIFY05_FIVE_REAL_SOURCE_OBJECTS_PINNED_AND_VERIFIED"
+      - name: Replay historical real noisy verifier acquisition with exact Bellman and group-disjoint heldout
+        working-directory: omega/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_falsify05_real_multiverifier.py \
+            --source-root "$GITHUB_WORKSPACE/claimdb_data" \
+            --output "$RUNNER_TEMP/falsify05_real_model_verifiers.json"
+          python - <<'PY'
+          import json,os
+          r=json.load(open(os.environ["RUNNER_TEMP"]+"/falsify05_real_model_verifiers.json"))
+          assert r["protocol"]=="P5-FALSIFY-05"
+          assert r["actual_real_historical_model_outputs"] is True
+          assert r["model_calls_now"]==0 and r["actual_sql_executed_by_omega"]==0
+          assert r["omega_like_is_actual_P1_P2_P3"] is False
+          assert r["source_manifest"]["calibration_count"]+r["source_manifest"]["evaluation_count"]==1000
+          # ClaimDB's 1000-row public test actually covers only 11 database groups.
+          # Keep the original DB-disjoint 60/40 split: 7 calibration / 4 test.
+          assert r["source_manifest"]["number_of_databases"]==11
+          assert r["source_manifest"]["calibration_databases"]==7
+          assert r["source_manifest"]["evaluation_databases"]==4
+          assert r["source_manifest"]["calibration_count"]==581
+          assert r["source_manifest"]["evaluation_count"]==419
+          assert set(r["policy_summary"])==set(r["policy_names"])
+          assert r["primary_paired_effect_omega_minus_bayes_context"]["bootstrap_rounds"]==2000
+          n=r["source_manifest"]["evaluation_count"]
+          for name,s in r["policy_summary"].items():
+              assert s["N"]==n
+              assert s["correct"]+s["wrong"]+s["abstained"]==n
+              if name!="hindsight_oracle":
+                  assert s["purchased_tools"]<=2*n
+          print("FALSIFY05_REAL_THREE_VENDOR_VERIFIERS_REPLAY_AND_EXACT_BELLMAN_EVALUATED")
+          PY
+      - name: Archive derived policies, per-claim trajectories and SHA evidence, never duplicate original raw 43MB source
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-falsify05-real-multiverifier-${{ github.run_id }}
+          path: ${{ runner.temp }}/falsify05_real_model_verifiers.json
+          retention-days: 7
+          if-no-files-found: ignore
