@@ -1,0 +1,60 @@
+name: Omega P5 OBS-02 noisy correlated evidence and archived Qwen replay
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-obs02-noisy-evidence.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_obs02_noisy_provenance.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_obs02_noisy_provenance.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/obs02_frozen_qwen96.zlib.b64"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_OBS02_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  obs02-joint-belief-exact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run no-leakage, duplicate-source and independent exact policy-tree tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_p5_obs02_noisy_provenance
+      - name: Replay 64 genuine archived Qwen predictions with clearly SYNTHETIC unreliable tools
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_obs02_noisy_provenance.py --input obs02_frozen_qwen96.zlib.b64 --output "$RUNNER_TEMP/p5_obs02_results.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/p5_obs02_results.json"))
+          assert x["status"]=="EXACT_NOISY_PROVENANCE_WITH_REAL_MODEL_OUTPUTS_SYNTHETIC_TOOL_FAULTS"
+          assert x["source_real_Qwen_answers"]==96
+          assert x["test_real_Qwen_answers"]==64
+          assert x["instrument_faults_are_artificial"] is True
+          assert x["new_LLM_generations"]==0 and x["paid_api_calls"]==0
+          assert x["same_source_duplicates_add_zero_information"]
+          assert x["impossible_same_source_contradiction_refused"]
+          assert set(x["policies"])=={
+            "no_probe","fixed_shared_pair_correct","fixed_shared_pair_naive",
+            "fixed_shared_independent","myopic_voi","entropy_micro",
+            "exact_bayes_dp","omega_provenance_candidate"}
+          for k,v in x["independent_calculation"].items():
+              assert v["exact_dp"]==v["independent_tree"],k
+          a,b=(x["policies"][n] for n in ("exact_bayes_dp","omega_provenance_candidate"))
+          assert a["realized_total_net"]==b["realized_total_net"]
+          assert a["wrong_published"]==b["wrong_published"]
+          print("OBS02_ARCHIVAL_REPLAY_AND_BAYESIAN_CERTIFICATES_SUCCESS")
+          PY
+      - name: Archive exact fractions, provenance witnesses and all 64-case policy trails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-p5-obs02-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/p5_obs02_results.json
+          retention-days: 7
+          if-no-files-found: ignore
