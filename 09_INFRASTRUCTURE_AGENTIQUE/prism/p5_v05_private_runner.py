@@ -14,6 +14,7 @@ Omega gain. The old DispatchLedger provides durable per-attempt commitments.
 from __future__ import annotations
 
 import argparse
+from decimal import Decimal
 from collections import Counter
 from datetime import datetime, timezone
 from hashlib import sha256
@@ -26,6 +27,9 @@ from time import perf_counter
 
 from planner import ROLE_ORDER, ROLE_QUESTIONS, plan_mission
 from p5_dispatch import DispatchLedger
+from p5_v05_costs import (
+    validate_pricing, price_estimate, calculate_budget, per_arm_costs
+)
 
 ARMS=("A","B","C")
 MISSION_TYPES=("mathematical","documentary","computational","exploratory","general")
@@ -240,7 +244,8 @@ def _generate(client,model,req,payload,output_cap,timeout):
 
 def execute(cases,manifest,*,client,model,total_token_cap,
             output_token_cap,max_generation_calls,allow_billable_api,
-            output_dir,seed=None,timeout_seconds=90):
+            output_dir,pricing=None,max_estimated_usd=None,
+            seed=None,timeout_seconds=90):
     if not allow_billable_api:
         raise ValueError("paid API generation requires explicit opt-in")
     if not isinstance(model,str) or not model.strip():
@@ -255,6 +260,9 @@ def execute(cases,manifest,*,client,model,total_token_cap,
         raise ValueError("explicit authenticated Responses client required")
     if not isinstance(timeout_seconds,(float,int)) or timeout_seconds<=0:
         raise ValueError("invalid timeout")
+    validate_pricing(pricing,model)
+    # Validate monetary cap BEFORE ANY provider token counting request.
+    calculate_budget([],output_token_cap,pricing,max_estimated_usd)
     target=_secure_outside_git(output_dir)
     if target.exists():
         raise FileExistsError("a run directory cannot be reused or overwritten")
@@ -270,6 +278,11 @@ def execute(cases,manifest,*,client,model,total_token_cap,
         if count+output_token_cap>total_token_cap:
             raise RuntimeError("one model prompt exceeds shared per-call token cap")
         requests.append((item,req,count,payload))
+    # Conservative pre-generation quote: every input at the uncached rate
+    # plus the complete allowed output on all 96 scheduled generations.
+    cost_preflight=calculate_budget(
+        [count for _,_,count,_ in requests],output_token_cap,
+        pricing,max_estimated_usd)
     target.mkdir(mode=0o700,parents=True)
     os.chmod(target,0o700)
     private_start={"status":"STARTED_NOT_COMPLETE",
@@ -283,7 +296,9 @@ def execute(cases,manifest,*,client,model,total_token_cap,
                                       "prompt_sha256":hash_data(req)}
                                      for i,req,cnt,_ in requests],
                    "gold_file_not_loaded":True,
-                   "actual_usd_spend":None}
+                   "actual_usd_spend":None,
+                   "cost_preflight":cost_preflight,
+                   "pricing_card":pricing}
     def save(name,record):
         p=target/name
         with os.fdopen(os.open(p,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600),
@@ -307,6 +322,10 @@ def execute(cases,manifest,*,client,model,total_token_cap,
         if (response["input_tokens"]+response["output_tokens"]>
                 total_token_cap or response["output_tokens"]>output_token_cap):
             raise RuntimeError("provider actual usage exceeds approved token cap")
+        estimated_call_usd=price_estimate(
+            response["input_tokens"],response["output_tokens"],pricing)
+        if response["input_tokens"]>cnt:
+            raise RuntimeError("actual provider input exceeded pre-generation token count")
         row={"call_id":call_id,
              "case_id":item["case_id"],"arm":item["arm"],
              "repetition":item["repetition"],"index":j,
@@ -314,6 +333,7 @@ def execute(cases,manifest,*,client,model,total_token_cap,
              "preflight_input_tokens":cnt,
              "actual_input_tokens":response["input_tokens"],
              "actual_output_tokens":response["output_tokens"],
+             "estimated_model_usd":str(estimated_call_usd),
              "elapsed_seconds":response["latency_seconds"],
              "model":response["model"],
              "provider_response_id":response["response_id"],
@@ -323,6 +343,9 @@ def execute(cases,manifest,*,client,model,total_token_cap,
         # silent automatic retry after an uncertain outcome.
         ledger.finish_payload(identity,row,response)
         completed.append(row)
+        if sum((Decimal(x["estimated_model_usd"]) for x in completed),
+               Decimal(0)) > Decimal(cost_preflight["approved_estimate_budget_usd"]):
+            raise RuntimeError("estimated USD spend exceeded operator budget")
     ledger.verify_results(completed)
     summary={"status":"RUN_UNGRADED","provider_generations":len(completed),
              "frozen_input_sha256":manifest["prompt_only_sha256"],
@@ -333,6 +356,15 @@ def execute(cases,manifest,*,client,model,total_token_cap,
              "measured_latency_seconds":round(sum(
                  x["elapsed_seconds"] for x in completed),6),
              "actual_usd_spend":None,
+             "estimated_model_usd":str(sum((
+                 Decimal(x["estimated_model_usd"]) for x in completed),Decimal(0))),
+             "estimated_budget_upper_usd":cost_preflight["estimated_upper_usd"],
+             "approved_estimate_budget_usd":cost_preflight["approved_estimate_budget_usd"],
+             "rate_card_sha256":cost_preflight["pricing_sha256"],
+             "rate_card_source_url":cost_preflight["pricing_source_url"],
+             "cost_status":"ESTIMATED_FROM_MODEL_TOKENS_NOT_BILLED_USD",
+             "billed_usd":None,
+             "per_arm":per_arm_costs(completed,pricing),
              "case_count":len(cases),"repetitions":REPS,
              "independent_grader_count":0,"answer_key_used":False,
              "primary_quality_comparison_complete":False}
@@ -350,6 +382,10 @@ def main():
     ap.add_argument("--total-token-cap",type=int)
     ap.add_argument("--output-token-cap",type=int)
     ap.add_argument("--max-generation-calls",type=int)
+    ap.add_argument("--pricing-json",
+                    help="operator-verified exact-model USD rate card")
+    ap.add_argument("--max-estimated-usd",
+                    help="explicit cap on estimated model-token USD")
     a=ap.parse_args()
     cases,manifest=validate_inputs(a.inputs,a.manifest)
     if not a.execute:
@@ -359,6 +395,11 @@ def main():
         return
     if not a.output_dir or not a.allow_billable_api:
         ap.error("real model calls require output dir and explicit billable API opt-in")
+    if not a.pricing_json or not a.max_estimated_usd:
+        ap.error("billable run requires a verified rate card and USD estimate cap")
+    # Credentials remain in the operator's environment (OPENAI_API_KEY).
+    # No key value is ever passed as a CLI flag, logged or committed.
+    pricing=json.loads(Path(a.pricing_json).read_text(encoding="utf-8"))
     from openai import OpenAI
     client=OpenAI()
     result=execute(
@@ -368,6 +409,7 @@ def main():
         max_generation_calls=a.max_generation_calls,
         allow_billable_api=a.allow_billable_api,
         output_dir=a.output_dir,
+        pricing=pricing,max_estimated_usd=a.max_estimated_usd,
     )
     print("OMEGA_P5V05_RUN_UNGRADED "+json.dumps(result,sort_keys=True))
 
