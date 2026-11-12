@@ -1,0 +1,88 @@
+name: Omega P5 FALSIFY-02 real Qwen 5-arm integration smoke (synthetic cases)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-falsify02-real-five-arm-smoke.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_falsify02_real_five_arm.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_falsify02_real_five_arm.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_FALSIFY02_REAL_FIVE_ARM_SMOKE_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-open-weight-model-five-arms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      HF_HOME: /tmp/omega-falsify02-hf
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      HF_HUB_DOWNLOAD_TIMEOUT: "120"
+      HF_HUB_ETAG_TIMEOUT: "20"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test all 40 exact finite witnesses, real P1/P2 ablations and fail-closed preflight
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_falsify02_real_five_arm
+          python p5_falsify02_real_five_arm.py --repo-root "$GITHUB_WORKSPACE" \
+            --preflight --output "$RUNNER_TEMP/falsify02_preflight.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/falsify02_preflight.json"))
+          assert x["expected_real_cpu_forwards"]==200
+          assert x["calibration"]==8 and x["evaluation"]==32
+          assert x["ghost_certified"]["prefix_survivor_counts"]==[2,1,0]
+          assert x["same_A_B_prompt"]
+          assert x["actual_P2_search_calls_for_ghost"]>0
+          assert x["P3_is_not_model_runner"]
+          assert not x["is_blinded_independent_benchmark"]
+          print("FALSIFY02_TRUE_FIVE_ARM_PREFLIGHT_CODE_READY_NOT_SCIENTIFIC_RESULT")
+          PY
+      - name: Install open-weight CPU inference dependency (no paid API)
+        run: |
+          python -m pip install "torch==2.6.0" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install "transformers==4.51.3" "safetensors>=0.4.5"
+      - name: Execute 200 ACTUAL fixed-Qwen model forwards across five arms
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_falsify02_real_five_arm.py --repo-root "$GITHUB_WORKSPACE" \
+            --output "$RUNNER_TEMP/falsify02_real_5arm_outputs.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/falsify02_real_5arm_outputs.json"))
+          assert x["status"]=="REAL_FIVE_ARM_LLM_INTEGRATION_SMOKE_SYNTHETIC_EXACT_TASKS"
+          assert x["actual_model_forwards"]==200
+          assert x["calibration_cases"]==8 and x["evaluation_cases"]==32
+          assert x["same_model_version_for_all"]
+          assert x["real_model_execution_performed_by_new_experimental_runner"]
+          assert not x["P3_real_model_execution"]
+          assert not x["realized_resource_parity"]
+          arms=x["per_arm"]
+          assert len(arms)==5
+          assert all(a["actual_forward_passes"]==40 for a in arms.values())
+          assert arms["classical_exact"]["evaluation_correct"]==32
+          assert arms["omega_no_memory"]["total_memory_searches"]==0
+          assert arms["omega_no_observability"]["total_exact_tool_calls"]==0
+          assert arms["omega_full_candidate"]["total_memory_searches"]>0
+          assert arms["omega_full_candidate"]["total_exact_tool_calls"]==40
+          print("FALSIFY02_200_REAL_QWEN_FORWARDS_COMPLETED_NO_UNIQUE_OMEGA_ADVANTAGE_ASSUMED")
+          PY
+      - name: Archive exactly observed prompts/logits/costs and all five-arm results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-falsify02-real-five-arm-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/falsify02_preflight.json
+            ${{ runner.temp }}/falsify02_real_5arm_outputs.json
+          retention-days: 7
+          if-no-files-found: ignore
