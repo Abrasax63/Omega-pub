@@ -93,7 +93,8 @@ class Real02Tests(unittest.TestCase):
 
     def test_alarm_can_trigger_without_hidden_truth(self):
         cal,ev=p.generation_plan()
-        labelled=[(r,{"text":"0","parsed":"0"}) for _,r in cal]
+        labelled=[(r,{"text":p.reference(r),"parsed":p.reference(r)})
+                  for _,r in cal]
         policy=p.Policy("omega_candidate",labelled)
         view=p.public_input(ev[0][1],{"text":"0","parsed":"0"})
         for i in range(6):
