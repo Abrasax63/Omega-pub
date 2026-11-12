@@ -158,6 +158,8 @@ def _query_exact_boolean(connection,sql):
     if ";" in sql or re.search(r"\b(ATTACH|DETACH|PRAGMA|UPDATE|INSERT|DELETE|DROP|ALTER)\b",
                                 sql,re.I):
         raise ValueError("unsafe or compound SQL")
+    if not re.search(r"\bFROM\b",sql,re.I):
+        raise ValueError("constant SELECT is not database evidence")
     rows=connection.execute(sql).fetchall()
     if len(rows)!=1 or len(rows[0])!=1:
         raise ValueError("non-scalar SQL result")
