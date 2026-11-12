@@ -4,6 +4,7 @@ All fixture cases live in TemporaryDirectory; they are deliberately *not*
 the real private cases. The real answer file is not imported or read here.
 """
 from copy import deepcopy
+from datetime import datetime, timezone
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -44,6 +45,15 @@ def write_dummy(folder):
     path=folder/"dummy_manifest.json"
     path.write_text(json.dumps(manifest),encoding="utf-8")
     return cases,inputs,path,manifest
+
+
+def rate_card(model="provider/explicit-test-model"):
+    return {
+        "model":model,"currency":"USD","processing_mode":"standard",
+        "input_usd_per_million":"1.00","output_usd_per_million":"5.00",
+        "source_url":"https://platform.openai.com/pricing",
+        "checked_at_utc":datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),
+    }
 
 
 class FakeOpenAI:
@@ -133,12 +143,20 @@ class P5V05PrivateRunnerTests(unittest.TestCase):
                 output_token_cap=400,
                 max_generation_calls=96,
                 allow_billable_api=True,
-                output_dir=output,seed=20261111)
+                output_dir=output,pricing=rate_card(),
+                max_estimated_usd="1.00",seed=20261111)
             self.assertEqual(summary["status"],"RUN_UNGRADED")
             self.assertEqual(summary["provider_generations"],96)
             self.assertEqual(summary["measured_input_tokens"],96*350)
             self.assertEqual(summary["measured_output_tokens"],96*40)
             self.assertEqual(client.generations,96)
+            self.assertEqual(summary["per_arm"]["A"]["generations"],32)
+            self.assertEqual(summary["per_arm"]["B"]["generations"],32)
+            self.assertEqual(summary["per_arm"]["C"]["generations"],32)
+            self.assertEqual(summary["cost_status"],
+                             "ESTIMATED_FROM_MODEL_TOKENS_NOT_BILLED_USD")
+            self.assertIsNone(summary["billed_usd"])
+            self.assertAlmostEqual(float(summary["estimated_model_usd"]),0.0528)
             self.assertEqual(client.counts,96)
             self.assertTrue((output/"dispatch_events.jsonl").exists())
             self.assertEqual(len(list(output.glob("*.json"))),98)
@@ -148,7 +166,8 @@ class P5V05PrivateRunnerTests(unittest.TestCase):
                         model="provider/explicit-test-model",
                         total_token_cap=1024,output_token_cap=400,
                         max_generation_calls=96,allow_billable_api=True,
-                        output_dir=output,seed=20261111)
+                        output_dir=output,pricing=rate_card(),
+                max_estimated_usd="1.00",seed=20261111)
             self.assertEqual(client.generations,96)
 
     def test_missing_caps_or_provider_refused_before_any_generation(self):
@@ -159,11 +178,13 @@ class P5V05PrivateRunnerTests(unittest.TestCase):
             opts={"model":"provider/explicit-test-model",
                   "total_token_cap":1000,"output_token_cap":300,
                   "max_generation_calls":96,"allow_billable_api":True,
-                  "output_dir":folder/"never-created"}
+                  "output_dir":folder/"never-created",
+                  "pricing":rate_card(),"max_estimated_usd":"1.00"}
             for mutation in (
                 {"allow_billable_api":False},{"max_generation_calls":95},
                 {"model":None},{"output_token_cap":1200},
                 {"total_token_cap":None},
+                {"pricing":None},{"max_estimated_usd":None},
                 {"client":object()},
             ):
                 with self.subTest(mutation=mutation),self.assertRaises(
@@ -183,9 +204,42 @@ class P5V05PrivateRunnerTests(unittest.TestCase):
                         model="provider/explicit-test-model",
                         total_token_cap=500,output_token_cap=200,
                         max_generation_calls=96,allow_billable_api=True,
-                        output_dir=folder/"blocked",seed=123)
+                        output_dir=folder/"blocked",
+                        pricing=rate_card(),max_estimated_usd="1.00",seed=123)
             self.assertEqual(client.generations,0)
             self.assertFalse((folder/"blocked").exists())
+
+    def test_usd_budget_rejection_prevents_all_generations(self):
+        with tempfile.TemporaryDirectory() as d:
+            folder=Path(d)
+            cases,_,_,manifest=write_dummy(folder)
+            client=FakeOpenAI()
+            with self.assertRaises(ValueError):
+                execute(cases,manifest,client=client,
+                        model="provider/explicit-test-model",
+                        total_token_cap=1024,output_token_cap=400,
+                        max_generation_calls=96,allow_billable_api=True,
+                        output_dir=folder/"blocked-money",
+                        pricing=rate_card(),max_estimated_usd="0.22",seed=123)
+            self.assertEqual(client.generations,0)
+            self.assertEqual(client.counts,96)
+            self.assertFalse((folder/"blocked-money").exists())
+
+    def test_usd_pricing_mismatch_fails_before_counting_or_generation(self):
+        with tempfile.TemporaryDirectory() as d:
+            folder=Path(d)
+            cases,_,_,manifest=write_dummy(folder)
+            client=FakeOpenAI()
+            with self.assertRaises(ValueError):
+                execute(cases,manifest,client=client,
+                        model="provider/explicit-test-model",
+                        total_token_cap=1024,output_token_cap=400,
+                        max_generation_calls=96,allow_billable_api=True,
+                        output_dir=folder/"blocked-model",
+                        pricing=rate_card("wrong-model"),
+                        max_estimated_usd="1.00",seed=123)
+            self.assertEqual(client.generations,0)
+            self.assertEqual(client.counts,0)
 
     def test_input_hash_breaks_on_single_character_change_and_rejects_hidden_keys(self):
         with tempfile.TemporaryDirectory() as d:
