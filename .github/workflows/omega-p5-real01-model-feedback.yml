@@ -1,0 +1,74 @@
+name: Omega P5 REAL-01 real model errors and bounded feedback (free CPU)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-real01-model-feedback.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_real01_feedback.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_real01_feedback.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_REAL_FEEDBACK_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  genuine-model-response-feedback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      HF_HOME: /tmp/hf
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test exact/limited verifiers, blind test split and same budgets without LLM
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_real01_feedback
+          python p5_real01_feedback.py --preflight > /tmp/omega-real01-preflight.json
+          python - <<'PY'
+          import json
+          d=json.load(open("/tmp/omega-real01-preflight.json"))
+          assert d["planned_model_generations"]==48
+          assert d["calibration_case_count"]==16
+          assert d["evaluation_case_count"]==32
+          assert d["paid_api_calls"]==0 and not d["private_holdout_read"]
+          print("REAL01_PUBLIC_FROZEN_QUESTIONS",d["public_cases_sha256"])
+          PY
+      - name: Install real open-weight CPU model (no API key)
+        run: |
+          python -m pip install "torch==2.6.0" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install "transformers==4.51.3" "safetensors>=0.4.5"
+      - name: Generate 48 real model outputs then run eight blinded-budget policies
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        env:
+          HF_HUB_DOWNLOAD_TIMEOUT: "120"
+          HF_HUB_ETAG_TIMEOUT: "20"
+        run: |
+          python p5_real01_feedback.py --output "$RUNNER_TEMP/p5_real01_feedback_results.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/p5_real01_feedback_results.json"))
+          assert x["generated_responses"]==48
+          assert x["calibration_cases"]==16 and x["test_cases"]==32
+          assert x["openai_api_calls"]==0 and not x["private_data_used"]
+          assert set(x["policies"])=={
+            "direct","verify_budget","abstain","kind_rule","stratum_rule",
+            "online_beta","omega_candidate","omega_no_alarm"}
+          assert all(v["verified"]<=16 for v in x["policies"].values())
+          print("REAL01_COMPLETE_ACTUAL_MODEL_RESPONSES_AND_TOOL_FEEDBACK")
+          PY
+      - name: Archive complete public model outputs, exact tool results and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-p5-real01-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/p5_real01_feedback_results.json
+          if-no-files-found: ignore
+          retention-days: 7
