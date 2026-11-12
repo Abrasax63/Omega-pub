@@ -31,6 +31,7 @@ MAX_CALLS=2
 ALPHA=.10
 ABSTAIN=.05
 NO_SQL="NO_SQL_OUTPUT"
+NO_LABEL="NO_VERIFIER_LABEL"
 SOURCES={
     "gold":("final-benchmark/test-public.jsonl",
       "b87d7062307cfcf5ae862bf03bd7e82f7123ff39cf0b69d3dc5cc25caaaea810"),
@@ -101,8 +102,10 @@ def ingest(root):
         reports=[]
         for tool in TOOLS:
             pred=raw[tool][key].get("verdict")
+            # Real unparsed/absent output is a paid verifier failure, not
+            # missing ground truth or a reason to drop an inconvenient claim.
             if pred not in LABELS:
-                raise ValueError(f"UNPARSED_{tool}_MODEL_OUTPUT:{key}")
+                pred=NO_LABEL
             receipt=trace_receipt(raw[tool][key])
             reports.append({"verdict":pred,"trace":receipt})
         all_rows.append({
@@ -135,6 +138,8 @@ def ingest(root):
 
 def symbol(row,tool_index,gated):
     report=row["reports_evaluator_only"][tool_index]
+    if report["verdict"]==NO_LABEL:
+        return NO_LABEL
     if gated and report["trace"]["outputs"]==0:
         return NO_SQL
     return report["verdict"]
@@ -148,7 +153,7 @@ class Joint:
     def __init__(self,records,gated,contextual):
         self.gated=gated
         self.contextual=contextual
-        self.symbols=LABELS+(NO_SQL,) if gated else LABELS
+        self.symbols=LABELS+(NO_SQL,NO_LABEL) if gated else LABELS+(NO_LABEL,)
         self.universe=tuple(product(LABELS,self.symbols,self.symbols,self.symbols))
         self.cal=records
         self.ctx_counts=Counter(r["context"] for r in records)
@@ -417,6 +422,10 @@ def run(root):
               "report_verdict_correct_test_evaluator_only":sum(
                   r["reports_evaluator_only"][i]["verdict"]==r["truth_evaluator_only"]
                   for r in test),
+              "no_verdict_calibration":sum(
+                  r["reports_evaluator_only"][i]["verdict"]==NO_LABEL for r in cal),
+              "no_verdict_test":sum(
+                  r["reports_evaluator_only"][i]["verdict"]==NO_LABEL for r in test),
              } for i,tool in enumerate(TOOLS)
     }
     if any(v["trace_available_calibration"]==0 for v in receipts.values()):
