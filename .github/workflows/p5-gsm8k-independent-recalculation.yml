@@ -1,0 +1,55 @@
+name: P5 GSM8K independent recalculation
+on:
+  pull_request:
+    paths:
+      - .github/workflows/p5-gsm8k-independent-recalculation.yml
+permissions:
+  contents: read
+jobs:
+  intake:
+    if: github.head_ref == 'experiment/p5-gsm8k-independent-recalculation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch pinned public corpus
+        run: |
+          python -m pip install pyarrow==19.0.1
+          curl --fail --silent --show-error --location --retry 2 --max-time 90 \
+            'https://huggingface.co/datasets/multi-domain-reasoning/gsm8k_eval/resolve/ee73c1ae289820c42191dde99a9461aded4846d9/data/test-00000-of-00001.parquet' \
+            --output corpus.parquet
+      - name: Prepare blinded questions and a separate evaluator file
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          import pyarrow.parquet as pq
+          p=Path("corpus.parquet")
+          assert hashlib.sha256(p.read_bytes()).hexdigest()=="22e8b058505cf5b8cc073559829e2d56200be63c34a32f303a829a387f824b1f"
+          sources=["baseline_llama_8b","baseline_llama_1b"]
+          rows=pq.read_table(p,columns=["question","answer",*sources]).to_pylist()
+          def h(s):
+              return hashlib.sha256(s.encode()).hexdigest()
+          def sort(rows,salt):
+              return sorted(rows,key=lambda r:h(salt+r["question"]))
+          assert len(rows)==len({r["question"] for r in rows})==1319
+          reserved=sort(rows,"P5-GSM8K-arithmetic-v1|")[600:]
+          sample=sort(reserved,"P5-GSM8K-recompute-v1|")[:24]
+          blind=[]
+          key=[]
+          for i,r in enumerate(sample,1):
+              blind.append({"i":i,"question":r["question"]})
+              key.append({"i":i,"reference":r["answer"].rsplit("#### ",1)[1].strip(),"outputs":[r[s] for s in sources]})
+          Path("questions.json").write_text(json.dumps(blind,ensure_ascii=False,indent=2),encoding="utf-8")
+          Path("evaluator.json").write_text(json.dumps(key,ensure_ascii=False,indent=2),encoding="utf-8")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-recomputation-questions-only
+          path: questions.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-recomputation-evaluator
+          path: evaluator.json
