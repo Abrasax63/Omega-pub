@@ -267,6 +267,7 @@ def evaluate_policies(all_rows,outputs):
             action=policy.choose(view)
             original_correct=(gen["parsed"]==gold(row))
             true=gold(row) # EVALUATOR only; never passed to choose
+            checked=None
             if action=="VERIFY":
                 checked=limited_verifier(row)
                 success=checked is not None
@@ -287,7 +288,7 @@ def evaluate_policies(all_rows,outputs):
                 "action":action,"final":final,
                 "expected":true,  # only public POST-HOC archive, not controller!
                 "model_parsed":gen["parsed"],"model_correct":original_correct,
-                "verified_outcome":limited_verifier(row) if action=="VERIFY" else None,
+                "verified_outcome":checked,
                 "gain":round(gain,5),
             })
         records[name]={

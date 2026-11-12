@@ -85,6 +85,53 @@ class RealFeedbackTests(unittest.TestCase):
              patch.object(m,"limited_verifier",side_effect=AssertionError("tool leakage")):
             for p in policies:
                 self.assertIn(p.choose(view),("DIRECT","VERIFY","ABSTAIN"))
+                p.observe(view, {"resolved": True, "model_correct": False})
+
+    def test_policy_initialization_uses_only_calibration_cases(self):
+        outputs = {row["id"]: {"text": "REPONSE=A", "parsed": "A"}
+                   for row in self.rows}
+        expected = {row["id"] for row in self.rows if row["split"] == "calibration"}
+        self.assertEqual(len(expected), 16)
+        initialize = m.DecisionPolicy.__init__
+
+        def check_calibration(policy, name, calibration):
+            with patch.object(m, "gold", wraps=m.gold) as gold, \
+                 patch.object(m, "limited_verifier", wraps=m.limited_verifier) as verifier:
+                initialize(policy, name, calibration)
+            for tool in (gold, verifier):
+                self.assertEqual({call.args[0]["id"] for call in tool.call_args_list},
+                                 expected)
+
+        with patch.object(m.DecisionPolicy, "__init__", autospec=True,
+                          side_effect=check_calibration) as initialize_spy:
+            m.evaluate_policies(self.rows, outputs)
+        self.assertEqual(initialize_spy.call_count, len(m.POLICIES))
+
+    def test_evaluation_checks_only_paid_verifications_once(self):
+        outputs = {row["id"]: {"text": "REPONSE=A", "parsed": "A"}
+                   for row in self.rows}
+        for name in ("direct", "abstain", "verify_budget"):
+            with self.subTest(policy=name):
+                observe = m.DecisionPolicy.observe
+                with patch.object(m, "POLICIES", (name,)), \
+                     patch.object(m, "limited_verifier", wraps=m.limited_verifier) as verifier, \
+                     patch.object(m.DecisionPolicy, "observe", autospec=True,
+                                  side_effect=observe) as feedback:
+                    result = m.evaluate_policies(self.rows, outputs)[name]
+
+                trajectory = result["trajectory"]
+                if name == "verify_budget":
+                    actions = ["VERIFY"] * m.BUDGET + ["DIRECT"] * (32 - m.BUDGET)
+                else:
+                    actions = [name.upper()] * 32
+                self.assertEqual([step["action"] for step in trajectory], actions)
+                verified_ids = [step["id"] for step in trajectory if step["action"] == "VERIFY"]
+                self.assertEqual([call.args[0]["id"] for call in verifier.call_args_list
+                                  if call.args[0]["split"] == "evaluation"], verified_ids)
+                self.assertEqual([call.args[1]["id"] for call in feedback.call_args_list],
+                                 verified_ids)
+                if verified_ids:
+                    self.assertEqual(result["alarm_log"][-1]["budget_remaining"], 0)
 
     def test_budget_and_complete_trajectories_with_stub_model_outputs(self):
         # Engineering regression only; these are NOT real model responses.
