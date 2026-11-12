@@ -1,0 +1,55 @@
+name: Omega P5 OBS-03 empirical GitHub source provenance (no model)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-obs03-real-provenance.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_obs03_empirical_provenance.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_obs03_empirical_provenance.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/obs03_fresh_pr_part*.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/obs03_real_full_filenames_part*.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_OBS03_REAL_PROVENANCE_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-archived-real-source-receipts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test all 12 GitHub PRs, failure cases and no invented independent evidence
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_p5_obs03_empirical_provenance
+      - name: Recompute source certificates and all short-circuit baselines
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_obs03_empirical_provenance.py --output "$RUNNER_TEMP/obs03_empirical_provenance.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/obs03_empirical_provenance.json"))
+          assert x["status"]=="REAL_SINGLE_PROVIDER_REOBSERVATION_NO_INDEPENDENT_VALIDATION"
+          assert x["real_prs"]==12
+          assert x["independent_provider_count"]==1
+          assert x["independent_external_corroborations"]==0
+          assert x["fresh_github_endpoint_observations"]==36
+          assert x["additional_full_filenames_rereads"]==12
+          assert x["replay_controls"]["policies"]["files_first"]["logical_calls"]==15
+          assert x["replay_controls"]["policies"]["merged_first"]["logical_calls"]==17
+          assert x["replay_controls"]["policies"]["fixed_both"]["logical_calls"]==24
+          assert all(not c["cert"]["correctness_certified_independently"] for c in x["cases"])
+          print("OBS03_CORRELATED_PROVIDER_EVIDENCE_AUDITED_NO_FALSE_INDEPENDENCE")
+          PY
+      - name: Archive immutable audit and per-PR source receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-obs03-provider-audit-${{ github.run_id }}
+          path: ${{ runner.temp }}/obs03_empirical_provenance.json
+          retention-days: 7
+          if-no-files-found: ignore
