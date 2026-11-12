@@ -1,0 +1,92 @@
+name: Omega P5 FALSIFY-03 real Qwen certified decision governance N4 L4
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-falsify03-certified-decision.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_falsify03_governance.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_falsify03_governance.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_FALSIFY03_CERTIFIED_DECISION_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certified-governed-five-arm-real-llm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      HF_HOME: /tmp/omega-falsify03-hf
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      HF_HUB_DOWNLOAD_TIMEOUT: "120"
+      HF_HUB_ETAG_TIMEOUT: "20"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify whole 57344-case finite universe and fail-closed proof governance tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_falsify03_governance
+          python p5_falsify03_governance.py --repo-root "$GITHUB_WORKSPACE" --preflight --output "$RUNNER_TEMP/falsify03_preflight.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/falsify03_preflight.json"))
+          assert x["status"]=="PREFLIGHT_NO_LLM"
+          assert x["universe_checked"]==57344
+          assert x["oracle_agreement_all"] is True
+          assert x["calibration"]==4 and x["evaluation"]==16
+          assert x["expected_real_model_forwards"]==100
+          assert x["tampered_certificate_refused"] is True
+          assert x["p3_model_runner_used"] is False
+          assert x["real_model_calls"]==0
+          assert x["blind_scientific_holdout"] is False
+          print("FALSIFY03_VALID_CERTIFICATE_AND_NO_GOLD_LEAK_PREFLIGHT")
+          PY
+      - name: Install open Qwen CPU inference, same exact model as FALSIFY02
+        run: |
+          python -m pip install "torch==2.6.0" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install "transformers==4.51.3" "safetensors>=0.4.5"
+      - name: Run 100 GENUINE Qwen forwards, P1, cached physical P2, two exact proof methods and decision gate
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_falsify03_governance.py --repo-root "$GITHUB_WORKSPACE" --output "$RUNNER_TEMP/falsify03_real_five_arm_results.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/falsify03_real_five_arm_results.json"))
+          assert x["status"]=="REAL_MODEL_PROOF_GOVERNANCE_INTEGRATION_NOT_INDEPENDENT_BENCHMARK"
+          assert x["total_world_cases_oracles_checked"]==57344
+          assert x["calibration_cases"]==4 and x["evaluation_cases"]==16
+          assert x["genuine_model_forwards"]==100
+          assert x["p2_shared_actual_retrievals"]["physical_p2_calls"]==20
+          assert x["p2_shared_actual_retrievals"]["physical_rce_searches"]>0
+          assert len(x["per_arm"])==5
+          assert all(v["model_forwards"]==20 for v in x["per_arm"].values())
+          assert x["per_arm"]["classical_exact"]["evaluation_correct"]==16
+          assert x["per_arm"]["omega_no_memory"]["evaluation_correct"]==16
+          assert x["per_arm"]["omega_full_governed"]["evaluation_correct"]==16
+          assert x["per_arm"]["omega_no_memory"]["used_memory_in_cases"]==0
+          assert x["per_arm"]["omega_no_observability"]["total_exact_computations"]==0
+          assert x["per_arm"]["omega_full_governed"]["used_memory_in_cases"]==20
+          assert x["omega_specific_gain_over_classical_exact"]==0
+          assert x["memory_effect_identified"] is False
+          for rec in x["individual_cases"]:
+              if rec["arm"] in ("omega_no_memory","omega_full_governed"):
+                  assert rec["certificate_validation"]["status"]=="CERTIFICATE_VALID_TWO_METHODS_SINGLE_DATA_PROVIDER"
+          print("FALSIFY03_ACTUAL_QWEN_GOVERNED_PROOF_AND_FAIR_CLASSICAL_BASELINE_MEASURED")
+          PY
+      - name: Archive real model outputs, exact certificates, costs and failure tests only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-falsify03-governed-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/falsify03_preflight.json
+            ${{ runner.temp }}/falsify03_real_five_arm_results.json
+          retention-days: 7
+          if-no-files-found: ignore
