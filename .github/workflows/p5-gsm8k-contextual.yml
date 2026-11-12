@@ -1,0 +1,189 @@
+name: P5 contextual publication at matched risk
+on:
+  pull_request:
+    paths:
+      - .github/workflows/p5-gsm8k-contextual.yml
+permissions:
+  contents: read
+jobs:
+  intake:
+    if: github.head_ref == 'experiment/p5-external-gsm8k-blind'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch pinned public corpus
+        run: |
+          python -m pip install pyarrow==19.0.1
+          curl --fail --silent --show-error --location --retry 2 --max-time 90 \
+            'https://huggingface.co/datasets/multi-domain-reasoning/gsm8k_eval/resolve/ee73c1ae289820c42191dde99a9461aded4846d9/data/test-00000-of-00001.parquet' \
+            --output corpus.parquet
+      - name: Run fixed selective publication protocol
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          import pyarrow.parquet as pq
+          path=Path("corpus.parquet")
+          sha=hashlib.sha256(path.read_bytes()).hexdigest()
+          assert sha=="22e8b058505cf5b8cc073559829e2d56200be63c34a32f303a829a387f824b1f"
+          sources=["baseline_llama_8b","baseline_llama_1b"]
+          rows=pq.read_table(path,columns=["question","answer",*sources]).to_pylist()
+          assert len(rows)==len({r["question"] for r in rows})==1319
+          def digest(s):
+              return hashlib.sha256(s.encode()).hexdigest()
+          def ordered(rows,salt):
+              return sorted(rows,key=lambda r:digest(salt+r["question"]))
+          legacy={r["question"] for r in ordered(rows,"P5-GSM8K-v1|order|")[:80]}
+          available=[r for r in rows if r["question"] not in legacy]
+          paired={r["question"] for r in ordered(available,"P5-GSM8K-paired-v1|")[:784]}
+          fresh=ordered([r for r in available if r["question"] not in paired],"P5-GSM8K-selective-v1|")
+          assert len(fresh)==455
+          selected=fresh[:452]
+          assert len({r["question"] for r in selected})==452
+          packed=[]
+          for r in selected:
+              outputs=[r[s] for s in sources]
+              assert all(isinstance(x,str) for x in outputs)
+              packed.append({"id":digest(r["question"]),"reference":r["answer"].rsplit("#### ",1)[1].strip(),"outputs":outputs})
+          Path("selective_input.json").write_text(json.dumps(packed),encoding="utf-8")
+          PY
+          node <<'JS'
+          const numeric="[-+]?(?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d+)?(?:/\\d+)?";
+          function number(s){
+            const [a,b]=s.replace(/,/g,"").split("/");
+            const v=b===undefined?Number(a):Number(a)/Number(b);
+            return Number.isFinite(v)?v:null;
+          }
+          function candidates(s,pattern){
+            return [...s.matchAll(new RegExp(pattern,"gim"))].map(m=>number(m[1])).filter(x=>x!==null);
+          }
+          function unique(v){return new Set(v).size===1?v[0]:null;}
+          function extract(s){
+            const primary=candidates(s,"^\\s*#{4}\\s*\\$?\\[?("+numeric+")(?=[\\].\\s%]|$)");
+            const box=candidates(s,"\\\\boxed\\{\\$?("+numeric+")\\}");
+            const label=candidates(s,"^\\s*(?:\\*\\*)?(?:final answer|answer)\\s*[:=]\\s*(?:\\*\\*)?\\$?("+numeric+")\\s*\\.?\\s*(?:\\*\\*)?$");
+            const last=s.trim().split(/\r?\n/).at(-1);
+            const bare=candidates(last,"^\\s*\\$?("+numeric+")\\.?\\s*$");
+            return unique([...primary,...box,...label,...bare]);
+          }
+          
+          
+          const fs=require("node:fs");
+          const crypto=require("node:crypto");
+          const assert=require("node:assert/strict");
+          const rows=JSON.parse(fs.readFileSync("selective_input.json","utf8"));
+          assert.equal(rows.length,452);
+          const modes=["static","discount","bocpd"];
+          const priorStrength=2, hazard=0.25, discount=0.7;
+          const grid=[2.05/3,0.70,0.725,0.75,0.775,0.80,0.825,0.85,0.875,0.90,0.925,0.95,0.975,1];
+          function view(row,source){
+            const raw=row.outputs[source], parsed=extract(raw), gold=number(row.reference);
+            assert.notEqual(gold,null);
+            return {parsed,correct:parsed!==null&&parsed===gold,bin:2*Number(raw.includes("<<"))+Number(raw.length>=500)};
+          }
+          const fitted=rows.slice(0,240).flatMap(row=>[0,1].map(source=>view(row,source))).filter(x=>x.parsed!==null);
+          const pooled=(fitted.filter(x=>x.correct).length+1)/(fitted.length+2);
+          const bins=Array.from({length:4},(_,bin)=>{
+            const data=fitted.filter(x=>x.bin===bin), correct=data.filter(x=>x.correct).length;
+            return {n:data.length,correct,p:(correct+8*pooled)/(data.length+8)};
+          });
+          function model(mode){
+            let histories=bins.map(({p})=>[{a:p*priorStrength,b:(1-p)*priorStrength,w:1}]);
+            let counts=bins.map(()=>[0,0]);
+            return {
+              predict(i){
+                const p=bins[i].p;
+                if(mode==="static")return p;
+                if(mode==="discount")return (priorStrength*p+counts[i][0])/(priorStrength+counts[i][0]+counts[i][1]);
+                return hazard*p+(1-hazard)*histories[i].reduce((sum,x)=>sum+x.w*x.a/(x.a+x.b),0);
+              },
+              update(observed){
+                if(mode==="static")return;
+                for(let i=0;i<bins.length;i++){
+                  const y=observed?.bin===i?observed.correct:null;
+                  const good=Number(y===true),bad=Number(y===false);
+                  if(mode==="discount"){
+                    counts[i]=[discount*counts[i][0]+good,discount*counts[i][1]+bad];
+                    continue;
+                  }
+                  const p=bins[i].p, a=p*priorStrength,b=(1-p)*priorStrength;
+                  const lik=x=>y===null?1:(y?x.a:x.b)/(x.a+x.b);
+                  const next=[{a,b,w:hazard*lik({a,b})},...histories[i].map(x=>({...x,w:(1-hazard)*x.w*lik(x)}))];
+                  const total=next.reduce((s,x)=>s+x.w,0);
+                  histories[i]=next.map(x=>({a:x.a+good,b:x.b+bad,w:x.w/total}));
+                }
+              }
+            };
+          }
+          const cases={stable8B:"0000",stable1B:"1111",alternate8B:"0101",alternate1B:"1010"};
+          function run(mode,threshold,block,scenario,salt){
+            const fit=model(mode), path=[];
+            const counts={right:0,wrong:0,checks:0,abstain:0};
+            const lots=block.length/4;
+            for(let l=0;l<lots;l++){
+              const source=Number(cases[scenario][Math.floor(l*4/lots)]);
+              const audit=crypto.createHash("sha256").update("P5-GSM8K-contextual-v1|"+salt+"|"+l).digest()[0]%4;
+              const lot=block.slice(l*4,l*4+4).map(row=>view(row,source));
+              const options=lot.map((x,i)=>{
+                const p=fit.predict(x.bin),direct=x.parsed!==null&&p>threshold;
+                return {i,p,direct,gain:70-(direct?300*p-200:5)};
+              });
+              const extra=options.filter(x=>x.i!==audit&&x.gain>0).sort((a,b)=>b.gain-a.gain||a.i-b.i)[0]?.i;
+              const actions=options.map(x=>x.i===audit||x.i===extra?"VERIFY":x.direct?"DIRECT":"ABSTAIN");
+              actions.forEach((action,i)=>{
+                if(action==="VERIFY")counts.checks++;
+                else if(action==="ABSTAIN")counts.abstain++;
+                else counts[lot[i].correct?"right":"wrong"]++;
+              });
+              const observation=lot[audit].parsed===null?null:{bin:lot[audit].bin,correct:lot[audit].correct};
+              path.push({audit,observation,actions,p:options.map(x=>x.p)});
+              fit.update(observation);
+            }
+            assert.equal(counts.right+counts.wrong+counts.checks+counts.abstain,block.length);
+            assert.ok(path.every(x=>x.actions[x.audit]==="VERIFY"&&x.actions.filter(a=>a==="VERIFY").length<=2));
+            return {...counts,path};
+          }
+          function combine(runs){
+            const t={right:0,wrong:0,checks:0,abstain:0};
+            for(const r of runs)for(const k of Object.keys(t))t[k]+=r[k];
+            const direct=t.right+t.wrong;
+            return {...t,direct,risk:direct?t.wrong/direct:null,utility:(100*t.right-200*t.wrong+70*t.checks+5*t.abstain)/100};
+          }
+          const dev=rows.slice(240,432);
+          const fresh=rows.slice(432,452);
+          const scenarioNames=Object.keys(cases);
+          const curves=Object.fromEntries(modes.map(mode=>[mode,grid.map(threshold=>{
+            const runs=Array.from({length:3},(_,c)=>scenarioNames.map(s=>run(mode,threshold,dev.slice(c*64,(c+1)*64),s,"dev"+c))).flat();
+            return {threshold,...combine(runs)};
+          })]));
+          const chosen={};
+          const results={};
+          for(const target of [0.10,0.20]){
+            chosen[target]=Object.fromEntries(modes.map(mode=>{
+              const eligible=curves[mode].filter(x=>x.direct>=20&&x.risk<=target).sort((a,b)=>b.direct-a.direct||b.utility-a.utility||b.threshold-a.threshold);
+              return [mode,eligible[0]??curves[mode].at(-1)];
+            }));
+            results[target]=Object.fromEntries(modes.map(mode=>{
+              const runs=Object.fromEntries(scenarioNames.map(s=>[s,run(mode,chosen[target][mode].threshold,fresh,s,"fresh")]));
+              return [mode,{stable:combine([runs.stable8B,runs.stable1B]),alternate:combine([runs.alternate8B,runs.alternate1B]),runs}];
+            }));
+          }
+          for(const target of [0.10,0.20])for(const scenario of scenarioNames){
+            const reference=results[target].static.runs[scenario].path;
+            for(const mode of modes)results[target][mode].runs[scenario].path.forEach((x,i)=>{
+              assert.equal(x.audit,reference[i].audit);
+              assert.deepEqual(x.observation,reference[i].observation);
+            });
+          }
+          const compact=Object.fromEntries(Object.entries(results).map(([t,v])=>[t,Object.fromEntries(Object.entries(v).map(([m,{stable,alternate}])=>[m,{stable,alternate}]))]));
+          const summary={fitQuestions:240,developmentQuestions:192,holdoutQuestions:20,pooled,bins,chosen,results:compact};
+          fs.writeFileSync("contextual_results.json",JSON.stringify({summary,curves,results},null,2));
+          console.log(JSON.stringify(summary,null,2));
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-gsm8k-contextual-results
+          path: contextual_results.json
