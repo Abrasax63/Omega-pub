@@ -1,0 +1,45 @@
+name: Omega P5 v0.5 private benchmark runner safety
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_v05_private_runner.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_v05_costs.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_v05_costs.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_v05_private_runner.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/evaluation/p5_v05_candidate_public_manifest.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_V05_PRIVATE_EXEC_PREREG_2026-11-11.md"
+      - ".github/workflows/omega-p5-v05-private-runner.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  zero-billable-mock-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test hash gates, equal prompts, cost caps and durable 96-call mock ledger
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_v05_costs test_p5_v05_private_runner test_p5_abc_fair_preflight test_p5_abc_budget_gate
+      - name: Confirm public committed manifest contains no private case content
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("09_INFRASTRUCTURE_AGENTIQUE/evaluation/p5_v05_candidate_public_manifest.json")
+          m=json.loads(p.read_text(encoding="utf-8"))
+          assert m["case_count"]==16
+          assert m["expected_generations"]==96
+          assert m["model_generations_executed"]==0
+          assert len(m["prompt_only_sha256"])==64
+          assert len(m["private_gold_sha256_commitment"])==64
+          assert "cases" not in m and "answers" not in m
+          print("P5V05_SAFE_MOCK_PREFLIGHT 0 real provider calls; 16 private candidates; 96 scheduled model generations NOT RUN")
+          PY

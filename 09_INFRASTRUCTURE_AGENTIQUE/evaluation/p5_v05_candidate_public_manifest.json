@@ -1,0 +1,23 @@
+{
+  "protocol": "P5V05_CANDIDATE",
+  "status": "PRIVATE_CANDIDATE_NOT_BLIND_NOT_INDEPENDENTLY_VETTED",
+  "case_count": 16,
+  "domains": {
+    "FORMAL": 4,
+    "CRT": 4,
+    "DOC": 4,
+    "DATA": 4
+  },
+  "prompt_only_sha256": "10a922b187ecf5752c13a4d2da1e690b1606e9da525b78051e56ab3b1d4099d9",
+  "private_gold_sha256_commitment": "ecfa7e4e4544840219379b507f496d65625ec1f0575352bda1b66a87f605417b",
+  "expected_arms": [
+    "A",
+    "B",
+    "C"
+  ],
+  "expected_repetitions": 2,
+  "expected_generations": 96,
+  "model_generations_executed": 0,
+  "human_independent_graders": 0,
+  "privacy": "Private candidate and answer key are stored in user's private Library /Omega-Private/P5V05-Candidate-2026-11-11; public Git receives only commitments."
+}
