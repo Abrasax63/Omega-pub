@@ -1,0 +1,76 @@
+name: Omega P5 REAL-02 hidden dual-model shifts (free public CPU)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-real02-dual-model-feedback.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_real02_multimodel.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_real02_multimodel.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_REAL02_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  two-open-models-exact-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      HF_HOME: /tmp/hf
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      HF_HUB_DOWNLOAD_TIMEOUT: "120"
+      HF_HUB_ETAG_TIMEOUT: "20"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check blind input, budget, duplicate prevention and independent exact solvers
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_real02_multimodel
+          python p5_real02_multimodel.py --preflight > /tmp/p5_real02_preflight.json
+          python - <<'PY'
+          import json
+          d=json.load(open("/tmp/p5_real02_preflight.json"))
+          assert d["oracles_agree_on_all"]==80
+          assert d["expected_generations"]==96
+          assert d["evaluation_generations"]==64
+          assert d["paid_api_calls"]==0 and not d["private_data_read"]
+          print("REAL02_FROZEN_PUBLIC_INPUT_DIGEST",d["public_cases_sha256"])
+          PY
+      - name: Install CPU-only inference dependencies (no paid API)
+        run: |
+          python -m pip install "torch==2.6.0" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install "transformers==4.51.3" "safetensors>=0.4.5"
+      - name: Generate 96 real responses from two models on remote GitHub CPU
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_real02_multimodel.py --output "$RUNNER_TEMP/p5_real02_results.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/p5_real02_results.json"))
+          assert x["status"]=="PUBLIC_REAL_MULTIMODEL_EXPLORATORY_NOT_INDEPENDENT"
+          assert len(x["raw_model_outputs"])==96
+          assert x["evaluation_decisions"]==64 and x["real_generations"]==96
+          assert x["budgets_equal"]==24 and not x["private_data_used"]
+          assert x["paid_api_calls"]==0
+          assert all(p["verified"]<=24 for p in x["policy_results"].values())
+          assert len(x["policy_results"])==8
+          assert all(len(p["trajectory"])==64 for p in x["policy_results"].values())
+          assert all(v["model"] in ("small","large")
+                     for v in x["model_test"]["by_phase"].values())
+          print("REAL02_COMPLETE_ALL_96_GENUINE_RESPONSES")
+          PY
+      - name: Store public raw transcripts, decisions, costs and source model commits
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-p5-real02-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/p5_real02_results.json
+          if-no-files-found: ignore
+          retention-days: 7
