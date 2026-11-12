@@ -1,0 +1,9 @@
+# P5-REAL-02 — amendement de protocole, avant lecture des résultats
+
+**12 novembre 2026.** L'essai pré-enregistré prévoyait 80 énoncés distincts. Un contrôle programmatique sur le générateur initial a trouvé **17 images INJ différentes seulement parmi 20 cas**. Collisions d'indices : INJ-06 / INJ-08, INJ-10 / INJ-16, INJ-13 / INJ-17. Ce défaut viole la condition de diversité. Il a été découvert pendant la phase d'inférence du **premier workflow** [43201065909](https://github.com/Abrasax63/Omega-pub/actions/runs/43201065909), **avant toute consultation de ses sorties**. Le premier workflow ne sera pas utilisé pour les comparaisons ni pour choisir des hyperparamètres ; il ne constitue qu'un essai d'intégration.
+
+**Correction vérifiable** : substituer aux rotations cycliques un ordre SHA-256 des images d'une permutation pour chaque cas `INJ`, puis ajouter un invariant `len({(kind,parameters)}) == 80` et un test séparé pour les **80 questions textuellement distinctes**. L'implémentation reste construite par une fonction SHA256 déterministe et suit les mêmes quotas par modèle, la même séquence, les mêmes stratégies, budgets et seuils. Le contenu de certaines questions a changé : c'est **une modification du jeu**, qui interdit de présenter le deuxième run comme un holdout entièrement gelé avant toute inférence du premier run.
+
+Le run suivant est la **première exécution corrigée destinée à l'analyse exploratoire**. Les résultats ne doivent être utilisés pour aucun réglage a posteriori. Tout nouvel échec de vérification ou de protocole exige de documenter le changement avant une éventuelle reprise. Aucun résultat positif éventuel ne constituera une validation indépendante extérieure.
+
+**Transparence** : cette modification constitue une déviation par rapport au pré-enregistrement initial ; signaler cet amendement dans la PR et dans le rapport, y compris si la version corrigée apporte un gain.
