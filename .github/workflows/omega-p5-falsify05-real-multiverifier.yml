@@ -66,7 +66,13 @@ jobs:
           assert r["model_calls_now"]==0 and r["actual_sql_executed_by_omega"]==0
           assert r["omega_like_is_actual_P1_P2_P3"] is False
           assert r["source_manifest"]["calibration_count"]+r["source_manifest"]["evaluation_count"]==1000
-          assert r["source_manifest"]["evaluation_databases"]>=10
+          # ClaimDB's 1000-row public test actually covers only 11 database groups.
+          # Keep the original DB-disjoint 60/40 split: 7 calibration / 4 test.
+          assert r["source_manifest"]["number_of_databases"]==11
+          assert r["source_manifest"]["calibration_databases"]==7
+          assert r["source_manifest"]["evaluation_databases"]==4
+          assert r["source_manifest"]["calibration_count"]==581
+          assert r["source_manifest"]["evaluation_count"]==419
           assert set(r["policy_summary"])==set(r["policy_names"])
           assert r["primary_paired_effect_omega_minus_bayes_context"]["bootstrap_rounds"]==2000
           n=r["source_manifest"]["evaluation_count"]
