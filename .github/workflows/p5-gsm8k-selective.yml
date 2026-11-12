@@ -90,7 +90,7 @@ jobs:
             let states=[{a,b,w:1}];
             return {
               predict(){
-                if(mode==="bocpd")return states.reduce((s,x)=>s+x.w*x.a/(x.a+x.b),0);
+                if(mode==="bocpd")return hazard*a/(a+b)+(1-hazard)*states.reduce((s,x)=>s+x.w*x.a/(x.a+x.b),0);
                 return (a+good)/(a+b+good+bad);
               },
               update(y){
@@ -131,9 +131,10 @@ jobs:
           const close=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-12);
           const detector=estimate("bocpd",1,1);
           detector.update(true);
-          close(detector.predict(),2/3);
+          close(detector.predict(),0.25*0.5+0.75*(2/3));
           detector.update(false);
-          close(detector.predict(),0.25*(1/2)*(1/3)/(0.25*(1/2)+0.75*(1/3))+0.75*(1/3)*(1/2)/(0.25*(1/2)+0.75*(1/3)));
+          const posterior=(0.25*(1/2)*(1/3)+0.75*(1/3)*(1/2))/(0.25*(1/2)+0.75*(1/3));
+          close(detector.predict(),0.25*0.5+0.75*posterior);
           assert.deepEqual(allocation([1,null,3,4],0.8,2),["DIRECT","VERIFY","VERIFY","DIRECT"]);
           assert.deepEqual(allocation([1,2,3,4],0.99,2),["DIRECT","DIRECT","VERIFY","DIRECT"]);
           const calibration=rows.slice(0,48).flatMap(row=>[0,1].map(source=>view(row,source)));
