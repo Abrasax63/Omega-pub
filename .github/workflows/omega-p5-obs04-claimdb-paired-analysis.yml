@@ -1,0 +1,67 @@
+name: Omega OBS-04 real ClaimDB with-SQL vs without-SQL paired-method audit
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-obs04-claimdb-paired-analysis.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_obs04_claimdb_real_disagreement.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_obs04_claimdb_real_disagreement.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-trace-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: omega
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Git LFS for real externally hosted model logs
+        run: git lfs version || (sudo apt-get update -qq && sudo apt-get install -y git-lfs)
+      - uses: actions/checkout@v4
+        with:
+          repository: claimdb/claimdb
+          ref: e06c3a22cc14a8ef6858bb5d40bca7925241b98d
+          path: original-claimdb
+          lfs: true
+          sparse-checkout: |
+            final-benchmark/test-public.jsonl
+            experiments/public/gpt-5-mini.jsonl
+            experiments/public/no_tools/gpt-5-mini.jsonl
+          sparse-checkout-cone-mode: false
+      - name: Test no-leak paired join and no synthetic predictions
+        working-directory: omega/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_p5_obs04_claimdb_real_disagreement
+      - name: Execute real 1,000 claim comparison without any new model inference
+        working-directory: omega/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_obs04_claimdb_real_disagreement.py --source-root "$GITHUB_WORKSPACE/original-claimdb" --output "$RUNNER_TEMP/obs04_claimdb_paired.json"
+          python - <<'PY'
+          import json,os
+          r=json.load(open(os.environ["RUNNER_TEMP"]+"/obs04_claimdb_paired.json"))
+          assert r["protocol"]=="P5-OBS-04"
+          assert r["gold_record_count"]==1000
+          assert r["status"]=="REAL_PAIRED_LLM_METHOD_DISAGREEMENT_SINGLE_BENCHMARK_PROVIDER"
+          assert r["valid_paired_verdicts"]==1000
+          assert r["new_model_inferences"]==0
+          assert r["sources"]["sql"]["sha256"]=="e31443bd85f46c4edc4a146243bb709634c6330c2914c726630c3f3349edb100"
+          assert r["same_model_family_not_independent_provider"] is True
+          assert r["gold_database_not_recomputed"] is True
+          assert r["model_policies"]["sql_tools"]==r["model_policies"]["prefer_sql_when_disagree"]
+          assert r["model_policies"]["agree_or_abstain"]["abstained"]==r["outcome_counts"]["disagreements"]
+          print("OBS04_REAL_1000_PAIRED_VERDICTS_WITHOUT_INDEPENDENCE_OVERCLAIMS")
+          PY
+      - name: Archive public derived metrics and IDs only (not original model or DB logs)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-p5-obs04-derived-metrics-${{ github.run_id }}
+          path: ${{ runner.temp }}/obs04_claimdb_paired.json
+          retention-days: 7
+          if-no-files-found: ignore
