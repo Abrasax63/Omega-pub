@@ -1,0 +1,55 @@
+name: Omega P5 FALSIFY-01 five-arm causality readiness gate (not model benchmark)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-falsify01-five-arm-readiness.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_falsify01_readiness.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_falsify01_readiness.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_FALSIFY01_FIVE_ARM_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  detect-actual-mechanisms-and-block-fake-results:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test real planner, real RCE reader, P3 recorder, counterexamples and negative causal controls
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_falsify01_readiness
+      - name: Produce structured and explicit NOT_READY verdict; no LLM and no false five-arm score
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_falsify01_readiness.py \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --output "$RUNNER_TEMP/p5_falsify01_readiness.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/p5_falsify01_readiness.json"))
+          assert x["protocol"]=="P5-FALSIFY-01"
+          assert x["status"]=="PRE_REGISTERED_5_ARM_EXECUTION_NOT_READY"
+          assert x["readiness"]=="NOT_READY"
+          assert len(x["required_arms"])==5
+          assert x["actual_P1_execution_model"]["status"]=="planning_only"
+          assert x["model_inference_now"]==0
+          assert x["new_genuine_evaluation_tasks_scored"]==0
+          assert not x["arms_have_genuine_5_way_results"]
+          assert not all(g["pass"] for g in x["gates"].values())
+          print("FALSIFY01_VALID_DIAGNOSTIC_FAIL_CLOSED_BEFORE_COSTLY_BENCHMARK")
+          PY
+      - name: Archive actual architecture evidence and missing gates
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-p5-falsify01-readiness-${{ github.run_id }}
+          path: ${{ runner.temp }}/p5_falsify01_readiness.json
+          retention-days: 7
+          if-no-files-found: ignore
