@@ -1,0 +1,65 @@
+name: Omega P5 EVID-04 actual ClaimDB source reproducibility and proof guard
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-evid04-claimdb-source.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_evid04_claimdb_adapter.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_evid04_claimdb_adapter.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/evid04_claimdb_public_sample_36.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_EVID04_CLAIMDB_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-real-annotated-claim-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run negative controls for leaked labels, fake witnesses and read-only SQL
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_evid04_claimdb_adapter
+      - name: Download original public test labels from PINNED author repository commit
+        run: |
+          curl --fail --location --silent --show-error --retry 2 --max-time 45 \
+            'https://raw.githubusercontent.com/claimdb/claimdb/e06c3a22cc14a8ef6858bb5d40bca7925241b98d/final-benchmark/test-public.jsonl' \
+            --output "$RUNNER_TEMP/claimdb_test_public_original.jsonl"
+          test -s "$RUNNER_TEMP/claimdb_test_public_original.jsonl"
+          test "$(git hash-object "$RUNNER_TEMP/claimdb_test_public_original.jsonl")" = "a017545623508c0090cf2148716b8d26a6f8c337"
+          echo "CLAIMDB_ORIGINAL_PUBLIC_SOURCE_GIT_BLOB_SHA_VERIFIED"
+      - name: Recompute all 36 sampled claims from original 1000-line split and run guard
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_evid04_claimdb_adapter.py \
+            --source "$RUNNER_TEMP/claimdb_test_public_original.jsonl" \
+            --output "$RUNNER_TEMP/p5_evid04_source_audit.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/p5_evid04_source_audit.json"))
+          assert x["protocol"]=="P5-EVID-04"
+          assert x["status"]=="REAL_THIRD_PARTY_ANNOTATIONS_PROVENANCE_ONLY_NO_WITNESS"
+          assert x["source_reproduction"]["exact_sample_reproduced"]
+          assert x["source_reproduction"]["source_blob_verified"]
+          assert x["source_reproduction"]["source_records"]==1000
+          assert x["annotated_claims"]==36
+          assert x["abstain_missing_evidence"]==36
+          assert x["actual_sql_queries_executed_on_claimdb_databases"]==0
+          assert x["reproduced_independent_verdicts"]==0
+          assert x["source_license"]=="CC-BY-SA-4.0"
+          print("EVID04_EXTERNAL_CLAIM_ANNOTATIONS_GENUINE_AND_NO_UNVERIFIED_CLAIM_PUBLISHED")
+          PY
+      - name: Archive source audit only, NOT an invented set of verdicts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-evid04-claimdb-${{ github.run_id }}
+          path: ${{ runner.temp }}/p5_evid04_source_audit.json
+          retention-days: 7
+          if-no-files-found: ignore
