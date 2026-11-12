@@ -81,6 +81,8 @@ class ClaimDBEvidenceIntegrity(unittest.TestCase):
             self.assertEqual(r["db_sha256"],digest)
             self.assertEqual(r["status"],
                 "EXECUTED_SQL_AGREEMENT_SINGLE_DB_PROVIDER")
+            self.assertFalse(r["claim_semantics_independently_reviewed"])
+            self.assertFalse(r["independent_fact_verification"])
 
     def test_contradiction_or_changed_snapshot_refused(self):
         ctxt,p,digest=self._with_db()
@@ -104,7 +106,8 @@ class ClaimDBEvidenceIntegrity(unittest.TestCase):
         ctxt,p,digest=self._with_db()
         with ctxt:
             case=a.policy_input(self.sample["cases"][0])
-            for invalid in ("UPDATE sample SET value = 2",
+            for invalid in ("SELECT 1",
+                            "UPDATE sample SET value = 2",
                             "SELECT 1; SELECT 2",
                             "PRAGMA table_info(sample)",
                             "SELECT value FROM sample",
