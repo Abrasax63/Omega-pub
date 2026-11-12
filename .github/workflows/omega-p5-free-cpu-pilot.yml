@@ -1,0 +1,73 @@
+name: Omega P5 free real CPU model pilot (public calibration)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-free-cpu-pilot.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_free_cpu_pilot.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_free_cpu_pilot.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-cpu-model-pilot:
+    # Standard GitHub-hosted runner on PUBLIC repository, no paid larger runner.
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      HF_HOME: ${{ runner.temp }}/hf
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test no-private-holdout prompts and zero API
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_free_cpu_pilot
+          python p5_free_cpu_pilot.py --preflight > /tmp/p5-free-preflight.json
+          python - <<'PY'
+          import json
+          d=json.load(open("/tmp/p5-free-preflight.json"))
+          assert d["max_paid_api_calls"] == 0
+          assert d["planned_local_generations"] == 18
+          assert d["private_holdout_accessed"] is False
+          PY
+      - name: Install public CPU inference stack without API key
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "torch==2.6.0" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install "transformers==4.51.3" "safetensors>=0.4.5"
+      - name: Run REAL local Qwen model inference (18 public generations)
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        env:
+          HF_HUB_ETAG_TIMEOUT: "20"
+          HF_HUB_DOWNLOAD_TIMEOUT: "120"
+        run: |
+          python p5_free_cpu_pilot.py --output "$RUNNER_TEMP/p5_public_cpu_results.json"
+          python - <<'PY'
+          import json, os
+          from collections import Counter
+          p=os.environ["RUNNER_TEMP"]+"/p5_public_cpu_results.json"
+          report=json.load(open(p))
+          assert len(report["rows"])==18
+          assert Counter(r["arm"] for r in report["rows"]) == {"A":6,"B":6,"C":6}
+          assert report["no_paid_api"] is True
+          assert report["not_private_p5"] is True
+          assert report["model_revision"]
+          print("REAL_PUBLIC_MODEL_PILOT_COMPLETE",report["per_arm"])
+          PY
+      - name: Archive public pilot results only (no private benchmark data)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p5-free-public-cpu-pilot-${{ github.run_id }}
+          path: ${{ runner.temp }}/p5_public_cpu_results.json
+          if-no-files-found: ignore
+          retention-days: 3
