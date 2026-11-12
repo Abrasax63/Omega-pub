@@ -1,0 +1,73 @@
+name: P5 external GSM8K blinded intake
+on:
+  pull_request:
+    paths:
+      - .github/workflows/p5-external-gsm8k-blind.yml
+permissions:
+  contents: read
+jobs:
+  intake:
+    if: github.head_ref == 'experiment/p5-external-gsm8k-blind'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch pinned public corpus
+        run: |
+          python -m pip install pyarrow==19.0.1
+          curl --fail --silent --show-error --location --retry 2 --max-time 90 \
+            'https://huggingface.co/datasets/multi-domain-reasoning/gsm8k_eval/resolve/ee73c1ae289820c42191dde99a9461aded4846d9/data/test-00000-of-00001.parquet' \
+            --output corpus.parquet
+      - name: Prepare disjoint calibration and blind annotation packet
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          import pyarrow.parquet as pq
+
+          path = Path('corpus.parquet')
+          revision = 'ee73c1ae289820c42191dde99a9461aded4846d9'
+          sources = ['baseline_llama_1b', 'baseline_llama_8b']
+          corpus = pq.read_table(path, columns=['question','answer',*sources]).to_pylist()
+          assert len(corpus) == 1319
+          def digest(s):
+              return hashlib.sha256(s.encode('utf-8')).hexdigest()
+          def order(row):
+              return digest('P5-GSM8K-v1|order|' + row['question'])
+          rows = sorted(corpus, key=order)
+          assert len({r['question'] for r in rows}) == len(rows)
+          calibration = rows[:16]
+          test = rows[16:80]
+          # The benchmark role is hidden in the annotation packet.
+          packet, key = [], []
+          def add(row, source, split, position):
+              response = row[source]
+              assert isinstance(response, str)
+              gold = row['answer'].rsplit('#### ',1)[1].strip()
+              token = digest('P5-GSM8K-v1|blind|' + row['question'] + '|' + source)
+              packet.append(dict(id=token, question=row['question'], response=response))
+              key.append(dict(id=token, reference=gold, source=source, split=split, position=position))
+          for i,row in enumerate(calibration):
+              for source in sources:
+                  add(row,source,'calibration',i)
+          for i,row in enumerate(test):
+              add(row,sources[1-(i//16)%2],'test',i)
+          packet.sort(key=lambda row:row['id'])
+          assert len({r['id'] for r in packet}) == 96
+          Path('blind').mkdir()
+          Path('key').mkdir()
+          Path('blind/packet.json').write_text(json.dumps(packet,ensure_ascii=False,indent=2),encoding='utf-8')
+          Path('key/evaluator.json').write_text(json.dumps({
+              'revision':revision,'parquet_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'rows':key
+          },indent=2),encoding='utf-8')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-external-gsm8k-blind-packet
+          path: blind/packet.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-external-gsm8k-evaluator-key
+          path: key/evaluator.json
