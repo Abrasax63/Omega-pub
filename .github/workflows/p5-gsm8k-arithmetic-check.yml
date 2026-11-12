@@ -1,0 +1,178 @@
+name: P5 GSM8K executable arithmetic check
+on:
+  pull_request:
+    paths:
+      - .github/workflows/p5-gsm8k-arithmetic-check.yml
+permissions:
+  contents: read
+jobs:
+  intake:
+    if: github.head_ref == 'experiment/p5-gsm8k-arithmetic-check'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch pinned public corpus
+        run: |
+          python -m pip install pyarrow==19.0.1
+          curl --fail --silent --show-error --location --retry 2 --max-time 90 \
+            'https://huggingface.co/datasets/multi-domain-reasoning/gsm8k_eval/resolve/ee73c1ae289820c42191dde99a9461aded4846d9/data/test-00000-of-00001.parquet' \
+            --output corpus.parquet
+      - name: Compare fixed checks on archived paired responses
+        run: |
+          python - <<'PY'
+          import ast
+          import hashlib
+          import json
+          import operator
+          import re
+          from fractions import Fraction
+          from pathlib import Path
+          import pyarrow.parquet as pq
+          
+          data_path=Path("corpus.parquet")
+          sha=hashlib.sha256(data_path.read_bytes()).hexdigest()
+          assert sha=="22e8b058505cf5b8cc073559829e2d56200be63c34a32f303a829a387f824b1f"
+          sources=["baseline_llama_8b","baseline_llama_1b"]
+          corpus=pq.read_table(data_path,columns=["question","answer",*sources]).to_pylist()
+          assert len(corpus)==len({r["question"] for r in corpus})==1319
+          def digest(s):
+              return hashlib.sha256(s.encode()).hexdigest()
+          corpus.sort(key=lambda r:digest("P5-GSM8K-arithmetic-v1|"+r["question"]))
+          
+          numeric=r"[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:/\d+)?"
+          final_patterns=[
+              re.compile(r"^\s*#{4}\s*\$?\[?("+numeric+r")(?=[\].\s%]|$)",re.M),
+              re.compile(r"\\boxed\{\$?("+numeric+r")\}"),
+              re.compile(r"^\s*(?:\*\*)?(?:final answer|answer)\s*[:=]\s*(?:\*\*)?\$?("+numeric+r")\s*\.?\s*(?:\*\*)?$",re.I|re.M),
+          ]
+          bare=re.compile(r"^\s*\$?("+numeric+r")\.?\s*$")
+          trace_pattern=re.compile(r"<<([^<>\n]{1,180})>>")
+          def value(s):
+              return Fraction(s.replace(",",""))
+          def parse(raw):
+              matches=[(m.start(),value(m[1])) for pattern in final_patterns for m in pattern.finditer(raw)]
+              last=raw.rstrip().split("\n")[-1]
+              m=bare.fullmatch(last)
+              if m:
+                  matches.append((len(raw.rstrip())-len(last),value(m[1])))
+              if len({v for _,v in matches})!=1:
+                  return None,""
+              return matches[0][1],raw[:min(i for i,_ in matches)]
+          ops={ast.Add:operator.add,ast.Sub:operator.sub,ast.Mult:operator.mul,ast.Div:operator.truediv}
+          signs={ast.UAdd:operator.pos,ast.USub:operator.neg}
+          def arithmetic(expression):
+              normalized=expression.strip().replace("×","*").replace("÷","/").replace("−","-").replace(",","")
+              if len(normalized)>100 or not re.fullmatch(r"[0-9.+*/()\s-]+",normalized):
+                  raise ValueError("unsupported characters")
+              root=ast.parse(normalized,mode="eval")
+              if sum(1 for _ in ast.walk(root))>40:
+                  raise ValueError("expression too large")
+              def walk(node):
+                  if isinstance(node,ast.Constant) and type(node.value) in {int,float}:
+                      return Fraction(ast.get_source_segment(normalized,node))
+                  if isinstance(node,ast.UnaryOp) and type(node.op) in signs:
+                      return signs[type(node.op)](walk(node.operand))
+                  if isinstance(node,ast.BinOp) and type(node.op) in ops:
+                      return ops[type(node.op)](walk(node.left),walk(node.right))
+                  raise ValueError("unsupported operation")
+              return walk(root.body)
+          def audit(explanation,final):
+              traces=trace_pattern.findall(explanation)
+              if not traces:
+                  return "unavailable"
+              last=None
+              unknown=False
+              for trace in traces:
+                  try:
+                      left,right=trace.split("=")
+                      x,y=arithmetic(left),arithmetic(right)
+                  except (SyntaxError,ValueError,ZeroDivisionError,OverflowError):
+                      unknown=True
+                      continue
+                  if x!=y:
+                      return "arithmetic_error"
+                  last=y
+              if unknown or last is None:
+                  return "unsupported"
+              return "consistent" if last==final else "final_mismatch"
+          assert audit("<<2+3=5>>",Fraction(5))=="consistent"
+          assert audit("<<2+3=6>>",Fraction(6))=="arithmetic_error"
+          assert audit("<<2+3=5>>",Fraction(6))=="final_mismatch"
+          assert audit("<<2**3=8>>",Fraction(8))=="unsupported"
+          assert audit("<<0.1+0.2=0.3>>",Fraction("0.3"))=="consistent"
+          assert audit("",Fraction(5))=="unavailable"
+          
+          features=("format","agreement","text","arithmetic")
+          def items(block):
+              for row in block:
+                  raws=[row[s] for s in sources]
+                  answers=[parse(raw) for raw in raws]
+                  gold=value(row["answer"].rsplit("#### ",1)[1].strip())
+                  for source,raw in enumerate(raws):
+                      final,explanation=answers[source]
+                      if final is None:
+                          continue
+                      other=answers[1-source][0]
+                      plain=trace_pattern.sub("",explanation)
+                      mentions=re.findall(numeric,plain[-250:])
+                      lexical="unavailable" if not mentions else "agree" if value(mentions[-1])==final else "other"
+                      yield dict(id=digest(row["question"]),source=source,correct=final==gold,
+                                 format=str(int(len(raw)>=500)),
+                                 agreement="unavailable" if other is None else "agree" if other==final else "other",
+                                 text=lexical,arithmetic=audit(explanation,final))
+          fit=list(items(corpus[:300]))
+          dev=list(items(corpus[300:600]))
+          test=list(items(corpus[600:]))
+          assert min(len(fit),len(dev),len(test))>20
+          pool=(sum(x["correct"] for x in fit)+1)/(len(fit)+2)
+          base={}
+          for f in ["0","1"]:
+              rows=[x for x in fit if x["format"]==f]
+              base[f]=(sum(x["correct"] for x in rows)+8*pool)/(len(rows)+8)
+          models={}
+          for feature in features:
+              model={}
+              for key in {(x["format"],x[feature]) for x in fit}:
+                  rows=[x for x in fit if (x["format"],x[feature])==key]
+                  model[key]=(sum(x["correct"] for x in rows)+8*base[key[0]])/(len(rows)+8)
+              models[feature]=model
+          def score(x,feature):
+              if feature=="format":
+                  return base[x["format"]]
+              return models[feature].get((x["format"],x[feature]),base[x["format"]])
+          thresholds=[0.5,0.55,0.6,0.625,0.65,0.675,0.7,0.725,0.75,0.775,0.8,0.825,0.85,0.875,0.9,0.925,0.95,0.975,1]
+          def measure(rows,feature,threshold):
+              published=[x for x in rows if score(x,feature)>=threshold]
+              errors=sum(not x["correct"] for x in published)
+              return dict(threshold=threshold,published=len(published),errors=errors,risk=errors/len(published) if published else None)
+          curves={f:[measure(dev,f,t) for t in thresholds] for f in features}
+          results={}
+          for target in [0.1,0.2]:
+              table={}
+              for f in features:
+                  eligible=[x for x in curves[f] if x["published"]>=20 and x["risk"]<=target]
+                  chosen=min(eligible,key=lambda x:(-x["published"],x["risk"],-x["threshold"])) if eligible else None
+                  t=chosen["threshold"] if chosen else 1
+                  table[f]=dict(qualified=bool(chosen),development=measure(dev,f,t),holdout=measure(test,f,t))
+              results[str(target)]=table
+          def stats(rows,feature):
+              return {k:dict(n=len(g),correct=sum(x["correct"] for x in g))
+                      for k in sorted({x[feature] for x in rows})
+                      for g in [[x for x in rows if x[feature]==k]]}
+          common=[x for x in test if x["arithmetic"] in {"consistent","final_mismatch","arithmetic_error"} and x["agreement"]!="unavailable" and x["text"]!="unavailable"]
+          def brier(rows):
+              return {f:sum((score(x,f)-x["correct"])**2 for x in rows)/len(rows) for f in features} if rows else {}
+          summary=dict(sha=sha,questions=len(corpus),holdoutQuestions=len(corpus)-600,fitExtracted=len(fit),developmentExtracted=len(dev),holdoutExtracted=len(test),
+                       counts={f:stats(test,f) for f in features},brier=brier(test),commonN=len(common),commonBrier=brier(common),results=results)
+          for x in test:
+              x["scores"]={f:score(x,f) for f in features}
+          Path("arithmetic_results.json").write_text(json.dumps(dict(summary=summary,curves=curves,holdout=test),indent=2),encoding="utf-8")
+          print(json.dumps(summary,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-gsm8k-arithmetic-results
+          path: arithmetic_results.json
