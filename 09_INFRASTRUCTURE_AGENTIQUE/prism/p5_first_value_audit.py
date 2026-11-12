@@ -20,6 +20,7 @@ from p5_v05_private_runner import build_triplet
 from planner import plan_mission
 
 MODEL_ID="Qwen/Qwen2.5-0.5B-Instruct"
+MODEL_REVISION="7ae557604adf67be50417f59c2c2f167def9a775"
 SEED=20261112
 MAX_NEW_TOKENS=96
 ARMS=("A","B","C")
@@ -263,9 +264,9 @@ def run(output):
     from transformers import AutoTokenizer,AutoModelForCausalLM
     torch.set_num_threads(2)
     torch.manual_seed(SEED)
-    tokenizer=AutoTokenizer.from_pretrained(MODEL_ID)
+    tokenizer=AutoTokenizer.from_pretrained(MODEL_ID,revision=MODEL_REVISION)
     model=AutoModelForCausalLM.from_pretrained(
-        MODEL_ID,torch_dtype=torch.float32).eval()
+        MODEL_ID,revision=MODEL_REVISION,torch_dtype=torch.float32).eval()
     output_rows=[]
     for index,arm in plan_schedule(rows):
         case=rows[index]
