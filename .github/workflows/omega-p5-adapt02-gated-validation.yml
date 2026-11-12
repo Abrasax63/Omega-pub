@@ -1,0 +1,56 @@
+name: Omega P5 ADAPT-02 calibrated gated adaptation (no API)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-adapt02-gated-validation.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_adapt02_calibration.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_adapt02_calibration.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_ADAPT02_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  adapt02-evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test no-oracle online control, frozen calibration, and safe rollback
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_adapt02_calibration
+      - name: Choose threshold on calibration only, then run separate evaluation
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_adapt02_calibration.py --output "$RUNNER_TEMP/omega_p5_adapt02_results.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/omega_p5_adapt02_results.json"))
+          assert x["protocol"]=="P5-ADAPT-02"
+          assert x["status"]=="SYNTHETIC_ONLY_NO_INDEPENDENT_MODEL_VALIDATION"
+          assert x["paid_api_calls"]==0 and x["model_generations"]==0
+          assert not x["private_data_read"]
+          assert not set(x["calibration_seeds"])&set(x["evaluation_seeds"])
+          assert x["total_evaluation_episodes"]==256
+          assert x["policy_rollouts"]==2048
+          for r,group in x["results"].items():
+              assert all(v["episodes"]==64 for v in group["by_policy"].values())
+              assert sum(group["paired_omega_vs_sw_ucb"].values())==64
+          print("ADAPT02_EXPERIMENT_RECORDED_TEST_SPLIT_ONLY",x["calibration"]["threshold"])
+          PY
+      - name: Archive synthetic-only reproducible output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-p5-adapt02-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/omega_p5_adapt02_results.json
+          retention-days: 7
+          if-no-files-found: ignore
