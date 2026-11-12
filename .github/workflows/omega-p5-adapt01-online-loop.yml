@@ -1,0 +1,55 @@
+name: Omega P5 ADAPT-01 online feedback and rollback (no API)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-adapt01-online-loop.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_adapt01_loop.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_adapt01_loop.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_ADAPT_LOOP_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  adapt01-classical-baselines:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate observations-only policy, alarms, rollback and ablations
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_adapt01_loop
+      - name: Run preregistered 128 synthetic 180-step episodes
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_adapt01_loop.py --output "$RUNNER_TEMP/omega_p5_adapt01_result.json"
+          python - <<'PY'
+          import json,os
+          r=json.load(open(os.environ["RUNNER_TEMP"]+"/omega_p5_adapt01_result.json"))
+          assert r["protocol"]=="P5-ADAPT-01"
+          assert r["status"]=="SYNTHETIC_ONLINE_ADAPTATION_NOT_REAL_MODEL_VALIDATION"
+          assert r["model_generations"]==0 and r["paid_api_calls"]==0
+          assert len(r["individual_results"])==4*32*10
+          assert set(r["aggregate"])=={"stationary","abrupt","recurrent","gradual"}
+          for regime,section in r["aggregate"].items():
+              for name,values in section["policy_summary"].items():
+                  assert values["episodes"]==32
+              assert sum(section["paired_outcomes_omega_vs_best"].values())==32
+          print("ADAPT01_SYNTHETIC_ONLY_COMPLETE")
+          PY
+      - name: Archive immutable public synthetic results (no private data)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-p5-adapt01-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/omega_p5_adapt01_result.json
+          retention-days: 7
+          if-no-files-found: ignore
