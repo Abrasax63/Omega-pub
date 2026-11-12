@@ -1,0 +1,27 @@
+name: P5 finite verification benchmark
+on:
+  pull_request:
+    paths:
+      - .github/workflows/p5-finite-verification.yml
+      - experiments/p5-finite-verification/**
+permissions:
+  contents: read
+jobs:
+  exhaustive:
+    if: github.head_ref == 'experiment/p5-finite-verification'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a7db42bb8587657edda700c245c9b7a0fd7a13b
+          path: omega-pinned
+      - name: Compute and cross-check exact costs
+        env:
+          PYTHONPATH: omega-pinned/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python3 experiments/p5-finite-verification/benchmark.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-finite-verification-results
+          path: finite_verification_results.json
