@@ -1,0 +1,61 @@
+name: Omega OBS-04 ClaimDB immutable source and two method logs preflight
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-obs04-claimdb-source-preflight.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_OBS04_CLAIMDB_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-public-source-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: omega
+      - name: Install Git LFS if missing
+        run: git lfs version || (sudo apt-get update -qq && sudo apt-get install -y git-lfs)
+      - uses: actions/checkout@v4
+        with:
+          repository: claimdb/claimdb
+          ref: e06c3a22cc14a8ef6858bb5d40bca7925241b98d
+          path: original-claimdb
+          lfs: true
+          sparse-checkout: |
+            final-benchmark/test-public.jsonl
+            experiments/public/gpt-5-mini.jsonl
+            experiments/public/no_tools/gpt-5-mini.jsonl
+          sparse-checkout-cone-mode: false
+      - name: Validate external source bytes and print file schemas only
+        run: |
+          python - <<'PY'
+          import hashlib,json,pathlib
+          p=pathlib.Path("original-claimdb")
+          files={
+            "test-public":p/"final-benchmark/test-public.jsonl",
+            "with-SQL":p/"experiments/public/gpt-5-mini.jsonl",
+            "no-tools":p/"experiments/public/no_tools/gpt-5-mini.jsonl",
+          }
+          for name, f in files.items():
+            if not f.is_file():raise AssertionError(f"unavailable {name}")
+            size=f.stat().st_size
+            digest=hashlib.sha256(f.read_bytes()).hexdigest()
+            print("OBS04_SOURCE_BYTES",name,"size",size,"sha256",digest)
+            if f.read_bytes()[:100].startswith(b"version https://git-lfs.github.com/spec/v1"):
+              raise AssertionError("UNCHECKOUT_LFS_POINTER_OMIT_RESULTS")
+            first=json.loads(f.open(encoding="utf-8").readline())
+            print("OBS04_SOURCE_SCHEMA",name,"keys",list(first))
+            print("OBS04_FIRST_FIELD_TYPES",name,
+                  {k:type(v).__name__ for k,v in first.items()})
+            for k,v in first.items():
+              if isinstance(v,dict):
+                print("OBS04_NESTED_SCHEMA",name,k,list(v)[:30])
+            if name=="with-SQL" and digest != "e31443bd85f46c4edc4a146243bb709634c6330c2914c726630c3f3349edb100":
+              raise AssertionError("SQL_MODEL_LFS_SHA_MISMATCH")
+          print("OBS04_REAL_TRACES_ACQUIRED_NO_PREDICTIONS_SCORED")
+          PY
