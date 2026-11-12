@@ -1,0 +1,47 @@
+{
+  "protocol": "P5-OBS-03",
+  "part": 2,
+  "rows": [
+    {
+      "repo": "psf/requests",
+      "number": 7082,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        "src/requests/cookies.py"
+      ]
+    },
+    {
+      "repo": "psf/requests",
+      "number": 7636,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        ".github/workflows/codeql-analysis.yml",
+        ".github/workflows/zizmor.yml"
+      ]
+    },
+    {
+      "repo": "psf/requests",
+      "number": 6767,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        "src/requests/adapters.py"
+      ]
+    },
+    {
+      "repo": "psf/requests",
+      "number": 7025,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        ".github/workflows/publish.yml"
+      ]
+    }
+  ]
+}
