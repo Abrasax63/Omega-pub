@@ -77,10 +77,13 @@ class RealFeedbackTests(unittest.TestCase):
         calib=[(r,{"text":"REPONSE=1","parsed":"1"})
                for r in self.rows if r["split"]=="calibration"]
         view=m.public_view(self.rows[-1],{"text":"REPONSE=A","parsed":"A"})
+        # Calibration is deliberately labeled and may use exact references.
+        # The test forbids reference/tool access only after calibration,
+        # while making test-time decisions from public features.
+        policies=[m.DecisionPolicy(name,calib) for name in m.POLICIES]
         with patch.object(m,"gold",side_effect=AssertionError("oracle leakage")), \
              patch.object(m,"limited_verifier",side_effect=AssertionError("tool leakage")):
-            for name in m.POLICIES:
-                p=m.DecisionPolicy(name,calib)
+            for p in policies:
                 self.assertIn(p.choose(view),("DIRECT","VERIFY","ABSTAIN"))
 
     def test_budget_and_complete_trajectories_with_stub_model_outputs(self):
