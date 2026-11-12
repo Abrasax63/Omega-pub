@@ -1,0 +1,158 @@
+{
+  "protocol": "P5-OBS-03",
+  "part": 0,
+  "observed_date": "2026-11-12",
+  "single_provider": "github.com",
+  "rows": [
+    {
+      "repo": "python/cpython",
+      "number": 154650,
+      "url": "https://github.com/python/cpython/pull/154650",
+      "previous": {
+        "merged": true,
+        "touched_tests": true,
+        "head_sha": "01036ec26c708f01501983f6e1fb86c6687f4548",
+        "ground_truth": true
+      },
+      "metadata": {
+        "provider": "github.com",
+        "endpoint": "get_pr_info",
+        "merged": true,
+        "state": "closed",
+        "head_sha": "01036ec26c708f01501983f6e1fb86c6687f4548",
+        "updated_at": "2026-11-11T12:20:53Z",
+        "error": null
+      },
+      "filenames": {
+        "provider": "github.com",
+        "endpoint": "list_pr_changed_filenames",
+        "count": 4,
+        "touched_tests": true,
+        "matching": [
+          "Lib/test/test_cext/setup.py"
+        ],
+        "error": null
+      },
+      "alternate": {
+        "provider": "github.com",
+        "endpoint": "fetch_pr",
+        "merged": true,
+        "head_sha": "01036ec26c708f01501983f6e1fb86c6687f4548",
+        "error": null
+      },
+      "truth": true
+    },
+    {
+      "repo": "python/cpython",
+      "number": 153709,
+      "url": "https://github.com/python/cpython/pull/153709",
+      "previous": {
+        "merged": true,
+        "touched_tests": false,
+        "head_sha": "fe80a4463185023c6a06379064a18604ddd4469c",
+        "ground_truth": false
+      },
+      "metadata": {
+        "provider": "github.com",
+        "endpoint": "get_pr_info",
+        "merged": true,
+        "state": "closed",
+        "head_sha": "fe80a4463185023c6a06379064a18604ddd4469c",
+        "updated_at": "2026-11-11T09:38:21Z",
+        "error": null
+      },
+      "filenames": {
+        "provider": "github.com",
+        "endpoint": "list_pr_changed_filenames",
+        "count": 2,
+        "touched_tests": false,
+        "matching": [],
+        "error": null
+      },
+      "alternate": {
+        "provider": "github.com",
+        "endpoint": "fetch_pr",
+        "merged": true,
+        "head_sha": "fe80a4463185023c6a06379064a18604ddd4469c",
+        "error": null
+      },
+      "truth": false
+    },
+    {
+      "repo": "python/cpython",
+      "number": 161726,
+      "url": "https://github.com/python/cpython/pull/161726",
+      "previous": {
+        "merged": false,
+        "touched_tests": true,
+        "head_sha": "4e1d94f1ea6ea92996b86c0efc8867e77962a16c",
+        "ground_truth": false
+      },
+      "metadata": {
+        "provider": "github.com",
+        "endpoint": "get_pr_info",
+        "merged": false,
+        "state": "open",
+        "head_sha": "4e1d94f1ea6ea92996b86c0efc8867e77962a16c",
+        "updated_at": "2026-11-11T08:56:29Z",
+        "error": null
+      },
+      "filenames": {
+        "provider": "github.com",
+        "endpoint": "list_pr_changed_filenames",
+        "count": 14,
+        "touched_tests": true,
+        "matching": [
+          "Lib/test/test_runpy.py",
+          "Lib/test/test_sys.py",
+          "Lib/test/test_zipfile/test_core.py"
+        ],
+        "error": null
+      },
+      "alternate": {
+        "provider": "github.com",
+        "endpoint": "fetch_pr",
+        "merged": false,
+        "head_sha": "4e1d94f1ea6ea92996b86c0efc8867e77962a16c",
+        "error": null
+      },
+      "truth": false
+    },
+    {
+      "repo": "python/cpython",
+      "number": 153021,
+      "url": "https://github.com/python/cpython/pull/153021",
+      "previous": {
+        "merged": false,
+        "touched_tests": false,
+        "head_sha": "28f445c9b95c68906a7fdbbe1e36106b4f4ee820",
+        "ground_truth": false
+      },
+      "metadata": {
+        "provider": "github.com",
+        "endpoint": "get_pr_info",
+        "merged": false,
+        "state": "open",
+        "head_sha": "28f445c9b95c68906a7fdbbe1e36106b4f4ee820",
+        "updated_at": "2026-11-11T06:06:57Z",
+        "error": null
+      },
+      "filenames": {
+        "provider": "github.com",
+        "endpoint": "list_pr_changed_filenames",
+        "count": 8,
+        "touched_tests": false,
+        "matching": [],
+        "error": null
+      },
+      "alternate": {
+        "provider": "github.com",
+        "endpoint": "fetch_pr",
+        "merged": false,
+        "head_sha": "28f445c9b95c68906a7fdbbe1e36106b4f4ee820",
+        "error": null
+      },
+      "truth": false
+    }
+  ]
+}
