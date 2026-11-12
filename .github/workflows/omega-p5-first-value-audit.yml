@@ -1,0 +1,74 @@
+name: Omega P5 first measurable value audit (free CPU)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-first-value-audit.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_first_value_audit.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_first_value_audit.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_FIRST_VALUE_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  value-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      HF_HOME: /tmp/hf
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify blind-to-reference prompts, oracle, and trivial routing baseline
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_first_value_audit
+          python p5_first_value_audit.py --preflight > /tmp/omega-value-preflight.json
+          python - <<'PY'
+          import json
+          p=json.load(open("/tmp/omega-value-preflight.json"))
+          assert p["planned_model_generations"] == 54
+          assert p["paid_api_calls"] == 0
+          assert len(p["public_cases_sha256"]) == 64
+          print("VALUE_PREFLIGHT_NO_PAID_API",p["public_cases_sha256"])
+          PY
+      - name: Install free open-weight CPU inference dependencies
+        run: |
+          python -m pip install "torch==2.6.0" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install "transformers==4.51.3" "safetensors>=0.4.5"
+      - name: Run 54 real local-model generations on GitHub cloud CPU
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        env:
+          HF_HUB_ETAG_TIMEOUT: "20"
+          HF_HUB_DOWNLOAD_TIMEOUT: "120"
+        run: |
+          python p5_first_value_audit.py --output "$RUNNER_TEMP/p5_first_value_results.json"
+          python - <<'PY'
+          import json,os
+          from collections import Counter
+          r=json.load(open(os.environ["RUNNER_TEMP"]+"/p5_first_value_results.json"))
+          assert r["model_generation_count"] == 54
+          assert len(r["rows"]) == 54
+          assert Counter(x["arm"] for x in r["rows"]) == {"A":18,"B":18,"C":18}
+          assert r["only_public_data"] is True and r["openai_api_calls"] == 0
+          assert all(v["exact_matches"]==18 for v in r["routing_baselines"].values())
+          print("VALUE_RESULT_SUMMARY",r["per_arm"])
+          print("VALUE_ROUTING_RESULT",{k:(v["exact_matches"],v["verifier_calls"])
+                for k,v in r["routing_baselines"].items()})
+          PY
+      - name: Save public raw outputs (no API secrets, no private holdout)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-p5-first-value-public-results-${{ github.run_id }}
+          path: ${{ runner.temp }}/p5_first_value_results.json
+          if-no-files-found: ignore
+          retention-days: 3
