@@ -21,7 +21,11 @@ jobs:
         env:
           PYTHONPATH: omega-pinned/09_INFRASTRUCTURE_AGENTIQUE/prism
         run: python3 experiments/p5-finite-verification/benchmark.py
+      - name: Compare local check selection with the exact optimum
+        run: python3 experiments/p5-finite-verification/heuristics.py
       - uses: actions/upload-artifact@v4
         with:
           name: p5-finite-verification-results
-          path: finite_verification_results.json
+          path: |
+            finite_verification_results.json
+            finite_heuristics_results.json
