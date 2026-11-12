@@ -58,10 +58,20 @@ class RealDataMethodContracts(unittest.TestCase):
         self.assertFalse(receipt["independent_sql_reexecution"])
         self.assertEqual(receipt["same_source_gold_provider"],"claimdb/claimdb")
 
+    def test_real_missing_model_verdict_stays_a_paid_no_label_event(self):
+        row=deepcopy(self.cal[2])
+        row["reports_evaluator_only"][0]["verdict"]=p.NO_LABEL
+        self.assertEqual(p.symbol(row,0,True),p.NO_LABEL)
+        self.assertEqual(p.symbol(row,0,False),p.NO_LABEL)
+        self.assertNotEqual(p.NO_LABEL,"NOT ENOUGH INFO")
+        receipt=p.read_tool(row,0,True)
+        self.assertEqual(receipt["symbol"],p.NO_LABEL)
+        self.assertFalse(receipt["independent_sql_reexecution"])
+
     def test_joint_model_preserves_correlated_outcomes_without_independence_assumption(self):
         j=p.Joint(self.cal,True,True)
-        self.assertEqual(len(j.universe),3*4**3)
-        self.assertEqual(j.symbols,p.LABELS+(p.NO_SQL,))
+        self.assertEqual(len(j.universe),3*5**3)
+        self.assertEqual(j.symbols,p.LABELS+(p.NO_SQL,p.NO_LABEL))
         view=p.view_of(self.cal[1])
         pr,fut=j.posterior(view,(None,None,None))
         self.assertAlmostEqual(sum(pr.values()),1.,places=12)
