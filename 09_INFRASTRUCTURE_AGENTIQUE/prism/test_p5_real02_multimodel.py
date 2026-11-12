@@ -11,6 +11,11 @@ class Real02Tests(unittest.TestCase):
         self.assertEqual(len(allrows),80)
         self.assertEqual(Counter(x["kind"] for x in allrows),
                          {kind:20 for kind in p.KINDS})
+        self.assertEqual(len({(r["kind"],tuple(r["parameters"]))
+                              for r in allrows}),80,
+                         "duplicate mathematical questions would confound test")
+        self.assertEqual(len({r["question"] for r in allrows}),80,
+                         "identical prompt text is forbidden")
         for r in allrows:
             self.assertEqual(p.reference(r),p.verify_exact(r))
         calib,ev=p.generation_plan()
