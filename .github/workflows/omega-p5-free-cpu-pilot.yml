@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
-      HF_HOME: ${{ runner.temp }}/hf
+      HF_HOME: /tmp/hf
       HF_HUB_DISABLE_TELEMETRY: "1"
       TOKENIZERS_PARALLELISM: "false"
       OMP_NUM_THREADS: "2"
