@@ -1,0 +1,107 @@
+name: Omega P5 EVID-06 paired GPT-5-mini budgeted SQL routing and real BIRD sentinels
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-evid06-real-budget-routing.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_evid06_budgeted_routing.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_evid06_bird_extra_sql.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_evid06_budgeted.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_EVID06_BUDGETED_ROUTING_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  paired-real-model-budget-allocation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: omega
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Ensure Git LFS available for real external model traces
+        run: git lfs version || (sudo apt-get update -qq && sudo apt-get install -y git-lfs)
+      - name: Pre-analysis test of no label leakage and exact budget on synthetic fixtures
+        working-directory: omega/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_evid06_budgeted
+          echo "EVID06_POLICY_CODE_FROZEN_AND_ADVERSARIAL_TESTED"
+      - uses: actions/checkout@v4
+        with:
+          repository: claimdb/claimdb
+          ref: e06c3a22cc14a8ef6858bb5d40bca7925241b98d
+          path: original-claimdb
+          lfs: true
+          sparse-checkout: |
+            final-benchmark/test-public.jsonl
+            experiments/public/gpt-5-mini.jsonl
+            experiments/public/no_tools/gpt-5-mini.jsonl
+          sparse-checkout-cone-mode: false
+      - name: Acquire actual pinned BIRD superhero DB (no binary redistribution)
+        run: |
+          curl --fail --location --silent --show-error --retry 2 --max-time 90 \
+            "https://raw.githubusercontent.com/Tarzanagh/QAFD-RAG/2a3a42c8ea4e9c416de0a7fe53c04fab50b756ef/data/text2sql/bird/databases/superhero/superhero.sqlite" \
+            -o "$RUNNER_TEMP/evid06_bird_superhero.sqlite"
+          test "$(wc -c < "$RUNNER_TEMP/evid06_bird_superhero.sqlite")" -eq 237568
+          test "$(git hash-object "$RUNNER_TEMP/evid06_bird_superhero.sqlite")" = "4cfbee0ba8b6033a7415184caff90d363fe444c2"
+          test "$(sha256sum "$RUNNER_TEMP/evid06_bird_superhero.sqlite" | cut -d' ' -f1)" = "75e94a2c3236ee3bb2c01fb97a1c4b4c1c269bcefd4eab1d04be323d2d0825b1"
+          test "$(sha256sum original-claimdb/final-benchmark/test-public.jsonl | cut -d' ' -f1)" = "b87d7062307cfcf5ae862bf03bd7e82f7123ff39cf0b69d3dc5cc25caaaea810"
+          test "$(sha256sum original-claimdb/experiments/public/gpt-5-mini.jsonl | cut -d' ' -f1)" = "e31443bd85f46c4edc4a146243bb709634c6330c2914c726630c3f3349edb100"
+          test "$(sha256sum original-claimdb/experiments/public/no_tools/gpt-5-mini.jsonl | cut -d' ' -f1)" = "552531cba335298816a998f7a2b6fb548d9cd0eb7f9b47e5d1272809620a9aa6"
+          echo "EVID06_FOUR_PINNED_PUBLIC_SOURCES_VERIFIED"
+      - name: Allocate 16 real historical model SQL-mode responses to 64 claims (8 rounds)
+        working-directory: omega/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_evid06_budgeted_routing.py \
+            --source-root "$GITHUB_WORKSPACE/original-claimdb" \
+            --output "$RUNNER_TEMP/evid06_budgeted_routing.json"
+          python - <<'PY'
+          import json,os
+          r=json.load(open(os.environ["RUNNER_TEMP"]+"/evid06_budgeted_routing.json"))
+          assert r["protocol"]=="P5-EVID-06"
+          assert r["calibration_size"]==24 and r["testing_size"]==64
+          assert r["new_inferences"]==0 and r["paid_api_calls"]==0
+          assert r["source_provider_count"]==1
+          assert r["paid_tool_is_exact_verifier"] is False
+          assert len(r["policies"])==8
+          for name,p in r["policies"].items():
+              assert len(p["events"])==64 and p["routed"]<=16
+          assert r["diagnostics"]["omega_minus_classical_trace_gate"]==0
+          assert r["diagnostics"]["omega_vs_classical_action_differences"]==0
+          print("EVID06_COMPLETE_REAL_PAIRED_MODEL_ROUTING_WITHOUT_TEST_LABEL_LEAK")
+          PY
+      - name: Re-execute three NEW factual ClaimDB fragments with two SQL shapes on ACTUAL BIRD DB
+        working-directory: omega/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_evid06_bird_extra_sql.py \
+            --database "$RUNNER_TEMP/evid06_bird_superhero.sqlite" \
+            --claimdb-original "$GITHUB_WORKSPACE/original-claimdb/final-benchmark/test-public.jsonl" \
+            --output "$RUNNER_TEMP/evid06_extra_real_bird_sql.json"
+          python - <<'PY'
+          import json,os
+          r=json.load(open(os.environ["RUNNER_TEMP"]+"/evid06_extra_real_bird_sql.json"))
+          assert r["protocol"]=="P5-EVID-06-BIRD-3"
+          assert r["new_sql_cases"]==3 and r["methods_agree_all"]
+          assert r["one_provider_not_independent"] is True
+          assert r["independently_semantically_reviewed_count"]==0
+          assert {x["claim_id"] for x in r["cases"]}=={15601,3730,3971}
+          print("EVID06_THREE_AUTHENTIC_DB_FACTS_REEXECUTED_NO_HUMAN_REVIEW_CLAIM")
+          PY
+      - name: Archive derived decision traces, SQL output and source fingerprints (not raw LFS model logs or DB)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-p5-evid06-real-budget-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/evid06_budgeted_routing.json
+            ${{ runner.temp }}/evid06_extra_real_bird_sql.json
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Delete BIRD database from temporary runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/evid06_bird_superhero.sqlite"
