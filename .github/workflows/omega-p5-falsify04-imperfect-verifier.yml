@@ -1,0 +1,44 @@
+name: Omega P5 FALSIFY-04 exact imperfect verifier pilot
+on:
+  push:
+    branches:
+      - experiment/p5-falsify04-costly-imperfect-verifiers-2026-11-12
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_falsify04_imperfect_verifier_dp.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_falsify04_imperfect_verifier_dp.py"
+      - ".github/workflows/omega-p5-falsify04-imperfect-verifier.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-decision-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Independent rational cross-check tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_p5_falsify04_imperfect_verifier_dp
+      - name: Execute finite rational benchmark
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python p5_falsify04_imperfect_verifier_dp.py > /tmp/p5_falsify04_results.json
+      - name: Display concise results
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/p5_falsify04_results.json'))
+          print('STATUS',r['status'])
+          for policy,d in r['aggregate']['policies'].items():
+              print(policy,'utility',d['utility']['decimal'],'calls',d['calls']['decimal'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-falsify04-exact-synthetic-results
+          path: /tmp/p5_falsify04_results.json
+          retention-days: 30
