@@ -1,0 +1,27 @@
+name: Omega P5 ACTIVE-01 choice-diversity audit (no model)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-active01-choice-gate.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_active01_design_gate.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_active01_design_gate.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-choice-diversity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Audit all-domain degeneracy, no-model tests only
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_active01_design_gate
+          echo "ACTIVE01_CHOICE_DIVERSITY_GUARD_IMPLEMENTED"
