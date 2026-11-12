@@ -1,0 +1,90 @@
+name: Omega EVID-05 real BIRD SQLite/ClaimDB evidence execution (no LLM)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-evid05-real-bird-sql.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_evid05_bird_sql.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_evid05_bird_sql.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/evid05_claimdb_5_preselected.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_EVID05_BIRD_SQL_PREREG_2026-11-12.md"
+      - "09_INFRASTRUCTURE_AGENTIQUE/AMENDEMENT_P5_EVID05_EDITEUR_SEMANTIQUE_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-sql-two-method-claim-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pre-run source-failure, SQL witness and semantic abstention tests (synthetic fixture)
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_evid05_bird_sql
+          python - <<'PY'
+          from p5_evid05_bird_sql import CLAIM_IDS,DB_SHA256,DB_GIT_BLOB
+          assert CLAIM_IDS==(4267,4179,4324,3930,4419)
+          assert len(DB_SHA256)==64 and len(DB_GIT_BLOB)==40
+          print("EVID05_PREDESIGNED_ASSERTIONS_FROZEN")
+          PY
+      - name: Download ACTUAL BIRD superhero SQLite and original ClaimDB public claims at PINNED GitHub commits
+        env:
+          BIRD_URL: https://raw.githubusercontent.com/Tarzanagh/QAFD-RAG/2a3a42c8ea4e9c416de0a7fe53c04fab50b756ef/data/text2sql/bird/databases/superhero/superhero.sqlite
+          CLAIMDB_URL: https://raw.githubusercontent.com/claimdb/claimdb/e06c3a22cc14a8ef6858bb5d40bca7925241b98d/final-benchmark/test-public.jsonl
+        run: |
+          curl --fail --location --silent --show-error --retry 2 --max-time 90 "$BIRD_URL" \
+            --output "$RUNNER_TEMP/evid05_bird_superhero.sqlite"
+          curl --fail --location --silent --show-error --retry 2 --max-time 90 "$CLAIMDB_URL" \
+            --output "$RUNNER_TEMP/evid05_claimdb_test_public.jsonl"
+          test "$(wc -c < "$RUNNER_TEMP/evid05_bird_superhero.sqlite")" -eq 237568
+          test "$(git hash-object "$RUNNER_TEMP/evid05_bird_superhero.sqlite")" = "4cfbee0ba8b6033a7415184caff90d363fe444c2"
+          test "$(sha256sum "$RUNNER_TEMP/evid05_bird_superhero.sqlite" | cut -d' ' -f1)" = "75e94a2c3236ee3bb2c01fb97a1c4b4c1c269bcefd4eab1d04be323d2d0825b1"
+          test "$(git hash-object "$RUNNER_TEMP/evid05_claimdb_test_public.jsonl")" = "a017545623508c0090cf2148716b8d26a6f8c337"
+          echo "EVID05_TWO_REMOTE_SOURCE_OBJECTS_PINNED_AND_HASHED"
+      - name: Execute factual SQL against authentic DB with 2 methods per claim and strict provenance
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_evid05_bird_sql.py \
+            --database "$RUNNER_TEMP/evid05_bird_superhero.sqlite" \
+            --claimdb-original "$RUNNER_TEMP/evid05_claimdb_test_public.jsonl" \
+            --output "$RUNNER_TEMP/evid05_real_bird_sql_results.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/evid05_real_bird_sql_results.json"))
+          assert x["status"]=="REAL_BIRD_SQL_REPLAY_EXPLORATORY_SINGLE_PROVIDER"
+          assert x["selected_cases"]==5
+          assert x["executed_real_db_claims"]==4
+          assert x["counterfactual_abstentions"]==1
+          assert x["single_provider_count"]==1
+          assert x["independent_external_fact_verifications"]==0
+          assert x["claim_semantics_independently_reviewed"] is False
+          assert x["claimdb_source"]["five_claims_exactly_reproduced"]
+          assert x["db_schema_check"]["tables_verified"]==5
+          assert len(x["all_cases"])==5
+          assert all(x["policy_results"][p]["published"]<=4
+              for p in x["policy_results"])
+          assert next(c for c in x["all_cases"] if c["claim_id"]==4179)[
+              "policies"]["omega_provenance_gate"]=="ABSTAIN_SEMANTIC_CONVENTION"
+          assert next(c for c in x["all_cases"] if c["claim_id"]==4419)[
+              "policies"]["omega_provenance_gate"]=="ABSTAIN_MISSING_OBSERVABLE_COUNTERFACTUAL"
+          print("EVID05_REAL_SQL_EXECUTED_NO_INDEPENDENT_SEMANTICS_CERTIFIED")
+          PY
+      - name: Archive only query transcripts, source SHA and observational limits
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-evid05-bird-sql-${{ github.run_id }}
+          path: ${{ runner.temp }}/evid05_real_bird_sql_results.json
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Remove source DB and claims from runner
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/evid05_bird_superhero.sqlite"
+          rm -f "$RUNNER_TEMP/evid05_claimdb_test_public.jsonl"
