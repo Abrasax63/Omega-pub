@@ -1,0 +1,51 @@
+name: Omega P5 ROUTE-02 bounded verification (no LLM)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-route02-bounded-verification.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_route02_simulation.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_route02_simulation.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_ROUTING_NONTRIVIAL_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  route02-no-provider:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests for hidden labels, exact baselines and shifted regime
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_p5_route02_simulation
+      - name: Execute all 256 synthetic episodes; store only public simulations
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_route02_simulation.py --output "$RUNNER_TEMP/omega_route02_public_result.json"
+          python - <<'PY'
+          import json,os
+          from p5_route02_simulation import N_EPISODES,REGIMES
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/omega_route02_public_result.json"))
+          assert x["model_generations"]==0 and x["paid_api_calls"]==0
+          assert x["status"]=="SYNTHETIC_CALIBRATION_NOT_EMPIRICAL_VALIDATION"
+          assert len(x["public_input_digest"])==64
+          for regime in REGIMES:
+              p=x["results"][regime]["policy_totals"]
+              assert p["omega_candidate"]==p["exact_knapsack"]
+              assert p["omega_candidate"]["episodes"]==N_EPISODES
+          print("ROUTE02_COMPLETED_SYNTHETIC_ONLY")
+          PY
+      - name: Publish public reproducible synthetic report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p5-route02-public-simulation-${{ github.run_id }}
+          path: ${{ runner.temp }}/omega_route02_public_result.json
+          if-no-files-found: ignore
+          retention-days: 7
