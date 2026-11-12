@@ -1,0 +1,70 @@
+{
+  "protocol": "P5-OBS-03",
+  "part": 0,
+  "rows": [
+    {
+      "repo": "python/cpython",
+      "number": 154650,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        "Include/cpython/pyatomic.h",
+        "Include/pyport.h",
+        "Lib/test/test_cext/setup.py",
+        "Misc/NEWS.d/next/C_API/2026-07-24-22-30-40.gh-issue-154643.z-ZutK.rst"
+      ]
+    },
+    {
+      "repo": "python/cpython",
+      "number": 153709,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        "Misc/NEWS.d/next/Library/2026-07-01-11-29-13.gh-issue-151126.eElGy5.rst",
+        "Modules/_ctypes/_ctypes.c"
+      ]
+    },
+    {
+      "repo": "python/cpython",
+      "number": 161726,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        "Doc/c-api/init_config.rst",
+        "Doc/library/sys.rst",
+        "Doc/using/cmdline.rst",
+        "Lib/gzip.py",
+        "Lib/runpy.py",
+        "Lib/tarfile.py",
+        "Lib/test/test_runpy.py",
+        "Lib/test/test_sys.py",
+        "Lib/test/test_zipfile/test_core.py",
+        "Lib/zipfile/__init__.py",
+        "Misc/NEWS.d/next/Security/2026-11-07-15-56-47.gh-issue-161705.OjDK2d.rst",
+        "Modules/main.c",
+        "Python/pathconfig.c",
+        "Python/sysmodule.c"
+      ]
+    },
+    {
+      "repo": "python/cpython",
+      "number": 153021,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        "Include/internal/pycore_fileutils_windows.h",
+        "Misc/NEWS.d/next/Windows/2026-07-04-13-33-04.gh-issue-152433.0EUfvN.rst",
+        "Modules/_io/winconsoleio.c",
+        "Modules/_winapi.c",
+        "Modules/getpath.c",
+        "Modules/overlapped.c",
+        "Modules/posixmodule.c",
+        "Python/dynload_win.c"
+      ]
+    }
+  ]
+}

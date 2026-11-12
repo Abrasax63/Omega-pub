@@ -1,0 +1,152 @@
+{
+  "protocol": "P5-OBS-03",
+  "part": 2,
+  "observed_date": "2026-11-12",
+  "single_provider": "github.com",
+  "rows": [
+    {
+      "repo": "psf/requests",
+      "number": 7082,
+      "url": "https://github.com/psf/requests/pull/7082",
+      "previous": {
+        "merged": false,
+        "touched_tests": false,
+        "head_sha": "a70cb1cc57a4c655ec41c0a33f32ff64225a2319",
+        "ground_truth": false
+      },
+      "metadata": {
+        "provider": "github.com",
+        "endpoint": "get_pr_info",
+        "merged": false,
+        "state": "closed",
+        "head_sha": "a70cb1cc57a4c655ec41c0a33f32ff64225a2319",
+        "updated_at": "2026-11-05T00:04:34Z",
+        "error": null
+      },
+      "filenames": {
+        "provider": "github.com",
+        "endpoint": "list_pr_changed_filenames",
+        "count": 1,
+        "touched_tests": false,
+        "matching": [],
+        "error": null
+      },
+      "alternate": {
+        "provider": "github.com",
+        "endpoint": "fetch_pr",
+        "merged": false,
+        "head_sha": "a70cb1cc57a4c655ec41c0a33f32ff64225a2319",
+        "error": null
+      },
+      "truth": false
+    },
+    {
+      "repo": "psf/requests",
+      "number": 7636,
+      "url": "https://github.com/psf/requests/pull/7636",
+      "previous": {
+        "merged": true,
+        "touched_tests": false,
+        "head_sha": "a7d2a5d259b74e97812c2db04acb34adf41ba22e",
+        "ground_truth": false
+      },
+      "metadata": {
+        "provider": "github.com",
+        "endpoint": "get_pr_info",
+        "merged": true,
+        "state": "closed",
+        "head_sha": "a7d2a5d259b74e97812c2db04acb34adf41ba22e",
+        "updated_at": "2026-10-26T17:14:45Z",
+        "error": null
+      },
+      "filenames": {
+        "provider": "github.com",
+        "endpoint": "list_pr_changed_filenames",
+        "count": 2,
+        "touched_tests": false,
+        "matching": [],
+        "error": null
+      },
+      "alternate": {
+        "provider": "github.com",
+        "endpoint": "fetch_pr",
+        "merged": true,
+        "head_sha": "a7d2a5d259b74e97812c2db04acb34adf41ba22e",
+        "error": null
+      },
+      "truth": false
+    },
+    {
+      "repo": "psf/requests",
+      "number": 6767,
+      "url": "https://github.com/psf/requests/pull/6767",
+      "previous": {
+        "merged": true,
+        "touched_tests": false,
+        "head_sha": "11d68c17bcd66bd3e2c5137b0a7aad7f59967102",
+        "ground_truth": false
+      },
+      "metadata": {
+        "provider": "github.com",
+        "endpoint": "get_pr_info",
+        "merged": true,
+        "state": "closed",
+        "head_sha": "11d68c17bcd66bd3e2c5137b0a7aad7f59967102",
+        "updated_at": "2026-10-02T00:08:10Z",
+        "error": null
+      },
+      "filenames": {
+        "provider": "github.com",
+        "endpoint": "list_pr_changed_filenames",
+        "count": 1,
+        "touched_tests": false,
+        "matching": [],
+        "error": null
+      },
+      "alternate": {
+        "provider": "github.com",
+        "endpoint": "fetch_pr",
+        "merged": true,
+        "head_sha": "11d68c17bcd66bd3e2c5137b0a7aad7f59967102",
+        "error": null
+      },
+      "truth": false
+    },
+    {
+      "repo": "psf/requests",
+      "number": 7025,
+      "url": "https://github.com/psf/requests/pull/7025",
+      "previous": {
+        "merged": true,
+        "touched_tests": false,
+        "head_sha": "7d8df1df573a01f20a80994685e9f6c375f9c63f",
+        "ground_truth": false
+      },
+      "metadata": {
+        "provider": "github.com",
+        "endpoint": "get_pr_info",
+        "merged": true,
+        "state": "closed",
+        "head_sha": "7d8df1df573a01f20a80994685e9f6c375f9c63f",
+        "updated_at": "2026-09-10T00:07:13Z",
+        "error": null
+      },
+      "filenames": {
+        "provider": "github.com",
+        "endpoint": "list_pr_changed_filenames",
+        "count": 1,
+        "touched_tests": false,
+        "matching": [],
+        "error": null
+      },
+      "alternate": {
+        "provider": "github.com",
+        "endpoint": "fetch_pr",
+        "merged": true,
+        "head_sha": "7d8df1df573a01f20a80994685e9f6c375f9c63f",
+        "error": null
+      },
+      "truth": false
+    }
+  ]
+}

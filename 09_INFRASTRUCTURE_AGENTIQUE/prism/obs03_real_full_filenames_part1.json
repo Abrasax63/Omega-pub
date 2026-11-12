@@ -1,0 +1,50 @@
+{
+  "protocol": "P5-OBS-03",
+  "part": 1,
+  "rows": [
+    {
+      "repo": "pallets/flask",
+      "number": 5918,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        "src/flask/app.py",
+        "src/flask/cli.py",
+        "src/flask/sansio/app.py",
+        "tests/test_basic.py",
+        "tests/test_cli.py"
+      ]
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6159,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        "docs/patterns/lazyloading.rst"
+      ]
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6151,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        "docs/deploying/index.rst"
+      ]
+    },
+    {
+      "repo": "pallets/flask",
+      "number": 6135,
+      "provider": "github.com",
+      "endpoint": "list_pr_changed_filenames",
+      "recollected_on": "2026-11-12",
+      "filenames": [
+        "src/flask/helpers.py"
+      ]
+    }
+  ]
+}
