@@ -1,0 +1,185 @@
+name: P5 paired GSM8K source switch
+on:
+  pull_request:
+    paths:
+      - .github/workflows/p5-gsm8k-paired.yml
+permissions:
+  contents: read
+jobs:
+  intake:
+    if: github.head_ref == 'experiment/p5-external-gsm8k-blind'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch pinned public corpus
+        run: |
+          python -m pip install pyarrow==19.0.1
+          curl --fail --silent --show-error --location --retry 2 --max-time 90 \
+            'https://huggingface.co/datasets/multi-domain-reasoning/gsm8k_eval/resolve/ee73c1ae289820c42191dde99a9461aded4846d9/data/test-00000-of-00001.parquet' \
+            --output corpus.parquet
+      - name: Evaluate fixed paired protocol
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          import pyarrow.parquet as pq
+          path=Path("corpus.parquet")
+          sources=["baseline_llama_8b","baseline_llama_1b"]
+          rows=pq.read_table(path,columns=["question","answer",*sources]).to_pylist()
+          assert len(rows)==len({r["question"] for r in rows})==1319
+          def digest(s):
+              return hashlib.sha256(s.encode("utf-8")).hexdigest()
+          legacy=sorted(rows,key=lambda r:digest("P5-GSM8K-v1|order|"+r["question"]))[:80]
+          excluded={r["question"] for r in legacy}
+          new=sorted((r for r in rows if r["question"] not in excluded),key=lambda r:digest("P5-GSM8K-paired-v1|"+r["question"]))[:784]
+          assert len(new)==784
+          packed=[]
+          for r in new:
+              outputs=[r[s] for s in sources]
+              assert all(isinstance(x,str) for x in outputs)
+              packed.append({"id":digest(r["question"]),"reference":r["answer"].rsplit("#### ",1)[1].strip(),"outputs":outputs})
+          Path("paired_input.json").write_text(json.dumps({"revision":"ee73c1ae289820c42191dde99a9461aded4846d9","sha256":hashlib.sha256(path.read_bytes()).hexdigest(),"rows":packed}),encoding="utf-8")
+          PY
+          node <<'JS'
+          const families=["MUL","CRT","RATE","INJ"], costs={MUL:20,CRT:45,RATE:30,INJ:15};
+          const policies=["static","cumulative","discount","window","omega","ablation"];
+          function parse(kind,raw){
+            const t=raw.normalize("NFD").replace(/\p{Diacritic}/gu,"").trim();
+            if(kind==="RATE"){
+              const m=/^(?:(?:equipe|groupe) )?([AB])\b/i.exec(t);
+              return m&&!/\b(?:equipe|groupe) [AB]\b/i.test(t.slice(m[0].length))?m[1].toUpperCase():null;
+            }
+            if(kind==="INJ"){
+              const m=/^(oui|non)(?:[.,]|$)/i.exec(t);
+              return m&&!/\b(?:oui|non)\b/i.test(t.slice(m[0].length))?m[1].toUpperCase():null;
+            }
+            const m=/^(-?\d+)\.?$/.exec(t)??(kind==="MUL"?(/^-?\d+\s*[*×x]\s*-?\d+\s*=\s*(-?\d+)\.?$/.exec(t)??/^elle vaut (-?\d+)\.?$/i.exec(t)):null);
+            return m?.[1]??null;
+          }
+          function run(prior,lots,limit,name){
+            const history=[], moves=[], alarms=[];
+            let active=false, score=0, mistakes=0, correct=0, abstain=0, spent=0;
+            const priorRate=prior.filter(x=>x.correct).length/prior.length;
+            for(const [index,lot] of lots.entries()){
+              const candidates=lot.map(row=>{
+                const base=prior.filter(x=>x.kind===row.kind);
+                let good=base.filter(x=>x.correct).length, n=base.length;
+                const same=history.filter(x=>x.kind===row.kind);
+                const observations=name==="static"?[]:name==="window"?same.slice(-6):same;
+                for(const [i,x] of observations.entries()){
+                  const w=name==="discount"?0.7**(observations.length-1-i):1;
+                  n+=w;
+                  if(x.correct)good+=w;
+                }
+                let p=(good+1)/(n+2);
+                if(active)p=(p+history.slice(-6).filter(x=>x.correct).length/6)/2;
+                const direct=row.parsed!==null && 300*p-200>5;
+                const delta=100-costs[row.kind]-(direct?300*p-200:5);
+                return {row,direct,delta};
+              });
+              const chosen=new Set([...candidates].sort((a,b)=>b.delta-a.delta).filter(x=>x.delta>0).slice(0,limit).map(x=>x.row.id));
+              moves.push(candidates.map(({row,direct})=>chosen.has(row.id)?"VERIFY":direct?"DIRECT":"ABSTAIN"));
+              for(const {row,direct} of candidates){
+                if(chosen.has(row.id)){
+                  correct++;
+                  spent+=costs[row.kind];
+                  score+=100-costs[row.kind];
+                  history.push({kind:row.kind,correct:row.correct});
+                  if(name==="omega"&&history.length>=6){
+                    const gap=Math.abs(history.slice(-6).filter(x=>x.correct).length/6-priorRate);
+                    const next=active?gap>0.15:gap>=0.30;
+                    if(next!==active)alarms.push({lot:index+1,check:history.length,active:next,gap});
+                    active=next;
+                  }
+                } else if(direct){
+                  if(row.correct){correct++;score+=100;}else{mistakes++;score-=200;}
+                } else {abstain++;score+=5;}
+              }
+            }
+            if(history.length>lots.length*limit||correct+mistakes+abstain!==lots.flat().length)throw Error("budget or accounting");
+            return {score:score/100,checks:history.length,cost:spent/100,correct,mistakes,abstain,alarms,moves};
+          }
+          function compare(prior,lots,limit){
+            const result=Object.fromEntries(policies.map(n=>[n,run(prior,lots,limit,n)]));
+            const differs=(a,b)=>a.moves.flat().filter((x,i)=>x!==b.moves.flat()[i]).length;
+            if(differs(result.cumulative,result.ablation))throw Error("ablation invariant");
+            return {limit,changedVsAblation:differs(result.omega,result.ablation),policies:result};
+          }
+          
+          
+          
+          const numeric="[-+]?(?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d+)?(?:/\\d+)?";
+          function number(s){
+            const [a,b]=s.replace(/,/g,"").split("/");
+            const v=b===undefined?Number(a):Number(a)/Number(b);
+            return Number.isFinite(v)?v:null;
+          }
+          function candidates(s,pattern){
+            return [...s.matchAll(new RegExp(pattern,"gim"))].map(m=>number(m[1])).filter(x=>x!==null);
+          }
+          function unique(v){return new Set(v).size===1?v[0]:null;}
+          function extract(s){
+            const primary=candidates(s,"^\\s*#{4}\\s*\\$?\\[?("+numeric+")(?=[\\].\\s%]|$)");
+            const box=candidates(s,"\\\\boxed\\{\\$?("+numeric+")\\}");
+            const label=candidates(s,"^\\s*(?:\\*\\*)?(?:final answer|answer)\\s*[:=]\\s*(?:\\*\\*)?\\$?("+numeric+")\\s*\\.?\\s*(?:\\*\\*)?$");
+            const last=s.trim().split(/\r?\n/).at(-1);
+            const bare=candidates(last,"^\\s*\\$?("+numeric+")\\.?\\s*$");
+            return unique([...primary,...box,...label,...bare]);
+          }
+          
+          const fs=require("node:fs");
+          const {revision,sha256,rows}=JSON.parse(fs.readFileSync("paired_input.json","utf8"));
+          function view(row,source){
+            const parsed=extract(row.outputs[source]);
+            const gold=number(row.reference);
+            if(gold===null)throw Error("invalid gold");
+            return {id:row.id,kind:"RATE",parsed,correct:parsed!==null&&parsed===gold};
+          }
+          const prior=rows.slice(0,16).flatMap(row=>[0,1].map(source=>view(row,source)));
+          const scenarios={stable8B:[0,0,0,0],stable1B:[1,1,1,1],alternate8B:[0,1,0,1],alternate1B:[1,0,1,0]};
+          const cohorts=[];
+          for(let c=0;c<12;c++){
+            const questions=rows.slice(16+c*64,16+(c+1)*64);
+            const data={};
+            for(const [name,sources] of Object.entries(scenarios)){
+              const test=questions.map((row,i)=>view(row,sources[Math.floor(i/16)]));
+              const lots=Array.from({length:16},(_,i)=>test.slice(4*i,4*i+4));
+              const replay=compare(prior,lots,2);
+              data[name]={...replay,rawCorrect:test.filter(x=>x.correct).length,unparsed:test.filter(x=>x.parsed===null).length};
+            }
+            cohorts.push(data);
+          }
+          const controls=policies.filter(n=>n!=="omega");
+          function stats(names){
+            const all=cohorts.flatMap(c=>names.map(n=>c[n]));
+            const utility=Object.fromEntries(policies.map(n=>[n,all.reduce((sum,x)=>sum+Math.round(100*x.policies[n].score),0)/100]));
+            return {
+              runs:all.length, utility, contrast:Object.fromEntries(controls.map(n=>[n,Math.round(100*(utility.omega-utility[n]))/100])),
+              changedActions:all.reduce((s,x)=>s+x.changedVsAblation,0),
+              alarmOn:all.reduce((s,x)=>s+x.policies.omega.alarms.filter(a=>a.active).length,0),
+              rawCorrect:all.reduce((s,x)=>s+x.rawCorrect,0),
+              unparsed:all.reduce((s,x)=>s+x.unparsed,0),
+              publishedCorrect:all.reduce((s,x)=>s+x.policies.omega.correct,0),
+              publishedWrong:all.reduce((s,x)=>s+x.policies.omega.mistakes,0),
+            };
+          }
+          const stable=stats(["stable8B","stable1B"]), alternate=stats(["alternate8B","alternate1B"]);
+          const interaction=Object.fromEntries(controls.map(n=>[n,Math.round(100*(alternate.contrast[n]-stable.contrast[n]))/100]));
+          const counts={positive:0,zero:0,negative:0};
+          for(const c of cohorts){
+            const gap=n=>Math.round(100*(c[n].policies.omega.score-c[n].policies.ablation.score));
+            const effect=gap("alternate8B")+gap("alternate1B")-gap("stable8B")-gap("stable1B");
+            counts[effect>0?"positive":effect<0?"negative":"zero"]++;
+          }
+          const checks=Object.fromEntries([0,1].map(n=>[n,rows.slice(16).map(r=>view(r,n)).reduce((x,r)=>({correct:x.correct+Number(r.correct),unparsed:x.unparsed+Number(r.parsed===null)}),{correct:0,unparsed:0})]));
+          const summary={revision,sha256,questions:768,calibrationQuestions:16,calibrationCorrect:prior.filter(x=>x.correct).length,checks,stable,alternate,interaction,interactionCohorts:counts,byScenario:Object.fromEntries(Object.keys(scenarios).map(n=>[n,stats([n])]))};
+          fs.writeFileSync("paired_results.json",JSON.stringify({summary,cohorts},null,2));
+          console.log(JSON.stringify(summary,null,2));
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-gsm8k-paired-results
+          path: paired_results.json
