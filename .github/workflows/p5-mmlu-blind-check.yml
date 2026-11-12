@@ -48,16 +48,32 @@ jobs:
           const {sha,rows}=JSON.parse(fs.readFileSync("mmlu.json","utf8"));
           const tags=/<answer>\s*(?:option\s+)?\(?([A-E1-5])\)?\s*[.!]?\s*<\/answer>/gi;
           const conclusion=/^(?:(?:the\s+)?(?:final\s+)?answer\s*(?:is|:)\s*|option\s+)?\(?([A-E1-5])\)?(?:[.)!]|:\s+.*)?$/i;
-          function extract(raw,choices){
-            const lines=raw.trim().split(/\r?\n/);
-            const last=lines.at(-1)?.trim().replace(/\*\*/g,"")??"";
-            const explicit=last.match(conclusion);
-            const m=[...raw.matchAll(tags)].map(x=>x[1].toUpperCase());
-            if(explicit)m.push(explicit[1].toUpperCase());
-            const labels=new Set(m);
-            const parsed=labels.size===1?[...labels][0]:null;
-            return {parsed:parsed!==null&&Object.hasOwn(choices,parsed)?parsed:null,lastLine:!!explicit};
+          function normalizeAnswer(s){
+            return s.normalize("NFKC").toLowerCase().replace(/\*\*/g,"").replace(/[.!]\s*$/,"").trim().replace(/\s+/g," ");
           }
+          function extract(raw,choices){
+            const tagged=[...raw.matchAll(/<answer>\s*([^<>]+)\s*<\/answer>/gi)].map(m=>m[1]);
+            const last=raw.trim().split(/\r?\n/).at(-1)?.replace(/\*\*/g,"").trim()??"";
+            const labeled=last.match(/^(?:#{1,6}\s*)?(?:the\s+)?(?:final\s+)?answer\s*(?:is\s*:?|:)\s*(.+)$/i);
+            const payloads=[...tagged,...(labeled?[labeled[1]]:conclusion.test(last)?[last]:[])];
+            const matches=new Set();
+            for(const payload of payloads){
+              const s=normalizeAnswer(payload);
+              const found=Object.entries(choices).filter(([,v])=>normalizeAnswer(v)===s).map(([k])=>k);
+              const letter=s.match(/^(?:option\s+)?\(?([a-d])\)?$/);
+              const explicitIndex=s.match(/^(?:answer\s+)?index\s*[:=]?\s*([0-3])$/);
+              if(letter)found.push(letter[1].toUpperCase());
+              if(explicitIndex)found.push("ABCD"[Number(explicitIndex[1])]);
+              // A bare 0–3 could denote an index or an option's numeric value.
+              if(/^[0-3]$/.test(s)&&found.length&&found[0]!=="ABCD"[Number(s)])return {parsed:null};
+              for(const k of found)matches.add(k);
+            }
+            return {parsed:matches.size===1?[...matches][0]:null};
+          }
+          assert.equal(extract("<answer>liquid vapor</answer>",{A:"liquid vapor",B:"frozen ice"}).parsed,"A");
+          assert.equal(extract("<answer>2</answer>",{A:"2",B:"3",C:"6",D:"12"}).parsed,null);
+          assert.equal(extract("Answer: index 2",{A:"2",B:"3",C:"6",D:"12"}).parsed,"C");
+          assert.equal(extract("<answer>A</answer>\nAnswer: B",{A:"liquid vapor",B:"frozen ice"}).parsed,null);
           const stop=new Set("that this with from which have when then their there would could should because these those about into they them where than also will been being what were some more most only each such very much does answer correct option choice therefore explanation".split(" "));
           function words(s){
             return new Set((s.toLowerCase().match(/[a-z]{4,}/g)??[]).filter(w=>!stop.has(w)));
@@ -91,6 +107,7 @@ jobs:
           }
           const expand=block=>block.flatMap(r=>[0,1].map(source=>build(r,source))).filter(x=>x.parsed!==null);
           const fit=expand(rows.slice(0,300)), dev=expand(rows.slice(300,600)), test=expand(rows.slice(600));
+          assert.ok(fit.length>20&&dev.length>20&&test.length>20,"extraction preflight failed");
           const mean=(fit.filter(x=>x.correct).length+1)/(fit.length+2);
           const base=Array.from({length:4},(_,format)=>{
             const x=fit.filter(r=>r.format===format);
