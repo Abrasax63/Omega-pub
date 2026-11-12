@@ -1,0 +1,50 @@
+{
+  "protocol": "P5-EVID-05",
+  "source": "ClaimDB, Theologitis et al. ACL 2026",
+  "commit": "e06c3a22cc14a8ef6858bb5d40bca7925241b98d",
+  "git_blob_sha": "a017545623508c0090cf2148716b8d26a6f8c337",
+  "selection": "hand-selected exploratory before first SQLite execution; NOT held-out",
+  "cases": [
+    {
+      "claim_id": 4267,
+      "db_name": "superhero",
+      "bird_id": 817,
+      "claim": "At least one blue-haired male superhero is a Mutant.",
+      "extra_info": "blue-haired refers to colour.colour = 'blue' WHERE hair_colour_id = colour.id; male refers to gender = 'male';",
+      "label_evaluator_only": "ENTAILED"
+    },
+    {
+      "claim_id": 4179,
+      "db_name": "superhero",
+      "bird_id": 799,
+      "claim": "There were no superheroes without a publisher; every character in the dataset is associated with a publisher.",
+      "extra_info": "didn't have any publisher refers to publisher.id = 1;",
+      "label_evaluator_only": "CONTRADICTED"
+    },
+    {
+      "claim_id": 4324,
+      "db_name": "superhero",
+      "bird_id": 823,
+      "claim": "In Marvel Comics, 111 superheroes are identified as female.",
+      "extra_info": "female refers to gender = 'Female'; Marvel Comics refers to publisher_name = 'Marvel Comics';",
+      "label_evaluator_only": "ENTAILED"
+    },
+    {
+      "claim_id": 3930,
+      "db_name": "superhero",
+      "bird_id": 758,
+      "claim": "There is no human superhero who stands 185 cm tall, so no hair color can be provided.",
+      "extra_info": "185 cm tall refers to height_cm = 185; human superhero refers to race = 'human'; hair colour refers to colour where hair_colour_id = colour.id;",
+      "label_evaluator_only": "CONTRADICTED"
+    },
+    {
+      "claim_id": 4419,
+      "db_name": "superhero",
+      "bird_id": 836,
+      "claim": "If publishers were to retroactively rename certain characters to have the first name John, the number of superheroes with the first name John would increase.",
+      "extra_info": "have John as their first name refers to full_name LIKE 'John%';",
+      "label_evaluator_only": "NOT ENOUGH INFO",
+      "category_evaluator_only": "COUNTERFACTUAL"
+    }
+  ]
+}
