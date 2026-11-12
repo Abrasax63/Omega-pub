@@ -1,0 +1,176 @@
+name: P5 GSM8K automatic translation
+on:
+  pull_request:
+    paths:
+      - .github/workflows/p5-gsm8k-automatic-translation.yml
+permissions:
+  contents: read
+jobs:
+  intake:
+    if: github.head_ref == 'experiment/p5-gsm8k-automatic-translation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch pinned public corpus
+        run: |
+          python -m pip install pyarrow==19.0.1
+          curl --fail --silent --show-error --location --retry 2 --max-time 90 \
+            'https://huggingface.co/datasets/multi-domain-reasoning/gsm8k_eval/resolve/ee73c1ae289820c42191dde99a9461aded4846d9/data/test-00000-of-00001.parquet' \
+            --output corpus.parquet
+      - name: Test question-only automatic translation
+        run: |
+          python - <<'PY'
+          import hashlib,json,re
+          from fractions import Fraction
+          from math import ceil
+          from pathlib import Path
+          import pyarrow.parquet as pq
+          F=Fraction
+          numeric=r"[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:/\d+)?"
+          final_patterns=[
+              re.compile(r"^\s*#{4}\s*\$?\[?("+numeric+r")(?=[\].\s%]|$)",re.M),
+              re.compile(r"\\boxed\{\$?("+numeric+r")\}"),
+              re.compile(r"^\s*(?:\*\*)?(?:final answer|answer)\s*[:=]\s*(?:\*\*)?\$?("+numeric+r")\s*\.?\s*(?:\*\*)?$",re.I|re.M),
+          ]
+          bare=re.compile(r"^\s*\$?("+numeric+r")\.?\s*$")
+          trace_pattern=re.compile(r"<<([^<>\n]{1,180})>>")
+          def value(s):
+              return Fraction(s.replace(",",""))
+          def parse(raw):
+              matches=[(m.start(),value(m[1])) for pattern in final_patterns for m in pattern.finditer(raw)]
+              last=raw.rstrip().split("\n")[-1]
+              m=bare.fullmatch(last)
+              if m:
+                  matches.append((len(raw.rstrip())-len(last),value(m[1])))
+              if len({v for _,v in matches})!=1:
+                  return None,""
+              return matches[0][1],raw[:min(i for i,_ in matches)]
+          
+          # Each grammar returns a typed operation and exact arguments, or abstains.
+          N=r"(\d+(?:,\d{3})*(?:\.\d+)?)"
+          money=r"\$\s*"+N
+          patterns=[
+           ("discount",rf"(?:the )?price of (?:a|an|the) [^.!?]+ is {money}\.\s*if you get a {N}% discount,\s*how much (?:do|will) you (?:have to )?pay\?"),
+           ("discount",rf"(?:a|an|the) [^.!?]+ costs? {money}\.\s*(?:it is|it's) (?:on sale|discounted) (?:for|at|by) {N}% off\.\s*(?:how much does it cost now|what is the sale price)\?"),
+           ("future_age",rf"[a-z][a-z' -]+ will be {N} years old in {N} years\.\s*how old will (?:he|she|they) be {N} years from now\?"),
+           ("price_share",rf"(?:a|the) [^.!?]+ and (?:a|the) [^.!?]+ cost {money} (?:in total|altogether|together)?\s*\.\s*if the [^.!?]+ cost(?:s)? {N} times as much as the [^.!?]+,\s*how much did the [^.!?]+ cost\?"),
+           ("hours_to_buy",rf"[a-z][a-z' -]+ wants to buy (?:a|an|the) [^.!?]+ for {money}\.\s*(?:he|she|they) (?:earn|earns|make|makes) {money} (?:per|an) hour\.\s*how many hours (?:does|do|will) (?:he|she|they) (?:need to work|have to work)\?"),
+           ("difference",rf"[a-z][a-z' -]+ has {N} ([a-z]+)\.\s*[a-z][a-z' -]+ has {N} \2\.\s*how many more \2 does [a-z][a-z' -]+ have than [a-z][a-z' -]+\?"),
+           ("equal_groups",rf"(?:there are|[a-z][a-z' -]+ has) {N} (?:boxes|bags|baskets|packs|cases|trays)(?: of ([a-z]+))?\.\s*each (?:box|bag|basket|pack|case|tray) (?:has|contains) {N} ([a-z]+)\.\s*how many \4 (?:are there in (?:all|total)|are there altogether|does [a-z][a-z' -]+ have in (?:all|total))\?"),
+           ("equal_split",rf"[a-z][a-z' -]+ has {N} ([a-z]+)\.\s*(?:he|she|they) (?:splits|split|shares|share|divides|divide) (?:them|the \2) equally (?:among|between) {N} (?:friends|people|children|students)\.\s*how many \2 (?:does each (?:friend|person|child|student) (?:get|receive)|will each (?:friend|person|child|student) (?:get|receive))\?"),
+           ("count_trucks",rf"(?:a|the) [^.!?]+ weighs {N} pounds\.\s*(?:each|a) truck can (?:carry|hold) (?:up to )?{N} pounds\.\s*how many trucks (?:are (?:needed|required)|will be needed) to (?:carry|transport) {N} [a-z]+\?"),
+           ("discount",rf"(?:a|an|the) [^.!?]+ originally costs? {money}\.\s*(?:it is|it's) (?:on sale for|discounted by) {N}% (?:off )?\.\s*(?:how much does it cost now|what is the sale price)\?"),
+          ]
+          rules=[(kind,re.compile(regex,re.I)) for kind,regex in patterns]
+          
+          def numeric_arg(x):
+              return F(x.replace(",",""))
+          
+          def translate(question):
+              q=" ".join(question.strip().split()).replace("’","'").lower()
+              for kind,rule in rules:
+                  m=rule.fullmatch(q)
+                  if m is None:
+                      continue
+                  g=m.groups()
+                  if kind=="price_share":
+                      names=re.fullmatch(r"(?:a|the) (.+?) and (?:a|the) (.+?) cost .+?if the (.+?) costs? [\d.,]+ times as much as the (.+?), how much did the (.+?) cost\?",q)
+                      if names is None:
+                          continue
+                      first,second,large,small,target=names.groups()
+                      if {large,small}!={first,second} or target not in {large,small}:
+                          continue
+                      return (kind,[*map(numeric_arg,g),F(target==large)])
+                  if kind=="difference":
+                      names=re.fullmatch(r"(.+?) has [\d.,]+ [a-z]+\.\s*(.+?) has [\d.,]+ [a-z]+\.\s*how many more [a-z]+ does (.+?) have than (.+?)\?",q)
+                      if names is None:
+                          continue
+                      a,b,target,other=names.groups()
+                      if a==b or {a,b}!={target,other}:
+                          continue
+                      x,y=map(numeric_arg,(g[0],g[2]))
+                      return (kind,[x,y] if target==a else [y,x])
+                  if kind=="equal_groups":
+                      if g[1] is not None and g[1]!=g[3]:
+                          continue
+                      return (kind,list(map(numeric_arg,(g[0],g[2]))))
+                  if kind=="equal_split":
+                      return (kind,list(map(numeric_arg,(g[0],g[2]))))
+                  return (kind,list(map(numeric_arg,g)))
+              return None
+          
+          def execute(program):
+              if program is None:
+                  return None
+              kind,args=program
+              x,y,*rest=args
+              if kind=="discount":
+                  return x*(100-y)/100 if 0<=y<=100 else None
+              if kind=="future_age":
+                  return x-y+rest[0] if x>=y else None
+              if kind=="price_share":
+                  return x*(y if rest[0] else 1)/(y+1) if y>0 else None
+              if kind=="hours_to_buy":
+                  return x/y if y>0 else None
+              if kind=="difference":
+                  return x-y if x>=y else None
+              if kind=="equal_groups":
+                  return x*y if x.denominator==y.denominator==1 else None
+              if kind=="equal_split":
+                  return x/y if y>0 and (x/y).denominator==1 else None
+              if kind=="count_trucks":
+                  return F(ceil(rest[0]/(y//x))) if x>0 and y>=x else None
+              raise ValueError(kind)
+          
+          fixtures=[
+           ("The price of a book is $25. If you get a 20% discount, how much do you have to pay?",20),
+           ("Alice will be 20 years old in 10 years. How old will she be 5 years from now?",15),
+           ("A boat and a trailer cost $10,000. If the boat costs 4 times as much as the trailer, how much did the trailer cost?",2000),
+           ("Alice has 9 apples. Bob has 5 apples. How many more apples does Alice have than Bob?",4),
+           ("There are 3 boxes of pencils. Each box contains 4 pencils. How many pencils are there in total?",12),
+           ("Alice has 12 apples. She shares them equally among 3 friends. How many apples does each friend get?",4),
+           ("A flagstone weighs 75 pounds. Each truck can carry 2000 pounds. How many trucks are needed to transport 80 flagstones?",4),
+           ("Alice has 8 apples. Bob has 5 apples. How many more apples does Carl have than Bob?",None),
+           ("The price of a book is $25. If you get a 20% discount, how much do you have to pay after tax?",None),
+          ]
+          for q,expected in fixtures:
+              assert execute(translate(q))==expected,(q,translate(q))
+          p=Path("corpus.parquet")
+          sha=hashlib.sha256(p.read_bytes()).hexdigest()
+          assert sha=="22e8b058505cf5b8cc073559829e2d56200be63c34a32f303a829a387f824b1f"
+          sources=["baseline_llama_8b","baseline_llama_1b"]
+          corpus=pq.read_table(p,columns=["question","answer",*sources]).to_pylist()
+          def h(s):return hashlib.sha256(s.encode()).hexdigest()
+          def order(rows,salt):return sorted(rows,key=lambda r:h(salt+r["question"]))
+          previous=order(corpus,"P5-GSM8K-arithmetic-v1|")[600:]
+          manual={r["question"] for r in order(previous,"P5-GSM8K-recompute-v1|")[:24]}
+          test=[r for r in previous if r["question"] not in manual]
+          assert len(test)==695
+          rows=[]
+          for r in test:
+              program=translate(r["question"])
+              computed=execute(program)
+              gold=value(r["answer"].rsplit("#### ",1)[1].strip())
+              a,b=[parse(r[s])[0] for s in sources]
+              rows.append(dict(id=h(r["question"]),kind=program[0] if program else None,args=[str(x) for x in program[1]] if program else [],
+                   computed=str(computed) if computed is not None else None,gold=str(gold),
+                   candidate=str(a) if a is not None else None,peer=str(b) if b is not None else None,
+                   solved=computed is not None,solverCorrect=computed is not None and computed==gold,
+                   publishRecompute=a is not None and a==computed,publishPeer=a is not None and a==b,correct=a is not None and a==gold))
+          def summarize(rows):
+              return {k:dict(published=sum(x[k] for x in rows),correct=sum(x[k] and x["correct"] for x in rows))
+                      for k in ["publishRecompute","publishPeer"]}
+          solved=[x for x in rows if x["solved"]]
+          summary=dict(questions=len(rows),solved=len(solved),solverCorrect=sum(x["solverCorrect"] for x in solved),
+                       all=summarize(rows),covered=summarize(solved),
+                       matches=[x for x in rows if x["kind"] is not None])
+          Path("automatic_results.json").write_text(json.dumps(dict(summary=summary,rows=rows),indent=2),encoding="utf-8")
+          print(json.dumps(summary,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-gsm8k-automatic-results
+          path: automatic_results.json
