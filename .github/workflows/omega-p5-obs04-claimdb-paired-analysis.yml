@@ -6,6 +6,7 @@ on:
       - ".github/workflows/omega-p5-obs04-claimdb-paired-analysis.yml"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_obs04_claimdb_real_disagreement.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_obs04_claimdb_real_disagreement.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_obs04_independent_audit.py"
   workflow_dispatch:
 
 permissions:
@@ -57,11 +58,29 @@ jobs:
           assert r["model_policies"]["agree_or_abstain"]["abstained"]==r["outcome_counts"]["disagreements"]
           print("OBS04_REAL_1000_PAIRED_VERDICTS_WITHOUT_INDEPENDENCE_OVERCLAIMS")
           PY
+      - name: Recount labels, disagreements and all policy utilities independently
+        working-directory: omega/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_obs04_independent_audit.py --source "$RUNNER_TEMP/obs04_claimdb_paired.json" --output "$RUNNER_TEMP/obs04_independent_audit.json"
+          python - <<'PY'
+          import os,json
+          d=json.load(open(os.environ["RUNNER_TEMP"]+"/obs04_independent_audit.json"))
+          assert d["paired_cases"]==1000
+          assert d["contingency"]["sql_only_correct"]==536
+          assert d["contingency"]["plain_only_correct"]==66
+          assert d["contingency"]["both_wrong_disagree"]==90
+          assert d["by_gold_label"]["NOT ENOUGH INFO"]["consensus_published"]==248
+          assert d["by_gold_label"]["ENTAILED"]["consensus_published"]==19
+          assert d["by_gold_label"]["CONTRADICTED"]["consensus_published"]==41
+          print("OBS04_INDEPENDENT_COUNTS_AND_LABEL_SKEW_VERIFIED")
+          PY
       - name: Archive public derived metrics and IDs only (not original model or DB logs)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: omega-p5-obs04-derived-metrics-${{ github.run_id }}
-          path: ${{ runner.temp }}/obs04_claimdb_paired.json
+          path: |
+            ${{ runner.temp }}/obs04_claimdb_paired.json
+            ${{ runner.temp }}/obs04_independent_audit.json
           retention-days: 7
           if-no-files-found: ignore
