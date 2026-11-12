@@ -1,0 +1,453 @@
+{
+  "protocol": "P5-EVID-04",
+  "status": "REAL_THIRD_PARTY_ANNOTATIONS_PROVENANCE_ONLY_NO_WITNESS",
+  "source": {
+    "title": "ClaimDB: A Fact Verification Benchmark over Large Structured Data",
+    "authors": "Theologitis et al. (ACL 2026)",
+    "url": "https://github.com/claimdb/claimdb",
+    "source_data_url": "https://github.com/claimdb/claimdb/blob/e06c3a22cc14a8ef6858bb5d40bca7925241b98d/final-benchmark/test-public.jsonl",
+    "commit": "e06c3a22cc14a8ef6858bb5d40bca7925241b98d",
+    "git_blob_sha": "a017545623508c0090cf2148716b8d26a6f8c337",
+    "license": "CC-BY-SA-4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "license_notice": "Subset of the authors' public ClaimDB dataset. Deterministically sampled and remapped with provenance fields; no verification of claims carried out. Attribution and ShareAlike apply."
+  },
+  "selection": {
+    "total_source_records": 1000,
+    "selection_rule": "rank = (claim_id * 2654435761 + bird_id * 1597334677) mod 2^32 ascending, then claim_id",
+    "strata": [
+      {
+        "label": "ENTAILED",
+        "category": null,
+        "available": 333,
+        "selected": 12
+      },
+      {
+        "label": "CONTRADICTED",
+        "category": null,
+        "available": 331,
+        "selected": 12
+      },
+      {
+        "label": "NOT ENOUGH INFO",
+        "category": "OUT-OF-SCHEMA",
+        "available": 111,
+        "selected": 4
+      },
+      {
+        "label": "NOT ENOUGH INFO",
+        "category": "COUNTERFACTUAL",
+        "available": 113,
+        "selected": 4
+      },
+      {
+        "label": "NOT ENOUGH INFO",
+        "category": "SUBJECTIVE",
+        "available": 112,
+        "selected": 4
+      }
+    ],
+    "unique_db_name_bird_id": true,
+    "selected_count": 36
+  },
+  "annotation_policy": "Labels are evaluator-only annotations, NOT independently verified facts, nor available to the policy.",
+  "evidence_status": "Missing underlying source database rows, SQL queries and computed result; no verifiable witness is included.",
+  "cases": [
+    {
+      "claim_id": 101,
+      "bird_id": 15,
+      "db_name": "california_schools",
+      "claim": "Palo Alto Unified is the active district with the highest average Reading score.",
+      "extra_info": "",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 4267,
+      "bird_id": 817,
+      "db_name": "superhero",
+      "claim": "At least one blue-haired male superhero is a Mutant.",
+      "extra_info": "blue-haired refers to colour.colour = 'blue' WHERE hair_colour_id = colour.id; male refers to gender = 'male';",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 2687,
+      "bird_id": 536,
+      "db_name": "codebase_community",
+      "claim": "In the Codebase Community dataset, 236 users created their accounts after 2013 and have more than 10 views.",
+      "extra_info": "more than 10 views refers to Views > 10; created after the year 2013 refers to year (CreationDate) > 2013",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 16410,
+      "bird_id": 1514,
+      "db_name": "debit_card_specializing",
+      "claim": "The transaction recorded at 16:25:00 on 2012/8/24 used CZK as the currency.",
+      "extra_info": "'2012/8/24' can be represented by '2012-08-24'; ",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 802,
+      "bird_id": 130,
+      "db_name": "financial",
+      "claim": "The number of account holders without credit cards in the South Bohemia region is 74.",
+      "extra_info": "A3 contains the region names; South Bohemia is one of region names.",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 668,
+      "bird_id": 108,
+      "db_name": "financial",
+      "claim": "The client who applied for the biggest loan made a first transaction of 300 after opening the account.",
+      "extra_info": "",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 2587,
+      "bird_id": 514,
+      "db_name": "card_games",
+      "claim": "In the duel format, the ten cards with the highest mana cost are Astral Cornucopia, Entreat the Angels, Quarantine Field, Mass Manipulation, Hour of Eternity, Recall, Part Water, Fall of the Titans, Bonfire of the Damned, and Release the Gremlins.",
+      "extra_info": "duels refer to format = 'duel'; the highest uncoverted mana cost refers to MAX(manaCost)",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 16027,
+      "bird_id": 1403,
+      "db_name": "student_club",
+      "claim": "September Speaker is the closed event that exceeded its budget by the greatest amount.",
+      "extra_info": "closed events refers to event_name where status = 'Closed'; exceed the budget the most refers to MIN(remaining) where remaining < 0",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 1738,
+      "bird_id": 282,
+      "db_name": "toxicology",
+      "claim": "For molecule ID TR006, the ratio of hydrogen elements is 0.3617021276595745 and the label is '+'.",
+      "extra_info": "hydrogen refers to element = 'h'; ratio = DIVIDE(SUM(element = 'h'), count(element)) where molecule_id = 'TR006' ; label = '+' mean molecules are carcinogenic; label = '-' means molecules are non-carcinogenic",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 951,
+      "bird_id": 154,
+      "db_name": "financial",
+      "claim": "Hl.m. Praha district has 339 male clients.",
+      "extra_info": "District data appears in the A2; Male means that gender = 'M'",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 1120,
+      "bird_id": 177,
+      "db_name": "financial",
+      "claim": "Following transaction 851, client number 4's account balance is 15,096.",
+      "extra_info": "",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 5743,
+      "bird_id": 1080,
+      "db_name": "european_football_2",
+      "claim": "Among players whose preferred foot was the left foot, 1,569 would remain in their position when the team attacked.",
+      "extra_info": "preferred foot when attacking was the left refers to preferred_foot = 'left'; players who would remain in his position when the team attacked refers to attacking_work_rate = 'low';",
+      "annotated_label_evaluator_only": "ENTAILED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 15874,
+      "bird_id": 1348,
+      "db_name": "student_club",
+      "claim": "None of the budgets for the \"November Meeting\" exceeded their allocations; the number that overspent was zero.",
+      "extra_info": "'November Meeting' is an event name; remaining < 0 means the cost had exceeded the budget",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 6382,
+      "bird_id": 1185,
+      "db_name": "thrombosis_prediction",
+      "claim": "For the patient born on 1959-02-18, the decrease rate in total cholesterol from November to December 1981 was at least 15%.",
+      "extra_info": "born on 1959/2/18 refers to Birthday = '1959-02-18'; calculation = SUBTRACT(SUM(Birthday = '1959-02-18' and Date like '1981-11-%' THEN `T-CHO`), SUM(Birthday = '1959-02-18' and Date like '1981-12-%' THEN `T-CHO`))",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 5567,
+      "bird_id": 1039,
+      "db_name": "european_football_2",
+      "claim": "Ahmed Samir Farag’s average number of long shots was 0.0.",
+      "extra_info": "average number of long shot = DIVIDE(SUM(long_shots), COUNT(player_fifa_api_id));",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 635,
+      "bird_id": 101,
+      "db_name": "financial",
+      "claim": "There is no single earliest account in 1995—account_id 1, account_id 4, and account_id 6 all share the same earliest trading date.",
+      "extra_info": "",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 5728,
+      "bird_id": 1078,
+      "db_name": "european_football_2",
+      "claim": "Of the two footballers, the elder is Abdelaziz Barrada, not Aaron Lennon.",
+      "extra_info": "The larger the birthday value, the younger the person is, and vice versa;",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 1508,
+      "bird_id": 234,
+      "db_name": "toxicology",
+      "claim": "Molecule TR009 has zero bonds that involve atom 12.",
+      "extra_info": "TR009 is the molecule id;  involved atom 12 refers to atom_id = 'TR009_12' or atom_id2 = 'TR009_12'",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 869,
+      "bird_id": 137,
+      "db_name": "financial",
+      "claim": "The number of accounts with running contracts in Branch location 1 is 62.",
+      "extra_info": "Status = 'C' stands for running contract, OK so far; Status = 'D' stands for running contract, client in debt",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 7515,
+      "bird_id": 1456,
+      "db_name": "student_club",
+      "claim": "Elijah Allen is not among the top five members by highest single expense in the Student Club.",
+      "extra_info": "full name refers to first_name, last_name; spend the most money refers to MAX(expense.cost)",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 2251,
+      "bird_id": 419,
+      "db_name": "card_games",
+      "claim": "Exactly nine borderless color cards have EDHRec ranks higher than 12,000.",
+      "extra_info": "color cards with no borders refers to borderColor = 'borderless'; ranked higher than 12000 on EDHRec refers to edhrecRank > 12000",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 4940,
+      "bird_id": 949,
+      "db_name": "formula_1",
+      "claim": "Red Bull Racing holds the highest points total in the Formula 1 constructors' standings.",
+      "extra_info": "",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 7514,
+      "bird_id": 1455,
+      "db_name": "student_club",
+      "claim": "Budget rec1bG6HSft7XIvTP contains no line item with the expense description 'Water, chips, cookies'.",
+      "extra_info": "budget allowed refers to expense_description; expense_description = 'Water, chips, cookies'; most money refers to MAX(cost)",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 6278,
+      "bird_id": 1167,
+      "db_name": "thrombosis_prediction",
+      "claim": "In the 12 months ending December 31, 1998, the lab averaged fewer than 7 male patients tested per month.",
+      "extra_info": "the year that concluded on December 31, 1998 refers to Date BETWEEN '1998-01-01' AND '1998-12-31'; male refers to SEX = 'M'; calculation = DIVIDE(COUNT(ID), 12)",
+      "annotated_label_evaluator_only": "CONTRADICTED",
+      "annotated_category_evaluator_only": null,
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 1005,
+      "bird_id": 161,
+      "db_name": "financial",
+      "claim": "The junior credit card held by client ID 13539 is issued on the Mastercard network.",
+      "extra_info": "",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "OUT-OF-SCHEMA",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 7686,
+      "bird_id": 1516,
+      "db_name": "debit_card_specializing",
+      "claim": "The point-of-sale terminals used for the CZK transactions on the morning of 2012-08-26 were predominantly Verifone Vx520 devices.",
+      "extra_info": "'2012/8/26' can be represented by '2012-08-26'; The morning refers to the time before '13:00:00'",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "OUT-OF-SCHEMA",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 3530,
+      "bird_id": 684,
+      "db_name": "codebase_community",
+      "claim": "A majority of teenage users on the Codebase Community are high school students.",
+      "extra_info": "DIVIDE(COUNT(Id where Age BETWEEN 13 and 18), COUNT(Id)) as percentage;",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "OUT-OF-SCHEMA",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 7039,
+      "bird_id": 1306,
+      "db_name": "thrombosis_prediction",
+      "claim": "Among patients diagnosed with systemic lupus erythematosus (SLE) whose white blood cell counts were between 3.5 and 9.0, fewer than 5% were active smokers at the time of the laboratory test.",
+      "extra_info": "diagnosed with SLE refers to Diagnosis = 'SLE'; normal white blood cell level refers to WBC between 3.5 and 9.0;",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "OUT-OF-SCHEMA",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 6483,
+      "bird_id": 1200,
+      "db_name": "thrombosis_prediction",
+      "claim": "If the definition of thrombocytopenia had required a platelet count below 50,000 per microliter rather than the criteria actually used, the proportion of patients diagnosed with systemic lupus erythematosus would have been lower.",
+      "extra_info": "thrombocytopenia' refers to symptoms; 'SLE' refers to diagnosis; calculation =  DIVIDE(SUM(DIAGNOSIS LIKE '%ITP%'), SUM(DIAGNOSIS LIKE '%SLE%')) MULTIPLY 100",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "COUNTERFACTUAL",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 4419,
+      "bird_id": 836,
+      "db_name": "superhero",
+      "claim": "If publishers were to retroactively rename certain characters to have the first name John, the number of superheroes with the first name John would increase.",
+      "extra_info": "have John as their first name refers to full_name LIKE 'John%';",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "COUNTERFACTUAL",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 854,
+      "bird_id": 135,
+      "db_name": "financial",
+      "claim": "If the bank had enforced a zero-balance floor at the authorization stage for credit card withdrawals, none of the six monthly-issuance accounts would have gone negative.",
+      "extra_info": "Negative balance means balance < 0; Operation = 'VYBER KARTOU' stands for credit card withdraw. Frequency = 'POPLATEK MESICNE' stands for monthly issurance",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "COUNTERFACTUAL",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 5496,
+      "bird_id": 1028,
+      "db_name": "european_football_2",
+      "claim": "If all 2009/2010 Scotland Premier League matches had been played at neutral venues, Celtic would have finished with fewer away wins than they actually recorded.",
+      "extra_info": "Final result should return the Team.team_long_name; Scotland Premier League refers to League.name = 'Scotland Premier League'; away team refers to away_team_api_id; away team that won the most refers to MAX(SUBTRACT(away_team_goal, home_team_goal) > 0); 2010 season refers to season = '2009/2010'; won the most refers to MAX(COUNT(*));",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "COUNTERFACTUAL",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 466,
+      "bird_id": 78,
+      "db_name": "california_schools",
+      "claim": "In Adelanto, schools that serve grades K-6 provide a better transitional experience for students than K-8 schools.",
+      "extra_info": "",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "SUBJECTIVE",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 266,
+      "bird_id": 42,
+      "db_name": "california_schools",
+      "claim": "Parents widely regard the math instruction at the California school that scored the highest average in SAT Math as the most innovative in its region.",
+      "extra_info": "",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "SUBJECTIVE",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 15919,
+      "bird_id": 1362,
+      "db_name": "student_club",
+      "claim": "The current number of municipalities in Orange County, Virginia provides an ideal balance between local autonomy and administrative efficiency.",
+      "extra_info": "Orange County is the county name, Virginia is the state name",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "SUBJECTIVE",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    },
+    {
+      "claim_id": 6197,
+      "bird_id": 1151,
+      "db_name": "thrombosis_prediction",
+      "claim": "An inpatient share of roughly 38% among patients born from 1930 to 1940 is considered low by international standards.",
+      "extra_info": "patient born between Year 1930 to 1940 refers to year(Birthday) BETWEEN '1930-01-01' AND '1940-12-31'; inpatient refers to Admission = '+'",
+      "annotated_label_evaluator_only": "NOT ENOUGH INFO",
+      "annotated_category_evaluator_only": "SUBJECTIVE",
+      "independent_source_count": 0,
+      "observed_evidence_records": 0
+    }
+  ]
+}
