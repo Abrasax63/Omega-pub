@@ -1,0 +1,128 @@
+name: P5 ARC justification signal
+on:
+  pull_request:
+    paths:
+      - .github/workflows/p5-arc-justification.yml
+permissions:
+  contents: read
+jobs:
+  intake:
+    if: github.head_ref == 'experiment/p5-external-gsm8k-blind'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch pinned public corpus
+        run: |
+          python -m pip install pyarrow==19.0.1
+          curl --fail --silent --show-error --location --retry 2 --max-time 90 \
+            'https://huggingface.co/datasets/multi-domain-reasoning/arc_eval/resolve/14bf91b9ebdae26bde57a220e4b59d14e33ab52d/data/test-00000-of-00001.parquet' \
+            --output corpus.parquet
+      - name: Evaluate justification signal on reserved ARC questions
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          import pyarrow.parquet as pq
+          path=Path("corpus.parquet")
+          sources=["baseline_llama_3.1_8b","baseline_llama_1b"]
+          rows=pq.read_table(path,columns=["id","question","choices","answerKey",*sources]).to_pylist()
+          unique={}
+          for r in sorted(rows,key=lambda r:r["id"]):
+              unique.setdefault(" ".join(r["question"].casefold().split()),r)
+          def order(r):
+              return hashlib.sha256(("P5-ARC-justification-v1|"+r["id"]).encode()).hexdigest()
+          selected=sorted(unique.values(),key=order)
+          assert len(selected)>=1100
+          data=[]
+          for r in selected:
+              choices=dict(zip(r["choices"]["label"],r["choices"]["text"],strict=True))
+              outputs=[r[s] for s in sources]
+              assert r["answerKey"] in choices and all(isinstance(x,str) for x in outputs)
+              data.append({"id":r["id"],"question":r["question"],"choices":choices,"reference":r["answerKey"],"outputs":outputs})
+          Path("arc.json").write_text(json.dumps({"sha":hashlib.sha256(path.read_bytes()).hexdigest(),"rows":data}),encoding="utf-8")
+          PY
+          node <<'JS'
+          const fs=require("node:fs"), assert=require("node:assert/strict");
+          const {sha,rows}=JSON.parse(fs.readFileSync("arc.json","utf8"));
+          const tags=/<answer>\s*(?:option\s+)?\(?([A-E1-5])\)?\s*[.!]?\s*<\/answer>/gi;
+          const conclusion=/^(?:(?:the\s+)?(?:final\s+)?answer\s*(?:is|:)\s*|option\s+)?\(?([A-E1-5])\)?(?:[.)!]|:\s+.*)?$/i;
+          function extract(raw,choices){
+            const lines=raw.trim().split(/\r?\n/);
+            const last=lines.at(-1)?.trim().replace(/\*\*/g,"")??"";
+            const explicit=last.match(conclusion);
+            const m=[...raw.matchAll(tags)].map(x=>x[1].toUpperCase());
+            if(explicit)m.push(explicit[1].toUpperCase());
+            const labels=new Set(m);
+            const parsed=labels.size===1?[...labels][0]:null;
+            return {parsed:parsed!==null&&Object.hasOwn(choices,parsed)?parsed:null,lastLine:!!explicit};
+          }
+          const stop=new Set("that this with from which have when then their there would could should because these those about into they them where than also will been being what were some more most only each such very much does answer correct option choice therefore explanation".split(" "));
+          function words(s){
+            return new Set((s.toLowerCase().match(/[a-z]{4,}/g)??[]).filter(w=>!stop.has(w)));
+          }
+          function evidence(raw,question,choices,parsed,lastLine){
+            if(parsed===null)return "unparsed";
+            const lines=raw.trim().split(/\r?\n/);
+            if(lastLine)lines.pop();
+            // Exclude the final declaration and anything after the first answer tag.
+            const explanation=lines.join("\n").split(/<answer\b/i)[0].slice(-600);
+            const said=words(explanation), prompt=words(question);
+            const terms=Object.fromEntries(Object.entries(choices).map(([k,v])=>[k,words(v)]));
+            const scores=Object.entries(terms).map(([k,ws])=>[k,[...ws].filter(w=>!prompt.has(w)&&said.has(w)&&Object.entries(terms).every(([other,v])=>other===k||!v.has(w))).length]);
+            const max=Math.max(...scores.map(x=>x[1]));
+            const leaders=scores.filter(x=>x[1]===max);
+            return max===0||leaders.length!==1?"unclear":leaders[0][0]===parsed?"aligned":"other";
+          }
+          const example={A:"liquid vapor",B:"frozen ice"};
+          assert.equal(extract("<answer>A</answer>\nAnswer: B",example).parsed,null);
+          assert.equal(evidence("Vapor spreads through the air.\nAnswer: A","What happens?",example,"A",true),"aligned");
+          assert.equal(evidence("Vapor spreads through the air.\nAnswer: B","What happens?",example,"B",true),"other");
+          assert.equal(evidence("Answer: A: vapor","What happens?",example,"A",true),"unclear");
+          function build(r,source){
+            const raw=r.outputs[source], {parsed,lastLine}=extract(raw,r.choices);
+            return {id:r.id,source,parsed,correct:parsed===r.reference,format:2*Number(/<answer>/i.test(raw))+Number(raw.length>=500),evidence:evidence(raw,r.question,r.choices,parsed,lastLine)};
+          }
+          const expand=block=>block.flatMap(r=>[0,1].map(source=>build(r,source))).filter(x=>x.parsed!==null);
+          const fit=expand(rows.slice(0,300)), dev=expand(rows.slice(300,600)), test=expand(rows.slice(600));
+          const mean=(fit.filter(x=>x.correct).length+1)/(fit.length+2);
+          const base=Array.from({length:4},(_,format)=>{
+            const x=fit.filter(r=>r.format===format);
+            return (x.filter(r=>r.correct).length+8*mean)/(x.length+8);
+          });
+          const learned={};
+          for(const format of [0,1,2,3])for(const state of ["aligned","other","unclear"]){
+            const x=fit.filter(r=>r.format===format&&r.evidence===state);
+            learned[format+"|"+state]=(x.filter(r=>r.correct).length+8*base[format])/(x.length+8);
+          }
+          const scores={format:x=>base[x.format],content:x=>learned[x.format+"|"+x.evidence]};
+          const grid=[0.5,0.55,0.6,0.625,0.65,2.05/3,0.7,0.725,0.75,0.775,0.8,0.825,0.85,0.875,0.9,0.925,0.95,0.975,1];
+          function measure(data,score,threshold){
+            const chosen=data.filter(x=>score(x)>=threshold);
+            const errors=chosen.filter(x=>!x.correct).length;
+            return {threshold,published:chosen.length,errors,risk:chosen.length?errors/chosen.length:null};
+          }
+          const curves=Object.fromEntries(Object.entries(scores).map(([mode,score])=>[mode,grid.map(t=>measure(dev,score,t))]));
+          const results={};
+          for(const cap of [0.1,0.2]){
+            results[cap]=Object.fromEntries(Object.entries(scores).map(([mode,score])=>{
+              const chosen=curves[mode].filter(x=>x.published>=20&&x.risk<=cap).sort((a,b)=>b.published-a.published||a.risk-b.risk||b.threshold-a.threshold)[0];
+              const threshold=chosen?.threshold??1;
+              return [mode,{qualified:!!chosen,development:measure(dev,score,threshold),holdout:measure(test,score,threshold),holdoutBySource:[0,1].map(s=>measure(test.filter(x=>x.source===s),score,threshold))}];
+            }));
+          }
+          const evidenceStats=Object.fromEntries(["aligned","other","unclear"].map(k=>{
+            const x=test.filter(r=>r.evidence===k);
+            return [k,{total:x.length,correct:x.filter(r=>r.correct).length}];
+          }));
+          const brier=Object.fromEntries(Object.entries(scores).map(([mode,score])=>[mode,test.reduce((s,x)=>s+(score(x)-Number(x.correct))**2,0)/test.length]));
+          const summary={sha,questions:rows.length,holdoutQuestions:rows.length-600,extractedHoldout:test.length,fitExtracted:fit.length,developmentExtracted:dev.length,evidenceStats,brier,results};
+          fs.writeFileSync("arc_justification_results.json",JSON.stringify({summary,curves,base,learned,holdout:test.map(x=>({...x,formatScore:scores.format(x),contentScore:scores.content(x)}))},null,2));
+          console.log(JSON.stringify(summary,null,2));
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-arc-justification-results
+          path: arc_justification_results.json
