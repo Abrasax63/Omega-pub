@@ -1,0 +1,55 @@
+name: Omega P5 OBS-01 controlled observability and finite belief certificates
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-obs01-controlled-observability.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_obs01_active_sensing.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_obs01_active_sensing.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_OBS01_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  observability-two-path-exact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test independent exact policies, survivor consistency and phantom counterexample
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest -v test_p5_obs01_active_sensing
+      - name: Execute all 16 hidden states for six policies; independent policy-tree reference
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_obs01_active_sensing.py --output "$RUNNER_TEMP/p5_obs01_exact.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/p5_obs01_exact.json"))
+          assert x["protocol"]=="P5-OBS-01"
+          assert x["status"]=="EXACT_FINITE_SYNTHETIC_OBSERVABILITY_NOT_REAL_OMEGA_ADVANTAGE"
+          assert x["bayesian_dp_value_exact"]=="19/25"
+          assert x["independent_policy_tree_value_exact"]=="19/25"
+          p=x["policy_results"]
+          assert p["myopic_decision_voi"]["mean_net_exact"]=="1/20"
+          assert p["entropy_greedy"]["mean_net_exact"]=="-3/25"
+          assert p["fixed_u_then_v"]["mean_net_exact"]=="19/25"
+          assert p["omega_observable_candidate"]["mean_net_exact"]=="19/25"
+          assert p["exact_bayesian_dp"]["mean_net_exact"]=="19/25"
+          assert x["phantom_guardrail"]["prefix_survivor_counts"]==[2,1,0]
+          assert x["paid_api_calls"]==0 and x["model_generations"]==0
+          print("OBS01_FINITE_EXACT_TWO_METHODS_MATCH_AND_NO_OMEGA_UNIQUE_GAIN")
+          PY
+      - name: Archive exact public proof certificates and policy traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-obs01-exact-${{ github.run_id }}
+          path: ${{ runner.temp }}/p5_obs01_exact.json
+          retention-days: 7
+          if-no-files-found: ignore
