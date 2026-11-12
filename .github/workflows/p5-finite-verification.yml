@@ -29,6 +29,8 @@ jobs:
         run: python3 experiments/p5-finite-verification/one_error.py
       - name: Verify decisions with one systematically faulty provenance group
         run: python3 experiments/p5-finite-verification/source_faults.py
+      - name: Compare correct and split provenance on the same evidence
+        run: python3 experiments/p5-finite-verification/provenance_intervention.py
       - uses: actions/upload-artifact@v4
         with:
           name: p5-finite-verification-results
@@ -38,3 +40,4 @@ jobs:
             finite_bounds_results.json
             finite_one_error_results.json
             finite_source_fault_results.json
+            finite_provenance_intervention.json
