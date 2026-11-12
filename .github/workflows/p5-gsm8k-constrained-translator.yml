@@ -1,0 +1,204 @@
+name: P5 constrained arithmetic translation
+on:
+  pull_request:
+    paths:
+      - .github/workflows/p5-gsm8k-constrained-translator.yml
+permissions:
+  contents: read
+jobs:
+  intake:
+    if: github.head_ref == 'experiment/p5-gsm8k-constrained-translator'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch pinned public corpus
+        run: |
+          python -m pip install pyarrow==19.0.1
+          curl --fail --silent --show-error --location --retry 2 --max-time 90 \
+            'https://huggingface.co/datasets/multi-domain-reasoning/gsm8k_eval/resolve/ee73c1ae289820c42191dde99a9461aded4846d9/data/test-00000-of-00001.parquet' \
+            --output corpus.parquet
+      - name: Install CPU inference dependencies
+        run: |
+          python -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install transformers==4.48.3
+      - name: Compare free and constrained expression decoding
+        run: |
+          python - <<'PY'
+          import ast,hashlib,json,operator,re,time
+          from fractions import Fraction
+          from pathlib import Path
+          import pyarrow.parquet as pq
+          import torch
+          from transformers import AutoModelForCausalLM,AutoTokenizer
+          numeric=r"[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:/\d+)?"
+          final_patterns=[
+              re.compile(r"^\s*#{4}\s*\$?\[?("+numeric+r")(?=[\].\s%]|$)",re.M),
+              re.compile(r"\\boxed\{\$?("+numeric+r")\}"),
+              re.compile(r"^\s*(?:\*\*)?(?:final answer|answer)\s*[:=]\s*(?:\*\*)?\$?("+numeric+r")\s*\.?\s*(?:\*\*)?$",re.I|re.M),
+          ]
+          bare=re.compile(r"^\s*\$?("+numeric+r")\.?\s*$")
+          trace_pattern=re.compile(r"<<([^<>\n]{1,180})>>")
+          def value(s):
+              return Fraction(s.replace(",",""))
+          def parse(raw):
+              matches=[(m.start(),value(m[1])) for pattern in final_patterns for m in pattern.finditer(raw)]
+              last=raw.rstrip().split("\n")[-1]
+              m=bare.fullmatch(last)
+              if m:
+                  matches.append((len(raw.rstrip())-len(last),value(m[1])))
+              if len({v for _,v in matches})!=1:
+                  return None,""
+              return matches[0][1],raw[:min(i for i,_ in matches)]
+          
+          
+          F=Fraction
+          quantities=re.compile(r"(?<![\w.])[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:/\d+)?(?!\w)")
+          ops={ast.Add:operator.add,ast.Sub:operator.sub,ast.Mult:operator.mul,ast.Div:operator.truediv}
+          
+          from functools import lru_cache
+          from itertools import product
+          from collections import defaultdict
+          
+          symbols="+-*/"
+          @lru_cache(maxsize=8)
+          def expressions(n):
+              names=[f"q{i}" for i in range(n)]
+              two={f"{a}{op}{b}" for a,b in product(names,repeat=2) for op in symbols}
+              three={f"({ab}){op}{c}" for ab,c in product(two,names) for op in symbols}
+              three.update(f"{a}{op}({bc})" for a,bc in product(names,two) for op in symbols)
+              return tuple(sorted({"null",*names,*two,*three}))
+          
+          def execute(raw,values):
+              expr=raw.strip()
+              if expr=="null":
+                  return None,"abstain"
+              expr="".join(expr.split())
+              if not re.fullmatch(r"[\w()+*/-]+",expr) or expr not in expressions(len(values)):
+                  return None,"outside_grammar"
+              def walk(node):
+                  if isinstance(node,ast.Name):
+                      return values[node.id]
+                  return ops[type(node.op)](walk(node.left),walk(node.right))
+              try:
+                  return walk(ast.parse(expr,mode="eval").body),"executed"
+              except ZeroDivisionError:
+                  return None,"division_by_zero"
+          assert execute("q0-(q1*q2)",{"q0":F(10),"q1":F(2),"q2":F(3)})==(F(4),"executed")
+          assert execute("q0+3",{"q0":F(10)})==(None,"outside_grammar")
+          assert execute("q0/q1",{"q0":F(10),"q1":F(0)})==(None,"division_by_zero")
+          assert execute("null",{"q0":F(10)})==(None,"abstain")
+          
+          def h(s):return hashlib.sha256(s.encode()).hexdigest()
+          def order(rows,salt):return sorted(rows,key=lambda r:h(salt+r["question"]))
+          p=Path("corpus.parquet")
+          assert hashlib.sha256(p.read_bytes()).hexdigest()=="22e8b058505cf5b8cc073559829e2d56200be63c34a32f303a829a387f824b1f"
+          archive=pq.read_table(p,columns=["question","answer","baseline_llama_8b"]).to_pylist()
+          old=order(archive,"P5-GSM8K-arithmetic-v1|")[600:]
+          manual={r["question"] for r in order(old,"P5-GSM8K-recompute-v1|")[:24]}
+          prior={r["question"] for r in order([r for r in old if r["question"] not in manual],"P5-GSM8K-open-translator-v1|")[:12]}
+          eligible=[r for r in old if r["question"] not in manual|prior and 2<=len(quantities.findall(r["question"]))<=6]
+          sample=order(eligible,"P5-GSM8K-constrained-translator-v1|")[:12]
+          assert len(sample)==len({r["question"] for r in sample})==12
+          semantic=[
+           ("by_to","An elevator is on floor 12. It descends by 4 floors. What floor does it reach?",8),
+           ("by_to","An elevator is on floor 12. It descends to floor 4. What floor does it reach?",4),
+           ("more_less","Rina has 11 marbles. Jo has 4 more marbles than Rina. How many marbles does Jo have?",15),
+           ("more_less","Rina has 11 marbles. Jo has 4 fewer marbles than Rina. How many marbles does Jo have?",7),
+           ("each_total","Lee has 12 apples and divides them equally into 3 bags. How many apples are in each bag?",4),
+           ("each_total","Lee has 12 apples in each of 3 bags. How many apples does Lee have in total?",36),
+           ("scope","Nora had 18 stickers. She gave 3 stickers to each of 4 friends. How many stickers does she have now?",6),
+           ("scope","Nora had 18 stickers. She gave 3 stickers in total to her 4 friends. How many stickers does she have now?",15),
+          ]
+          model_id="Qwen/Qwen2.5-0.5B-Instruct"
+          revision="7ae557604adf67be50417f59c2c2f167def9a775"
+          torch.set_num_threads(2)
+          torch.set_num_interop_threads(1)
+          tok=AutoTokenizer.from_pretrained(model_id,revision=revision,trust_remote_code=False)
+          llm=AutoModelForCausalLM.from_pretrained(model_id,revision=revision,trust_remote_code=False,torch_dtype=torch.float32).eval()
+          eos=tok.eos_token_id
+          @lru_cache(maxsize=8)
+          def trie(n):
+              start=time.perf_counter()
+              transitions=defaultdict(set)
+              seqs=tok(list(expressions(n)),add_special_tokens=False,return_attention_mask=False)["input_ids"]
+              for seq in seqs:
+                  prefix=()
+                  for t in seq+[eos]:
+                      transitions[prefix].add(t)
+                      prefix=prefix+(t,)
+              assert max(map(len,seqs))<32
+              return {k:sorted(v) for k,v in transitions.items()},time.perf_counter()-start
+          
+          plan_prompt=(
+           "Translate the question into a single arithmetic expression using only the listed q names, + - * / and parentheses. "
+           "Use at most three quantities, with parentheses around the inner operation when there are two operations. "
+           "Do not output explanations, literal numbers, or units. If impossible output null. "
+           "For example, if q0=9 apples and q1=4 apples were given away, output q0-q1."
+          )
+          direct_prompt="Solve the word problem. Return the final number only, no units or explanation. If uncertain, return null."
+          def infer(system,prompt,constraint=None):
+              msg=[dict(role="system",content=system),dict(role="user",content=prompt)]
+              ids=tok(tok.apply_chat_template(msg,tokenize=False,add_generation_prompt=True),return_tensors="pt")
+              n=ids["input_ids"].shape[1]
+              kwargs={}
+              if constraint is not None:
+                  def allowed(_,input_ids):
+                      return constraint[tuple(input_ids[n:].tolist())]
+                  kwargs["prefix_allowed_tokens_fn"]=allowed
+              start=time.perf_counter()
+              with torch.inference_mode():
+                  out=llm.generate(**ids,do_sample=False,max_new_tokens=32,pad_token_id=eos,eos_token_id=eos,**kwargs)
+              tail=out[0,n:]
+              return dict(raw=tok.decode(tail,skip_special_tokens=True).strip(),seconds=time.perf_counter()-start,input_tokens=int(n),output_tokens=int(tail.shape[0]))
+          
+          def direct_value(s):
+              if not re.fullmatch(numeric,s.strip()):
+                  return None
+              try:return F(s.strip().replace(",",""))
+              except (ValueError,ZeroDivisionError):return None
+          
+          methods=["free","constrained","direct"]
+          def evaluate(question,gold,candidate,i,kind):
+              numbered=quantities.findall(question)
+              vals={f"q{j}":F(x.replace(",","")) for j,x in enumerate(numbered)}
+              prompt=question+"\nQuantities: "+", ".join(f"q{j}={x}" for j,x in enumerate(numbered))
+              lookup,_=trie(len(vals))
+              rows={}
+              for name in methods[i%3:]+methods[:i%3]:
+                  out=infer(direct_prompt,question) if name=="direct" else infer(plan_prompt,prompt,lookup if name=="constrained" else None)
+                  if name=="direct":
+                      value=direct_value(out["raw"])
+                      state="number" if value is not None else "unparsed"
+                  else:
+                      value,state=execute(out["raw"],vals)
+                      if name=="constrained":
+                          assert state!="outside_grammar",(out["raw"],question)
+                  rows[name]={**out,"answer":str(value) if value is not None else None,"state":state,"correct":value==gold,
+                              "publish":candidate is not None and candidate==value,
+                              "publish_correct":candidate is not None and candidate==value and candidate==gold}
+              return dict(id=h(question),kind=kind,gold=str(gold),candidate=str(candidate) if candidate is not None else None,methods=rows)
+          
+          real=[evaluate(r["question"],value(r["answer"].rsplit("#### ",1)[1].strip()),parse(r["baseline_llama_8b"])[0],i,"gsm8k") for i,r in enumerate(sample)]
+          pairs=[evaluate(q,F(gold),None,i,kind) for i,(kind,q,gold) in enumerate(semantic)]
+          def summarize(rows):
+              summary={}
+              for name in methods:
+                  x=[r["methods"][name] for r in rows]
+                  summary[name]=dict(calls=len(x),valid=sum(v["answer"] is not None for v in x),correct=sum(v["correct"] for v in x),
+                       publish=sum(v["publish"] for v in x),publish_correct=sum(v["publish_correct"] for v in x),
+                       seconds=round(sum(v["seconds"] for v in x),3),input_tokens=sum(v["input_tokens"] for v in x),output_tokens=sum(v["output_tokens"] for v in x))
+              return summary
+          pair_success={m:sum(all(r["methods"][m]["correct"] for r in pairs[i:i+2]) for i in range(0,len(pairs),2)) for m in methods}
+          ns=sorted({len(quantities.findall(r["question"])) for r in sample}|{len(quantities.findall(q)) for _,q,_ in semantic})
+          summary=dict(model=model_id,revision=revision,eligibleQuestions=len(eligible),trie_seconds={n:round(trie(n)[1],3) for n in ns},
+                       real=summarize(real),semantic=summarize(pairs),pairs_correct=pair_success)
+          Path("constrained_translator_results.json").write_text(json.dumps(dict(summary=summary,real=real,semantic=pairs),indent=2),encoding="utf-8")
+          print(json.dumps(summary,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p5-gsm8k-constrained-translator-results
+          path: constrained_translator_results.json
