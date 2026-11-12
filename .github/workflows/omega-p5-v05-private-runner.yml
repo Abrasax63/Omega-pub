@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_v05_private_runner.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_v05_costs.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_v05_costs.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_v05_private_runner.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/evaluation/p5_v05_candidate_public_manifest.json"
       - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_V05_PRIVATE_EXEC_PREREG_2026-11-11.md"
@@ -25,7 +27,7 @@ jobs:
       - name: Test hash gates, equal prompts, cost caps and durable 96-call mock ledger
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
         run: |
-          python -m unittest -v test_p5_v05_private_runner test_p5_abc_fair_preflight test_p5_abc_budget_gate
+          python -m unittest -v test_p5_v05_costs test_p5_v05_private_runner test_p5_abc_fair_preflight test_p5_abc_budget_gate
       - name: Confirm public committed manifest contains no private case content
         run: |
           python - <<'PY'
