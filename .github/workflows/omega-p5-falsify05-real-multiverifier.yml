@@ -1,12 +1,9 @@
 name: Omega P5 FALSIFY-05 REAL multi-vendor ClaimDB verifier acquisition vs exact empirical Bellman
 
+# The complete 40+MB historical model corpus is expensive to redownload.
+# First validated source-backed run: https://github.com/Abrasax63/Omega-pub/actions/runs/43263585438
+# Explicit manual reruns only, no automatic repeated LFS downloads on report edits.
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/omega-p5-falsify05-real-multiverifier.yml"
-      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_falsify05_real_multiverifier.py"
-      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_falsify05_real_multiverifier.py"
-      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_FALSIFY05_CLAIMDB_MULTI_VERIFIERS_PREREG_2026-11-12.md"
   workflow_dispatch:
 
 permissions:
