@@ -56,7 +56,7 @@ jobs:
            ("discount",rf"(?:the )?price of (?:a|an|the) [^.!?]+ is {money}\.\s*if you get a {N}% discount,\s*how much (?:do|will) you (?:have to )?pay\?"),
            ("discount",rf"(?:a|an|the) [^.!?]+ costs? {money}\.\s*(?:it is|it's) (?:on sale|discounted) (?:for|at|by) {N}% off\.\s*(?:how much does it cost now|what is the sale price)\?"),
            ("future_age",rf"[a-z][a-z' -]+ will be {N} years old in {N} years\.\s*how old will (?:he|she|they) be {N} years from now\?"),
-           ("price_share",rf"(?:a|the) [^.!?]+ and (?:a|the) [^.!?]+ cost {money} (?:in total|altogether|together)?\s*\.\s*if the [^.!?]+ cost(?:s)? {N} times as much as the [^.!?]+,\s*how much did the [^.!?]+ cost\?"),
+           ("price_share",rf"(?:a|the) [^.!?]+ and (?:a|the) [^.!?]+ cost {money}(?: (?:in total|altogether|together))?\s*\.\s*if the [^.!?]+ cost(?:s)? {N} times as much as the [^.!?]+,\s*how much did the [^.!?]+ cost\?"),
            ("hours_to_buy",rf"[a-z][a-z' -]+ wants to buy (?:a|an|the) [^.!?]+ for {money}\.\s*(?:he|she|they) (?:earn|earns|make|makes) {money} (?:per|an) hour\.\s*how many hours (?:does|do|will) (?:he|she|they) (?:need to work|have to work)\?"),
            ("difference",rf"[a-z][a-z' -]+ has {N} ([a-z]+)\.\s*[a-z][a-z' -]+ has {N} \2\.\s*how many more \2 does [a-z][a-z' -]+ have than [a-z][a-z' -]+\?"),
            ("equal_groups",rf"(?:there are|[a-z][a-z' -]+ has) {N} (?:boxes|bags|baskets|packs|cases|trays)(?: of ([a-z]+))?\.\s*each (?:box|bag|basket|pack|case|tray) (?:has|contains) {N} ([a-z]+)\.\s*how many \4 (?:are there in (?:all|total)|are there altogether|does [a-z][a-z' -]+ have in (?:all|total))\?"),
