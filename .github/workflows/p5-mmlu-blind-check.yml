@@ -107,7 +107,10 @@ jobs:
           }
           const expand=block=>block.flatMap(r=>[0,1].map(source=>build(r,source))).filter(x=>x.parsed!==null);
           const fit=expand(rows.slice(0,300)), dev=expand(rows.slice(300,600)), test=expand(rows.slice(600));
-          assert.ok(fit.length>20&&dev.length>20&&test.length>20,"extraction preflight failed");
+          if(fit.length<=20||dev.length<=20||test.length<=20){
+            console.log("PREFLIGHT "+JSON.stringify({fit:fit.length,dev:dev.length,test:test.length,examples:rows.slice(0,8).map(r=>({choices:r.choices,outputs:r.outputs.map(o=>o.slice(-450))}))}));
+            throw new Error("extraction preflight failed");
+          }
           const mean=(fit.filter(x=>x.correct).length+1)/(fit.length+2);
           const base=Array.from({length:4},(_,format)=>{
             const x=fit.filter(r=>r.format===format);
