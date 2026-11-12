@@ -1,0 +1,77 @@
+name: Omega P5 ACTIVE-01 chosen-information batches (public Qwen CPU)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-p5-active01-batch-voi.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_active01.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_active01.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_ACTIVE_VOI_PREREG_2026-11-12.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  active01-public-real-model-scores:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HF_HOME: /tmp/hf
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      HF_HUB_DOWNLOAD_TIMEOUT: "120"
+      HF_HUB_ETAG_TIMEOUT: "20"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run audit of four-way choices, calibration split and exact oracles
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_p5_active01
+          python p5_active01.py --preflight > /tmp/p5_active01_preflight.json
+          python - <<'PY'
+          import json
+          x=json.load(open("/tmp/p5_active01_preflight.json"))
+          assert x["public_question_count"]==80
+          assert x["calibration_outputs"]==32 and x["test_outputs"]==64
+          assert x["real_model_forwards"]==96
+          assert x["batches"]==16 and x["candidates_per_batch"]==4
+          assert x["paid_api_calls"]==0 and not x["private_data_used"]
+          print("ACTIVE01_FROZEN_QUESTIONS_SHA256",x["public_digest"])
+          PY
+      - name: Install Qwen inference on free runner CPU (no API)
+        run: |
+          python -m pip install "torch==2.6.0" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install "transformers==4.51.3" "safetensors>=0.4.5"
+      - name: Score 96 real constrained next-token model answers and nine deployable policies
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python p5_active01.py --output "$RUNNER_TEMP/p5_active01_results.json"
+          python - <<'PY'
+          import json,os
+          x=json.load(open(os.environ["RUNNER_TEMP"]+"/p5_active01_results.json"))
+          assert x["status"]=="PUBLIC_OPEN_MODEL_ACTIVE_INFORMATION_EXPLORATORY"
+          assert len(x["raw_model_scores"])==96
+          assert x["actual_model_forwards"]==96
+          assert x["paid_api_calls"]==0 and not x["private_data_used"]
+          assert len(x["policies"])==10
+          assert all(x["policies"][k]["verified"]<=16
+                     for k in x["policies"] if k!="hindsight_oracle")
+          assert all(len(x["policies"][k]["trajectory"])==64
+                     for k in x["policies"] if k!="hindsight_oracle")
+          assert x["policies"]["voi_online"]["trajectory"]==x["policies"]["omega_no_change"]["trajectory"]
+          print("P5_ACTIVE01_COMPLETE_REAL_TWO_MODEL_FORWARDS")
+          PY
+      - name: Archive real logits, blind decisions, verification feedback and post-hoc references
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-active01-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/p5_active01_results.json
+          retention-days: 7
+          if-no-files-found: ignore
