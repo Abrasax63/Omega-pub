@@ -52,10 +52,11 @@ jobs:
             return s.normalize("NFKC").toLowerCase().replace(/\*\*/g,"").replace(/[.!]\s*$/,"").trim().replace(/\s+/g," ");
           }
           function extract(raw,choices){
-            const tagged=[...raw.matchAll(/<answer>\s*([^<>]+)\s*<\/answer>/gi)].map(m=>m[1]);
+            const tagged=[...raw.matchAll(/<answer>\s*([^<>]+?)\s*(?:<\/answer>|$)/gi)].map(m=>m[1]);
             const last=raw.trim().split(/\r?\n/).at(-1)?.replace(/\*\*/g,"").trim()??"";
             const labeled=last.match(/^(?:#{1,6}\s*)?(?:the\s+)?(?:final\s+)?answer\s*(?:is\s*:?|:)\s*(.+)$/i);
-            const payloads=[...tagged,...(labeled?[labeled[1]]:conclusion.test(last)?[last]:[])];
+            const terminal=raw.match(/(?:^|\r?\n)\s*(?:final\s+)?answer\s*\r?\n\s*([0-3])\s*$/i);
+            const payloads=[...tagged,...(terminal?[terminal[1]]:labeled?[labeled[1]]:conclusion.test(last)?[last]:[])];
             const matches=new Set();
             for(const payload of payloads){
               const s=normalizeAnswer(payload);
@@ -65,13 +66,18 @@ jobs:
               if(letter)found.push(letter[1].toUpperCase());
               if(explicitIndex)found.push("ABCD"[Number(explicitIndex[1])]);
               // A bare 0–3 could denote an index or an option's numeric value.
-              if(/^[0-3]$/.test(s)&&found.length&&found[0]!=="ABCD"[Number(s)])return {parsed:null};
+              if(/^[0-3]$/.test(s)){
+                const index="ABCD"[Number(s)];
+                if(found.length&&found[0]!==index)return {parsed:null};
+                found.push(index);
+              }
               for(const k of found)matches.add(k);
             }
             return {parsed:matches.size===1?[...matches][0]:null};
           }
           assert.equal(extract("<answer>liquid vapor</answer>",{A:"liquid vapor",B:"frozen ice"}).parsed,"A");
           assert.equal(extract("<answer>2</answer>",{A:"2",B:"3",C:"6",D:"12"}).parsed,null);
+          assert.equal(extract("<answer>\n2",{A:"a text",B:"b text",C:"c text",D:"d text"}).parsed,"C");
           assert.equal(extract("Answer: index 2",{A:"2",B:"3",C:"6",D:"12"}).parsed,"C");
           assert.equal(extract("<answer>A</answer>\nAnswer: B",{A:"liquid vapor",B:"frozen ice"}).parsed,null);
           const stop=new Set("that this with from which have when then their there would could should because these those about into they them where than also will been being what were some more most only each such very much does answer correct option choice therefore explanation".split(" "));
@@ -81,7 +87,7 @@ jobs:
           
           function blind(raw,question,choices){
             // The checker receives a rationale, never the candidate's output or the archive key.
-            const prefix=raw.split(/<answer\b/i)[0];
+            const prefix=raw.split(/<answer\b/i)[0].replace(/(?:^|\r?\n)\s*(?:final\s+)?answer\s*\r?\n\s*[0-3]\s*$/i,"");
             const lines=prefix.split(/\r?\n/).filter(line=>!conclusion.test(line.trim().replace(/\*\*/g,""))&&!/^\s*(?:#{1,6}\s*)?(?:\*\*)?(?:the\s+)?(?:final\s+)?answer\s*(?:is|:)/i.test(line));
             const said=words(lines.join("\n").slice(-900)), prompt=words(question);
             const terms=Object.fromEntries(Object.entries(choices).map(([k,v])=>[k,words(v)]));
