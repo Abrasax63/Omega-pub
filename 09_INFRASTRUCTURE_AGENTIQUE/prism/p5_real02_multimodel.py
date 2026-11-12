@@ -72,8 +72,9 @@ def case(kind,index):
                   "Quelle équipe a le taux global de succès le plus élevé ?")
     else:
         n=5+_rand(kind,index,"n")%2
-        shift=_rand(kind,index,"shift")%n
-        values=[(j+shift)%n for j in range(n)]
+        # SHA-shuffled permutations, not cyclic shifts: cyclic shifts
+        # duplicate questions for different indices (pre-output audit fix).
+        values=sorted(range(n),key=lambda v:(_rand(kind,index,"perm",v),v))
         if index%2:
             pos=1+_rand(kind,index,"dup")%(n-1)
             values[pos]=values[0]
@@ -90,6 +91,8 @@ def case(kind,index):
 def all_cases():
     rows=[case(k,j) for k in KINDS for j in range(20)]
     assert len({r["id"] for r in rows})==80
+    assert len({(r["kind"],tuple(r["parameters"])) for r in rows})==80, (
+        "duplicate mathematical questions invalidate the preregistered split")
     for r in rows:
         assert reference(r)==verify_exact(r)
     return rows
