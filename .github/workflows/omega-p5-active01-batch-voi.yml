@@ -1,12 +1,8 @@
 name: Omega P5 ACTIVE-01 chosen-information batches (public Qwen CPU)
 
+# Expensive LLM CPU inference is intentional/manual only. PR checks run
+# separately without model: avoids repeating 96 forwards on each report commit.
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/omega-p5-active01-batch-voi.yml"
-      - "09_INFRASTRUCTURE_AGENTIQUE/prism/p5_active01.py"
-      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_p5_active01.py"
-      - "09_INFRASTRUCTURE_AGENTIQUE/EXPERIMENT_P5_ACTIVE_VOI_PREREG_2026-11-12.md"
   workflow_dispatch:
 
 permissions:
