@@ -219,7 +219,7 @@ class Policy:
             return [0,1]
         if self.name=="hash_random_two":
             return sorted(range(BATCH),key=lambda i:(
-                _rank(views[i]["claim_id"]+"100000"),i))[:PURCHASES]
+                _rank(str(views[i]["claim_id"])+"100000"),i))[:PURCHASES]
         choices=sorted(range(BATCH),
             key=lambda i:(-gains[i],_rank(views[i]["claim_id"]),i))
         return [i for i in choices if gains[i]>0][:PURCHASES]
