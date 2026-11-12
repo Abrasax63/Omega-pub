@@ -172,7 +172,8 @@ def evaluate(gold,sql,no_tools):
     assert result["prefer_sql_when_disagree"]==result["sql_tools"]
     assert result["reject_all"]["published"]==0
     assert result["agree_or_abstain"]["published"]==valid-errors["disagreements"]
-    if missing["gold_without_sql"] or missing["gold_without_no_tools"]:
+    if (missing["gold_without_sql"] or missing["gold_without_no_tools"]
+            or valid<len(joined)):
         status="INCOMPLETE_PAIRED_COVERAGE_PARTIAL"
     else:
         status=STATUS
