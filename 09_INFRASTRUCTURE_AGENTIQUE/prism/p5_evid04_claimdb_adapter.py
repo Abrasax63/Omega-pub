@@ -193,16 +193,23 @@ def execute_sql_witness(public_row,db_path,expected_sha256,sql_a,sql_b):
             "status":"CONTRADICTORY_SQL_WITNESSES",
             "calculated_label":None,"db_sha256":digest,
             "independent_provider_count":1,"independent_method_count":2,
+            "claim_semantics_independently_reviewed":False,
+            "independent_fact_verification":False,
         }
     return {
         "status":"EXECUTED_SQL_AGREEMENT_SINGLE_DB_PROVIDER",
+        # A SQL boolean is NOT a certified ClaimDB label unless a separate
+        # reviewer has checked that BOTH queries express the natural-language
+        # claim. A constant or irrelevant SELECT can agree without proving it.
         "calculated_label":"ENTAILED" if a else "CONTRADICTED",
+        "claim_semantics_independently_reviewed":False,
+        "independent_fact_verification":False,
         "db_sha256":digest,
         "sql_method_sha256":[sha256(x.encode()).hexdigest()
                              for x in (sql_a,sql_b)],
         "independent_provider_count":1,
         "independent_method_count":2,
-        "limit":"Only the database and supplied query semantics, not external independent proof",
+        "limit":"Queries executed on one local DB; their correspondence to the claim is NOT validated",
     }
 
 
