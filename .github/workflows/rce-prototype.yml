@@ -98,3 +98,30 @@ jobs:
           fi
           set +x
           sha256sum evidence/*.json
+
+  provenance-lab-install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        partition: [build, reserved]
+    steps:
+      - name: Trace a copy performed by install
+        shell: bash
+        env:
+          PARTITION: ${{ matrix.partition }}
+        run: |
+          mkdir evidence
+          printf '%s\n' 506 > input
+          set -x
+          if [[ "$PARTITION" == build ]]; then
+            install -m 0644 input evidence/train.json
+          else
+            install -m 0600 input evidence/copy.json
+            cp input evidence/conflict.json
+            install -m 0644 input evidence/conflict.json
+            set +x
+            cp input evidence/hidden.json
+          fi
+          set +x
+          sha256sum evidence/*.json
