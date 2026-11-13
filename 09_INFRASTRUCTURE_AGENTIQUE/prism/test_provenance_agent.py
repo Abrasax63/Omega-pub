@@ -31,3 +31,28 @@ class ProvenanceAgentTests(unittest.TestCase):
     def test_final_program_has_both_events(self):
         program, _ = learn()
         self.assertEqual({rule["kind"] for rule in program}, {"COMPUTED", "COPIED"})
+
+    def test_bundle_run_and_missing_log(self):
+        from provenance_agent import JournalBundle
+
+        repo = "owner/repo"
+        payload = {
+            "repository": repo, "run": 10,
+            "jobs": [{"id": 2, "name": "Candidate alpha", "run_id": 10, "conclusion": "success"}],
+            "logs": {},
+        }
+        with self.assertRaises(ValueError):
+            JournalBundle(payload, repo, 11)
+        source = JournalBundle(payload, repo, 10)
+        with TemporaryDirectory() as directory:
+            result = audit(source, 10, "a", "Recalcul ou copie ?", Path(directory))
+        self.assertEqual(result["statut"], "indéterminé")
+
+    def test_bundle_rejects_orphan_log(self):
+        from provenance_agent import JournalBundle
+
+        with self.assertRaises(ValueError):
+            JournalBundle(
+                {"repository": "owner/repo", "run": 10, "jobs": [], "logs": {"1": "COMPUTED a "}},
+                "owner/repo", 10,
+            )

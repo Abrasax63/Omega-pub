@@ -38,6 +38,41 @@ class GitHub:
         return self.get(f"/actions/jobs/{job}/logs").decode("utf-8")
 
 
+class JournalBundle:
+    """Consume a snapshot supplied by an authorized journal collector."""
+
+    def __init__(self, payload, repository, run):
+        if not isinstance(payload, dict) or (
+            payload.get("repository"), payload.get("run")
+        ) != (repository, run):
+            raise ValueError("Le dossier ne correspond pas au dépôt et à l'exécution demandés.")
+        self.run = run
+        self.records = payload.get("jobs")
+        self.logs = payload.get("logs")
+        if not isinstance(self.records, list) or not isinstance(self.logs, dict):
+            raise ValueError("Dossier de journaux incomplet.")
+        if any(
+            not isinstance(job, dict) or type(job.get("id")) is not int
+            or job.get("run_id") != run or not isinstance(job.get("name"), str)
+            for job in self.records
+        ):
+            raise ValueError("Métadonnées de jobs invalides.")
+        ids = {str(job["id"]) for job in self.records}
+        if len(ids) != len(self.records) or self.logs.keys() - ids:
+            raise ValueError("Journaux orphelins ou jobs en double.")
+
+    def jobs(self, run):
+        if run != self.run:
+            raise ValueError("Exécution différente de celle du dossier.")
+        return self.records
+
+    def log(self, job):
+        log = self.logs.get(str(job))
+        if not isinstance(log, str):
+            raise ValueError("Journal absent du dossier.")
+        return log
+
+
 def evidence(log):
     for line in log.splitlines():
         yield TIMESTAMP.sub("", line)
@@ -121,12 +156,19 @@ def main():
     parser.add_argument("run", type=int)
     parser.add_argument("item")
     parser.add_argument("--question", default="Le résultat a-t-il été recalculé ou copié ?")
+    parser.add_argument("--bundle", type=Path, help="Dossier JSON fourni par un collecteur autorisé")
     args = parser.parse_args()
     try:
-        result = audit(GitHub(args.repository), args.run, args.item, args.question,
+        if args.bundle:
+            payload = json.loads(args.bundle.read_text(encoding="utf-8"))
+            source = JournalBundle(payload, args.repository, args.run)
+        else:
+            source = GitHub(args.repository)
+        result = audit(source, args.run, args.item, args.question,
                        Path(__file__).resolve().parents[2])
     except (OSError, ValueError, KeyError) as error:
         result = {"statut": "indéterminé", "motif": str(error)}
+    result["source"] = "dossier_fourni" if args.bundle else "api_github"
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["statut"] == "évalué" else 1
 
