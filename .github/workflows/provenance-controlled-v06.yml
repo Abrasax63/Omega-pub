@@ -1,0 +1,72 @@
+name: Provenance controlled v06
+on:
+  pull_request:
+    branches: [main]
+    paths: ['.github/workflows/provenance-controlled-v06.yml']
+permissions:
+  contents: read
+jobs:
+  origin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Produce both exact results
+        shell: bash
+        run: |
+          set -eu
+          for pair in a:11 b:12; do
+            case_id=${pair%:*}
+            n=${pair#*:}
+            python3 -c 'import json,sys; n=int(sys.argv[1]); print(json.dumps({"input":n,"value":sum(i*i for i in range(1,n+1))},sort_keys=True))' "$n" > "$case_id.json"
+            printf 'COMPUTED %s input=%s parity=%s ' "$case_id" "$n" "$((n % 2))"
+            cat "$case_id.json"
+            sha256sum "$case_id.json"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v06-originals
+          path: |
+            a.json
+            b.json
+          if-no-files-found: error
+  candidates:
+    needs: origin
+    strategy:
+      matrix:
+        include:
+          - lane: alpha
+            fresh: a
+            input: 11
+            copy: b
+          - lane: beta
+            fresh: b
+            input: 12
+            copy: a
+    name: Candidate ${{ matrix.lane }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: v06-originals
+          path: received
+      - name: Recalculate one result and republish the other
+        shell: bash
+        env:
+          FRESH: ${{ matrix.fresh }}
+          INPUT: ${{ matrix.input }}
+          COPY: ${{ matrix.copy }}
+        run: |
+          set -eu
+          mkdir outbound
+          python3 -c 'import json,sys; n=int(sys.argv[1]); print(json.dumps({"input":n,"value":sum(i*i for i in range(1,n+1))},sort_keys=True))' "$INPUT" > "outbound/$FRESH.json"
+          printf 'COMPUTED %s input=%s ' "$FRESH" "$INPUT"
+          cat "outbound/$FRESH.json"
+          cp "received/$COPY.json" "outbound/$COPY.json"
+          printf 'COPIED %s from v06-originals\n' "$COPY"
+          sha256sum outbound/*.json
+          cmp "received/$FRESH.json" "outbound/$FRESH.json"
+          cmp "received/$COPY.json" "outbound/$COPY.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v06-${{ matrix.lane }}
+          path: outbound/*.json
+          if-no-files-found: error
