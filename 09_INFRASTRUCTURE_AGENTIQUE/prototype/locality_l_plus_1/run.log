@@ -1,0 +1,11 @@
+[command]/usr/bin/git log -1 --format=%H
+ac1a76e9c01491bd4a1365be6be425d0e26b9d45
+##[group]Run python research/code/audit_v19_forced_graph_locality_independent.py && python research/code/test_v19_locality_l_plus_1.py
+L_PLUS_1_EXHAUSTIVE_TEST: PASS
+PREFIX_CONVENTION: times 0,...,L+1
+COHERENT_ENDOFUNCTIONS_BY_N: {1: 1, 2: 4, 3: 23, 4: 191, 5: 2069, 6: 27454}
+COHERENT_CYCLE_MAPS_BY_N: {3: 2, 4: 38, 5: 614, 6: 10384}
+GLOBAL_LOCAL_COMPARISONS_BY_N: {3: 12, 4: 456, 5: 12280, 6: 312720}
+GLOBAL_LOCAL_COMPARISONS_TOTAL: 325468
+NO_COUNTEREXAMPLE_FOUND
+Scope: n<=6 and L in {2,3}; this does not prove universal L+1 sufficiency.
