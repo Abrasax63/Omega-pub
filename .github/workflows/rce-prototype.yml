@@ -69,3 +69,32 @@ jobs:
             exit 1
           }
           python -c 'import json, sys; audit = json.load(open(sys.argv[1])); verdicts = {row["nom"]: row["verdict"] for row in audit["verdicts"]}; assert verdicts == {"Candidate alpha": "recalcul", "Candidate beta": "copie"}, verdicts; print(verdicts)' "$RUNNER_TEMP/omega-audit.json"
+
+  provenance-lab-corpus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        partition: [build, reserved]
+    steps:
+      - name: Produce identical files with different histories
+        env:
+          PARTITION: ${{ matrix.partition }}
+        shell: bash
+        run: |
+          mkdir -p evidence
+          printf '%s\n' 506 > original.json
+          set -x
+          if [[ "$PARTITION" == build ]]; then
+            python3 -c 'from pathlib import Path; Path("evidence/build-a.json").write_text(str(sum(i*i for i in range(1,12)))+"\\n")'
+            cp original.json evidence/build-b.json
+          else
+            cp original.json evidence/reserved-a.json
+            python3 -c 'from pathlib import Path; Path("evidence/reserved-b.json").write_text(str(sum(i*i for i in range(1,12)))+"\\n")'
+            set +x
+            cp original.json evidence/reserved-c.json
+          fi
+          set +x
+          sha256sum evidence/*.json
