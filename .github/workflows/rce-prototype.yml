@@ -45,3 +45,27 @@ jobs:
           python -c "import json; d=json.load(open('/tmp/omega-rce-result.json', encoding='utf-8')); assert d['registered_results'], 'No indexed result retrieved'; assert d['registered_results'][0]['publication_status'].startswith('EXPÉRIMENTAL'); assert d['manifest']['mode'] == 'read_only_local_checkout'; print('Repository index smoke test: OK')"
           python rce.py --repo ../.. --question "CL-DYN migration mathématiques" --role refuter --output /tmp/omega-rce-pending.json
           python -c "import json; d=json.load(open('/tmp/omega-rce-pending.json', encoding='utf-8')); assert d['pending_migration_items'], 'Pending migration items were not retrieved'; print('Pending migration smoke test: OK')"
+
+  provenance-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Collect and analyze real GitHub Actions journals
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python provenance_agent.py "$GITHUB_REPOSITORY" 43374750280 a > "$RUNNER_TEMP/omega-audit.json" || {
+            cat "$RUNNER_TEMP/omega-audit.json"
+            exit 1
+          }
+          python -c 'import json, sys; audit = json.load(open(sys.argv[1])); verdicts = {row["nom"]: row["verdict"] for row in audit["verdicts"]}; assert verdicts == {"Candidate alpha": "recalcul", "Candidate beta": "copie"}, verdicts; print(verdicts)' "$RUNNER_TEMP/omega-audit.json"
