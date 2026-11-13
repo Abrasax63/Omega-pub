@@ -32,3 +32,43 @@ Les fixtures testent le parcours avec des traces construites. Un préfixe de
 commande peut couvrir des opérations différentes, comme le montre le test de
 rejet. L'extraction depuis des journaux bruts et l'évaluation externe restent
 à réaliser.
+
+## Cycle autonome de proposition
+
+```bash
+python3 provenance_cycle.py propose training.json incumbent.json proposal.json
+python3 provenance_cycle.py check proposal.json incumbent.json reserved.json
+python3 provenance_cycle.py run proposal.json incumbent.json observation.json
+```
+
+Le cycle compte les erreurs du vérificateur sur les traces annotées et
+choisit un seul préfixe. Une fausse confirmation pèse deux fois une
+confirmation manquée. Les égalités sont résolues par ordre lexical. Il
+ajoute une règle soutenue par les observations ou restreint une règle
+existante. La proposition consigne le choix, les erreurs et les empreintes
+des données d'entrée. Elle peut être rejouée avec la référence d'origine.
+
+Fournir les cas réservés seulement après la construction. Les empreintes
+détectent la réutilisation exacte d'une observation, même réannotée.
+L'opérateur doit établir la séparation des sources et conserver les
+corrigés hors du processus de génération. L'évaluation accepte en option
+`--direct predictions.json` pour une liste de verdicts établie séparément.
+La recommandation exige zéro faux verdict, aucun verdict correct perdu et
+un gain sur les confirmations correctes ou la suppression de faux verdicts.
+Conserver aussi les candidats rejetés pour éviter de répéter le même essai.
+
+### Rejeu du premier cycle
+
+Sur le [run contrôlé 43489499229](https://github.com/Abrasax63/Omega-pub/actions/runs/43489499229),
+la référence déclarative choisie pour le pilote connaissait uniquement
+`cp`. Le constructeur a reçu la trace annotée de `evidence/train.json` et
+a proposé `install -m → copie`. Le candidat a confirmé 1 cas sur les
+3 traces d'évaluation, contre 0 pour la référence déclarative et 1 pour
+la règle fixe du laboratoire. Les trois approches ont produit zéro faux
+verdict. Ce corpus avait déjà servi au développement du laboratoire.
+
+Sur le [journal externe déjà examiné](https://github.com/nexu-io/open-design/actions/runs/38714250159/job/116353498714),
+le candidat et la référence déclarative se sont abstenus sur les deux
+sorties. Le transfert positif et le gain par rapport à la règle fixe
+restent à établir. La collecte et l'annotation ont été préparées dans
+la session. Aucun bras LLM à budget égal n'a été exécuté.
