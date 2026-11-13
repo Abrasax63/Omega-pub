@@ -88,3 +88,70 @@ Deux jobs réussis de k3s-io/k3s : [construction](https://github.com/k3s-io/k3s/
 Sur les mêmes lignes, `fixed_verdict(extract(log, output))` s'abstient, car la trace porte le préfixe BuildKit. `extract_buildkit_copy` exige la commande tracée, le retour verbeux avec les deux chemins et la fin réussie de la même étape. `fixed_verdict` et `classify` donnent copie dans les deux cas. La règle synthétisée sur le premier cas est `[{"argv_prefix":["cp","-av"],"verdict":"copie"}]`. Sur chacun des deux journaux, supprimer le retour verbeux conduit à l'abstention. Les contrôles locaux couvrent aussi une confirmation dans une autre étape, une fin absente et une commande répétée. Les 15 tests locaux passent.
 
 Les jobs utilisent la même famille de workflow. Les traces établissent la copie dans l'étape BuildKit ; aucune vérification indépendante du contenu de l'archive finale n'a été effectuée. La règle fixe égale le candidat appris sur ce lot. Le nouvel extracteur est appelé explicitement et n'est pas encore raccordé à la sélection automatique.
+
+
+## Cycle Meson — 13 novembre 2026
+
+Le [job SageMath doc-pdf](https://github.com/sagemath/sage/actions/runs/41538531683/job/125596440060) déjà recensé a fourni un essai rétrospectif de couverture. Les déclarations `fs.copyfile` au commit `6244e7214a1cb9afe7275954aa9aab779c5494e6` ont servi de contrôle distinct pour le fichier GAP et trois fichiers de documentation. Un adaptateur expérimental normalise uniquement les lignes de progression Meson horodatées de type `[n/m] Copying file PATH` du job réussi vers une observation `meson fs.copyfile PATH`. Le verdict concerne l'opération rapportée, sans vérification des octets finaux.
+
+La référence déclarative contenait `cp -av → copie` et `install -m → copie`. `provenance_cycle.py propose` a reçu un seul exemple annoté (GAP) et a choisi le préfixe `meson` avant création des observations réservées destinées à `check`. Le comparateur fixe classe directement les mêmes événements normalisés. Sur trois chemins réservés distincts du même job et un contrôle sans trace, la référence s'abstient quatre fois. Le candidat et le comparateur fixe donnent chacun trois confirmations correctes et une abstention, sans fausse confirmation. Le drapeau de revue compare à la référence déclarative. La parité avec le comparateur fixe et la réutilisation du même job excluent un gain externe selon le protocole. L'adaptateur et la règle n'ont pas été intégrés. Les 20 tests locaux du répertoire prism passent.
+
+```json
+{
+  "proposal": {
+    "target": [
+      "meson"
+    ],
+    "failure_counts": [
+      {
+        "prefix": [
+          "meson"
+        ],
+        "false_confirmations": 0,
+        "missed_confirmations": 1
+      }
+    ],
+    "rules": [
+      {
+        "argv_prefix": [
+          "meson"
+        ],
+        "verdict": "copie"
+      }
+    ],
+    "training_fingerprints": [
+      "e4da871195eab649153a471dc4fbaedb4f4ed27549133b5808ec1c266c1e9e7b"
+    ],
+    "baseline_fingerprint": "550b41020fb22671f47706a51e5045a8e6cc3d4cce276c67030af9f8ba6c9f33"
+  },
+  "check": {
+    "cases": 4,
+    "baseline": {
+      "false_confirmations": 0,
+      "correct_confirmations": 0,
+      "abstentions": 4
+    },
+    "candidate": {
+      "false_confirmations": 0,
+      "correct_confirmations": 3,
+      "abstentions": 1
+    },
+    "recommend_for_review": true,
+    "direct": {
+      "false_confirmations": 0,
+      "correct_confirmations": 3,
+      "abstentions": 1
+    }
+  },
+  "sha256": {
+    "check": "3a5b01590633e9236b287c179a3a39b106b49d052f0805155455857ad6d5d7be",
+    "reserved.json": "6be4188e40cffb72fff4d9c109fcb528d78b9b790d71246a08905920e66f4837",
+    "fixed.json": "d0a58a968fc956388553bcd59c0ff9ced85e2e65d0d6ce64ea0236a74e1f6f6f",
+    "proposal.json": "7c82d0fb52f2eddd7e8bd87e1acf015f199a831e9ab92b59dc359f9585bc2074",
+    "train.json": "c33daba8b660d7996cbbcd6d2ac1e9211cf25ab12f7ea95ff0d6eed6ddbcc1ae",
+    "baseline.json": "5013a0ab9c7d2b5f7dd00db1c0f92fdacf28ba34d6388f11ef1542790948cf51",
+    "reserved.log": "df95d9352191197cd81f631a7d37e603e22724632f269d990558e02f940553b2",
+    "train.log": "b74ff43430092f5618c095ee8b6a98a04fda480edf28a6cdcae9681a59c363fa"
+  }
+}
+```
