@@ -4,7 +4,19 @@ import re
 import shlex
 
 
-def extract(log, output):
+def copy_output(argv):
+    if len(argv) == 3 and argv[0] == "cp":
+        return argv[2]
+    if (
+        len(argv) == 5 and argv[:2] == ["install", "-m"]
+        and re.fullmatch(r"[0-7]{3,4}", argv[2])
+        and all(value and not value.startswith("-") for value in argv[3:])
+    ):
+        return argv[4]
+    return None
+
+
+def extract(log, output, *, recognize_install=True):
     """Read executed commands from the dedicated successful fixture step."""
     writers = []
     for line in log.splitlines():
@@ -15,10 +27,12 @@ def extract(log, output):
         argv = shlex.split(command)
         if not argv:
             continue
-        writes_output = (
+        copy_destination = (
+            copy_output(argv) if recognize_install or argv[0] != "install" else None
+        )
+        writes_output = copy_destination == output or (
             len(argv) == 3 and (
-                (argv[0] == "cp" and argv[2] == output)
-                or (argv[:2] == ["python3", "-c"] and f'Path("{output}").write_text(' in argv[2])
+                argv[:2] == ["python3", "-c"] and f'Path("{output}").write_text(' in argv[2]
             )
         )
         if writes_output:
@@ -31,7 +45,7 @@ def fixed_verdict(case):
     if not case["complete"]:
         return "indéterminé"
     argv = shlex.split(case["writers"][0]["command"])
-    if argv[0] == "cp":
+    if copy_output(argv) == case["output"]:
         return "copie"
     expression = (
         f'from pathlib import Path; Path("{case["output"]}").write_text('
