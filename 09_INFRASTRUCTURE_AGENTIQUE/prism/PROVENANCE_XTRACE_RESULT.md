@@ -179,3 +179,21 @@ Sur un [nouveau job K3s](https://github.com/k3s-io/k3s/actions/runs/43476757307/
 Candidat de routage déterministe évalué localement : appliquer les deux extracteurs existants au même texte. Si les deux signalent un écrivain pour la sortie, s'abstenir. Sinon retenir BuildKit s'il confirme, ou rendre la trace Bash. Sur le journal réel, Bash seul s'abstient, le candidat et BuildKit seul répondent copie. Sur un contrôle synthétique ajoutant une deuxième écriture Bash à la même sortie, Bash et BuildKit seuls répondent copie et le candidat s'abstient. Les 20 tests existants et le contrôle du candidat passent localement. Aucune synthèse de règle annotée dans ce cycle.
 
 La [nouvelle PR K3s et son workflow Install Script](https://github.com/k3s-io/k3s/actions/runs/43502342269) étaient en statut action_required à la collecte. Le test positif porte sur un autre job de la famille déjà étudiée et donne une égalité avec le fixe. Candidat de routage non intégré. Attendre un workflow distinct avec trace et contrôle séparé de l'opération pour mesurer un gain externe.
+
+
+## Cycle Libtool / Autotools — 13 novembre 2026
+
+Nouvelle famille de workflow. Le [job curl AM awslc](https://github.com/curl/curl/actions/runs/43485734962/job/132093549401) rapporte les commandes Libtool avec chemin source et destination. Le [Makefile.am épinglé au checkout](https://github.com/curl/curl/blob/82240c5970411ac8d7916adbd00004fe30d778c5/lib/Makefile.am) corrobore la construction de libcurl avant l'installation. Pas de contrôle distinct des octets installés. Le verdict porte uniquement sur l'opération rapportée par Libtool, sans inférence sur l'origine du contenu.
+
+Adaptateur temporaire : reconnaître les lignes horodatées dont le message entier est `libtool: install: /usr/bin/install -c SOURCE DESTINATION` avec deux chemins sans espaces et une destination absolue. Le comparateur fixe classe directement ces opérations de copie et s'abstient sinon. Une trace de construction, puis deux sorties réservées distinctes et un contrôle synthétique dont le préfixe Libtool a été remplacé par `checking:`. La référence déclarative `cp -av / install -m` a été fournie à `provenance_cycle.py propose` avant préparation du réservé pour `check`. Le programme a choisi `/usr/bin/install -c → copie`.
+
+Référence : trois abstentions. Candidat et fixe : deux confirmations, une abstention, zéro fausse confirmation dans ce lot. Égalité au fixe, donc aucun gain externe. Candidat et adaptateur non intégrés. Les observations viennent du même job et le code épinglé ne certifie pas chaque sortie. Les 21 tests locaux passent.
+
+```text
+log 64fa966e0d73ee02c7c2710b08ca620c559b38b75f518ba0fa88d5d6221374fc
+baseline 5013a0ab9c7d2b5f7dd00db1c0f92fdacf28ba34d6388f11ef1542790948cf51
+train c604f9cdfda33c117d01e241b41bf34f61816598c9043ffe10bf8a2c3544d745
+proposal 8515949c3041d81f71aae0b88673f9c49052a188e36d0799eeec82c79eade81e
+reserved 1863733601db42158c6987a220ed1414696b22ecced62504b4b4a5c63db88104
+fixed c23fad2c89e43a69c835586b6ef330254286d2310d0c69d15ab1fbadfef988f6
+```
