@@ -79,3 +79,12 @@ de commande est illisible, car elle pourrait masquer un autre écrivain.
 Après correction, le vérificateur fixe et le candidat `install -m` rendent
 tous deux `indéterminé`. Le format de progression Meson reste à prendre en
 charge. Ce cas mesure une erreur de couverture, sans gain de classification.
+
+
+## Transfert externe BuildKit — 13 novembre 2026
+
+Deux jobs réussis de k3s-io/k3s : [construction](https://github.com/k3s-io/k3s/actions/runs/43477410364/job/132064733608), [réservé](https://github.com/k3s-io/k3s/actions/runs/43477306465/job/132064373779). Journaux GitHub obtenus en lecture seule. Évaluation sur les lignes horodatées portant le préfixe #22, pour les archives `pkg/data/embed/4873afb1a4cbd30b68e17aa817c29eb1d267db562293def3d821141a86355aed.tar.zst` et `pkg/data/embed/f4649b3a5ee76edb0dd43baff97d735cb5de4931190fc214b004eb40d32f77c3.tar.zst` respectivement.
+
+Sur les mêmes lignes, `fixed_verdict(extract(log, output))` s'abstient, car la trace porte le préfixe BuildKit. `extract_buildkit_copy` exige la commande tracée, le retour verbeux avec les deux chemins et la fin réussie de la même étape. `fixed_verdict` et `classify` donnent copie dans les deux cas. La règle synthétisée sur le premier cas est `[{"argv_prefix":["cp","-av"],"verdict":"copie"}]`. Sur chacun des deux journaux, supprimer le retour verbeux conduit à l'abstention. Les contrôles locaux couvrent aussi une confirmation dans une autre étape, une fin absente et une commande répétée. Les 15 tests locaux passent.
+
+Les jobs utilisent la même famille de workflow. Les traces établissent la copie dans l'étape BuildKit ; aucune vérification indépendante du contenu de l'archive finale n'a été effectuée. La règle fixe égale le candidat appris sur ce lot. Le nouvel extracteur est appelé explicitement et n'est pas encore raccordé à la sélection automatique.

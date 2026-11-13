@@ -49,11 +49,53 @@ def extract(log, output, *, recognize_install=True):
     return {"complete": len(writers) == 1 and not unparsed, "output": output, "writers": writers}
 
 
+def extract_buildkit_copy(log, output):
+    """Recognize a traced cp -av backed by its verbose output and step completion."""
+    pending = {}
+    writers = []
+    output = output.removeprefix("./")
+    for line in log.splitlines():
+        line = re.sub(r"^\ufeff?\d{4}-\d\d-\d\dT\S+Z ", "", line)
+        done = re.fullmatch(r"(#\d+) DONE [0-9.]+s", line)
+        if done:
+            if (writer := pending.pop(done[1], None)) and writer["reported"]:
+                writers.append({"command": writer["command"], "exit_code": 0, "output": output})
+            continue
+        event = re.fullmatch(r"(#\d+) [0-9.]+ (.*)", line)
+        if not event:
+            continue
+        step, detail = event.groups()
+        if detail.startswith("+ "):
+            if not detail.startswith("+ cp -av "):
+                continue
+            match = re.fullmatch(r"cp -av ([\w./-]+) ([\w./-]+/)", detail[2:])
+            if not match:
+                continue
+            source, directory = (value.removeprefix("./") for value in match.groups())
+            filename = source.rsplit("/", 1)[-1]
+            if directory + filename != output:
+                continue
+            if step in pending:
+                return {"complete": False, "output": output, "writers": []}
+            pending[step] = {
+                "command": detail[2:],
+                "message": f"'{source}' -> '{output}'",
+                "reported": False,
+            }
+        elif step in pending and detail == pending[step]["message"]:
+            pending[step]["reported"] = True
+    return {"complete": len(writers) == 1 and not pending, "output": output, "writers": writers}
+
+
 def fixed_verdict(case):
     if not case["complete"]:
         return "indéterminé"
     argv = shlex.split(case["writers"][0]["command"])
-    if copy_output(argv) == case["output"]:
+    if copy_output(argv) == case["output"] or (
+        len(argv) == 4 and argv[:2] == ["cp", "-av"]
+        and argv[3].endswith("/")
+        and argv[3].removeprefix("./") + argv[2].rsplit("/", 1)[-1] == case["output"]
+    ):
         return "copie"
     expression = (
         f'from pathlib import Path; Path("{case["output"]}").write_text('

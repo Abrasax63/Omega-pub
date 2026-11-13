@@ -37,3 +37,15 @@ class InstallTraceTests(unittest.TestCase):
     def test_diff_comment_with_apostrophe_does_not_hide_copy(self):
         trace = extract("+    # Homebrew's binding\n+ cp input target", "target")
         self.assertEqual(fixed_verdict(trace), "copie")
+
+    def test_buildkit_requires_same_step_verbose_output_and_completion(self):
+        from provenance_xtrace import extract_buildkit_copy
+
+        command = "#22 0.2 + cp -av source/file target/\n"
+        verbose = "#22 0.3 'source/file' -> 'target/file'\n"
+        done = "#22 DONE 1s\n"
+        for log in [command + done, command + verbose, command + verbose.replace("#22", "#23") + done,
+                    command + verbose + command + done, verbose + done]:
+            with self.subTest(log=log):
+                self.assertEqual(fixed_verdict(extract_buildkit_copy(log, "target/file")), "indéterminé")
+        self.assertEqual(fixed_verdict(extract_buildkit_copy(command + verbose + done, "target/file")), "copie")
