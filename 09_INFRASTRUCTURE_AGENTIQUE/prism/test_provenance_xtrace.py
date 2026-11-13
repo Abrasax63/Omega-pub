@@ -28,3 +28,12 @@ class InstallTraceTests(unittest.TestCase):
         trace = extract(log, "/usr/local/bin/actionlint")
         self.assertEqual(trace["writers"], [])
         self.assertEqual(fixed_verdict(trace), "indéterminé")
+
+    def test_unparseable_record_prevents_confirmation(self):
+        trace = extract("+ cp input target\n+ python3 -c 'unterminated", "target")
+        self.assertEqual(len(trace["writers"]), 1)
+        self.assertEqual(fixed_verdict(trace), "indéterminé")
+
+    def test_diff_comment_with_apostrophe_does_not_hide_copy(self):
+        trace = extract("+    # Homebrew's binding\n+ cp input target", "target")
+        self.assertEqual(fixed_verdict(trace), "copie")

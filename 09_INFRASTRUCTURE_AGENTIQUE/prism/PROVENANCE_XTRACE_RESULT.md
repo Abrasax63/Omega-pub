@@ -63,3 +63,19 @@ Comparaison à journal identique, sans réentraînement. Pour `/usr/local/bin/ac
 Le journal contient le script de l'étape affiché par GitHub Actions, mais aucune trace xtrace reconnue pour les deux appels install. La régression vérifie que l'affichage seul laisse le résultat indéterminé. Ce transfert ne mesure donc aucune confirmation hors du corpus contrôlé. La prochaine évaluation exige un workflow externe montrant les commandes effectivement exécutées, avec des cas à verdict vérifiable.
 
 Candidat évalué puis écarté : supprimer les séquences de couleur et transformer les lignes horodatées commençant par `sudo install -m` en lignes `+ install -m`. Sur la ligne externe isolée (source affichée, exécution non observable dans cet extrait), la référence s'abstient, le candidat conclut copie. La trace positive de contrôle `+ install -m 0755 actionlint /usr/local/bin/actionlint` est reconnue par l'extracteur existant. Le candidat élargit donc les confirmations sans établir l'exécution et n'est pas intégré. Les 12 tests locaux du répertoire prism passent.
+
+## Dossier externe SageMath
+
+Le [job doc-pdf](https://github.com/sagemath/sage/actions/runs/41538531683/job/125596440060)
+s'est terminé avec succès. Le journal Meson indique une copie de
+`src/sage/libs/gap/sage.gaprc`. Le [script Meson au commit testé](https://github.com/sagemath/sage/blob/6244e7214a1cb9afe7275954aa9aab779c5494e6/src/sage/libs/gap/meson.build#L24)
+corrobore l'opération avec `fs.copyfile('sage.gaprc')`.
+
+Le rejeu des lignes horodatées commençant par `+ ` et des lignes relatives
+à cette sortie faisait lever `ValueError: No closing quotation`. La première
+ligne fautive était un commentaire dans un diff affiché par le job.
+L'extracteur ignore désormais les commentaires et s'abstient si une ligne
+de commande est illisible, car elle pourrait masquer un autre écrivain.
+Après correction, le vérificateur fixe et le candidat `install -m` rendent
+tous deux `indéterminé`. Le format de progression Meson reste à prendre en
+charge. Ce cas mesure une erreur de couverture, sans gain de classification.

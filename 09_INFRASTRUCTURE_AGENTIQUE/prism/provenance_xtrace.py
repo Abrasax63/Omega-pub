@@ -19,12 +19,20 @@ def copy_output(argv):
 def extract(log, output, *, recognize_install=True):
     """Read executed commands from the dedicated successful fixture step."""
     writers = []
+    unparsed = False
     for line in log.splitlines():
         line = re.sub(r"^\ufeff?\d{4}-\d\d-\d\dT\S+Z ", "", line)
         if not line.startswith("+ "):
             continue
         command = line[2:]
-        argv = shlex.split(command)
+        if command.lstrip().startswith("#"):
+            continue
+        try:
+            argv = shlex.split(command)
+        except ValueError:
+            # An unreadable record may conceal a second write to the output.
+            unparsed = True
+            continue
         if not argv:
             continue
         copy_destination = (
@@ -38,7 +46,7 @@ def extract(log, output, *, recognize_install=True):
         if writes_output:
             writers.append({"command": command, "exit_code": 0, "output": output})
     # The controlled step uses errexit. Missing or multiple writes remain ambiguous.
-    return {"complete": len(writers) == 1, "output": output, "writers": writers}
+    return {"complete": len(writers) == 1 and not unparsed, "output": output, "writers": writers}
 
 
 def fixed_verdict(case):
