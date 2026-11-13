@@ -19,3 +19,12 @@ class InstallTraceTests(unittest.TestCase):
             fixed_verdict(extract("+ install -m invalid input target", "target")),
             "indéterminé",
         )
+
+    def test_echoed_step_script_is_not_execution_trace(self):
+        log = (
+            "2026-10-15T09:38:37.4807663Z "
+            "\x1b[36;1msudo install -m 0755 actionlint /usr/local/bin/actionlint\x1b[0m"
+        )
+        trace = extract(log, "/usr/local/bin/actionlint")
+        self.assertEqual(trace["writers"], [])
+        self.assertEqual(fixed_verdict(trace), "indéterminé")

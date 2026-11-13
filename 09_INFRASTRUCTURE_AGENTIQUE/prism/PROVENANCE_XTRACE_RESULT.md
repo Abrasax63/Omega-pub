@@ -53,3 +53,13 @@ Avant, la copie install était manquée et le dossier à deux écritures était 
   }
 }
 ```
+
+## Transfert externe — 13 novembre 2026
+
+Journal brut du [job Static gate](https://github.com/nexu-io/open-design/actions/runs/38714250159/job/116353498714) du dépôt nexu-io/open-design, obtenu via l'accès GitHub autorisé. SHA-256 de la réponse texte UTF-8 : d332b40fd16fdc424d4d82a6d45be7a34442a2016e6cee150346278d3c372c19. Le premier run externe envisagé, 29481239283, renvoyait HTTP 410 à la demande du journal.
+
+Comparaison à journal identique, sans réentraînement. Pour `/usr/local/bin/actionlint` et `/usr/local/bin/shellcheck`, appeler `extract(log, output)`, puis `fixed_verdict(trace)` et `classify(trace, {("install", "-m"): "copie"})`. Zéro écrivain reconnu et verdict indéterminé pour les deux sorties, avec les deux méthodes.
+
+Le journal contient le script de l'étape affiché par GitHub Actions, mais aucune trace xtrace reconnue pour les deux appels install. La régression vérifie que l'affichage seul laisse le résultat indéterminé. Ce transfert ne mesure donc aucune confirmation hors du corpus contrôlé. La prochaine évaluation exige un workflow externe montrant les commandes effectivement exécutées, avec des cas à verdict vérifiable.
+
+Candidat évalué puis écarté : supprimer les séquences de couleur et transformer les lignes horodatées commençant par `sudo install -m` en lignes `+ install -m`. Sur la ligne externe isolée (source affichée, exécution non observable dans cet extrait), la référence s'abstient, le candidat conclut copie. La trace positive de contrôle `+ install -m 0755 actionlint /usr/local/bin/actionlint` est reconnue par l'extracteur existant. Le candidat élargit donc les confirmations sans établir l'exécution et n'est pas intégré. Les 12 tests locaux du répertoire prism passent.
