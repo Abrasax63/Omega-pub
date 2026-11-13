@@ -170,3 +170,12 @@ Essai contradictoire : l'adaptateur local convertit un événement d'installatio
 | Proposition | 887abb3e17b4f44d82d8b76556201966125f9c30147a1d4ba1562f86aa90b031 |
 | Réservé | 9be239b884f7bff4b13439ca4dcde91b2023c1e4625f88ade96fb0ce3faca7cd |
 | Fixe | 8fa86bd6ee1b47d872c2d4663d7c517c7f8514ed30864f902b4b720c0193fa3b |
+
+
+## Routage des extracteurs — 13 novembre 2026
+
+Sur un [nouveau job K3s](https://github.com/k3s-io/k3s/actions/runs/43476757307/job/132062459438) de la même famille BuildKit, l'extrait des lignes horodatées `#22` jointes par LF a pour SHA-256 `bac44f4af39f6fd468e76ec1e3dfac3a33e13a8906b8c7e0e2aa9112472d0801`. [Le script épinglé](https://github.com/k3s-io/k3s/blob/91b9cf50c12eed08f5e4f175b12eaa81e1dc5d8d/scripts/package-cli#L74) prescrit la copie, et le journal montre la confirmation et la fin de l'étape.
+
+Candidat de routage déterministe évalué localement : appliquer les deux extracteurs existants au même texte. Si les deux signalent un écrivain pour la sortie, s'abstenir. Sinon retenir BuildKit s'il confirme, ou rendre la trace Bash. Sur le journal réel, Bash seul s'abstient, le candidat et BuildKit seul répondent copie. Sur un contrôle synthétique ajoutant une deuxième écriture Bash à la même sortie, Bash et BuildKit seuls répondent copie et le candidat s'abstient. Les 20 tests existants et le contrôle du candidat passent localement. Aucune synthèse de règle annotée dans ce cycle.
+
+La [nouvelle PR K3s et son workflow Install Script](https://github.com/k3s-io/k3s/actions/runs/43502342269) étaient en statut action_required à la collecte. Le test positif porte sur un autre job de la famille déjà étudiée et donne une égalité avec le fixe. Candidat de routage non intégré. Attendre un workflow distinct avec trace et contrôle séparé de l'opération pour mesurer un gain externe.
