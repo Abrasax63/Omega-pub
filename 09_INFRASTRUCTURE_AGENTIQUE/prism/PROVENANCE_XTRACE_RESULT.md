@@ -155,3 +155,18 @@ La référence déclarative contenait `cp -av → copie` et `install -m → copi
   }
 }
 ```
+
+
+## Cycle CMake — 13 novembre 2026
+
+Collecte GitHub autorisée du nouveau [job curl CM awslc](https://github.com/curl/curl/actions/runs/43485734962/job/132093549032). Le [CMakeLists au checkout](https://github.com/curl/curl/blob/82240c5970411ac8d7916adbd00004fe30d778c5/docs/libcurl/CMakeLists.txt) déclare deux opérations distinctes : génération des pages dans le répertoire de build, puis installation des fichiers générés. Le journal affiche les destinations mais l'événement Installing pris isolément ne suffit pas à classifier la provenance de bout en bout.
+
+Essai contradictoire : l'adaptateur local convertit un événement d'installation en pseudo-commande et fournit un exemple étiqueté copie au sens de l'étape locale. Après `provenance_cycle.py propose`, le préfixe choisi est `cmake --install` avec verdict copie. `check` reçoit ensuite deux événements distincts dont la provenance est indéterminée à partir de la seule observation normalisée et un contrôle sans trace. Le comparateur fixe s'abstient pour ce type de signal. Le candidat émet deux confirmations non étayées et une abstention. La référence et le fixe s'abstiennent trois fois. La cible et l'évaluation portent sur le danger de mélanger la sémantique locale et la provenance de bout en bout. Elles ne démontrent pas que l'installation elle-même n'a pas copié un fichier. Candidat écarté. Jeu réservé et corrigé non publiés. Vingt tests locaux passent.
+
+| Entrée | SHA-256 |
+|---|---|
+| Construction | d637eade351fe25ea0847317b16d7a0a1d46312df4b1a2c4a56b9e04d520e791 |
+| Référence | 5013a0ab9c7d2b5f7dd00db1c0f92fdacf28ba34d6388f11ef1542790948cf51 |
+| Proposition | 887abb3e17b4f44d82d8b76556201966125f9c30147a1d4ba1562f86aa90b031 |
+| Réservé | 9be239b884f7bff4b13439ca4dcde91b2023c1e4625f88ade96fb0ce3faca7cd |
+| Fixe | 8fa86bd6ee1b47d872c2d4663d7c517c7f8514ed30864f902b4b720c0193fa3b |
