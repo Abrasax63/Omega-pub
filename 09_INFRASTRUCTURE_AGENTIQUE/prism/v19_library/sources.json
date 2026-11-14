@@ -1,0 +1,8 @@
+{
+  "inventory": ["639dc01ca3ea58c61b075adb9a6d860bf41db7bc", "08_ARCHIVES/MIGRATION_2026-11-05/INVENTAIRE_FICHIERS_PR2.md"],
+  "index": ["2f71a6b8ed03914c0b5d308520d30e0133d9e9ad", "research/bricks/INDEX_BRIQUES.md"],
+  "card": ["2f71a6b8ed03914c0b5d308520d30e0133d9e9ad", "research/bricks/reconstructed/OBS-V19-LOCAL-L2_RECONSTITUTION.md"],
+  "audit": ["639dc01ca3ea58c61b075adb9a6d860bf41db7bc", "02_MATHEMATIQUES/defauts_recollement/AUDIT_INDEPENDANT_LOCALITE_V19_L_PLUS_2_2026-11-05.md"],
+  "experiment": ["763d77f0aa735d90bb558b2c7fac056298d5313c", "02_MATHEMATIQUES/v19_c5/TEST_OPTIMALITE_LOCALITE_L_PLUS_1_2026-11-10.md"],
+  "historical_script": ["763d77f0aa735d90bb558b2c7fac056298d5313c", "research/code/test_v19_locality_l_plus_1.py"]
+}

@@ -1,0 +1,85 @@
+{
+  "brick": "OBS-V19-LOCAL-L2",
+  "sources": {
+    "inventory": {
+      "commit": "639dc01ca3ea58c61b075adb9a6d860bf41db7bc",
+      "path": "08_ARCHIVES/MIGRATION_2026-11-05/INVENTAIRE_FICHIERS_PR2.md",
+      "sha256": "b06ecf5b61eaba290685449990726dbe2bff44f8dba8310ff8ab71d2a8ab29f4"
+    },
+    "index": {
+      "commit": "2f71a6b8ed03914c0b5d308520d30e0133d9e9ad",
+      "path": "research/bricks/INDEX_BRIQUES.md",
+      "sha256": "967478341e19a89d63f34ca32976988d636fad36132946b6ed8e251498306012"
+    },
+    "card": {
+      "commit": "2f71a6b8ed03914c0b5d308520d30e0133d9e9ad",
+      "path": "research/bricks/reconstructed/OBS-V19-LOCAL-L2_RECONSTITUTION.md",
+      "sha256": "51e2c7eb64a988a6fa711513235e2c4085ec8c037e025d6979a1a53e3a755715"
+    },
+    "audit": {
+      "commit": "639dc01ca3ea58c61b075adb9a6d860bf41db7bc",
+      "path": "02_MATHEMATIQUES/defauts_recollement/AUDIT_INDEPENDANT_LOCALITE_V19_L_PLUS_2_2026-11-05.md",
+      "sha256": "1954c1a8bb6ca791331cb72fb69ee3b8bcc34f7fe1feb49f54f43dd99e99e358"
+    },
+    "experiment": {
+      "commit": "763d77f0aa735d90bb558b2c7fac056298d5313c",
+      "path": "02_MATHEMATIQUES/v19_c5/TEST_OPTIMALITE_LOCALITE_L_PLUS_1_2026-11-10.md",
+      "sha256": "ff991f0047be02e7c5a3e328a64aacced4b101cdd6d9f99b2bef32ecc6323808"
+    },
+    "historical_script": {
+      "commit": "763d77f0aa735d90bb558b2c7fac056298d5313c",
+      "path": "research/code/test_v19_locality_l_plus_1.py",
+      "sha256": "b4556e78b12edbd2467eb7166576d4202cfa1cdaa10a3113730a5be5d6487946"
+    }
+  },
+  "historical_status": "DÉMONTRÉ (SQLite, fiche reconstituée)",
+  "historical_replay": {
+    "python": "3.12.14",
+    "exit_code": 0,
+    "stdout": "L_PLUS_1_EXHAUSTIVE_TEST: PASS\nPREFIX_CONVENTION: times 0,...,L+1\nCOHERENT_ENDOFUNCTIONS_BY_N: {1: 1, 2: 4, 3: 23, 4: 191, 5: 2069, 6: 27454}\nCOHERENT_CYCLE_MAPS_BY_N: {3: 2, 4: 38, 5: 614, 6: 10384}\nGLOBAL_LOCAL_COMPARISONS_BY_N: {3: 12, 4: 456, 5: 12280, 6: 312720}\nGLOBAL_LOCAL_COMPARISONS_TOTAL: 325468\nNO_COUNTEREXAMPLE_FOUND\nScope: n<=6 and L in {2,3}; this does not prove universal L+1 sufficiency.\n",
+    "stderr": "",
+    "reproduced": true
+  },
+  "full_extension_check": {
+    "scope": "N <= 6, q >= 3, L in {2,3}, coherent forced constraints",
+    "comparisons": {
+      "3": 12,
+      "4": 456,
+      "5": 12280,
+      "6": 312720
+    },
+    "verified_equal_in_scope": true,
+    "locality_counterexample": null,
+    "historical_shadow_discrepancy": {
+      "T": [
+        0,
+        0,
+        3,
+        4,
+        2
+      ],
+      "cycle": [
+        2,
+        3,
+        4
+      ],
+      "pair": [
+        0,
+        1
+      ],
+      "L": 2,
+      "historical": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "full": []
+    }
+  },
+  "general_L_plus_1": "INDÉTERMINÉ — preuve candidate à relire"
+}
