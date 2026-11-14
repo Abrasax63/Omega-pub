@@ -125,3 +125,27 @@ jobs:
           fi
           set +x
           sha256sum evidence/*.json
+
+  provenance-read-trial:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare read policies on fresh executions
+        shell: bash
+        run: |
+          root=$(mktemp -d)
+          for kind in copy compute hidden; do
+            mkdir "$root/$kind"
+            (
+              cd "$root/$kind"
+              printf '%s\n' 506 > original.txt
+              case "$kind" in
+                copy) bash -ex -c 'cp original.txt output.txt' 2> execution.txt ;;
+                compute) bash -ex -c "python3 -c 'from pathlib import Path; Path(\"output.txt\").write_text(str(sum(i*i for i in range(1,12)))+chr(10))'" 2> execution.txt ;;
+                hidden) cp original.txt output.txt > execution.txt 2>&1 ;;
+              esac
+              cmp original.txt output.txt
+              sha256sum output.txt > digest.txt
+            )
+          done
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_read_trial.py "$root"
