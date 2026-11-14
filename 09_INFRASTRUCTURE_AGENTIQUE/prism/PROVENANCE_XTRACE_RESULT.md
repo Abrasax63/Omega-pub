@@ -197,3 +197,12 @@ proposal 8515949c3041d81f71aae0b88673f9c49052a188e36d0799eeec82c79eade81e
 reserved 1863733601db42158c6987a220ed1414696b22ecced62504b4b4a5c63db88104
 fixed c23fad2c89e43a69c835586b6ef330254286d2310d0c69d15ab1fbadfef988f6
 ```
+
+
+## Raccord job–artefact — 14 novembre 2026
+
+Collecte en lecture autorisée des journaux et de la liste des artefacts des runs [K3s](https://github.com/k3s-io/k3s/actions/runs/43476757307) et [SageMath](https://github.com/sagemath/sage/actions/runs/41538531683). Les trois journaux ont été relus pour une question distincte des classifications d'écriture précédentes : associer au job un ID d'artefact publié. Un candidat déterministe croise l'ID et le nom de l'événement horodaté de finalisation avec la liste API du run et exige une correspondance unique. Ce prototype a été testé sur les lignes sélectionnées, avec des données d'un job à la fois. Le comparateur fixe vérifie le suffixe exact de la ligne avec le nom et l'ID attendus dans l'inventaire.
+
+Les deux méthodes relient trois artefacts, pour deux jobs K3s et un job SageMath, alors que la référence actuelle ne produit pas de lien job–artefact. Dans un contrôle synthétique par journal, remplacer l'ID final par 1 force le candidat à s'abstenir. SHA-256 du JSON de session (liste ordonnée K3s Linux, SageMath, K3s Windows, métadonnées API et lignes de finalisation) : `31b1036870fee985afb24a921dd7d9b1311627ba938d64de39462c3468259aad`. Les 21 tests existants passent localement. Aucune règle sur des traces annotées n'a été générée dans ce cycle.
+
+La liste API et le journal sont deux pièces du même fournisseur, et l'archive publiée ne prouve pas par sa seule présence la provenance des octets en amont. Parité avec le fixe sur ce raccord et aucun nouveau workflow admissible pour le verdict copie/recalcul. Candidat non intégré. La décision sur un extracteur reste soumise à une trace d'exécution et à une vérification distincte de l'opération.
