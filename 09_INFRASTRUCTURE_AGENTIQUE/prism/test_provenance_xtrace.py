@@ -65,3 +65,11 @@ class InstallTraceTests(unittest.TestCase):
         log = "#1 1 + cp -av a/f out/\n#1 2 'a/f' -> 'out/f'\n#1 DONE 3s"
         self.assertEqual(fixed_verdict(extract_buildkit_copy(log + "\n#1 ERROR: failed", "out/f")), "indéterminé")
         self.assertEqual(fixed_verdict(extract_buildkit_copy(log + "\n#2 ERROR: failed", "out/f")), "copie")
+
+    def test_buildkit_verbose_paths_accept_leading_current_directory(self):
+        from provenance_xtrace import extract_buildkit_copy
+
+        log = "#1 1 + cp -av ./a/f ./out/\n#1 2 './a/f' -> './out/f'\n#1 DONE 3s"
+        self.assertEqual(fixed_verdict(extract_buildkit_copy(log, "./out/f")), "copie")
+        conflict = log.replace("'./out/f'", "'./other/f'")
+        self.assertEqual(fixed_verdict(extract_buildkit_copy(conflict, "./out/f")), "indéterminé")
