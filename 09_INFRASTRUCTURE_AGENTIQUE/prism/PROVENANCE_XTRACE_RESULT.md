@@ -236,3 +236,12 @@ Référence au commit `e90cb673945a487c4ee21afc1727828cb02ace70`. La référence
 Sur le [job K3s 132128441512](https://github.com/k3s-io/k3s/actions/runs/43362781867/job/132128441512), obtenu en lecture, les deux versions et le fixe confirment la copie de l'archive dans `pkg/data/embed/`. SHA-256 des lignes horodatées #22 jointes par LF sans LF final : `5f659a4a14a180b0caad3a9d763c6d255a798ad68d7c80aca3d2baf54729676f`. Deux contrôles synthétiques ajoutent avant ou après ces lignes une seconde étape qui trace une copie sur le même chemin et se termine sans retour verbeux. La référence confirme les deux, le candidat et le fixe s'abstiennent deux fois. Les tests de régression et les 21 tests locaux passent.
 
 Correction retenue pour le défaut de prudence mesuré dans l'extracteur. Le cas positif appartient à la famille K3s déjà étudiée et égale le fixe. Aucun gain externe ni vérité terrain indépendante sur les octets n'est établi. Aucune synthèse de règle annotée n'a été effectuée.
+
+
+## Statuts BuildKit contradictoires — 14 novembre 2026
+
+Sur un extrait `#22` du [job K3s](https://github.com/k3s-io/k3s/actions/runs/43477306465/job/132064373779) déjà utilisé, le comparateur fixe exige la commande, son retour verbeux, la fin et l'absence d'erreur du même identifiant d'étape. Ajouter une ligne synthétique `#22 ERROR: failed` laissait auparavant le verdict copie. Le candidat s'abstient et égale le fixe. Sur l'extrait d'origine et sur le contrôle avec une erreur `#23`, les trois méthodes gardent le verdict copie. Le verdict concerne l'étape #22, pas le résultat global du job.
+
+SHA-256 des entrées UTF-8, respectivement original, contradiction et erreur d'une autre étape : `f174ad9eaad8709e3f72051fe0e5554f2b9b4ad84578bc97b81c36a92b2f5f9b`, `29f5d192bbfa2f4f343583715567faf22b99fa8ecb55492d189507d0fa667ac2`, `ac6846ba91aa6e352eaa78ce48e0c1548957bc2c49811513a2912e0219834271`. Référence `0b5d866cdad5ada4278b2de47d4593280078bf5c`.
+
+Les 22 tests locaux passent. Correctif retenu pour la contradiction synthétique mesurée. Aucun workflow inédit admissible ni gain externe. La comparaison repose sur des journaux bruts et un correctif déterministe, sans génération sur traces annotées.

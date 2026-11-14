@@ -51,18 +51,23 @@ def extract(log, output, *, recognize_install=True):
 
 def extract_buildkit_copy(log, output):
     """Recognize a traced cp -av backed by its verbose output and step completion."""
+    failed = set()
     pending = {}
     writers = []
     output = output.removeprefix("./")
     for line in log.splitlines():
         line = re.sub(r"^\ufeff?\d{4}-\d\d-\d\dT\S+Z ", "", line)
+        error = re.fullmatch(r"(#\d+) ERROR:.*", line)
+        if error:
+            failed.add(error[1])
+            continue
         done = re.fullmatch(r"(#\d+) DONE [0-9.]+s", line)
         if done:
             writer = pending.pop(done[1], None)
             if writer and not writer["reported"]:
-                return {"complete": False, "output": output, "writers": writers}
+                return {"complete": False, "output": output, "writers": [row for _, row in writers]}
             if writer:
-                writers.append({"command": writer["command"], "exit_code": 0, "output": output})
+                writers.append((done[1], {"command": writer["command"], "exit_code": 0, "output": output}))
             continue
         event = re.fullmatch(r"(#\d+) [0-9.]+ (.*)", line)
         if not event:
@@ -87,7 +92,11 @@ def extract_buildkit_copy(log, output):
             }
         elif step in pending and detail == pending[step]["message"]:
             pending[step]["reported"] = True
-    return {"complete": len(writers) == 1 and not pending, "output": output, "writers": writers}
+    return {
+        "complete": len(writers) == 1 and not pending and writers[0][0] not in failed,
+        "output": output,
+        "writers": [writer for _, writer in writers],
+    }
 
 
 def fixed_verdict(case):

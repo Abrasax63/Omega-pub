@@ -58,3 +58,10 @@ class InstallTraceTests(unittest.TestCase):
         for log in (confirmed + incomplete, incomplete + confirmed):
             with self.subTest(log=log):
                 self.assertEqual(fixed_verdict(extract_buildkit_copy(log, "out/f")), "indéterminé")
+
+    def test_buildkit_contradictory_step_status(self):
+        from provenance_xtrace import extract_buildkit_copy
+
+        log = "#1 1 + cp -av a/f out/\n#1 2 'a/f' -> 'out/f'\n#1 DONE 3s"
+        self.assertEqual(fixed_verdict(extract_buildkit_copy(log + "\n#1 ERROR: failed", "out/f")), "indéterminé")
+        self.assertEqual(fixed_verdict(extract_buildkit_copy(log + "\n#2 ERROR: failed", "out/f")), "copie")
