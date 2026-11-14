@@ -20,3 +20,20 @@ class V19LibraryTests(unittest.TestCase):
             if all(colors[u] ^ colors[v] == parity for u, v, parity in constraints)
         }
         self.assertEqual(shadow(4, constraints, cycle), expected)
+
+
+class V19PrefixTests(unittest.TestCase):
+    def test_identical_short_prefixes_have_different_global_shadows(self):
+        from v19_library.prefix import forced_edges, orbit, prefix_shadow
+
+        cycle = (3, 4, 5)
+        maps = [(1, 0, 0, 4, 5, 3), (1, 1, 0, 4, 5, 3)]
+        for T, expected in zip(maps, ({0, 3, 4, 7}, set(range(8)))):
+            with self.subTest(T=T):
+                self.assertEqual(orbit(T, 2, 3), [2, 0, 1])
+                self.assertEqual(orbit(T, 3, 3), [3, 4, 5])
+                forced = forced_edges(dict(enumerate(T)))
+                self.assertTrue(shadow(6, forced, ()))
+                full = shadow(6, forced + [(2, 3, 0), (0, 4, 0)], cycle)
+                self.assertEqual(full, expected)
+                self.assertEqual(prefix_shadow(cycle, orbit(T, 2, 4), orbit(T, 3, 4), 2), full)

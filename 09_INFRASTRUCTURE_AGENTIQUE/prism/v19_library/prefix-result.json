@@ -1,0 +1,62 @@
+{
+  "scope": "N <= 6, q >= 3, L in {2,3}, coherent forced constraints",
+  "through_L_plus_1": {
+    "counts": {
+      "3": 12,
+      "4": 456,
+      "5": 12280,
+      "6": 312720
+    },
+    "witness": null
+  },
+  "through_L_exploratory": {
+    "counts": {
+      "3": 12,
+      "4": 456,
+      "5": 12280,
+      "6": 24739
+    },
+    "witness": {
+      "T": [
+        1,
+        0,
+        0,
+        4,
+        5,
+        3
+      ],
+      "cycle": [
+        3,
+        4,
+        5
+      ],
+      "L": 2,
+      "left": [
+        2,
+        0,
+        1
+      ],
+      "right": [
+        3,
+        4,
+        5
+      ],
+      "global_shadow": [
+        0,
+        3,
+        4,
+        7
+      ],
+      "prefix_shadow": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  }
+}
