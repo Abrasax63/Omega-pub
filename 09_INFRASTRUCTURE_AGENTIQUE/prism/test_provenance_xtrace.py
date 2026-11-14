@@ -73,3 +73,10 @@ class InstallTraceTests(unittest.TestCase):
         self.assertEqual(fixed_verdict(extract_buildkit_copy(log, "./out/f")), "copie")
         conflict = log.replace("'./out/f'", "'./other/f'")
         self.assertEqual(fixed_verdict(extract_buildkit_copy(conflict, "./out/f")), "indéterminé")
+
+    def test_cp_requires_two_path_operands(self):
+        for command in ("cp --version target", "cp '--help' target", "cp -r target"):
+            with self.subTest(command=command):
+                self.assertEqual(fixed_verdict(extract("+ " + command, "target")), "indéterminé")
+        for source in ("source", "./--help"):
+            self.assertEqual(fixed_verdict(extract(f"+ cp {source} target", "target")), "copie")

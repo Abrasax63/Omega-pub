@@ -5,7 +5,10 @@ import shlex
 
 
 def copy_output(argv):
-    if len(argv) == 3 and argv[0] == "cp":
+    if (
+        len(argv) == 3 and argv[0] == "cp"
+        and all(value and not value.startswith("-") for value in argv[1:])
+    ):
         return argv[2]
     if (
         len(argv) == 5 and argv[:2] == ["install", "-m"]
