@@ -58,7 +58,10 @@ def extract_buildkit_copy(log, output):
         line = re.sub(r"^\ufeff?\d{4}-\d\d-\d\dT\S+Z ", "", line)
         done = re.fullmatch(r"(#\d+) DONE [0-9.]+s", line)
         if done:
-            if (writer := pending.pop(done[1], None)) and writer["reported"]:
+            writer = pending.pop(done[1], None)
+            if writer and not writer["reported"]:
+                return {"complete": False, "output": output, "writers": writers}
+            if writer:
                 writers.append({"command": writer["command"], "exit_code": 0, "output": output})
             continue
         event = re.fullmatch(r"(#\d+) [0-9.]+ (.*)", line)

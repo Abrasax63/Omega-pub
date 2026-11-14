@@ -49,3 +49,12 @@ class InstallTraceTests(unittest.TestCase):
             with self.subTest(log=log):
                 self.assertEqual(fixed_verdict(extract_buildkit_copy(log, "target/file")), "indéterminé")
         self.assertEqual(fixed_verdict(extract_buildkit_copy(command + verbose + done, "target/file")), "copie")
+
+    def test_buildkit_incomplete_second_writer_prevents_confirmation(self):
+        from provenance_xtrace import extract_buildkit_copy
+
+        confirmed = "#1 1 + cp -av a/f out/\n#1 2 'a/f' -> 'out/f'\n#1 DONE 3s\n"
+        incomplete = "#2 1 + cp -av b/f out/\n#2 DONE 2s\n"
+        for log in (confirmed + incomplete, incomplete + confirmed):
+            with self.subTest(log=log):
+                self.assertEqual(fixed_verdict(extract_buildkit_copy(log, "out/f")), "indéterminé")
