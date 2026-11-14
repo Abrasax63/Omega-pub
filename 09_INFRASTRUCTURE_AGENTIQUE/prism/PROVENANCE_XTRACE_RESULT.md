@@ -206,3 +206,17 @@ Collecte en lecture autorisée des journaux et de la liste des artefacts des run
 Les deux méthodes relient trois artefacts, pour deux jobs K3s et un job SageMath, alors que la référence actuelle ne produit pas de lien job–artefact. Dans un contrôle synthétique par journal, remplacer l'ID final par 1 force le candidat à s'abstenir. SHA-256 du JSON de session (liste ordonnée K3s Linux, SageMath, K3s Windows, métadonnées API et lignes de finalisation) : `31b1036870fee985afb24a921dd7d9b1311627ba938d64de39462c3468259aad`. Les 21 tests existants passent localement. Aucune règle sur des traces annotées n'a été générée dans ce cycle.
 
 La liste API et le journal sont deux pièces du même fournisseur, et l'archive publiée ne prouve pas par sa seule présence la provenance des octets en amont. Parité avec le fixe sur ce raccord et aucun nouveau workflow admissible pour le verdict copie/recalcul. Candidat non intégré. La décision sur un extracteur reste soumise à une trace d'exécution et à une vérification distincte de l'opération.
+
+
+## Vérification de la création d'archives — 14 novembre 2026
+
+Nouveau workflow externe [Ninja Linux](https://github.com/ninja-build/ninja/actions/runs/42888784476), jobs 130093749128 et 130093749464, artefacts 13798927618 et 13798982552. Téléchargés via GitHub en lecture autorisée. Les ZIP publiés contiennent chacun le ZIP annoncé par 7-Zip, de même taille que dans le journal. Les deux ZIP internes contiennent une entrée ninja et passent le contrôle CRC. Vérification des octets des archives, sans exécution ni extraction sur disque des binaires. Cette observation porte sur l'emballage, sans verdict sur la compilation ou le recalcul du binaire.
+
+Candidat déterministe local : rechercher dans les messages d'exécution le triplet création, taille, succès, puis joindre le nom et la taille de l'entrée du ZIP publié. Le comparateur fixe vérifie directement les trois lignes avec les mêmes informations d'archive. La référence xtrace s'abstient sur les deux journaux. Le candidat et le fixe rendent deux confirmations chacun et s'abstiennent sur les quatre contrôles dérivés (taille incompatible et marqueur de succès absent dans chaque cas). Les deux architectures constituent des jobs distincts du même workflow. Les 21 tests locaux passent. Aucune annotation d'entraînement ni synthèse de règle dans ce cycle. Égalité au fixe et candidat non intégré.
+
+Empreintes SHA-256, dans l'ordre ZIP publié puis extrait UTF-8 des trois lignes jointes par LF :
+
+```text
+635f87c064556b02f3046cd6bd6f7eb17fa6de51aabc51f60e7d73e6b7dd2c86 5f05e7014b9f6b7592ae926b0ddf1ed659ce1af92a62fc9bc291dae43ff0ab21 b'ninja-linux.zip' 145259 ['ninja']
+0f749468951e9a10b61abb1a5b91cb67d2959c8455fc25a89b0a4cbb58f889b1 a3610fda54b8b3402fdfe5405596c950814dc7737c96f0f0df47aff22b7cf72f b'ninja-linux-aarch64.zip' 138008 ['ninja']
+```
