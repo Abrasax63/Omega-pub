@@ -87,11 +87,15 @@ def extract_buildkit_copy(log, output):
                 return {"complete": False, "output": output, "writers": []}
             pending[step] = {
                 "command": detail[2:],
-                "message": f"'{source}' -> '{output}'",
+                "paths": (source, output),
                 "reported": False,
             }
-        elif step in pending and detail == pending[step]["message"]:
-            pending[step]["reported"] = True
+        elif step in pending:
+            quoted_paths = re.fullmatch(r"'([\w./-]+)' -> '([\w./-]+)'", detail)
+            if quoted_paths:
+                observed = tuple(path.removeprefix("./") for path in quoted_paths.groups())
+                if observed == pending[step]["paths"]:
+                    pending[step]["reported"] = True
     return {
         "complete": len(writers) == 1 and not pending and writers[0][0] not in failed,
         "output": output,
