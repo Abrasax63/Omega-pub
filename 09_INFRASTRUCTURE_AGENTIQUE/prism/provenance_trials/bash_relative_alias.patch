@@ -1,0 +1,16 @@
+--- a/09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_xtrace.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_xtrace.py
+@@ -41,6 +41,13 @@
+         copy_destination = (
+             copy_output(argv) if recognize_install or argv[0] != "install" else None
+         )
++        # A relative spelling of the same destination may hide a second writer.
++        alias_of_output = (
++            copy_destination is not None
++            and copy_destination.removeprefix("./") == output.removeprefix("./")
++        )
++        if alias_of_output and copy_destination != output:
++            unparsed = True
+         writes_output = copy_destination == output or (
+             len(argv) == 3 and (
+                 argv[:2] == ["python3", "-c"] and f'Path("{output}").write_text(' in argv[2]
