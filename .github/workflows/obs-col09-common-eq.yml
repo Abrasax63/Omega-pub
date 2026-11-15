@@ -1,0 +1,100 @@
+name: OBS-COL-09B identical EQ inputs Python and Java
+on:
+  push:
+    branches:
+      - experiment/obs-col09-common-eq-2026-11-15
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col09_common/**"
+      - "02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/**"
+      - ".github/workflows/obs-col09-common-eq.yml"
+  workflow_dispatch:
+jobs:
+  common-eq-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          cache-dependency-path: 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml
+      - name: Install genuine AALpy 2.0.0
+        run: python -m pip install --disable-pip-version-check aalpy==2.0.0
+      - name: Generate ONE target-free equivalence and evaluation manifest set
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col09_common/generate_manifests.py "$PWD/obs_col09_common_manifests"
+      - name: Run seven true-learning and anti-leak Python tests
+        run: python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col09_common -p 'test_common_eq.py' -v
+      - name: Run genuine AALpy learners with fixed 512-word EQ suite
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col09_common/common_eq.py "$PWD/obs_col09_common_manifests" > obs_col09_common_python.json
+      - name: Compile genuine LearnLib TTT Moore 0.18.0
+        run: mvn -B -ntp -f 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml -DskipTests compile
+      - name: Run TTT on the identical 512-word EQ suite
+        run: |
+          set -o pipefail
+          mvn -B -ntp -e -f 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml \
+            exec:java \
+            "-Dexec.args=$PWD/02_MATHEMATIQUES/pilotes/obs_col09/external_fixtures $PWD/obs_col09_common_manifests" \
+            2>&1 | tee obs_col09_common_java.log
+          grep '^{"fixture"' obs_col09_common_java.log > obs_col09_common_ttt.jsonl
+      - name: Audit common hashes, attribution, budgets and save joined report
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=json.load(open('obs_col09_common_python.json'))
+          j=[json.loads(s) for s in open('obs_col09_common_ttt.jsonl') if s.strip()]
+          assert p["protocol"]=="OBS-COL-09B" and len(p["results"])==12 and len(j)==3
+          assert not p["p1_selects_probes"]
+          for ttt in j:
+              same=[x for x in p["results"] if x["fixture"]==ttt["fixture"]]
+              assert len(same)==4 and ttt["algorithm"]=="TTT-LearnLib-0.18.0"
+              assert ttt["suite_completed"] and ttt["completed_eq_suites"]>=1
+              assert all(x["eq_manifest_sha256"]==ttt["eq_manifest_sha256"] for x in same)
+              assert all(x["evaluation_manifest_sha256"]==ttt["evaluation_manifest_sha256"] for x in same)
+              assert all(x["proposed_eq_words_per_round"]==ttt["eq_candidates_per_round"]==512 for x in same)
+              assert all(x["source_states_posthoc_only"]==ttt["true_states_posthoc"] for x in same)
+              assert ttt["heldout_unseen_scored"]+ttt["heldout_overlap_seen_during_training"]==256
+              assert ttt["heldout_unseen_scored"]>0 and not ttt["equivalence_certified"]
+          for row in p["results"]:
+              assert row["completed_eq_suites"] >= 1
+              assert row["physical_resets"] <=10000 and row["physical_symbols"] <=50000
+              assert row["evaluation_count"]==256 and row["evaluation_unseen_count"]>0
+              assert not row["omega_gains_demonstrated"]
+          for row in j:
+              print(row["fixture"], "TTT", row["learned_states"],
+                    "resets", row["physical_resets"],
+                    "symbols", row["physical_symbols"],
+                    "EQ words actually tried", row["eq_candidates_executed"],
+                    "unseen errors", row["heldout_errors_unseen"])
+          for algorithm in ("Lstar","KV","Lsharp","Lsharp_P1"):
+              rows=[x for x in p["results"] if x["algorithm"]==algorithm]
+              print(algorithm,
+                    "resets",sum(x["physical_resets"] for x in rows),
+                    "symbols",sum(x["physical_symbols"] for x in rows),
+                    "unseen_errors",sum(x["evaluation_unseen_errors"] for x in rows))
+          pathlib.Path("obs_col09_common_joined.json").write_text(
+              json.dumps({"protocol":"OBS-COL-09B","python":p,
+                          "ttt_java":j,"same_eq_manifest":True,
+                          "not_blind":True,"not_universal_equivalence":True,
+                          "no_omega_superiority_claim":True},indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: obs-col09b-common-eq-evidence
+          path: |
+            obs_col09_common_python.json
+            obs_col09_common_ttt.jsonl
+            obs_col09_common_java.log
+            obs_col09_common_joined.json
+            obs_col09_common_manifests/
+          if-no-files-found: warn

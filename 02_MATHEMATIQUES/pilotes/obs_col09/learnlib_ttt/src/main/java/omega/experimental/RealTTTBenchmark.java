@@ -20,7 +20,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -159,38 +160,64 @@ public final class RealTTTBenchmark {
         }
     }
 
-    static Word<String> findRandomCounterexample(
+    /** Same fixed 512 candidate words as Python; first differing OUTPUT PREFIX wins. */
+    static final class EqCounter {
+        int rounds = 0;
+        int proposedWords = 0;
+        int counterexamples = 0;
+        int completedSuites = 0;
+    }
+
+    static Word<String> findSharedCounterexample(
             Source source, MooreMachine<?, String, ?, String> hypothesis,
-            List<String> alphabet, Random random, Meter meter) {
-        String actualState = source.initial;
-        List<String> word = new ArrayList<>();
-        meter.eqResets++;
-        meter.resets++;
-        meter.check();
-        for (int i = 0; i < 2000; i++) {
-            if (random.nextDouble() <= 0.12) {
-                word.clear();
-                actualState = source.initial;
-                meter.resets++;
-                meter.eqResets++;
-                meter.check();
-            }
-            String action = alphabet.get(random.nextInt(alphabet.size()));
-            word.add(action);
-            meter.observedPrefixes.add(List.copyOf(word));
-            actualState = source.next.get(actualState).get(action);
-            meter.symbols++;
-            meter.eqSymbols++;
+            List<List<String>> eqWords, Meter meter, EqCounter counter) {
+        counter.rounds++;
+        for (List<String> word : eqWords) {
+            String actualState = source.initial;
+            List<String> prefix = new ArrayList<>();
+            meter.eqResets++;
+            meter.resets++;
+            counter.proposedWords++;
             meter.check();
-            Word<String> input = Word.fromList(word);
-            // MooreMachine's computeOutput includes the state after the last input.
-            Word<String> predicted = hypothesis.computeOutput(input);
-            String expected = source.outputs.get(actualState);
-            if (!Objects.equals(predicted.lastSymbol(), expected)) {
-                return input;
+            for (String action : word) {
+                prefix.add(action);
+                actualState = source.next.get(actualState).get(action);
+                meter.symbols++;
+                meter.eqSymbols++;
+                meter.check();
+                meter.observedPrefixes.add(List.copyOf(prefix));
+                // Moore output after current prefix, like AALpy .step().
+                String prediction = hypothesis.computeOutput(
+                        Word.fromList(prefix)).lastSymbol();
+                String observation = source.outputs.get(actualState);
+                if (!Objects.equals(prediction, observation)) {
+                    counter.counterexamples++;
+                    return Word.fromList(prefix);
+                }
             }
         }
-        return null;  // bounded random-walk oracle, not a proof of equivalence
+        counter.completedSuites++;
+        return null; // bounded common EQ test suite, NOT universal equivalence
+    }
+
+    static String sha256(Path path) throws Exception {
+        MessageDigest dig = MessageDigest.getInstance("SHA-256");
+        return HexFormat.of().formatHex(dig.digest(Files.readAllBytes(path)));
+    }
+
+    static List<List<String>> readManifest(Path path) throws Exception {
+        List<List<String>> result = new ArrayList<>();
+        Set<List<String>> unique = new LinkedHashSet<>();
+        for (String line : Files.readAllLines(path)) {
+            if (line.isBlank()) throw new IllegalArgumentException("Blank EQ word");
+            List<String> word = List.of(line.split("\\t"));
+            if (!unique.add(word)) {
+                throw new IllegalArgumentException("Duplicate EQ word");
+            }
+            result.add(word);
+        }
+        if (result.size() != 512) throw new IllegalArgumentException("Expected 512 EQ words");
+        return result;
     }
 
     static void runOne(String filename, Path dot, int index, Path matchedEvalDir) throws Exception {
@@ -205,17 +232,28 @@ public final class RealTTTBenchmark {
         TTTLearnerMoore<String, String> learner =
             new TTTLearnerMoore<>(alphabet, membership, AcexAnalyzers.BINARY_SEARCH_BWD);
 
-        Random random = new Random(20261115L + index);
+        Path eqPath = matchedEvalDir.resolve(filename + ".eq.words");
+        List<List<String>> eqWords = readManifest(eqPath);
+        for (List<String> word : eqWords) {
+            if (!symbols.containsAll(word)) throw new IllegalArgumentException("Invalid EQ symbol");
+        }
+        String eqSha = sha256(eqPath);
+        String evalSha = sha256(matchedEvalDir.resolve(filename + ".words"));
+        EqCounter eqCounter = new EqCounter();
         long cpuBefore = java.lang.management.ManagementFactory.getThreadMXBean()
                 .getCurrentThreadCpuTime();
         long wallBefore = System.nanoTime();
         learner.startLearning();
         int rounds = 0;
         int cexs = 0;
+        boolean suiteCompleted = false;
         while (rounds++ < 40) {
             Word<String> counterexample =
-                findRandomCounterexample(target, learner.getHypothesisModel(), symbols, random, meter);
-            if (counterexample == null) break;
+                findSharedCounterexample(target, learner.getHypothesisModel(), eqWords, meter, eqCounter);
+            if (counterexample == null) {
+                suiteCompleted = true;
+                break;
+            }
             cexs++;
             List<String> allOutputs = target.run(counterexample);
             // Moore output includes the initial state's output.
@@ -262,16 +300,23 @@ public final class RealTTTBenchmark {
 
         System.out.printf(
             "{\"fixture\":\"%s\",\"algorithm\":\"TTT-LearnLib-0.18.0\","
+            + "\"eq_manifest_sha256\":\"%s\",\"evaluation_manifest_sha256\":\"%s\","
+            + "\"eq_candidates_per_round\":512,\"eq_rounds\":%d,"
+            + "\"eq_candidates_executed\":%d,\"eq_counterexamples\":%d,"
+            + "\"completed_eq_suites\":%d,\"suite_completed\":%b,"
             + "\"true_states_posthoc\":%d,\"learned_states\":%d,"
             + "\"membership_queries\":%d,\"membership_symbols\":%d,"
             + "\"physical_resets\":%d,\"physical_symbols\":%d,"
             + "\"eq_resets\":%d,\"eq_symbols\":%d,\"cex_count\":%d,"
             + "\"heldout_total\":%d,\"heldout_errors\":%d,"
-            + "\"heldout_overlap_seen_during_training\":%d,\"heldout_unseen_scored\":%d,"
-            + "\"heldout_errors_unseen\":%d,"
+            + "\"heldout_overlap_seen_during_training\":%d,"
+            + "\"heldout_unseen_scored\":%d,\"heldout_errors_unseen\":%d,"
             + "\"cpu_ns\":%d,\"wall_ns\":%d,"
-            + "\"equivalence_certified\":false,\"directly_comparable_to_aalpy\":false}%n",
-            filename, target.outputs.size(), learner.getHypothesisModel().size(),
+            + "\"equivalence_certified\":false,\"directly_comparable_eq_protocol\":true}%n",
+            filename, eqSha, evalSha,
+            eqCounter.rounds, eqCounter.proposedWords, eqCounter.counterexamples,
+            eqCounter.completedSuites, suiteCompleted,
+            target.outputs.size(), learner.getHypothesisModel().size(),
             meter.mqCount, meter.mqSymbols, meter.resets, meter.symbols,
             meter.eqResets, meter.eqSymbols, cexs, evalCount, errors,
             seenOverlap, unseenScored, unseenErrors,
