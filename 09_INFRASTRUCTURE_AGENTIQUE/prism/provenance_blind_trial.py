@@ -9,6 +9,23 @@ import json
 import os
 import sys
 import urllib.request
+import urllib.parse
+
+
+class SafeLogRedirect(urllib.request.HTTPRedirectHandler):
+    """Never forward API bearer credentials to signed log storage URLs."""
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected is None:
+            return None
+        old_host = urllib.parse.urlsplit(req.full_url).hostname
+        new_host = urllib.parse.urlsplit(newurl).hostname
+        if old_host != new_host:
+            redirected.remove_header("Authorization")
+            redirected.remove_header("X-GitHub-Api-Version")
+            redirected.remove_header("Accept")
+        return redirected
+
 
 from provenance_log_evidence import extract
 
@@ -35,7 +52,7 @@ def fetch_log(url, token):
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
     })
-    with urllib.request.urlopen(request, timeout=20) as response:
+    with urllib.request.build_opener(SafeLogRedirect()).open(request, timeout=20) as response:
         return response.read().decode("utf-8", errors="replace")
 
 
