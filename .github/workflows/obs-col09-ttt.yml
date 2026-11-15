@@ -28,7 +28,7 @@ jobs:
       - name: Execute the actual TTT algorithm on third-party DOT fixtures
         run: |
           set -o pipefail
-          python 02_MATHEMATIQUES/pilotes/obs_col09/generate_matched_eval.py "$PWD/obs_col09_matched_eval"
+          python 02_MATHEMATIQUES/pilotes/obs_col09_common/generate_manifests.py "$PWD/obs_col09_matched_eval"
           mvn -B -ntp -e -f 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml \
             exec:java \
             "-Dexec.args=$PWD/02_MATHEMATIQUES/pilotes/obs_col09/external_fixtures $PWD/obs_col09_matched_eval" \
@@ -39,7 +39,9 @@ jobs:
           lines=[json.loads(s) for s in open('obs_col09_ttt.jsonl') if s.strip()]
           assert len(lines)==3, len(lines)
           assert all(x['algorithm']=='TTT-LearnLib-0.18.0' for x in lines)
-          assert all(x['equivalence_certified']==False and not x['directly_comparable_to_aalpy'] for x in lines)
+          assert all(x['equivalence_certified']==False and x['directly_comparable_eq_protocol'] for x in lines)
+          assert all(x['suite_completed'] and x['eq_candidates_per_round']==512 for x in lines)
+          assert all(len(x['eq_manifest_sha256'])==64 for x in lines)
           assert all(x['physical_symbols']<=50000 and x['physical_resets']<=10000 for x in lines)
           assert all(x['heldout_total']==256 for x in lines)
           assert all(x['heldout_unseen_scored'] + x['heldout_overlap_seen_during_training'] == 256 for x in lines)
