@@ -91,5 +91,40 @@ class TargetedPatchTests(unittest.TestCase):
         scores.assert_not_called()
         self.assertFalse(row["development_correct"])
 
+
+    def test_actual_llama_cli_fenced_reply_extracted_without_console(self):
+        transcript=(
+            "llama.cpp banner\nmodel: /model.gguf\n"
+            "> <|im_start|>system\nsource... (truncated)\n"
+            + chr(96)*3 + "python\n"
+            + "rows[j] & (1 << i) and rows[j] & (1 << i) == rows[j]\n"
+            + chr(96)*3 + "\n\n[ Prompt: 52 t/s | Generation: 17 t/s ]\n"
+            + "Exiting...\n"
+        )
+        expression=parse_model_patch(transcript, "not fully present")
+        self.assertEqual(expression,"rows[j] & (1 << i) and rows[j] & (1 << i) == rows[j]")
+        # Syntax acceptance != correct mathematical repair.
+        changed=apply_patch(expression)
+        self.assertIn("and",changed.splitlines()[10])
+
+    def test_actual_memory_reply_fenced_but_unsafe_expression_rejected(self):
+        transcript=(
+            "banner\n> source... (truncated)\n"+chr(96)*3+"python\n"
+            "if rows[j] & (1 << i) and rows[j] not in result[i]:\n"
+            +chr(96)*3+"\n[ Prompt: generated ]\n"
+        )
+        with self.assertRaisesRegex(ValueError,"unapproved AST node"):
+            parse_model_patch(transcript)
+
+    def test_ambiguous_two_fences_rejected(self):
+        block=chr(96)*3+"python\nresult[i] & (1 << j)\n"+chr(96)*3
+        with self.assertRaisesRegex(ValueError,"multiple"):
+            parse_model_patch(block+"\n"+block)
+
+    def test_never_parse_just_echoed_cli_source_as_new_patch(self):
+        raw="banner\n> def q_power(rows, steps):\n"+"  if rows[j] & (1 << i):\n"
+        with self.assertRaisesRegex(ValueError,"boundary"):
+            parse_model_patch(raw,"missing full prompt")
+
 if __name__=="__main__":
     unittest.main()
