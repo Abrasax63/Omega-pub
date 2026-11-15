@@ -118,6 +118,7 @@ public final class RealTTTBenchmark {
         long mqSymbols = 0;
         long eqResets = 0;
         long eqSymbols = 0;
+        final Set<List<String>> observedPrefixes = new LinkedHashSet<>();
         void check() {
             if (resets > 10000 || symbols > 50000) {
                 throw new IllegalStateException("Physical query budget exceeded");
@@ -141,6 +142,11 @@ public final class RealTTTBenchmark {
                 int prefix = query.getPrefix().length();
                 int suffix = query.getSuffix().length();
                 List<String> outputs = source.run(full);
+                List<String> prefixSeen = new ArrayList<>();
+                for (String input : full) {
+                    prefixSeen.add(input);
+                    meter.observedPrefixes.add(List.copyOf(prefixSeen));
+                }
                 Word<String> response = Word.fromList(
                     outputs.subList(prefix, prefix + suffix + 1));
                 meter.resets++;
@@ -171,6 +177,7 @@ public final class RealTTTBenchmark {
             }
             String action = alphabet.get(random.nextInt(alphabet.size()));
             word.add(action);
+            meter.observedPrefixes.add(List.copyOf(word));
             actualState = source.next.get(actualState).get(action);
             meter.symbols++;
             meter.eqSymbols++;
@@ -186,7 +193,7 @@ public final class RealTTTBenchmark {
         return null;  // bounded random-walk oracle, not a proof of equivalence
     }
 
-    static void runOne(String filename, Path dot, int index) throws Exception {
+    static void runOne(String filename, Path dot, int index, Path matchedEvalDir) throws Exception {
         Source target = Source.load(dot);
         List<String> symbols = new ArrayList<>(target.alphabet);
         Collections.sort(symbols);
@@ -223,20 +230,34 @@ public final class RealTTTBenchmark {
                 .getCurrentThreadCpuTime();
         long wallAfter = System.nanoTime();
 
-        Random evalRng = new Random(20261116L + index);
+        List<String> testLines = Files.readAllLines(matchedEvalDir.resolve(filename + ".words"));
+        Set<List<String>> uniqueTests = new LinkedHashSet<>();
         int evalCount = 0;
         int errors = 0;
-        for (int i = 0; i < 256; i++) {
-            int len = 12 + evalRng.nextInt(7);
-            List<String> sequence = new ArrayList<>();
-            for (int j = 0; j < len; j++) {
-                sequence.add(symbols.get(evalRng.nextInt(symbols.size())));
-            }
+        int unseenScored = 0;
+        int unseenErrors = 0;
+        int seenOverlap = 0;
+        for (String line : testLines) {
+            if (line.isBlank()) throw new IllegalArgumentException("Empty test word");
+            List<String> sequence = List.of(line.split("\\t"));
+            if (!uniqueTests.add(sequence)) throw new IllegalArgumentException("Repeated evaluation word");
+            if (!symbols.containsAll(sequence)) throw new IllegalArgumentException("Foreign evaluation symbol");
             Word<String> input = Word.fromList(sequence);
-            String expected = target.run(input).get(len);
+            String expected = target.run(input).get(sequence.size());
             String predicted = learner.getHypothesisModel().computeOutput(input).lastSymbol();
-            errors += !Objects.equals(expected, predicted) ? 1 : 0;
+            boolean error = !Objects.equals(expected, predicted);
+            errors += error ? 1 : 0;
+            boolean overlap = meter.observedPrefixes.contains(sequence);
+            if (overlap) {
+                seenOverlap++;
+            } else {
+                unseenScored++;
+                unseenErrors += error ? 1 : 0;
+            }
             evalCount++;
+        }
+        if (evalCount != 256 || unseenScored + seenOverlap != 256) {
+            throw new AssertionError("Invalid matched evaluation manifest");
         }
 
         System.out.printf(
@@ -246,23 +267,27 @@ public final class RealTTTBenchmark {
             + "\"physical_resets\":%d,\"physical_symbols\":%d,"
             + "\"eq_resets\":%d,\"eq_symbols\":%d,\"cex_count\":%d,"
             + "\"heldout_total\":%d,\"heldout_errors\":%d,"
+            + "\"heldout_overlap_seen_during_training\":%d,\"heldout_unseen_scored\":%d,"
+            + "\"heldout_errors_unseen\":%d,"
             + "\"cpu_ns\":%d,\"wall_ns\":%d,"
             + "\"equivalence_certified\":false,\"directly_comparable_to_aalpy\":false}%n",
             filename, target.outputs.size(), learner.getHypothesisModel().size(),
             meter.mqCount, meter.mqSymbols, meter.resets, meter.symbols,
             meter.eqResets, meter.eqSymbols, cexs, evalCount, errors,
+            seenOverlap, unseenScored, unseenErrors,
             Math.max(0L, cpuAfter - cpuBefore), wallAfter - wallBefore
         );
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("Pass path to external_fixtures directory");
+        if (args.length != 2) {
+            throw new IllegalArgumentException("Pass fixture directory and matched evaluation directory");
         }
         Path folder = Path.of(args[0]);
+        Path evalDir = Path.of(args[1]);
         String[] names = {"Angluin_Moore.dot", "coffee_moore.dot", "mooreModel.dot"};
         for (int i = 0; i < names.length; i++) {
-            runOne(names[i], folder.resolve(names[i]), i);
+            runOne(names[i], folder.resolve(names[i]), i, evalDir);
         }
     }
 }
