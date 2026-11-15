@@ -1,0 +1,34 @@
+name: OBS-COL-04 exact synthetic pilot
+on:
+  push:
+    branches:
+      - experiment/obs-col04-active-constraint-discovery-2026-11-15
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col04/**"
+      - "02_MATHEMATIQUES/pilotes/observabilite_collective/**"
+      - ".github/workflows/obs-col04-exact.yml"
+jobs:
+  exact-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Confirm source provenance and run 10 exact tests
+        run: |
+          python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col04 -p 'test_obs_col04.py' -v
+      - name: Execute real inherited P1 and PR23/PR40 with synthetic oracle
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col04/obs_col04.py > obs_col04_result.json
+          python -c "import json; d=json.load(open('obs_col04_result.json')); assert d['cases']==6; assert d['model_calls']==0; assert all(not r['false_robust_claim'] for r in d['results']); print('OBS-COL-04', d['status'], 'cases=', d['cases'])"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-col04-exact-result
+          path: obs_col04_result.json
+          if-no-files-found: error
