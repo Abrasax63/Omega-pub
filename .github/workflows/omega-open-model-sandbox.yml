@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: omega-open-model-sandbox-pilot
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   cpu-open-weight-inference-and-sandbox:
@@ -36,24 +36,39 @@ jobs:
         run: |
           docker pull python:3.12-slim
           docker image inspect python:3.12-slim --format '{{json .RepoDigests}}'
+      - name: Restore pinned llama.cpp build cache
+        uses: actions/cache@v4
+        id: llama-cache
+        with:
+          path: ${{ runner.temp }}/llama.cpp
+          key: omega-llama-cpu-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6-v1
       - name: Build pinned llama.cpp CPU inference engine
+        if: steps.llama-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
           set -euo pipefail
-          git clone --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$RUNNER_TEMP/llama.cpp"
+          git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$RUNNER_TEMP/llama.cpp"
           git -C "$RUNNER_TEMP/llama.cpp" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
           git -C "$RUNNER_TEMP/llama.cpp" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
           cmake -S "$RUNNER_TEMP/llama.cpp" -B "$RUNNER_TEMP/llama.cpp/build" -G Ninja \
             -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release
           cmake --build "$RUNNER_TEMP/llama.cpp/build" --target llama-cli -j 4
           "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" --help >/dev/null
+      - name: Restore pinned Qwen model weight cache
+        uses: actions/cache@v4
+        id: model-cache
+        with:
+          path: ${{ runner.temp }}/model.gguf
+          key: omega-qwen2p5-coder-1p5b-cc324af070c2ecbfd324a30884d2f951a7ff756aba85cb811a6ec436933bb046-v1
       - name: Download verified Qwen2.5 Coder 1.5B Q4_K_M weights
         shell: bash
         run: |
           set -euo pipefail
-          curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
-            "https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF/resolve/main/qwen2.5-coder-1.5b-instruct-q4_k_m.gguf" \
-            -o "$RUNNER_TEMP/model.gguf"
+          if [[ ! -f "$RUNNER_TEMP/model.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF/resolve/main/qwen2.5-coder-1.5b-instruct-q4_k_m.gguf" \
+              -o "$RUNNER_TEMP/model.gguf"
+          fi
           echo "cc324af070c2ecbfd324a30884d2f951a7ff756aba85cb811a6ec436933bb046  $RUNNER_TEMP/model.gguf" | sha256sum -c -
       - name: Generate real candidate source and test in no-network containers
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
