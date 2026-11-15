@@ -1,0 +1,57 @@
+name: Omega bounded algorithmic variant pilot
+
+on:
+  push:
+    branches:
+      - experiment/omega-algorithmic-variant-pilot-2026-11-15
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/auto_research/**'
+      - '.github/workflows/omega-algorithmic-pilot.yml'
+  pull_request:
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/auto_research/**'
+      - '.github/workflows/omega-algorithmic-pilot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-program-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout pilot with no retained credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax checks
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: python -m py_compile gate.py variant_factory.py reference.py runner.py test_gate.py test_variant_search.py
+      - name: Test mathematical equivalence and gate invariants
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: python -m unittest -v test_gate.py test_variant_search.py
+      - name: Execute generated algorithm variants and holdout gate
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: |
+          python runner.py --output pilot-result.json
+          python - <<'PY'
+          import json
+          x = json.load(open('pilot-result.json', encoding='utf-8'))
+          assert x['status'] == 'EXECUTED_SYNTHETIC_PILOT'
+          assert x['delta_exact_match'] is True
+          assert all(v['correct'] for v in x['training'].values())
+          assert x['gate']['holdout_cases'] == 3
+          assert x['gate']['provenance_status'] == 'UNVERIFIED_EXTERNAL_INPUTS'
+          print('Quality checks passed; speed and gate recommendation are descriptive, not forced.')
+          PY
+      - name: Archive non-certifying pilot evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-bounded-algorithmic-pilot
+          path: 09_INFRASTRUCTURE_AGENTIQUE/auto_research/pilot-result.json
+          retention-days: 30
