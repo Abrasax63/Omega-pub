@@ -2,6 +2,9 @@
 import copy
 from hashlib import sha256
 import itertools
+import subprocess
+import sys
+from pathlib import Path
 import unittest
 
 from gate import digest
@@ -19,6 +22,14 @@ class Opt02ProtocolTests(unittest.TestCase):
     def setUpClass(cls):
         cls.cases, cls.graph_info = build_holdout()
         cls.development = make_training()
+
+    def test_evaluator_imports_under_isolated_python_mode(self):
+        evaluator = Path(__file__).resolve().parent / "opt02_evaluator.py"
+        statement = ("import runpy; runpy.run_path("
+                     + repr(str(evaluator)) + ", run_name='import_check')")
+        process = subprocess.run([sys.executable, "-I", "-B", "-c", statement],
+                                 capture_output=True, text=True, timeout=15)
+        self.assertEqual(process.returncode, 0, process.stderr)
 
     def test_external_nx35_cohort_and_sizes(self):
         self.assertEqual(len(self.cases), 48)
