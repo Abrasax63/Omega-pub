@@ -34,21 +34,42 @@ def validate_manifest(manifest: dict) -> dict[str, dict]:
     require(isinstance(manifest.get("cost_unit"), str) and manifest["cost_unit"], "cost_unit is required")
     budget = manifest.get("max_cost_per_case")
     require(type(budget) is int and budget >= 0, "max_cost_per_case must be a nonnegative integer")
+    cost_policy = manifest.get("cost_policy", "no_increase")
+    require(cost_policy in ("no_increase", "exact_parity"), "invalid cost_policy")
+    total_budget = manifest.get("max_total_cost")
+    require(total_budget is None or (type(total_budget) is int and total_budget >= 0),
+            "max_total_cost must be a nonnegative integer")
     training = manifest.get("training_case_ids")
     require(isinstance(training, list) and all(isinstance(x, str) and x for x in training), "training_case_ids must be a list of identifiers")
     require(len(training) == len(set(training)), "duplicate training case IDs")
+    training_groups = manifest.get("training_group_ids")
+    require(isinstance(training_groups, list) and
+            all(isinstance(x, str) and x for x in training_groups) and
+            len(training_groups) == len(set(training_groups)),
+            "training_group_ids must be a unique list of group identifiers")
+    previous_groups = manifest.get("previous_holdout_group_ids", [])
+    require(isinstance(previous_groups, list) and
+            all(isinstance(x, str) and x for x in previous_groups) and
+            len(previous_groups) == len(set(previous_groups)),
+            "previous_holdout_group_ids invalid")
     holdout = manifest.get("holdout")
     require(isinstance(holdout, list) and bool(holdout), "holdout must be a nonempty list")
     ids: dict[str, dict] = {}
+    holdout_groups: set[str] = set()
     for row in holdout:
         require(isinstance(row, dict), "holdout row must be an object")
         case_id, domain, expected = row.get("case_id"), row.get("domain"), row.get("expected")
         require(isinstance(case_id, str) and case_id, "invalid holdout case_id")
         require(isinstance(domain, str) and domain, "invalid domain")
         require(isinstance(expected, str) and expected and expected != ABSTAIN, "expected must be known, not abstention")
+        group_id = row.get("group_id")
+        require(isinstance(group_id, str) and group_id, "holdout group_id required")
         require(case_id not in ids, f"duplicate holdout case_id: {case_id}")
+        holdout_groups.add(group_id)
         ids[case_id] = row
     require(not set(ids).intersection(training), "training and holdout overlap by case_id")
+    require(not holdout_groups.intersection(training_groups), "training and holdout overlap by group_id")
+    require(not holdout_groups.intersection(previous_groups), "previous holdout groups reused")
     domains = manifest.get("required_domains", [])
     require(isinstance(domains, list) and len(domains) == len(set(domains)) and all(isinstance(x, str) and x for x in domains), "required_domains invalid")
     require(set(domains) <= {row["domain"] for row in holdout}, "required domain absent in holdout")
@@ -110,15 +131,24 @@ def evaluate(manifest: dict, observations: dict, expected_sha256: str) -> dict:
             regressions.append(case_id)
         per_case.append({"case_id": case_id, "domain": gold["domain"], "baseline_correct": base == gold["expected"], "candidate_correct": new == gold["expected"]})
     b, c = metrics["baseline"], metrics["candidate"]
+    cost_policy = manifest.get("cost_policy", "no_increase")
+    cost_fair = (c["cost"] <= b["cost"]) if cost_policy == "no_increase" else (c["cost"] == b["cost"])
+    total_budget = manifest.get("max_total_cost")
+    cap_ok = total_budget is None or (c["cost"] <= total_budget and b["cost"] <= total_budget)
     valid_gain = (c["correct"] > b["correct"] or (c["correct"] == b["correct"] and c["cost"] < b["cost"]))
     domain_regressions = [domain for domain in domain_names if per_domain[domain]["candidate"]["correct"] < per_domain[domain]["baseline"]["correct"]]
-    recommend = bool(valid_gain and not regressions and not domain_regressions and c["false"] == 0)
+    recommend = bool(valid_gain and cost_fair and cap_ok and not regressions and not domain_regressions and c["false"] == 0)
     return {
         "experiment_id": manifest["experiment_id"],
         "manifest_sha256": expected_sha256,
         "observations_sha256": digest(observations),
         "holdout_cases": len(ids),
         "cost_unit": manifest["cost_unit"],
+        "cost_policy": cost_policy,
+        "cost_fair": cost_fair,
+        "total_budget_satisfied": cap_ok,
+        "max_total_cost": total_budget,
+        "holdout_group_count": len({row["group_id"] for row in ids.values()}),
         "metrics": metrics,
         "per_domain": per_domain,
         "lost_correct_case_ids": regressions,
@@ -128,7 +158,8 @@ def evaluate(manifest: dict, observations: dict, expected_sha256: str) -> dict:
         "provenance_status": "UNVERIFIED_EXTERNAL_INPUTS",
         "limitations": [
             "This program checks declared observations, not execution logs or source commit authenticity.",
-            "Case-ID separation cannot detect equivalent examples under different IDs.",
+            "Group-ID separation relies on truthful grouping and cannot detect undisclosed mirrors.",
+            "Repeated holdout evaluation can overfit even when group IDs are disjoint.",
             "Preregistering a SHA-256 is only meaningful if it was fixed independently before candidate evaluation.",
             "No code is executed; a positive verdict is not a scientific certificate or authorization to merge.",
         ],
