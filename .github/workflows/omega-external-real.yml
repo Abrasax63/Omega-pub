@@ -1,0 +1,204 @@
+name: Omega external historical BugsInPy reproductions
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-multifault-unknown-location-2026-11-15
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/external_real/**'
+      - '.github/workflows/omega-external-real.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-external-real-pr
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify pinned manifest and generic AST candidate generator
+        run: |
+          set -euo pipefail
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/external_real/external_real.py
+          python -m unittest discover -v -s 09_INFRASTRUCTURE_AGENTIQUE/external_real -p 'test_external*.py'
+
+  historical-reproduction:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download SIX historical upstream source files by exact SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          D="09_INFRASTRUCTURE_AGENTIQUE/external_real/upstream"
+          mkdir -p "$D/E1" "$D/E2" "$D/E3"
+          download_and_verify() {
+            url="$1"; target="$2"; sha="$3"
+            curl --fail --location --silent --show-error --retry 3 --connect-timeout 30 --max-time 120 "$url" -o "$target"
+            actual="$(git hash-object "$target")"
+            if [[ "$actual" != "$sha" ]]; then
+              echo "UPSTREAM GIT BLOB INTEGRITY ERROR: $target expected $sha got $actual"
+              exit 1
+            fi
+            echo "PINNED ORIGINAL BLOB VERIFIED: $target $sha"
+          }
+          download_and_verify "https://raw.githubusercontent.com/cool-RR/PySnooper/6e3d797be3fa0a746fb5b1b7c7fea78eb926c208/pysnooper/pysnooper.py" "$D/E1/buggy.py" "8d0c6a724024b07910ebc2492dc4e53234937d83"
+          download_and_verify "https://raw.githubusercontent.com/cool-RR/PySnooper/15555ed760000b049aff8fecc79d29339c1224c3/pysnooper/pysnooper.py" "$D/E1/fixed.py" "19139d3a0f6ecfe558ce78ffeffa123ee3caae93"
+          download_and_verify "https://raw.githubusercontent.com/tqdm/tqdm/8cc777fe8401a05d07f2c97e65d15e4460feab88/tqdm/contrib/__init__.py" "$D/E2/buggy.py" "1dddacf45ff6abda47d63ab753b73c4529e7a0ba"
+          download_and_verify "https://raw.githubusercontent.com/tqdm/tqdm/c0dcf39b046d1b4ff6de14ac99ad9a1b10487512/tqdm/contrib/__init__.py" "$D/E2/fixed.py" "935ab63be7d8c18801386e2aa81027a7b535da4e"
+          download_and_verify "https://raw.githubusercontent.com/cookiecutter/cookiecutter/c15633745df6abdb24e02746b82aadb20b8cdf8c/cookiecutter/generate.py" "$D/E3/buggy.py" "37365a496f5b03c2ef5c623689db87607e64b377"
+          download_and_verify "https://raw.githubusercontent.com/cookiecutter/cookiecutter/7f6804c4953a18386809f11faf4d86898570debc/cookiecutter/generate.py" "$D/E3/fixed.py" "c526b97db5f01f659bd31626fc23abfd007bcf0c"
+      - name: Pull isolated Python runtime
+        run: docker pull python:3.11-slim
+      - name: Run original historical routines in no-network read-only Docker
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p external-real-artifacts
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=96m \
+            -v "$PWD:/repo:ro" \
+            -w /repo/09_INFRASTRUCTURE_AGENTIQUE/external_real \
+            python:3.11-slim \
+            sh -c 'python external_real.py --output /tmp/historical-repro.json >&2 && cat /tmp/historical-repro.json' \
+            > external-real-artifacts/historical-repro.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("external-real-artifacts/historical-repro.json")
+          result=json.loads(p.read_text(encoding="utf-8"))
+          assert len(result["cases"]) == 3
+          for case in result["cases"]:
+              assert case["status"] == "REPRODUCED_EXTERNAL_HISTORICAL_BUG", case
+              assert not case["buggy_public"]["passed"], case
+              assert case["fixed_public"]["passed"], case
+              assert case["fixed_reserved"]["passed"], case
+              assert case["candidate_count"] >= 1, case
+              print("EXTERNAL CASE VERIFIED",case["case"],case["repo"],
+                    "buggy:",case["buggy_public"]["failure"],
+                    "fixed: PASS",
+                    "candidate pool:",case["candidate_count"],
+                    "public survivors:",case["shortlist_ids"])
+          assert not result["full_upstream_test_suite_executed"]
+          assert not result["model_called"]
+          print("SOURCE-BACKED SEMANTIC REPRODUCTION, NOT FULL UPSTREAM TESTS.")
+          PY
+      - name: Restore pinned llama.cpp build cache
+        uses: actions/cache@v4
+        id: llama-cache
+        with:
+          path: ${{ runner.temp }}/llama.cpp
+          key: omega-llama-cpu-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6-v1
+      - name: Build pinned llama.cpp CPU inference engine
+        if: steps.llama-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$RUNNER_TEMP/llama.cpp"
+          git -C "$RUNNER_TEMP/llama.cpp" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          git -C "$RUNNER_TEMP/llama.cpp" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          cmake -S "$RUNNER_TEMP/llama.cpp" -B "$RUNNER_TEMP/llama.cpp/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/llama.cpp/build" --target llama-cli -j 4
+          "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" --help >/dev/null
+      - name: Restore pinned Qwen model weight cache
+        uses: actions/cache@v4
+        id: model-cache
+        with:
+          path: ${{ runner.temp }}/model.gguf
+          key: omega-qwen2p5-coder-3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7-v1
+      - name: Download verified Qwen2.5 Coder 3B Q4_K_M weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f "$RUNNER_TEMP/model.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf" \
+              -o "$RUNNER_TEMP/model.gguf"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $RUNNER_TEMP/model.gguf" | sha256sum -c -
+      - name: Qwen chooses ONE genuinely ambiguous real-world patch (no external code executed here)
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/external_real
+        shell: bash
+        run: |
+          set -euo pipefail
+          python external_selector.py \
+            --mode select \
+            --manifest "$GITHUB_WORKSPACE/external-real-artifacts/historical-repro.json" \
+            --choices "$GITHUB_WORKSPACE/external-real-artifacts/choices.json" \
+            --output "$GITHUB_WORKSPACE/external-real-artifacts/choices.json" \
+            --llama-cli "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" \
+            --model-file "$RUNNER_TEMP/model.gguf"
+          python - <<'PY'
+          import json,os
+          p=os.environ['GITHUB_WORKSPACE']+'/external-real-artifacts/choices.json'
+          r=json.load(open(p,encoding='utf8'))
+          assert r['phase']=='CHOICES_COMMITTED_BEFORE_HOLDOUT'
+          assert r['model_calls']==1
+          assert r['inference']['called']
+          assert r['inference'].get('returncode') == 0
+          assert r['choices_sha256'] and not r['reserved_opened']
+          assert r['choices']['E1']['deterministic']=='P00'
+          assert r['choices']['E2']['qwen'] is None
+          assert r['choices']['E3']['qwen'] is None
+          print('MODEL RAW RESPONSE STATUS:',r['inference']['status'],
+                'chosen ID:',r['inference'].get('selected_id'),
+                'choices SHA:',r['choices_sha256'])
+          PY
+      - name: Evaluate frozen choices against reserved inputs in isolated Docker
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=96m \
+            -v "$PWD:/repo:ro" \
+            -w /repo/09_INFRASTRUCTURE_AGENTIQUE/external_real \
+            python:3.11-slim \
+            sh -c 'python external_selector.py --mode evaluate --manifest /repo/external-real-artifacts/historical-repro.json --choices /repo/external-real-artifacts/choices.json --output /tmp/reserved.json >&2 && cat /tmp/reserved.json' \
+            > external-real-artifacts/reserved.json
+          python - <<'PY'
+          import json
+          r=json.load(open('external-real-artifacts/reserved.json',encoding='utf8'))
+          assert r['phase']=='RESERVED_CHECKED_AFTER_CHOICE_FREEZE'
+          assert r['model_calls']==1
+          assert r['deterministic_successes']==3
+          assert len(r['cases'])==3
+          assert all(c['upstream_fixed_reserved_correct'] for c in r['cases'])
+          assert all(not r[x] for x in ('upstream_full_suite_run','independent_blind_evaluation','promoted','main_modified'))
+          for c in r['cases']:
+              print('EXTERNAL REAL:',c['case'],c['repo'],
+                    'deterministic:',c['arms']['deterministic']['correct'],
+                    'Qwen:',c['arms']['qwen']['correct'],
+                    'candidate audit:',c['all_survivor_reserve'])
+          print('CONCLUSION: historical semantic repair observed; no blind generalization claimed.')
+          PY
+      - name: Archive original/fixed evidence (including failures)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-external-real-historical-evidence
+          path: external-real-artifacts/*.json
+          if-no-files-found: warn
+          retention-days: 14
