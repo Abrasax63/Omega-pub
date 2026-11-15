@@ -85,7 +85,8 @@ def run_method(index, name, blob, algorithm, manifest_dir):
     wall_start = time.perf_counter()
     learned, info = learner(
         alphabet, physical, eq, automaton_type="moore",
-        max_learning_rounds=40, return_data=True, print_level=0,
+        max_learning_rounds=40, cache_and_non_det_check=False,
+        return_data=True, print_level=0,
     )
     cpu = time.process_time() - cpu_start
     wall = time.perf_counter() - wall_start
