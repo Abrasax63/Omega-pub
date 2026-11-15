@@ -96,6 +96,9 @@ jobs:
         run: |
           docker pull python:3.12-slim
           docker image inspect python:3.12-slim --format '{{json .RepoDigests}}'
+      - name: Reproduce isolated Python import preflight before opening graph cases
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: python -m unittest -v test_opt02.Opt02ProtocolTests.test_evaluator_imports_under_isolated_python_mode
       - name: First external-data evaluation of the recovered ORIGINAL program
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
         run: |
