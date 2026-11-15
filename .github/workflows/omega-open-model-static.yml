@@ -1,0 +1,30 @@
+name: Omega open-model safety and semantics unit tests (no inference)
+
+on:
+  push:
+    branches:
+      - experiment/omega-free-model-sandbox-pilot-2026-11-15
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/auto_research/**'
+      - '.github/workflows/omega-open-model-static.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  no-model-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Parse all components and execute deterministic tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: |
+          python -m py_compile gate.py model_proposal.py sandbox_runner.py model_pilot.py reference.py runner.py variant_factory.py
+          python -m unittest -v test_gate.py test_variant_search.py test_model_proposal.py
