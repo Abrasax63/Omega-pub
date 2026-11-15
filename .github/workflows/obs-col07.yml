@@ -1,0 +1,43 @@
+name: OBS-COL-07 active automaton synthesis audit
+on:
+  push:
+    branches:
+      - experiment/obs-col07-active-automaton-synthesis-2026-11-15
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col07/**"
+      - ".github/workflows/obs-col07.yml"
+  workflow_dispatch:
+jobs:
+  exact-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run ten finite learning and anti-leak tests
+        run: python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col07 -p 'test_obs_col07.py' -v
+      - name: Execute full model synthesis and check classical parity
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col07/obs_col07.py > obs_col07_result.json
+          python - <<'PY'
+          import json
+          z=json.load(open('obs_col07_result.json'))
+          assert z['model_calls']==0
+          assert [r['learned_states'] for r in z['worlds']]==[2,3,4,2,3,1]
+          assert all(r['holdout_total']==1792 for r in z['worlds'])
+          assert all(r['holdout_errors']==0 for r in z['worlds'][:5])
+          assert z['worlds'][-1]['holdout_errors']>0
+          assert all(r['same_model_as_classical'] and r['same_probe_order_as_classical'] for r in z['worlds'])
+          assert all(r['p1_calls']==r['query_count'] for r in z['worlds'])
+          print("OBS-COL-07:",[(r['world_posthoc_only'],r['learned_states'],r['holdout_errors']) for r in z['worlds']])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-col07-exact-evidence
+          path: obs_col07_result.json
+          if-no-files-found: error
