@@ -29,3 +29,16 @@ Any model failure is reported, never replaced with a fake template claim. Invali
 - The Docker image is logged with digest but is not yet pinned for future runs.
 - This is a two-attempt, single-task experiment. Broader transfer, adversarial safety, statistical significance and independent provenance still need external testing.
 - No merge, no automatic scientific status promotion, no rights to change main or other PRs.
+
+
+## Verified empirical results on 2026-11-15
+
+- First Qwen2.5-Coder-1.5B attempt: run 43692466252, Python unit tests passed and two true model responses were executed, but both were incorrect or crashed. NO_VALID_MODEL_CANDIDATE.
+- Second 1.5B attempt with revised task specification and public training feedback: run 43693100005, two model responses crashed (integer used as iterable), no holdout opened. NO_VALID_MODEL_CANDIDATE.
+- Qwen2.5-Coder-3B Q4_K_M: run 43693684837, downloaded weights SHA-256 724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7, two successful model calls. Both responses were BYTE-IDENTICAL code despite different runtimes. The generated algorithm is a standard linear Boolean matrix-power iteration; the generated source is not a new discovery.
+- The 3B model correctly computed Q^h and Delta_h on all three synthetic withheld cases. Its holdout cost was 820446 microseconds including container startup, versus 855601 for naive linear-scan and 791506 for strong classical square-scan. The gate returns REVIEW_REQUIRED relative to the naive baseline, but REJECTED against square-scan.
+- The two identical source code proposals had training costs of 7493942 and 876911 microseconds on the same public development families. This huge discrepancy illustrates why single-run container wall-time comparison is unfit for a fine-grained speed claim. It is NOT a measured eightfold algorithmic improvement.
+- The evaluator only produced a non-certifying in-run SHA commitment of the reserved manifest. No external replication, randomized crossed order, or independently established confidence interval was performed.
+- Subsequent changes add AST-semantic deduplication and a guard against evaluating identical code twice. These changes do not retroactively modify the original run. The expensive LLM workflow is now manual-only to avoid repeated downloads and non-independent reuse of held-out groups.
+
+**Scientific status: correct model-generated program on a tiny synthetic task, but no demonstrated superiority over classical exponentiation or specific cognitive self-improvement of Omega.**
