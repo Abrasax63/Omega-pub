@@ -37,6 +37,14 @@ class TestObsCol09(unittest.TestCase):
             self.assertTrue(all(12 <= len(word) <= 18 for word in words))
             self.assertEqual(words, evaluation_words(alphabet, i))
 
+    def test_matched_java_and_python_eval_input_manifests(self):
+        from generate_matched_eval import INPUTS, words
+        for index, (filename, alphabet) in enumerate(INPUTS):
+            model, _ = external_fixture(*FIXTURES[index])
+            self.assertEqual(filename, FIXTURES[index][0])
+            self.assertEqual(alphabet, tuple(sorted(model.get_input_alphabet(), key=str)))
+            self.assertEqual(words(alphabet, index), evaluation_words(alphabet, index))
+
     def test_physical_counter_and_true_p1_gate(self):
         name, sha = FIXTURES[0]
         model, _ = external_fixture(name, sha)
