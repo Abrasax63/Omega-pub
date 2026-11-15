@@ -1,0 +1,10 @@
+[
+  {
+    "id": "FZF-TRAIN",
+    "source": "https://github.com/junegunn/fzf/actions/runs/43003796079/job/130466140326",
+    "checkout": "314cbe1be73849921ce7beb614ce674fae1515b3",
+    "log": "2026-11-11T10:29:28.4969426Z GOARCH=amd64 go build -a -ldflags \"-s -w -X main.version=0.75.0 -X main.revision=314cbe1b\" -tags \"\" -trimpath -o target/fzf-linux_amd64",
+    "output": "target/fzf-linux_amd64",
+    "expected": "construction_signalée"
+  }
+]
