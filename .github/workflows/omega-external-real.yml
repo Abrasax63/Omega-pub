@@ -78,10 +78,10 @@ jobs:
             --pids-limit 64 --memory 512m --cpus 1 \
             --tmpfs /tmp:rw,nosuid,size=96m \
             -v "$PWD:/repo:ro" \
-            -v "$PWD/external-real-artifacts:/out:rw" \
             -w /repo/09_INFRASTRUCTURE_AGENTIQUE/external_real \
             python:3.11-slim \
-            python external_real.py --output /out/historical-repro.json
+            sh -c 'python external_real.py --output /tmp/historical-repro.json >&2 && cat /tmp/historical-repro.json' \
+            > external-real-artifacts/historical-repro.json
           python - <<'PY'
           import json
           from pathlib import Path
