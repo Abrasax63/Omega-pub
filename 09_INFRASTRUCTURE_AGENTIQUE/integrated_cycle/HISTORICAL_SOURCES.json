@@ -1,0 +1,14 @@
+{
+  "description": "Frozen public SHA-256 signatures of previously generated model candidate programs, for cross-run novelty gating. This list is not a substitute for an exhaustive external registry.",
+  "entries": [
+    {
+      "source_sha256": "121e09058b41984199ac870b6250882ffa4eddb5a4344b1fb1cd0d674296de5a",
+      "source": "Qwen2.5-Coder-3B, original generation on PR #85; subsequently frozen in PR #93",
+      "run_url": "https://github.com/Abrasax63/Omega-pub/actions/runs/43693684837",
+      "prior_experiment": "OMEGA-OPEN-MODEL-01",
+      "source_commit": "13856010877cdcc27c0a963d7b67ec8eaab78ba6"
+    }
+  ],
+  "scope": "Known prior samples only. Nonmatch does not prove global novelty or algorithmic originality.",
+  "last_frozen_before_this_guard": "2026-11-15"
+}

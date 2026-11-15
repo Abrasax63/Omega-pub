@@ -1,0 +1,26 @@
+{
+  "experiment_id": "OMEGA-CYCLE-01",
+  "mode": "template-integration",
+  "seed_development": [
+    1101,
+    1102,
+    1103
+  ],
+  "seed_reserved": [
+    202611151,
+    202611152,
+    202611153
+  ],
+  "rule": "Only one development selection, holdout read once by each arm. Genuine LLM generation is a separate Qwen mode.",
+  "strong_baseline_policy": "Choose one fixed classic from square-scan/square-lowbit using development-only CPU.",
+  "source_bases": {
+    "autoresearch": "1db9d396bcb76b5e2ed9e1fd9685630387a89ef9",
+    "RCE": "83d6d62e6bc090c04a379c678da000bf2c886c44"
+  },
+  "statements": [
+    "Synthetic seeds are not externally blind.",
+    "No candidate is novel if selected from fixed templates.",
+    "No identical source can be approved as an innovation.",
+    "Time comparisons are exploratory and noisy."
+  ]
+}
