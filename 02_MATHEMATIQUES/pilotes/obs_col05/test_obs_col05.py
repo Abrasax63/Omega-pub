@@ -39,7 +39,8 @@ class TestObsCol05(unittest.TestCase):
                 x = choose_probe(observations, remaining)
                 observations.append((x, o.observe("pulse", x)))
                 remaining.remove(x)
-            self.assertEqual(tuple(x for x, _ in observations), TRAIN)
+            self.assertEqual(tuple(x for x, _ in observations),
+                             tuple(sorted(TRAIN, key=lambda x: (x.bit_count(), x))))
         self.assertEqual(len(set(TRAIN)), 26)
 
     def test_affine_control(self):
