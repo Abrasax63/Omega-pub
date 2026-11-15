@@ -140,15 +140,16 @@ jobs:
           set -uo pipefail
           for id in B1 B2 B3; do
             case "$id" in
-              B1) image="python:3.8.1-slim";;
-              B2|B3) image="python:3.6.9-slim";;
+              B1) image="python:3.8.1-slim"; test_extra="python_toolbox";;
+              B2) image="python:3.6.9-slim"; test_extra="nose";;
+              B3) image="python:3.6.9-slim"; test_extra="pytest-cov<4";;
             esac
             dir="oracle-work/$id"
             cat > "$dir/Dockerfile.pilot" <<EOF
           FROM $image
           WORKDIR /src
           COPY . /src
-          RUN python -m pip install --disable-pip-version-check --no-cache-dir "pip<22" "setuptools<60" "wheel<1" && python -m pip install --disable-pip-version-check --no-cache-dir "pytest<7" -e /src
+          RUN python -m pip install --disable-pip-version-check --no-cache-dir "pip<22" "setuptools<60" "wheel<1" && python -m pip install --disable-pip-version-check --no-cache-dir "pytest<7" "$test_extra" -e /src
           ENV PYTHONDONTWRITEBYTECODE=1
           EOF
             docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=0 \
