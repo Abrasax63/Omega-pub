@@ -1,0 +1,7 @@
+# Gel définitif P5-INDUCE-01 avant consultation du holdout
+
+**2026-11-15**. Le constructeur déterministe est [`provenance_induce01.py`](provenance_induce01.py), écrit dans le commit `a8c2ab355c609a1c189a824a5487394dd14db767`. Les **17 tests adversariaux** ont été déposés au commit `d2fcbf28c09e4abae8e307cc7663da7fc1688fad`. Les seules données d'entraînement proviennent du [job fzf 130466140326](https://github.com/junegunn/fzf/actions/runs/43003796079/job/130466140326), enregistrées dans `P5_INDUCE01_TRAIN.json` au commit `3b6e3806745c84616ea67e50f728ad8746515a10`.
+
+La règle candidate que le constructeur est censé induire est : `tool=go`, `verb=build`, `flag=-o`, `verdict=construction_signalée`. **Aucune règle sur Go ne figure dans la fonction construct()** : elle est dérivée de la commande d'entraînement. Le comparateur classique utilise une règle `go build -o` écrite à la main, figée avant l'évaluation. Le verdict annoncé est uniquement la présence d'une ligne de commande de construction avec un chemin de sortie, dans un job dont le statut GitHub est `success`. Ni la validité des bytes ni l'unicité d'écriture ne sont démontrées.
+
+Évaluation verrouillée, aucun journal lu à ce stade : H1 `130915918123` (fzf), H2 `132516131842` (Caddy), H3 `132032174540` (Task), H4 `132602642451` (Hugo), H5 `132651135271` (ripgrep). Aucun remplacement autorisé, pas de changement de code après lecture. Le statut d'exécution des tests est à consigner séparément : la publication de tests n'est pas une exécution réussie.
