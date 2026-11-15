@@ -25,7 +25,7 @@ class FreezeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             one_line(src,2,"    return x")
         with self.assertRaises(SyntaxError):
-            one_line(src,1,"if 42:")
+            one_line(src,1,"def broken(:")
 
     def test_generic_encoding_patch(self):
         src="def f(p):\n    with open(p) as f:\n        return f.read()\n"
