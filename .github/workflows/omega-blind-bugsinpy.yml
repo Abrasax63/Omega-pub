@@ -136,6 +136,7 @@ jobs:
       - name: Build dependency images with pinned legacy Python, no repository credentials
         shell: bash
         run: |
+          set +e
           set -uo pipefail
           for id in B1 B2 B3; do
             case "$id" in
@@ -151,7 +152,7 @@ jobs:
           ENV PYTHONDONTWRITEBYTECODE=1
           EOF
             docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=0 \
-              -f "$dir/Dockerfile.pilot" -t "omega-blind-$id:local" "$dir/buggy" \
+              -f "$dir/Dockerfile.pilot" -t "omega-blind-${id,,}:local" "$dir/buggy" \
               >"$dir/build.log" 2>&1
             rc=$?
             echo "$rc" >"$dir/build.exit"
@@ -162,6 +163,7 @@ jobs:
       - name: Execute genuine original regression tests in network-isolated Docker
         shell: bash
         run: |
+          set +e
           set -uo pipefail
           for id in B1 B2 B3; do
             dir="oracle-work/$id"
@@ -183,7 +185,7 @@ jobs:
                 -e PYTHONDONTWRITEBYTECODE=1 \
                 -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
                 -e PYTHONPATH=/tmp/work \
-                "omega-blind-$id:local" sh -c \
+                "omega-blind-${id,,}:local" sh -c \
                   "cp -a /origin/. /tmp/work && cd /tmp/work && python -m pytest -q -p no:cacheprovider --maxfail=1 $targets" \
                 >"$dir/$version.log" 2>&1
               rc=$?
