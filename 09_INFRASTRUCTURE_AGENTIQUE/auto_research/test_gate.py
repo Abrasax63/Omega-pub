@@ -10,12 +10,14 @@ def fixture():
         "cost_unit": "declared_tool_calls",
         "max_cost_per_case": 2,
         "training_case_ids": ["train-a", "train-b"],
+        "training_group_ids": ["train-group-a", "train-group-b"],
+        "cost_policy": "no_increase",
         "required_domains": ["provenance", "math"],
         "holdout": [
-            {"case_id": "p1", "domain": "provenance", "expected": "copie"},
-            {"case_id": "p2", "domain": "provenance", "expected": "recalcul"},
-            {"case_id": "m1", "domain": "math", "expected": "vrai"},
-            {"case_id": "m2", "domain": "math", "expected": "faux"},
+            {"case_id": "p1", "group_id": "prov-family", "domain": "provenance", "expected": "copie"},
+            {"case_id": "p2", "group_id": "prov-family", "domain": "provenance", "expected": "recalcul"},
+            {"case_id": "m1", "group_id": "math-family", "domain": "math", "expected": "vrai"},
+            {"case_id": "m2", "group_id": "math-family", "domain": "math", "expected": "faux"},
         ],
     }
     observations = {"experiment_id": "DEMO-SYNTHETIC-01", "arms": {
@@ -136,6 +138,81 @@ class GateTests(unittest.TestCase):
         o["arms"]["baseline"]["run_url"] = ""
         with self.assertRaisesRegex(ValueError, "required"):
             self.check(m, o)
+
+
+    def test_more_correct_but_more_total_cost_is_rejected(self):
+        m, o = fixture()
+        # Every case stays within the per-case budget, but aggregate cost rises 5 -> 8.
+        for row in o["arms"]["candidate"]["results"]:
+            row["cost"] = 2
+        result = self.check(m, o)
+        self.assertEqual(result["metrics"]["baseline"]["correct"], 2)
+        self.assertEqual(result["metrics"]["candidate"]["correct"], 4)
+        self.assertEqual(result["metrics"]["baseline"]["cost"], 5)
+        self.assertEqual(result["metrics"]["candidate"]["cost"], 8)
+        self.assertFalse(result["cost_fair"])
+        self.assertFalse(result["candidate_for_independent_review"])
+
+    def test_equal_total_cost_passes_cost_policy(self):
+        result = self.check()
+        self.assertTrue(result["cost_fair"])
+        self.assertTrue(result["candidate_for_independent_review"])
+
+    def test_exact_parity_rejects_cheaper_candidate(self):
+        m, o = fixture()
+        m["cost_policy"] = "exact_parity"
+        o["arms"]["candidate"]["results"][2]["cost"] = 1
+        result = self.check(m, o)
+        self.assertFalse(result["cost_fair"])
+        self.assertFalse(result["candidate_for_independent_review"])
+
+    def test_exact_parity_accepts_equal_cost(self):
+        m, o = fixture()
+        m["cost_policy"] = "exact_parity"
+        self.assertTrue(self.check(m, o)["candidate_for_independent_review"])
+
+    def test_total_budget_rejects_above_cap(self):
+        m, o = fixture()
+        m["max_total_cost"] = 4
+        result = self.check(m, o)
+        self.assertFalse(result["total_budget_satisfied"])
+        self.assertFalse(result["candidate_for_independent_review"])
+
+    def test_invalid_total_budget_type_rejected(self):
+        m, _ = fixture()
+        m["max_total_cost"] = True
+        with self.assertRaisesRegex(ValueError, "max_total_cost"):
+            validate_manifest(m)
+
+    def test_invalid_cost_policy_rejected(self):
+        m, _ = fixture()
+        m["cost_policy"] = "reward_tuning"
+        with self.assertRaisesRegex(ValueError, "cost_policy"):
+            validate_manifest(m)
+
+    def test_missing_holdout_group_rejected(self):
+        m, _ = fixture()
+        del m["holdout"][0]["group_id"]
+        with self.assertRaisesRegex(ValueError, "group_id required"):
+            validate_manifest(m)
+
+    def test_training_holdout_same_group_rejected(self):
+        m, _ = fixture()
+        m["training_group_ids"].append("prov-family")
+        with self.assertRaisesRegex(ValueError, "overlap by group_id"):
+            validate_manifest(m)
+
+    def test_previous_holdout_group_reuse_rejected_when_declared(self):
+        m, _ = fixture()
+        m["previous_holdout_group_ids"] = ["math-family"]
+        with self.assertRaisesRegex(ValueError, "previous holdout groups reused"):
+            validate_manifest(m)
+
+    def test_training_group_list_required(self):
+        m, _ = fixture()
+        del m["training_group_ids"]
+        with self.assertRaisesRegex(ValueError, "training_group_ids"):
+            validate_manifest(m)
 
     def test_full_result_deterministic(self):
         self.assertEqual(self.check(), self.check())
