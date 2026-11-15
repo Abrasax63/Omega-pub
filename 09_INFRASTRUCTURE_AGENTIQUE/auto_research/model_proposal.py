@@ -8,6 +8,7 @@ import re
 import subprocess
 
 ALLOWED_CALLS = {"range", "len", "enumerate", "zip", "list", "int", "sum", "min", "max", "bool", "abs", "reversed"}
+ALLOWED_METHODS = {"append", "bit_length"}
 BANNED_NODES = (ast.Import, ast.ImportFrom, ast.ClassDef, ast.AsyncFunctionDef,
                 ast.Await, ast.Global, ast.Nonlocal, ast.With, ast.AsyncWith,
                 ast.Try, ast.Raise, ast.Yield, ast.YieldFrom, ast.Delete,
@@ -52,14 +53,14 @@ def validate_source(source):
         if isinstance(node, ast.Name) and node.id.startswith("__"):
             raise ValueError("dunder access forbidden")
         if isinstance(node, ast.Attribute):
-            if node.attr != "bit_length" or not isinstance(node.value, ast.Name):
+            if node.attr not in ALLOWED_METHODS or not isinstance(node.value, ast.Name):
                 raise ValueError("attribute access forbidden")
         if isinstance(node, ast.Call):
             target = node.func
             if isinstance(target, ast.Name):
                 if target.id not in ALLOWED_CALLS:
                     raise ValueError("call forbidden: " + target.id)
-            elif not (isinstance(target, ast.Attribute) and target.attr == "bit_length"):
+            elif not (isinstance(target, ast.Attribute) and target.attr in ALLOWED_METHODS):
                 raise ValueError("call forbidden")
     return source.strip() + "\n"
 
