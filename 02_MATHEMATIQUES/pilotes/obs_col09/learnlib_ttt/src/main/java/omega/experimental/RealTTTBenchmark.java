@@ -1,6 +1,7 @@
 package omega.experimental;
 
 import de.learnlib.algorithm.ttt.moore.TTTLearnerMoore;
+import de.learnlib.acex.AcexAnalyzers;
 import de.learnlib.oracle.MembershipOracle;
 import de.learnlib.query.DefaultQuery;
 import de.learnlib.query.Query;
@@ -195,7 +196,7 @@ public final class RealTTTBenchmark {
 
         // This class comes from LearnLib, not from Omega.
         TTTLearnerMoore<String, String> learner =
-            new TTTLearnerMoore<>(alphabet, membership);
+            new TTTLearnerMoore<>(alphabet, membership, AcexAnalyzers.BINARY_SEARCH_BWD);
 
         Random random = new Random(20261115L + index);
         long cpuBefore = java.lang.management.ManagementFactory.getThreadMXBean()
