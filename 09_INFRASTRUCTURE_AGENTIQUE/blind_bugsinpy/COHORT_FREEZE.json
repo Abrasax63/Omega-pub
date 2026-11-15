@@ -1,0 +1,68 @@
+{
+  "experiment_id": "OMEGA-BUGSINPY-BLIND-01",
+  "frozen_on": "2026-11-15",
+  "selection_rule": "Precommitted IDs PySnooper-1, tqdm-2, cookiecutter-2; no fixed diff or corrected source fetched before candidate commitments; historical defect metadata only",
+  "upstream_dataset": "https://github.com/soarsmu/BugsInPy",
+  "cases": [
+    {
+      "id": "B1",
+      "project": "PySnooper",
+      "repo": "cool-RR/PySnooper",
+      "bug_id": "1",
+      "python": "3.8.1",
+      "buggy_sha": "e21a31162f4c54be693d8ca8260e42393b39abd3",
+      "fixed_sha": "56f22f8ffe1c6b2be4d2cf3ad1987fdb66113da2",
+      "test_file": "tests/test_chinese.py",
+      "command": "pytest -q -s tests/test_chinese.py::test_chinese",
+      "bug_info_url": "https://github.com/soarsmu/BugsInPy/blob/master/projects/PySnooper/bugs/1/bug.info",
+      "run_test_url": "https://github.com/soarsmu/BugsInPy/blob/master/projects/PySnooper/bugs/1/run_test.sh"
+    },
+    {
+      "id": "B2",
+      "project": "tqdm",
+      "repo": "tqdm/tqdm",
+      "bug_id": "2",
+      "python": "3.6.9",
+      "buggy_sha": "bef86db56654d271838b145ad77f7040a73a7b4d",
+      "fixed_sha": "127af5caf19e7d29c346f5ca8a9c7ef3004b664b",
+      "test_file": "tqdm/tests/tests_tqdm.py",
+      "command": "python3 -m pytest tqdm/tests/tests_tqdm.py::test_format_meter",
+      "bug_info_url": "https://github.com/soarsmu/BugsInPy/blob/master/projects/tqdm/bugs/2/bug.info",
+      "run_test_url": "https://github.com/soarsmu/BugsInPy/blob/master/projects/tqdm/bugs/2/run_test.sh"
+    },
+    {
+      "id": "B3",
+      "project": "cookiecutter",
+      "repo": "cookiecutter/cookiecutter",
+      "bug_id": "2",
+      "python": "3.6.9",
+      "buggy_sha": "d7e7b28811e474e14d1bed747115e47dcdd15ba3",
+      "fixed_sha": "90434ff4ea4477941444f1e83313beb414838535",
+      "test_file": "tests/test_hooks.py",
+      "command": "tox tests/test_hooks.py::TestFindHooks::test_find_hook; tox tests/test_hooks.py::TestExternalHooks::test_run_hook",
+      "bug_info_url": "https://github.com/soarsmu/BugsInPy/blob/master/projects/cookiecutter/bugs/2/bug.info",
+      "run_test_url": "https://github.com/soarsmu/BugsInPy/blob/master/projects/cookiecutter/bugs/2/run_test.sh"
+    }
+  ],
+  "constraints": {
+    "max_changed_lines": 1,
+    "max_candidates": 60,
+    "allow_patch_outside_function": false,
+    "model_can_see_fixed_diff": false,
+    "holdout_is_independent_third_party": false,
+    "required_buggy_fail_fixed_pass": true,
+    "required_real_tests": true,
+    "source_visibility": "git pinned public SHA is not cryptographic concealment"
+  },
+  "statuses": [
+    "PROPOSED",
+    "CODE_PRESENT",
+    "EXECUTED",
+    "VERIFIED",
+    "REPRODUCED_BUG",
+    "REPAIR_ACCEPTED",
+    "REPAIR_REJECTED",
+    "ENVIRONMENT_BLOCKED",
+    "INDETERMINATE"
+  ]
+}
