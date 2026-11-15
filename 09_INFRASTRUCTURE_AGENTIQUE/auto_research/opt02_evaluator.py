@@ -272,6 +272,9 @@ def run_host(champion_path, generation_json, output_path):
         os.chmod(stage,0o755)
         files={"opt02_evaluator.py":root/"opt02_evaluator.py",
                "variant_factory.py":root/"variant_factory.py",
+               "gate.py":root/"gate.py",
+               "reference.py":root/"reference.py",
+               "model_proposal.py":root/"model_proposal.py",
                "champion.py":champion_path}
         for dest,from_path in files.items():
             shutil.copyfile(from_path,stage/dest)
