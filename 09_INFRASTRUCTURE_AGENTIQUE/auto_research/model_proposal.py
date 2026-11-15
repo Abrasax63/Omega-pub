@@ -24,10 +24,16 @@ def q_power(rows, steps):
 The input rows is a list of non-negative Python int bitmasks representing
 a directed graph of N vertices. Return a list of N int bitmasks for all
 walks of EXACT length steps (Boolean matrix power). When steps=0 return
-identity. It must work for any N>=1 and all nonnegative steps, including
+identity [1<<i for i in range(N)], NOT the original rows.
+To compose two Boolean relations A and B: for each row i of A, start 0;
+for every set bit j in A[i], OR B[j] into the result row i.
+A correct power can iterate this composition from the identity, or
+use exponentiation by repeated squaring. It must work for any N>=1 and all nonnegative steps, including
 large horizons. Optimize for speed. You may use loops, lists, bit operations,
 integer.bit_length(), and Python builtins range, len, enumerate, min, max.
 No imports, no external calls, no helper functions, no global variables.
+Public examples: q_power([2,1],0) == [1,2]; q_power([2,1],1) == [2,1];
+q_power([2,1],2) == [1,2].
 Only emit one complete def q_power(rows, steps): function.
 <|im_end|>
 <|im_start|>assistant
@@ -85,10 +91,19 @@ def extract_candidate(raw):
     raise ValueError("model did not return a valid allowed q_power function")
 
 
-def generate_with_llama(llama_cli, model_file, variant, timeout=240):
+def generate_with_llama(llama_cli, model_file, variant, timeout=240, feedback=None):
     prompt = PROMPT
     if variant == 1:
         prompt = prompt.replace("Optimize for speed.", "Optimize for speed by reducing unnecessary matrix compositions.")
+    if feedback:
+        if len(feedback) > 1800:
+            feedback = feedback[:1800]
+        prompt = prompt.replace(
+            "Only emit one complete def q_power(rows, steps): function.",
+            "Only emit one complete def q_power(rows, steps): function.\n"
+            + "Previous attempt failed PUBLIC development tests, NOT the held-out set.\n"
+            + "Use this feedback to revise your source:\n" + feedback
+        )
     command = [str(llama_cli), "-m", str(model_file), "-p", prompt,
                "-n", "400", "-c", "2048", "-t", "4", "--temp", "0"]
     result = subprocess.run(command, text=True, capture_output=True, timeout=timeout)
