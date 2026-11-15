@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from model_proposal import extract_candidate, generate_with_llama, validate_source
+from model_proposal import extract_candidate, generate_with_llama, semantic_fingerprint, validate_source
 
 
 GOOD = """def q_power(rows, steps):
@@ -27,6 +27,14 @@ class ModelProposalTests(unittest.TestCase):
     def test_extracts_fenced_python(self):
         raw = "Example text\n" + chr(96) * 3 + "python\n" + GOOD + chr(96) * 3
         self.assertEqual(extract_candidate(raw), GOOD)
+
+    def test_semantic_fingerprint_ignores_whitespace_and_comments(self):
+        modified = GOOD.replace("    return result", "    # irrelevant comment\n\n    return result")
+        self.assertEqual(semantic_fingerprint(GOOD), semantic_fingerprint(modified))
+
+    def test_semantic_fingerprint_detects_operation_change(self):
+        modified = GOOD.replace("total |= rows[j]", "total ^= rows[j]")
+        self.assertNotEqual(semantic_fingerprint(GOOD), semantic_fingerprint(modified))
 
     def test_rejects_import(self):
         with self.assertRaisesRegex(ValueError, "exactly one function"):
