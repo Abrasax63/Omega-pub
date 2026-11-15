@@ -75,6 +75,7 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
         "requires_literature": mission_type == "documentary",
         "exploratory": mission_type in ("exploratory", "general"),
         "claims_to_test": True,
+        "requires_provenance": False,
     }
     flags = {key: _boolean(mission, key, default) for key, default in defaults.items()}
 
@@ -155,7 +156,15 @@ def plan_mission(mission: dict[str, Any]) -> dict[str, Any]:
                 raise MissionValidationError(f"'{field}' must be a list of non-empty strings")
             mission_context[field] = list(dict.fromkeys(item.strip() for item in value))
 
+    tools = ([{"name": "reconstruct_provenance",
+               "module": "provenance_reconstructor",
+               "activation_reason": "Mission explicitly requires provenance analysis.",
+               "execution_status": "not_executed",
+               "scientific_certification": False}]
+             if flags["requires_provenance"] else [])
+
     return {
+        "tools": tools,
         "planner": "omega-adaptive-prism",
         "planner_version": VERSION,
         "mission": mission_context,
