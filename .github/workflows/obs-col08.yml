@@ -28,14 +28,17 @@ jobs:
           import json
           z=json.load(open('obs_col08_result.json'))
           assert z["candidate_models"]==40 and z["case_count"]==9
-          assert z["model_calls"]==0 and z["p1_selects_actual_probe"]
+          assert z["model_calls"]==0 and z["omega_pipeline_selects_actual_probe"] and z["pr23_selects_probe"] and not z["p1_alone_selects_probe"]
           for target in z["results"]:
               a,b=target["arms"]["omega"],target["arms"]["exact_classical"]
               assert a["heldout_errors"]==b["heldout_errors"]
+              assert a["posthoc_status"]==b["posthoc_status"]
               assert a["symbols"]==b["symbols"]
               for arm in target["arms"].values():
                   assert arm["queries"]<=6 and arm["symbols"]<=18
                   assert arm["heldout_total"]==1792 and not arm["scientific_certificate"]
+          assert all(t["arms"]["omega"]["posthoc_status"]=="UNIQUE_IN_CATALOG_NOT_CERTIFIED" for t in z["results"][:-1])
+          assert all(t["arms"][a]["posthoc_status"]=="OUT_OF_HORIZON_WARNING" for t in z["results"][-1:] for a in ("omega","exact_classical","greedy","lexical"))
           for name in ("omega","exact_classical","greedy","lexical"):
               print(name,
                   "holdout_errors", sum(t["arms"][name]["heldout_errors"] for t in z["results"]),
