@@ -1,0 +1,54 @@
+name: OBS-COL-09 external published automata baselines
+on:
+  push:
+    branches:
+      - experiment/obs-col09-external-aalpy-benchmark-2026-11-15
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col09/**"
+      - ".github/workflows/obs-col09-external.yml"
+  workflow_dispatch:
+jobs:
+  aalpy-external:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install real third-party AALpy 2.0.0
+        run: python -m pip install --disable-pip-version-check aalpy==2.0.0
+      - name: Run six reproducibility and real P1 integration tests
+        run: python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col09 -p 'test_obs_col09.py' -v
+      - name: Run full benchmark on three published external automata
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col09/benchmark.py > obs_col09_result.json
+          python - <<'PY'
+          import json
+          x=json.load(open('obs_col09_result.json'))
+          assert x["aalpy_version"] == "2.0.0"
+          assert len(x["results"]) == 12
+          assert x["model_calls"] == 0
+          assert x["ttt_status"] == "NOT_EXECUTED_IN_THIS_PYTHON_STAGE"
+          for row in x["results"]:
+              assert row["physical_symbols"] <= 50000 and row["physical_resets"] <= 10000
+              assert row["heldout_unseen_scored"] + row["heldout_overlap_seen_during_training"] == 256
+              assert row["status"] == "COMPLETED"
+              assert row["omega_superiority_demonstrated"] is False
+          for row in x["results"]:
+              print(row["fixture"]["filename"], row["algorithm"],
+                    "states", row["learned_states"],
+                    "physical_resets", row["physical_resets"],
+                    "symbols", row["physical_symbols"],
+                    "cpu_s", row["cpu_seconds"],
+                    "unseen", row["heldout_unseen_scored"],
+                    "errors", row["heldout_errors_unseen"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-col09-aalpy-external-benchmark-json
+          path: obs_col09_result.json
+          if-no-files-found: error
