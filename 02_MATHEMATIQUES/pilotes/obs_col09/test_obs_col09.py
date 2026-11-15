@@ -42,8 +42,10 @@ class TestObsCol09(unittest.TestCase):
         for index, (filename, alphabet) in enumerate(INPUTS):
             model, _ = external_fixture(*FIXTURES[index])
             self.assertEqual(filename, FIXTURES[index][0])
-            self.assertEqual(alphabet, tuple(sorted(model.get_input_alphabet(), key=str)))
-            self.assertEqual(words(alphabet, index), evaluation_words(alphabet, index))
+            actual_alphabet = tuple(sorted(model.get_input_alphabet(), key=str))
+            self.assertEqual(alphabet, tuple(map(str, actual_alphabet)))
+            self.assertEqual(words(alphabet, index),
+                             [tuple(map(str, w)) for w in evaluation_words(actual_alphabet, index)])
 
     def test_physical_counter_and_true_p1_gate(self):
         name, sha = FIXTURES[0]
