@@ -71,6 +71,13 @@ def validate_source(source):
     return source.strip() + "\n"
 
 
+def semantic_fingerprint(source):
+    """Ignore whitespace/comments; identical ASTs are not new experiments."""
+    validate_source(source)
+    normalized = ast.dump(ast.parse(source), include_attributes=False)
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
 def extract_candidate(raw):
     """Prefer last complete function; the CLI may echo the prompt."""
     cleaned = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", raw)
@@ -118,6 +125,7 @@ def generate_with_llama(llama_cli, model_file, variant, timeout=240, feedback=No
     try:
         code = extract_candidate(raw)
         output["source_sha256"] = hashlib.sha256(code.encode()).hexdigest()
+        output["semantic_sha256"] = semantic_fingerprint(code)
         output["source"] = code
         return code, output
     except ValueError as exc:
