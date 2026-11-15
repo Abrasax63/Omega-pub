@@ -15,6 +15,11 @@ import statistics
 import subprocess
 import tempfile
 import time
+import sys
+
+# Python -I excludes the script directory from sys.path. Reintroduce ONLY
+# this explicitly mounted, trusted and read-only evaluation directory.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from gate import digest, evaluate
 from model_proposal import validate_source
