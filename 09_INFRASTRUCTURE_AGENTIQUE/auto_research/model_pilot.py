@@ -81,7 +81,7 @@ def evaluate_against(baseline_name, baseline_rows, winner_rows, manifest, candid
     return evaluate(manifest, observations, digest(manifest))
 
 
-def run(llama_cli, model_file):
+def run(llama_cli, model_file, model_label):
     if not docker_available():
         raise RuntimeError("Docker is required; no unisolated fallback")
     candidates = generate()
@@ -143,7 +143,7 @@ def run(llama_cli, model_file):
     # closed: do not substitute a hand-coded algorithm and label it model-created.
     result = {
         "status": "NO_VALID_MODEL_CANDIDATE",
-        "model": "Qwen2.5-Coder-1.5B-Instruct-GGUF Q4_K_M",
+        "model": model_label,
         "model_file_sha256": hashlib.sha256(Path(model_file).read_bytes()).hexdigest(),
         "sandbox_image": IMAGE,
         "manifest_sha256": initial_commitment,
@@ -195,8 +195,9 @@ def main():
     parser.add_argument("--llama-cli", required=True)
     parser.add_argument("--model-file", required=True)
     parser.add_argument("--output", type=Path, default=Path("model-result.json"))
+    parser.add_argument("--model-label", required=True)
     args = parser.parse_args()
-    report = run(args.llama_cli, args.model_file)
+    report = run(args.llama_cli, args.model_file, args.model_label)
     args.output.write_text(json.dumps(report, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
                            encoding="utf-8")
     print(json.dumps({k: v for k, v in report.items() if k not in ("attempts", "withheld_manifest_after_evaluation")},
