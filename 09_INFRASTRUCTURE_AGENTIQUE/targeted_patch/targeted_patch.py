@@ -116,17 +116,35 @@ NODES=(ast.Expression,ast.BinOp,ast.Name,ast.Load,ast.Subscript,
        ast.UnaryOp,ast.Not,ast.Invert)
 
 def parse_model_patch(raw,prompt_text=""):
-    if prompt_text and prompt_text in raw:
+    """Extract exactly one emitted expression, never the echoed CLI prompt.
+
+    llama-cli 5a4afd8 can print an interactive banner, a truncated prompt
+    preview, a fenced reply, and inference statistics in stdout. These are
+    NOT a multi-line candidate. Parsing is isolated from semantic checking.
+    """
+    if not isinstance(raw,str) or not raw.strip():
+        raise ValueError("empty model response")
+    # A fenced response does not occur in our prompt or source. If present,
+    # it is the safest recognized boundary for this specific CLI protocol.
+    fenced=re.findall(r"(?ms)^```(?:python)?[ \t]*\r?\n(.*?)\r?\n```[ \t]*$",raw)
+    if fenced:
+        if len(fenced)!=1:
+            raise ValueError("ambiguous multiple generated blocks")
+        fragment=fenced[0]
+    elif prompt_text and prompt_text in raw:
         fragment=raw.rsplit(prompt_text,1)[1]
     elif MARK in raw:
         fragment=raw.rsplit(MARK,1)[1]
+    elif "... (truncated)\n" in raw and "\n[ Prompt:" in raw:
+        fragment=raw.rsplit("... (truncated)\n",1)[1].split("\n[ Prompt:",1)[0]
     else:
-        fragment=raw
+        raise ValueError("no unambiguous output boundary in CLI transcript")
     fragment=re.sub(r"\x1b\[[0-9;]*[A-Za-z]","",fragment)
     fragment=fragment.split("<|im_end|>",1)[0]
+    fragment=fragment.split("\n[ Prompt:",1)[0]
     lines=[line.strip() for line in fragment.splitlines() if line.strip()]
     if len(lines)!=1:
-        raise ValueError("expected exactly one nonempty expression line")
+        raise ValueError("expected exactly one generated expression line")
     expression=lines[0]
     if expression.startswith("if ") and expression.endswith(":"):
         expression=expression[3:-1].strip()
@@ -209,7 +227,7 @@ def run(cli,gguf,root=ROOT):
             seeds.append(x)
     reserved=[graph_case(i) for i in seeds]
     manifest=_manifest(reserved)
-    manifest["experiment_id"]="OMEGA-TARGETED-PATCH-01"
+    manifest["experiment_id"]="OMEGA-TARGETED-PATCH-02"
     manifest_sha=digest(manifest)
     print("FROZEN_BEFORE_MODEL_CALL="+manifest_sha,flush=True)
     print("HISTORICAL_BUG_SHA256="+FROZEN_ORIGINAL_SHA,flush=True)
@@ -268,7 +286,7 @@ def run(cli,gguf,root=ROOT):
     if not provenance["valid"]:
         raise RuntimeError("P3 provenance chain invalid")
     report={
-        "experiment_id":"OMEGA-TARGETED-PATCH-01",
+        "experiment_id":"OMEGA-TARGETED-PATCH-02",
         "scientific_status":"EXPERIMENTAL_NOT_CERTIFIED",
         "model_sha256":hashlib.sha256(gguf.read_bytes()).hexdigest(),
         "model_calls":len(results),
