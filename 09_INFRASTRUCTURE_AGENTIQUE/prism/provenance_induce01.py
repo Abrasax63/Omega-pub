@@ -37,6 +37,9 @@ def parse_line(line: str) -> dict | None:
     if any(mark in clean for mark in ("&&", "||", ";", "|", " > ", " < ")):
         return None
     tool, verb = tokens[:2]
+    # Console reporters and text-only commands are never artifact producers.
+    if tool in {"echo", "printf", "cat", "grep", "sed", "awk"}:
+        return None
     if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{1,30}", tool):
         return None
     if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{1,30}", verb):
