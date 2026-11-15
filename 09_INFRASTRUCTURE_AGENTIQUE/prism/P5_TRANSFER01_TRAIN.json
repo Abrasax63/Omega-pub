@@ -1,0 +1,14 @@
+[
+  {
+    "complete": true,
+    "output": "result.json",
+    "writers": [
+      {
+        "command": "cp original.json result.json",
+        "exit_code": 0,
+        "output": "result.json"
+      }
+    ],
+    "expected": "copie"
+  }
+]
