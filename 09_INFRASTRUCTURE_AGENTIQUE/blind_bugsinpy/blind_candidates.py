@@ -96,11 +96,11 @@ def candidate_rules(source):
                                if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef))
                                and n.lineno<=node.lineno<=n.end_lineno]
                     if enclosing:
-                        f=min(enclosing,key=lambda n:n.end_lineno-n.lineno)
-                        for arg in f.args.args:
-                            if arg.arg==wrong:
+                        names=sorted({arg.arg for f in enclosing for arg in f.args.args})
+                        for arg_name in names:
+                            if arg_name==wrong:
                                 continue
-                            edit=re.sub(r"\b"+re.escape(wrong)+r"\b",arg.arg,original,count=1)
+                            edit=re.sub(r"\b"+re.escape(wrong)+r"\b",arg_name,original,count=1)
                             add(node,edit,"unbound-open-path")
         if isinstance(node,ast.Return) and isinstance(node.value,ast.Call):
             outer=node.value
