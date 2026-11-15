@@ -3,7 +3,7 @@ import copy
 import unittest
 from unittest.mock import patch
 
-from integrated_cycle import ROOT, integrated_cycle, template_trial
+from integrated_cycle import ROOT, integrated_cycle, template_trial, model_trial, known_prior_sources
 from event_store import verify_events, EventLedgerError
 
 
@@ -45,6 +45,36 @@ class IntegratedCycleTests(unittest.TestCase):
     def test_real_model_requires_model_and_cli(self):
         with self.assertRaisesRegex(ValueError, "requires both"):
             integrated_cycle("model")
+
+    def test_cross_run_reuse_is_rejected_even_if_fast(self):
+        known_sha = known_prior_sources()[0]["source_sha256"]
+        fake = {
+            "status": "MODEL_CANDIDATE_EVALUATED",
+            "attempts": [{"model_call_returncode": 0}],
+            "winner_sha256": known_sha,
+            "strong_baseline_passed": True,
+            "candidate_equals_classical_source": False,
+        }
+        with patch("integrated_cycle.run_open_model", return_value=fake):
+            verdict = model_trial("FAKE_TEST_ONLY", "FAKE_TEST_ONLY", "unit-test")
+        self.assertEqual(verdict["decision"], "REJECTED")
+        self.assertTrue(verdict["known_historical_duplicate"])
+        self.assertIn("KNOWN_HISTORICAL_SOURCE_REUSED", verdict["rejection_reasons"])
+        self.assertFalse(verdict["promotion_to_core"])
+
+    def test_unknown_source_does_not_certify_novelty(self):
+        fake = {
+            "status": "MODEL_CANDIDATE_EVALUATED",
+            "attempts": [{"model_call_returncode": 0}],
+            "winner_sha256": "f" * 64,
+            "strong_baseline_passed": True,
+            "candidate_equals_classical_source": False,
+        }
+        with patch("integrated_cycle.run_open_model", return_value=fake):
+            verdict = model_trial("FAKE_TEST_ONLY", "FAKE_TEST_ONLY", "unit-test")
+        self.assertEqual(verdict["decision"], "REVIEW_REQUIRED")
+        self.assertEqual(verdict["source_novelty"], "UNVERIFIED_GLOBAL_NOVELTY")
+        self.assertFalse(verdict["gain_of_autonomous_intelligence_demonstrated"])
 
     def test_training_holdout_overlap_is_fatal(self):
         bad = {"seed_development": [1101], "seed_reserved": [1101]}
