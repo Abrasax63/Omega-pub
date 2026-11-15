@@ -1,0 +1,113 @@
+name: Omega external historical BugsInPy reproductions
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-multifault-unknown-location-2026-11-15
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/external_real/**'
+      - '.github/workflows/omega-external-real.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-external-real-pr
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify pinned manifest and generic AST candidate generator
+        run: |
+          set -euo pipefail
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/external_real/external_real.py
+          python -m unittest discover -v -s 09_INFRASTRUCTURE_AGENTIQUE/external_real -p 'test_external_real.py'
+
+  historical-reproduction:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download SIX historical upstream source files by exact SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          D="09_INFRASTRUCTURE_AGENTIQUE/external_real/upstream"
+          mkdir -p "$D/E1" "$D/E2" "$D/E3"
+          download_and_verify() {
+            url="$1"; target="$2"; sha="$3"
+            curl --fail --location --silent --show-error --retry 3 --connect-timeout 30 --max-time 120 "$url" -o "$target"
+            actual="$(git hash-object "$target")"
+            if [[ "$actual" != "$sha" ]]; then
+              echo "UPSTREAM GIT BLOB INTEGRITY ERROR: $target expected $sha got $actual"
+              exit 1
+            fi
+            echo "PINNED ORIGINAL BLOB VERIFIED: $target $sha"
+          }
+          download_and_verify "https://raw.githubusercontent.com/cool-RR/PySnooper/6e3d797be3fa0a746fb5b1b7c7fea78eb926c208/pysnooper/pysnooper.py" "$D/E1/buggy.py" "8d0c6a724024b07910ebc2492dc4e53234937d83"
+          download_and_verify "https://raw.githubusercontent.com/cool-RR/PySnooper/15555ed760000b049aff8fecc79d29339c1224c3/pysnooper/pysnooper.py" "$D/E1/fixed.py" "19139d3a0f6ecfe558ce78ffeffa123ee3caae93"
+          download_and_verify "https://raw.githubusercontent.com/tqdm/tqdm/8cc777fe8401a05d07f2c97e65d15e4460feab88/tqdm/contrib/__init__.py" "$D/E2/buggy.py" "1dddacf45ff6abda47d63ab753b73c4529e7a0ba"
+          download_and_verify "https://raw.githubusercontent.com/tqdm/tqdm/c0dcf39b046d1b4ff6de14ac99ad9a1b10487512/tqdm/contrib/__init__.py" "$D/E2/fixed.py" "935ab63be7d8c18801386e2aa81027a7b535da4e"
+          download_and_verify "https://raw.githubusercontent.com/cookiecutter/cookiecutter/c15633745df6abdb24e02746b82aadb20b8cdf8c/cookiecutter/generate.py" "$D/E3/buggy.py" "37365a496f5b03c2ef5c623689db87607e64b377"
+          download_and_verify "https://raw.githubusercontent.com/cookiecutter/cookiecutter/7f6804c4953a18386809f11faf4d86898570debc/cookiecutter/generate.py" "$D/E3/fixed.py" "c526b97db5f01f659bd31626fc23abfd007bcf0c"
+      - name: Pull isolated Python runtime
+        run: docker pull python:3.11-slim
+      - name: Run original historical routines in no-network read-only Docker
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p external-real-artifacts
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=96m \
+            -v "$PWD:/repo:ro" \
+            -v "$PWD/external-real-artifacts:/out:rw" \
+            -w /repo/09_INFRASTRUCTURE_AGENTIQUE/external_real \
+            python:3.11-slim \
+            python external_real.py --output /out/historical-repro.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("external-real-artifacts/historical-repro.json")
+          result=json.loads(p.read_text(encoding="utf-8"))
+          assert len(result["cases"]) == 3
+          for case in result["cases"]:
+              assert case["status"] == "REPRODUCED_EXTERNAL_HISTORICAL_BUG", case
+              assert not case["buggy_public"]["passed"], case
+              assert case["fixed_public"]["passed"], case
+              assert case["fixed_reserved"]["passed"], case
+              assert case["candidate_count"] >= 1, case
+              print("EXTERNAL CASE VERIFIED",case["case"],case["repo"],
+                    "buggy:",case["buggy_public"]["failure"],
+                    "fixed: PASS",
+                    "candidate pool:",case["candidate_count"],
+                    "public survivors:",case["shortlist_ids"])
+          assert not result["full_upstream_test_suite_executed"]
+          assert not result["model_called"]
+          print("SOURCE-BACKED SEMANTIC REPRODUCTION, NOT FULL UPSTREAM TESTS.")
+          PY
+      - name: Archive original/fixed evidence (including failures)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-external-real-historical-evidence
+          path: external-real-artifacts/historical-repro.json
+          if-no-files-found: warn
+          retention-days: 14
