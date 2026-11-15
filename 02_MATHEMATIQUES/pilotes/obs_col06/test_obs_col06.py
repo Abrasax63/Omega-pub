@@ -102,6 +102,10 @@ class TestObsCol06(unittest.TestCase):
             self.assertEqual(episode["heldout_correct"], 6)
             self.assertLessEqual(episode["active_queries"], 5)
             self.assertTrue(episode["all_baseline_scores_equal"])
+            for step in episode["plans"]:
+                if "mission_id" in step:
+                    self.assertTrue(step["mission_id"].startswith("OBS-COL-06-UNLABELED-"))
+                    self.assertNotIn(rule, step["mission_id"])
         outside = report["episodes"][-1]
         self.assertEqual(outside["status"], "OUT_OF_CATALOG_WARNING")
         self.assertIsNone(outside["reported_family_after_heldout_gate"])
