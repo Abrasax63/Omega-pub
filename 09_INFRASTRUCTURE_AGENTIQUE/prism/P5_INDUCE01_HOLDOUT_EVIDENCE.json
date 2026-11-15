@@ -1,0 +1,67 @@
+[
+  {
+    "id": "H1",
+    "sha256_utf8": "60652466e6f9d84c8dd40b1e5db9bf448540c4ad6cea190b76a080b65ddce636",
+    "chars": 153599,
+    "go_build_occurrences": 1,
+    "go_build_lines": [
+      {
+        "line_number": 1309,
+        "line": "2026-11-12T01:53:19.8654557Z GOARCH=amd64 go build -a -ldflags \"-s -w -X main.version=0.75.0 -X main.revision=4499615f\" -tags \"\" -trimpath -o target/fzf-linux_amd64"
+      }
+    ],
+    "condition": "go build with literal -o output (no shell expansion/redirect), emitted directly as command text",
+    "expected_coverage": "candidate=1, classic=1",
+    "meaning": "signal of reported command only; artifacts not certified"
+  },
+  {
+    "id": "H2",
+    "sha256_utf8": "1c52caab89b1098dc92b5c37070147050d17c648e1259008dcaa9c5154ef251c",
+    "chars": 63797,
+    "go_build_occurrences": 1,
+    "go_build_lines": [
+      {
+        "line_number": 455,
+        "line": "2026-11-14T16:49:10.8809023Z ##[group]Run go build -trimpath -o caddy-\"$GOOS\"-$GOARCH 2> /dev/null"
+      }
+    ],
+    "condition": "go build with literal -o output (no shell expansion/redirect), emitted directly as command text",
+    "expected_coverage": "candidate=0, classic=0",
+    "meaning": "signal of reported command only; artifacts not certified"
+  },
+  {
+    "id": "H3",
+    "sha256_utf8": "4fcafdb78a02e1fb581558e480dc2cfe0dd35b0b4e4d69270a746cbb89c81821",
+    "chars": 94310,
+    "go_build_occurrences": 1,
+    "go_build_lines": [
+      {
+        "line_number": 196,
+        "line": "2026-11-13T16:58:15.3542443Z ##[group]Run go build -v ./cmd/task"
+      }
+    ],
+    "condition": "go build with literal -o output (no shell expansion/redirect), emitted directly as command text",
+    "expected_coverage": "candidate=0, classic=0",
+    "meaning": "signal of reported command only; artifacts not certified"
+  },
+  {
+    "id": "H4",
+    "sha256_utf8": "54e87114533b8c9396f5e337c64206015d72d2e68e6bce990339f7454932caba",
+    "chars": 235605,
+    "go_build_occurrences": 0,
+    "go_build_lines": [],
+    "condition": "go build with literal -o output (no shell expansion/redirect), emitted directly as command text",
+    "expected_coverage": "candidate=0, classic=0",
+    "meaning": "signal of reported command only; artifacts not certified"
+  },
+  {
+    "id": "H5",
+    "sha256_utf8": "5e4ac740b088a8476714b1489bf6d9ca0bef98a0102ff46b544f62bf72be95a7",
+    "chars": 324351,
+    "go_build_occurrences": 0,
+    "go_build_lines": [],
+    "condition": "go build with literal -o output (no shell expansion/redirect), emitted directly as command text",
+    "expected_coverage": "candidate=0, classic=0",
+    "meaning": "signal of reported command only; artifacts not certified"
+  }
+]
