@@ -19,7 +19,53 @@ python gate.py evaluate manifest.json observations.json --manifest-sha256 YOUR_P
 python -m unittest -v test_gate.py
 ```
 
-The two arms must have the same case set and bounded per-case cost. The gate rejects missing or duplicated cases, case ID overlap with training, a changed manifest, false candidate confirmations, loss of known-correct cases, and candidates that have neither improved correct responses nor reduced work at equal accuracy. Every required domain must be represented. A pass is only `REVIEW_REQUIRED`: it never upgrades a scientific status, merges a PR, or changes a canonical reference.
+The two arms must have the same case set and bounded per-case cost. The gate rejects missing or duplicated cases, case ID/group overlap with training, a changed manifest, false candidate confirmations, loss of known-correct cases, aggregate cost violations, and candidates that have neither improved correct responses nor reduced work at equal accuracy. Every required domain must be represented. A pass is only `REVIEW_REQUIRED`: it never upgrades a scientific status, merges a PR, or changes a canonical reference.
+
+## Cost fairness and grouped holdout (v0.2)
+
+The manifest now requires `training_group_ids` (possibly `[]`) and a
+nonempty `group_id` on **each** holdout case. Choose the group before
+evaluation, using a physical source, mathematical problem family, original
+benchmark item, database, or other lineage that would make near-duplicates
+dependent. The evaluator rejects overlap in groups between training and
+holdout, in addition to overlap in case IDs. Optionally set
+`previous_holdout_group_ids` to previously consumed families; this only
+checks the declared list and **does not** constitute a trusted ledger.
+
+Pre-register `cost_policy` as `"no_increase"` (default; total candidate cost
+must be at most total baseline cost) or `"exact_parity"` (total costs must be
+equal). Both arms must still respect the `max_cost_per_case` limit.
+An optional `max_total_cost` limits each arm's aggregate consumption.
+Costs must be genuinely measured in the **same frozen unit**. Under
+`no_increase`, greater correctness at greater total cost is **not**
+accepted. `exact_parity` intentionally rejects cost-only improvements,
+so select it only when strict equality is the scientific objective.
+
+Example additional manifest fields:
+
+```json
+{
+  "training_group_ids": ["training-source-a"],
+  "previous_holdout_group_ids": [],
+  "cost_policy": "no_increase",
+  "max_total_cost": 100,
+  "holdout": [
+    {"case_id": "reserved-001", "group_id": "reserved-source-b",
+     "domain": "provenance", "expected": "copie"}
+  ]
+}
+```
+
+The rest of the required manifest schema (experiment ID, cost unit, per-case
+budget, training IDs and domains) still applies. A candidate can only be
+recommended for *independent review*, never accepted as proven.
+
+The gate neither authenticates run IDs nor proves independence between
+different group IDs. It also cannot prevent repeated adaptive evaluations
+on the same holdout if the evaluator omits prior groups or leaks feedback.
+A separate trusted experiment register, fresh reserved groups, immutable
+source commits, and independently checked runtime/quality metrics remain
+necessary before any claim of autonomous improvement.
 
 ## Trust boundary / limits
 
