@@ -1,8 +1,21 @@
 import unittest
-from provenance_trace_inference import infer_from_trace, evaluate_blind_traces
+from provenance_trace_inference import infer_from_trace, evaluate_blind_traces, infer_buildkit_copy
 
 
 class TraceInferenceTests(unittest.TestCase):
+    def test_buildkit_trace_requires_verbose_and_done(self):
+        log = ("#22 1.0 + cp -av ./source/file.tar out/\\n"
+               "#22 1.1 './source/file.tar' -> 'out/file.tar'\\n"
+               "#22 DONE 1.2s")
+        result = infer_buildkit_copy(log, "out/file.tar")
+        self.assertEqual(result["relations"][0]["from"], "source/file.tar")
+        self.assertEqual(result["relations"][0]["to"], "out/file.tar")
+        self.assertFalse(result["scientific_certification"])
+        self.assertEqual(infer_buildkit_copy(log.replace("#22 DONE 1.2s", ""),
+                                            "out/file.tar")["relations"], [])
+        self.assertEqual(infer_buildkit_copy(log.replace("out/file.tar'","out/other.tar'"),
+                                            "out/file.tar")["relations"], [])
+
     def test_hidden_relation_from_raw_trace(self):
         result = infer_from_trace("start\nCOPY source.csv -> result.csv\nend")
         self.assertEqual([(x["from"], x["to"]) for x in result["relations"]],
