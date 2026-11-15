@@ -57,6 +57,7 @@ class TestCommonEq(unittest.TestCase):
         model, _ = external_fixture(*FIXTURES[0])
         # Target itself is exactly equivalent, so fixed suite should find no CEX.
         physical = PhysicalCounter(model, use_p1=False)
+        independent_hypothesis, _ = external_fixture(*FIXTURES[0])
         alphabet = sorted(model.get_input_alphabet(), key=str)
         values = equivalence_words(tuple(map(str, alphabet)), 0)
         mapping = {str(x): x for x in alphabet}
@@ -64,7 +65,7 @@ class TestCommonEq(unittest.TestCase):
             alphabet, physical,
             [tuple(mapping[x] for x in word) for word in values],
         )
-        self.assertIsNone(eq.find_cex(model))
+        self.assertIsNone(eq.find_cex(independent_hypothesis))
         self.assertEqual(eq.completed_suites, 1)
         self.assertEqual(eq.proposed_words, 512)
         self.assertEqual(eq.num_queries, 512)
