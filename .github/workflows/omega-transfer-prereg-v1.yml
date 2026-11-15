@@ -1,0 +1,67 @@
+name: Omega preregistered frozen-Qwen transfer test (64 cases)
+
+on:
+  push:
+    branches:
+      - experiment/omega-heldout-transfer-v1-2026-11-15
+    paths:
+      - '.github/workflows/omega-transfer-prereg-v1.yml'
+      - '09_INFRASTRUCTURE_AGENTIQUE/auto_research/transfer_trial.py'
+      - '09_INFRASTRUCTURE_AGENTIQUE/auto_research/test_transfer_trial.py'
+      - '09_INFRASTRUCTURE_AGENTIQUE/auto_research/frozen_qwen3b_candidate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-transfer-prereg-v1
+  cancel-in-progress: false
+
+jobs:
+  frozen-candidate-transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout immutable benchmark commit
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit frozen source and preregistration
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: |
+          echo '121e09058b41984199ac870b6250882ffa4eddb5a4344b1fb1cd0d674296de5a  frozen_qwen3b_candidate.py' | sha256sum -c -
+          python -m py_compile transfer_trial.py test_transfer_trial.py frozen_qwen3b_candidate.py
+          python -m unittest -v test_gate.py test_variant_search.py test_model_proposal.py test_transfer_trial.py
+      - name: Start fixed Python measurement image
+        run: |
+          docker pull python:3.12-slim
+          docker image inspect python:3.12-slim --format '{{json .RepoDigests}}'
+      - name: One-shot prospective 64-case comparison against two strong classical baselines
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: |
+          python transfer_trial.py --output transfer-result.json
+          python - <<'PY'
+          import json
+          x = json.load(open('transfer-result.json', encoding='utf-8'))
+          assert x['n_cases_total'] == 80
+          assert x['n_timed_cases'] == 64
+          assert x['repetitions_per_arm_per_case'] == 7
+          assert x['candidate_source_sha256'] == '121e09058b41984199ac870b6250882ffa4eddb5a4344b1fb1cd0d674296de5a'
+          assert x['scientific_verdict'] in ('REVIEW_REQUIRED', 'NO_DEMONSTRATED_ADVANTAGE')
+          print('Finished a one-shot test. Negative scientific findings are accepted and preserved.')
+          print('Verdict:', x['scientific_verdict'])
+          print('Family speed ratios:', x['family_median_speedup'])
+          PY
+      - name: Archive full benchmark, source hashes and negative findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-transfer-prereg-v1-evidence
+          path: 09_INFRASTRUCTURE_AGENTIQUE/auto_research/transfer-result.json
+          retention-days: 30
+          if-no-files-found: warn
