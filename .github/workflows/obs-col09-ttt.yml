@@ -1,0 +1,52 @@
+name: OBS-COL-09 genuine LearnLib TTT integration
+on:
+  push:
+    branches:
+      - experiment/obs-col09-external-aalpy-benchmark-2026-11-15
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/**"
+      - ".github/workflows/obs-col09-ttt.yml"
+  workflow_dispatch:
+jobs:
+  genuine-learnlib-ttt:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          cache-dependency-path: 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml
+      - name: Compile actual LearnLib TTTLearnerMoore version 0.18.0
+        run: |
+          mvn -B -ntp -f 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml -DskipTests compile
+      - name: Execute the actual TTT algorithm on third-party DOT fixtures
+        run: |
+          mvn -B -ntp -q -f 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml \
+            exec:java \
+            "-Dexec.args=$PWD/02_MATHEMATIQUES/pilotes/obs_col09/external_fixtures" \
+            > obs_col09_ttt_output.log
+          grep '^{"fixture"' obs_col09_ttt_output.log > obs_col09_ttt.jsonl
+          python - <<'PY'
+          import json
+          lines=[json.loads(s) for s in open('obs_col09_ttt.jsonl') if s.strip()]
+          assert len(lines)==3, len(lines)
+          assert all(x['algorithm']=='TTT-LearnLib-0.18.0' for x in lines)
+          assert all(x['equivalence_certified']==False and not x['directly_comparable_to_aalpy'] for x in lines)
+          assert all(x['physical_symbols']<=50000 and x['physical_resets']<=10000 for x in lines)
+          for x in lines:
+              print(x['fixture'], 'TTT states', x['learned_states'],
+                    'physical symbols', x['physical_symbols'], 'errors', x['heldout_errors'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-col09-genuine-learnlib-ttt-jsonl
+          path: |
+            obs_col09_ttt.jsonl
+            obs_col09_ttt_output.log
+          if-no-files-found: error
