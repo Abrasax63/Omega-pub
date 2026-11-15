@@ -37,6 +37,8 @@ def score(source, cases):
             "expected": digest(expected),
             "prediction": digest(got),
             "correct": correct,
+            "counterexample": {"rows": q, "steps": case["steps"],
+                               "expected": expected, "actual": got} if not correct else None,
             "delta_correct": [a & ~b for a, b in zip(expected, actual)] ==
                              [a & ~b for a, b in zip(got, actual)],
             "cost": cost,
@@ -103,10 +105,15 @@ def run(llama_cli, model_file):
 
     attempts = []
     valid = []
+    training_feedback = None
     for variant in (0, 1):
-        source, meta = generate_with_llama(llama_cli, model_file, variant)
+        source, meta = generate_with_llama(llama_cli, model_file, variant,
+                                           feedback=training_feedback)
         if source is None:
             meta["status"] = "MODEL_PROPOSAL_REJECTED_AT_PARSE"
+            training_feedback = ("Your previous answer did not contain an allowed complete "
+                                 "Python function. Include only def q_power(rows, steps). "
+                                 "Use exact Boolean matrix multiplication, not shifts/XOR.")
             attempts.append(meta)
             continue
         try:
@@ -116,9 +123,20 @@ def run(llama_cli, model_file):
             meta["status"] = "TRAINING_CORRECT" if meta["training_correct"] else "TRAINING_INCORRECT"
             if meta["training_correct"]:
                 valid.append(meta)
+                training_feedback = None
+            else:
+                failing = next((r["counterexample"] for r in train_results
+                                if not r["correct"]), None)
+                training_feedback = ("Your previous code failed a PUBLIC training example. "
+                                     "Replace its logic, do not just rename variables. "
+                                     + json.dumps(failing, separators=(",", ":"))
+                                     + " Previous code: " + source)
         except (RuntimeError, ValueError, TimeoutError) as exc:
             meta["status"] = "TRAINING_EXECUTION_REJECTED"
             meta["failure"] = str(exc)[:300]
+            training_feedback = ("Your previous code crashed on PUBLIC training data: "
+                                 + str(exc)[:250] + ". Previous code: " + source
+                                 + ". Use Boolean OR for path composition, not XOR.")
         attempts.append(meta)
 
     # The model is invoked for real even if it produces no valid programs. Fail
