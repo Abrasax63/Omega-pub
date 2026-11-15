@@ -23,6 +23,7 @@ for folder in (
     if str(folder) not in sys.path:
         sys.path.insert(0, str(folder))
 from action_planning_two_step import plan_with_variable_horizon  # Real PR23 + P1
+from planner import plan_mission  # Real P1 for separate falsification probes
 from observer_guard_bridge import inspect_observer_evidence  # Real PR40
 from obs_col04 import independent_two_step_oracle  # Separate two-step comparator
 from collective_observability import walsh  # Identical source from PR86
@@ -198,6 +199,50 @@ def observed_walsh(observations):
     return {str(bit): str(walsh(rows, (bit, bit + 4))) for bit in range(4)}
 
 
+
+def direct_memory_diagnostic(oracle, observations, selected):
+    """POST-RUN AMENDMENT: request a non-Markov witness if still absent.
+
+    Costed separately from the exact PR23-vs-classical plan. Only selected
+    candidate predictions, not the hidden-world rule, guide the probe.
+    """
+    if selected not in ("MEMORY_TOGGLE", "MEMORY_SET") or markov_conflict(observations):
+        return None
+    used = {probe for probe, _ in observations}
+    eligible = []
+    for index, probe in enumerate(PROBES):
+        if probe in used:
+            continue
+        hypothetical = observations + [(probe, trace(selected, *probe))]
+        if markov_conflict(hypothetical):
+            eligible.append((10 * len(probe[1]), index, probe))
+    if not eligible:
+        return {"status": "NO_NONMARKOV_DIAGNOSTIC_IN_PROBE_CATALOG"}
+    cost, _, probe = min(eligible)
+    plan = plan_mission({
+        "question": "Can measured traces refute deterministic visible Markov dynamics?",
+        "mission_type": "mathematical",
+        "mission_id": "OBS-COL-06-MARKOV-CONFLICT",
+        "decision_context": {
+            "blocking_uncertainty": "A memory explanation was selected without a direct Markov counterexample",
+            "verification": f"Reset {probe[0]}, run {'+'.join(probe[1])}, inspect observable successors",
+            "verification_effect": "Two measured successors for the same visible input/action refute deterministic Markov behavior",
+        },
+    })
+    if plan["next_action"]["action"] != "verify":
+        raise AssertionError("Omega P1 refused explicit diagnostic verification")
+    measured = oracle.query(probe)
+    observations.append((probe, measured))
+    certificate = markov_conflict(observations)
+    return {
+        "status": "DIRECT_NONMARKOV_WITNESS" if certificate else "WITNESS_NOT_OBSERVED",
+        "probe": [probe[0], list(probe[1])], "measured": list(measured),
+        "cost_milli": cost, "p1_called": True,
+        "certificate": certificate,
+        "not_counted_in_two_step_comparison": True,
+    }
+
+
 def score_episode(world):
     oracle = WorldOracle(world)
     observations = [(probe, oracle.query(probe)) for probe in INITIAL]
@@ -244,6 +289,11 @@ def score_episode(world):
         })
         if not current:
             break
+    # Separate diagnostic; no reserved evidence enters the fit.
+    selected_before_diagnostic = current[0] if len(current) == 1 else None
+    diagnostic = direct_memory_diagnostic(oracle, observations, selected_before_diagnostic)
+    if diagnostic and diagnostic.get("probe"):
+        current = candidates_from_observations(observations)
     # Heldout observations are made only AFTER all model/probe decisions.
     selected_rule = current[0] if len(current) == 1 else None
     heldout = []
@@ -271,6 +321,8 @@ def score_episode(world):
         "training_queries": len(observations),
         "active_queries": len(observations) - len(INITIAL),
         "p1_decision_calls": len(plans),
+        "p1_diagnostic_calls": int(bool(diagnostic and diagnostic.get("p1_called"))),
+        "post_run_diagnostic": diagnostic,
         "heldout_correct": sum(x["correct"] for x in heldout),
         "heldout_total": len(RESERVED),
         "all_baseline_scores_equal": all(
