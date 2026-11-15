@@ -216,8 +216,12 @@ def run_arm(models, source, arm):
     assert all(truth(models[i], w) == a for i in remaining for w, a in oracle.training)
     return {
         "arm": arm, "queries": len(oracle.training), "symbols": total_symbols,
-        "survivors": len(remaining), "out_of_catalog": not bool(remaining),
+        "survivors": len(remaining), "version_space_empty_on_training": not bool(remaining),
         "heldout_errors": errors, "heldout_abstentions": abstained,
+        "posthoc_status": ("OUT_OF_HORIZON_WARNING" if errors else
+                           "MODEL_CLASS_INCOMPATIBLE" if not remaining else
+                           "UNIQUE_IN_CATALOG_NOT_CERTIFIED" if len(remaining) == 1 else
+                           "AMBIGUOUS_IN_CATALOG"),
         "heldout_total": len(HOLDOUT_WORDS), "p1_calls": sum(x["p1_called"] for x in records),
         "trace": records,
         "scientific_certificate": False, "model_calls": 0,
@@ -250,7 +254,9 @@ def run():
         "status": "CLOSED_CATALOG_SYNTHETIC_EXACT_QUERY_SELECTION",
         "candidate_models": len(models), "case_count": len(results),
         "training_queries_max": MAX_QUERIES, "training_symbols_max": MAX_SYMBOLS,
-        "reserved_histories": len(HOLDOUT_WORDS), "p1_selects_actual_probe": True,
+        "reserved_histories": len(HOLDOUT_WORDS),
+        "omega_pipeline_selects_actual_probe": True,
+        "pr23_selects_probe": True, "p1_alone_selects_probe": False,
         "p1_uses_classical_voi": True, "independent_exact_two_step": True,
         "not_a_TTT_or_Lsharp_implementation": True, "model_calls": 0,
         "no_claim_of_omega_superiority": True,
