@@ -1,0 +1,49 @@
+name: OBS-COL-08 equal budget active sensing
+on:
+  push:
+    branches:
+      - experiment/obs-col08-budgeted-query-choice-2026-11-15
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col08/**"
+      - ".github/workflows/obs-col08.yml"
+  workflow_dispatch:
+jobs:
+  exact-trial:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run ten real Omega P1 and equal-budget regression tests
+        run: python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col08 -p 'test_obs_col08.py' -v
+      - name: Execute nine worlds, four arms, hard budgets
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col08/obs_col08.py > obs_col08_result.json
+          python - <<'PY'
+          import json
+          z=json.load(open('obs_col08_result.json'))
+          assert z["candidate_models"]==40 and z["case_count"]==9
+          assert z["model_calls"]==0 and z["p1_selects_actual_probe"]
+          for target in z["results"]:
+              a,b=target["arms"]["omega"],target["arms"]["exact_classical"]
+              assert a["heldout_errors"]==b["heldout_errors"]
+              assert a["symbols"]==b["symbols"]
+              for arm in target["arms"].values():
+                  assert arm["queries"]<=6 and arm["symbols"]<=18
+                  assert arm["heldout_total"]==1792 and not arm["scientific_certificate"]
+          for name in ("omega","exact_classical","greedy","lexical"):
+              print(name,
+                  "holdout_errors", sum(t["arms"][name]["heldout_errors"] for t in z["results"]),
+                  "query_count", sum(t["arms"][name]["queries"] for t in z["results"]),
+                  "symbols", sum(t["arms"][name]["symbols"] for t in z["results"]))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-col08-equal-budget-evidence
+          path: obs_col08_result.json
+          if-no-files-found: error
