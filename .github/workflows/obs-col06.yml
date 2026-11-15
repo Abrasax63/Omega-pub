@@ -1,0 +1,40 @@
+name: OBS-COL-06 competing representations exact audit
+on:
+  push:
+    branches:
+      - experiment/obs-col06-competing-representations-2026-11-15
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col06/**"
+      - ".github/workflows/obs-col06.yml"
+  workflow_dispatch:
+jobs:
+  exact-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run ten integration tests with actual P1 PR23 PR40 and PR86
+        run: python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col06 -p 'test_obs_col06.py' -v
+      - name: Execute six fixed worlds and keep the raw JSON evidence
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col06/obs_col06.py > obs_col06_result.json
+          python - <<'PY'
+          import json
+          r=json.load(open('obs_col06_result.json'))
+          assert len(r['episodes'])==6 and r['model_calls']==0
+          assert all(x['all_baseline_scores_equal'] for x in r['episodes'])
+          assert all(x['heldout_correct']==6 for x in r['episodes'][:5])
+          assert r['episodes'][-1]['status']=="OUT_OF_CATALOG_WARNING"
+          print('OBS-COL-06 complete:', [x['status'] for x in r['episodes']])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-col06-exact-evidence
+          path: obs_col06_result.json
+          if-no-files-found: error
