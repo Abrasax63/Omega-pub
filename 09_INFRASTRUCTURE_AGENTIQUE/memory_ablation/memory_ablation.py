@@ -144,9 +144,13 @@ def build_prompt(arm: str, contexts: dict) -> str:
         note = "No repository context available."
     else:
         note = contexts["placebo" if arm == "placebo_rce" else "relevant"]["text"]
-    return BASE_PROMPT.replace(
-        "<|im_end|>\n", "", 1
-    ) + NOTE_PREAMBLE + note + TAIL
+    # Keep the note inside the *same* user turn of the Qwen chat template.
+    # The system/user role markers must not be deleted or reordered.
+    user_prefix = BASE_PROMPT.rsplit("<|im_end|>", 1)[0]
+    return (
+        user_prefix + "\n" + NOTE_PREAMBLE + note
+        + TAIL.replace("<|im_start|>assistant", "<|im_end|>\n<|im_start|>assistant")
+    )
 
 
 def infer(llama_cli: Path, model_file: Path, arm: str, prompt: str) -> dict:
