@@ -150,6 +150,10 @@ def template_trial(inputs: dict) -> dict:
         "candidate_sha256": source_candidate["sha256"],
         "strong_baseline_sha256": source_baseline["sha256"],
         "same_exact_source": source_candidate["sha256"] == source_baseline["sha256"],
+        "same_source_timing_false_review_detected": bool(
+            source_candidate["sha256"] == source_baseline["sha256"]
+            and gate["candidate_for_independent_review"]
+        ),
         "training": training,
         "holdout_opened": True,
         "holdout_cases": len(heldout),
@@ -162,18 +166,54 @@ def template_trial(inputs: dict) -> dict:
     }
 
 
+def known_prior_sources() -> list[dict]:
+    """Read the historical source ledger; fail closed if absent or malformed."""
+    path = HERE / "HISTORICAL_SOURCES.json"
+    history = json.loads(path.read_text(encoding="utf-8"))
+    records = history["entries"]
+    if not isinstance(records, list) or not records:
+        raise ValueError("historical source registry missing or empty")
+    for record in records:
+        digest_value = record["source_sha256"]
+        if (not isinstance(digest_value, str) or len(digest_value) != 64
+                or any(ch not in "0123456789abcdef" for ch in digest_value)):
+            raise ValueError("invalid historical SHA-256")
+    return records
+
+
 def model_trial(llama_cli: Path, model_file: Path, model_label: str) -> dict:
+    history = known_prior_sources()
     outcome = run_open_model(str(llama_cli), str(model_file), model_label)
     attempted = outcome.get("attempts", [])
     if not attempted or all(row.get("model_call_returncode") != 0 for row in attempted):
         raise RuntimeError("model inference infrastructure failed")
     evaluated = outcome.get("status") == "MODEL_CANDIDATE_EVALUATED"
-    passed = bool(evaluated and outcome.get("strong_baseline_passed"))
-    if passed and outcome.get("candidate_equals_classical_source", False):
-        passed = False
+    winner_sha = outcome.get("winner_sha256") if evaluated else None
+    matched = [record for record in history if record["source_sha256"] == winner_sha]
+    passed_strong = bool(evaluated and outcome.get("strong_baseline_passed"))
+    source_identical_to_classic = bool(outcome.get("candidate_equals_classical_source"))
+    passed = passed_strong and not matched and not source_identical_to_classic
+    reasons = []
+    if not evaluated:
+        reasons.append("NO_VALID_MODEL_CANDIDATE")
+    if evaluated and not passed_strong:
+        reasons.append("NO_ADVANTAGE_OVER_BOTH_STRONG_CLASSICS")
+    if source_identical_to_classic:
+        reasons.append("IDENTICAL_TO_CLASSICAL_SOURCE")
+    if matched:
+        reasons.append("KNOWN_HISTORICAL_SOURCE_REUSED")
     return {
         **outcome,
+        "historical_source_registry_size": len(history),
+        "historical_source_matches": matched,
+        "known_historical_duplicate": bool(matched),
+        "source_novelty": (
+            "KNOWN_REUSED" if matched else
+            "UNVERIFIED_GLOBAL_NOVELTY" if winner_sha else
+            "NO_SELECTED_SOURCE"
+        ),
         "decision": "REVIEW_REQUIRED" if passed else "REJECTED",
+        "rejection_reasons": reasons,
         "gain_of_autonomous_intelligence_demonstrated": False,
         "promotion_to_core": False,
     }
