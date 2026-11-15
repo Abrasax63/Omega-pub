@@ -186,7 +186,7 @@ jobs:
                 -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
                 -e PYTHONPATH=/tmp/work \
                 "omega-blind-${id,,}:local" sh -c \
-                  "cp -a /origin/. /tmp/work && cd /tmp/work && python -m pytest -q -p no:cacheprovider --maxfail=1 $targets" \
+                  "mkdir -p /tmp/work && cp -R /origin/. /tmp/work/ && cd /tmp/work && python -m pytest -q -p no:cacheprovider --maxfail=1 $targets" \
                 >"$dir/$version.log" 2>&1
               rc=$?
               echo "$rc" >"$dir/$version.exit"
