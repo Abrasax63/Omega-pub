@@ -62,6 +62,7 @@ def proposals_for_source(source):
             return
         templates.append({
             "rule":kind,"lines":sorted(edit),
+            "function_name":fns[0].name,"function_start_line":fns[0].lineno,
             "changes":[{"line":i,"before":lines[i-1],"after":edit[i]}
                        for i in sorted(edit)],
             "source_after":updated,"source_sha256":sha(updated)})
@@ -136,7 +137,12 @@ def select_candidates(root,ranking):
         if not src.is_relative_to(root) or not src.is_file():
             continue
         content=src.read_text(encoding="utf8",errors="replace")
-        for p in proposals_for_source(content):
+        symbols=set(ranking["test_evidence"]["symbols"])
+        candidates=proposals_for_source(content)
+        candidates.sort(key=lambda p:(
+            p["function_name"] not in symbols,
+            p["function_start_line"],min(p["lines"]),p["source_sha256"]))
+        for p in candidates:
             if len(outputs)>=MAX_CANDIDATES:
                 break
             p={k:v for k,v in p.items() if k!="source_after"}
