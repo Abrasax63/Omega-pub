@@ -70,6 +70,25 @@ jobs:
           }
           python -c 'import json, sys; audit = json.load(open(sys.argv[1])); verdicts = {row["nom"]: row["verdict"] for row in audit["verdicts"]}; assert verdicts == {"Candidate alpha": "recalcul", "Candidate beta": "copie"}, verdicts; print(verdicts)' "$RUNNER_TEMP/omega-audit.json"
 
+  provenance-blind-holdout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Evaluate frozen raw logs against independent GitHub job/run oracle
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python provenance_blind_trial.py "$GITHUB_REPOSITORY"
+
   provenance-lab-corpus:
     runs-on: ubuntu-latest
     timeout-minutes: 5
