@@ -31,12 +31,12 @@ jobs:
         run: |
           set -euo pipefail
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/external_real/external_real.py
-          python -m unittest discover -v -s 09_INFRASTRUCTURE_AGENTIQUE/external_real -p 'test_external_real.py'
+          python -m unittest discover -v -s 09_INFRASTRUCTURE_AGENTIQUE/external_real -p 'test_external*.py'
 
   historical-reproduction:
     needs: smoke
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
@@ -103,11 +103,102 @@ jobs:
           assert not result["model_called"]
           print("SOURCE-BACKED SEMANTIC REPRODUCTION, NOT FULL UPSTREAM TESTS.")
           PY
+      - name: Restore pinned llama.cpp build cache
+        uses: actions/cache@v4
+        id: llama-cache
+        with:
+          path: ${{ runner.temp }}/llama.cpp
+          key: omega-llama-cpu-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6-v1
+      - name: Build pinned llama.cpp CPU inference engine
+        if: steps.llama-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$RUNNER_TEMP/llama.cpp"
+          git -C "$RUNNER_TEMP/llama.cpp" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          git -C "$RUNNER_TEMP/llama.cpp" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          cmake -S "$RUNNER_TEMP/llama.cpp" -B "$RUNNER_TEMP/llama.cpp/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/llama.cpp/build" --target llama-cli -j 4
+          "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" --help >/dev/null
+      - name: Restore pinned Qwen model weight cache
+        uses: actions/cache@v4
+        id: model-cache
+        with:
+          path: ${{ runner.temp }}/model.gguf
+          key: omega-qwen2p5-coder-3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7-v1
+      - name: Download verified Qwen2.5 Coder 3B Q4_K_M weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f "$RUNNER_TEMP/model.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf" \
+              -o "$RUNNER_TEMP/model.gguf"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $RUNNER_TEMP/model.gguf" | sha256sum -c -
+      - name: Qwen chooses ONE genuinely ambiguous real-world patch (no external code executed here)
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/external_real
+        shell: bash
+        run: |
+          set -euo pipefail
+          python external_selector.py \
+            --mode select \
+            --manifest "$GITHUB_WORKSPACE/external-real-artifacts/historical-repro.json" \
+            --choices "$GITHUB_WORKSPACE/external-real-artifacts/choices.json" \
+            --output "$GITHUB_WORKSPACE/external-real-artifacts/choices.json" \
+            --llama-cli "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" \
+            --model-file "$RUNNER_TEMP/model.gguf"
+          python - <<'PY'
+          import json,os
+          p=os.environ['GITHUB_WORKSPACE']+'/external-real-artifacts/choices.json'
+          r=json.load(open(p,encoding='utf8'))
+          assert r['phase']=='CHOICES_COMMITTED_BEFORE_HOLDOUT'
+          assert r['model_calls']==1
+          assert r['inference']['called']
+          assert r['inference'].get('returncode') == 0
+          assert r['choices_sha256'] and not r['reserved_opened']
+          assert r['choices']['E1']['deterministic']=='P00'
+          assert r['choices']['E2']['qwen'] is None
+          assert r['choices']['E3']['qwen'] is None
+          print('MODEL RAW RESPONSE STATUS:',r['inference']['status'],
+                'chosen ID:',r['inference'].get('selected_id'),
+                'choices SHA:',r['choices_sha256'])
+          PY
+      - name: Evaluate frozen choices against reserved inputs in isolated Docker
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=96m \
+            -v "$PWD:/repo:ro" \
+            -w /repo/09_INFRASTRUCTURE_AGENTIQUE/external_real \
+            python:3.11-slim \
+            sh -c 'python external_selector.py --mode evaluate --manifest /repo/external-real-artifacts/historical-repro.json --choices /repo/external-real-artifacts/choices.json --output /tmp/reserved.json >&2 && cat /tmp/reserved.json' \
+            > external-real-artifacts/reserved.json
+          python - <<'PY'
+          import json
+          r=json.load(open('external-real-artifacts/reserved.json',encoding='utf8'))
+          assert r['phase']=='RESERVED_CHECKED_AFTER_CHOICE_FREEZE'
+          assert r['model_calls']==1
+          assert r['deterministic_successes']==3
+          assert len(r['cases'])==3
+          assert all(c['upstream_fixed_reserved_correct'] for c in r['cases'])
+          assert all(not r[x] for x in ('upstream_full_suite_run','independent_blind_evaluation','promoted','main_modified'))
+          for c in r['cases']:
+              print('EXTERNAL REAL:',c['case'],c['repo'],
+                    'deterministic:',c['arms']['deterministic']['correct'],
+                    'Qwen:',c['arms']['qwen']['correct'],
+                    'candidate audit:',c['all_survivor_reserve'])
+          print('CONCLUSION: historical semantic repair observed; no blind generalization claimed.')
+          PY
       - name: Archive original/fixed evidence (including failures)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: omega-external-real-historical-evidence
-          path: external-real-artifacts/historical-repro.json
+          path: external-real-artifacts/*.json
           if-no-files-found: warn
           retention-days: 14
