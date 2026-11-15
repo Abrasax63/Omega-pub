@@ -27,10 +27,11 @@ jobs:
           mvn -B -ntp -f 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml -DskipTests compile
       - name: Execute the actual TTT algorithm on third-party DOT fixtures
         run: |
-          mvn -B -ntp -q -f 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml \
+          set -o pipefail
+          mvn -B -ntp -e -f 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml \
             exec:java \
             "-Dexec.args=$PWD/02_MATHEMATIQUES/pilotes/obs_col09/external_fixtures" \
-            > obs_col09_ttt_output.log
+            2>&1 | tee obs_col09_ttt_output.log
           grep '^{"fixture"' obs_col09_ttt_output.log > obs_col09_ttt.jsonl
           python - <<'PY'
           import json
@@ -44,9 +45,10 @@ jobs:
                     'physical symbols', x['physical_symbols'], 'errors', x['heldout_errors'])
           PY
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: obs-col09-genuine-learnlib-ttt-jsonl
           path: |
             obs_col09_ttt.jsonl
             obs_col09_ttt_output.log
-          if-no-files-found: error
+          if-no-files-found: warn
