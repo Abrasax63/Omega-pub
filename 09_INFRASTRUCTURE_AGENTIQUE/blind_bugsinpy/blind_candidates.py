@@ -152,7 +152,9 @@ def freeze_case(case,checkout):
         ["git","-C",str(work),"rev-parse","HEAD"],text=True).strip()
     if sha_checkout!=case["buggy_sha"]:
         raise RuntimeError("wrong upstream SHA "+name+" "+sha_checkout)
-    paths=sorted((work/pkg).rglob("*.py"))
+    paths=sorted(p for p in (work/pkg).rglob("*.py")
+                 if not any(part.lower() in ("tests","test","test_utils")
+                            for part in p.relative_to(work).parts))
     found=[]
     bad_syntax=[]
     for f in paths[:INSPECTION_LIMIT]:
