@@ -23,6 +23,10 @@ class SemanticProvenanceTests(unittest.TestCase):
                    {"archive-pipeline": "recalcul"})["verdict"], "recalcul",
         )
 
+    def test_double_xtrace_hash_marker(self):
+        log = LOG.replace("+ sha256sum", "++ sha256sum")
+        self.assertTrue(fingerprints(log, SCRIPT, "source.tar.gz")["archive"])
+
     def test_missing_script_rejects(self):
         self.assertFalse(fingerprints(LOG, "", "source.tar.gz")["archive"])
 
