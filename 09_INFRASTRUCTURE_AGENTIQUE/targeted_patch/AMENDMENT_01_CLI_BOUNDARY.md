@@ -1,0 +1,17 @@
+# Amendment #1 — défaut de découpage de la sortie CLI, AVANT nouvelle campagne
+
+Date : 15 novembre 2026. **Le pilote OMEGA-TARGETED-PATCH-01 est terminé**, [run #43753885334](https://github.com/Abrasax63/Omega-pub/actions/runs/43753885334), artefact #14177391886. Les deux appels Qwen ont réellement retourné des chaînes, mais le parseur `parse_model_patch` les a refusées avant l'analyse AST, avec `expected exactly one nonempty expression line`. L'inspection de l'artefact révèle que la sortie brute `llama-cli` comprend une **bannière console, un écho de prompt parfois tronqué, le bloc de réponse entre trois accents graves, puis les statistiques de génération**. L'extracteur a traité cette enveloppe comme la réponse au lieu d'en séparer la zone produite.
+
+**Le premier refus n'est donc pas une mesure valide de la capacité de Qwen à émettre une expression syntaxiquement admissible**. C'est d'abord une erreur du raccord de sortie. Les propositions visibles dans les blocs produits ne semblent pas corriger le bug, mais elles n'ont PAS été soumises au vérificateur mathématique, donc ne pas leur attribuer de scores calculés.
+
+## Correctif pré-engagé
+
+1. Créer une version `OMEGA-TARGETED-PATCH-02` qui modifie **uniquement le parseur de la zone de réponse** et des tests unitaires de ce parseur. Conserver le source historique, l'emplacement de patch, les deux prompts, les notes RCE, le modèle GGUF, les limites d'inférence, la grammaire AST, le sandbox Docker, l'oracle, les quatre cas publics, les trois graines publiques, les deux références classiques, et le gate inchangés.
+2. Seuls trois cas de découpage sont autorisés : (i) bloc de code balisé unique provenant de la réponse, (ii) texte après le prompt complet effectivement échoé, (iii) contenu suivant le marqueur de troncature propre à cette version CLI et précédant ses statistiques. Refuser plusieurs blocs, formats ambiguës, code multi-ligne, import, appel arbitraire, condition originale inchangée, ou absence de zone de réponse identifiable.
+3. Ajouter des **tests de non-régression avec les deux formes brutes observées**, pour vérifier que l'extracteur ne peut plus confondre l'écho de prompt avec le patch. Cela ne signifie pas que les expressions observées étaient correctes.
+4. Un **nouveau workflow** doit tirer et geler **cinq nouvelles graines secrètes dans le même run, avant le premier appel modèle**, et les évaluer une fois seulement si les contrôles de développement passent. Les réserves précédentes sont déjà consommées à titre d'audit et **ne sont pas réutilisées pour la sélection ou revendication de performance**.
+5. Garder l'égalité de la longueur des notes en caractères (pas tokens), une seule inférence par bras, même ordre. Une éventuelle réussite est toujours **exploratoire**, et aucune promotion sur `main` ni CORE.
+
+Ce correctif est motivé par des observations post-hoc : **les prompts exacts et leurs sorties antérieures ne sont plus aveugles**. Même avec de nouveaux cas réservés, il sera impossible de revendiquer un test de nouveauté véritablement indépendant ni une supériorité statistique à partir de cette répétition. Le but du cycle #02 est **la validité instrumentale du vérificateur**, pas de sauver une hypothèse en adaptant les critères.
+
+État gelé de #01 : source `15fe02b6d5ea993ecb2a64eac02823345a58b631264a8eee081e70a5f3e89314`, deux sorties model réelles, aucun patch appliqué, refus `PATCH_REJECTED`, aucun holdout candidat ouvert, CI verte (infrastructure), aucune amélioration démontrée.
