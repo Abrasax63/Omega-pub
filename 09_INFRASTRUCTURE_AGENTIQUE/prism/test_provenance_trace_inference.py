@@ -4,8 +4,8 @@ from provenance_trace_inference import infer_from_trace, evaluate_blind_traces, 
 
 class TraceInferenceTests(unittest.TestCase):
     def test_buildkit_trace_requires_verbose_and_done(self):
-        log = ("#22 1.0 + cp -av ./source/file.tar out/\\n"
-               "#22 1.1 './source/file.tar' -> 'out/file.tar'\\n"
+        log = ("#22 1.0 + cp -av ./source/file.tar out/\n"
+               "#22 1.1 './source/file.tar' -> 'out/file.tar'\n"
                "#22 DONE 1.2s")
         result = infer_buildkit_copy(log, "out/file.tar")
         self.assertEqual(result["relations"][0]["from"], "source/file.tar")
