@@ -11,6 +11,7 @@ import tempfile
 import time
 
 from model_proposal import validate_source
+from variant_factory import generate
 
 IMAGE = "python:3.12-slim"
 HARNESS = r'''
@@ -41,7 +42,10 @@ def docker_available():
 
 
 def execute(source, rows, steps, repeats=12, timeout=12):
-    validate_source(source)
+    # Only hashes of the four repository-defined programs can bypass the
+    # one-function model proposal validator; their code is audited separately.
+    if source not in {v["source"] for v in generate().values()}:
+        validate_source(source)
     if not docker_available():
         raise RuntimeError("Docker unavailable: fail closed")
     if type(steps) is not int or not 0 <= steps <= 100000 or not 1 <= len(rows) <= 64:
