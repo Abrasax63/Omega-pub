@@ -28,9 +28,10 @@ jobs:
       - name: Execute the actual TTT algorithm on third-party DOT fixtures
         run: |
           set -o pipefail
+          python 02_MATHEMATIQUES/pilotes/obs_col09/generate_matched_eval.py "$PWD/obs_col09_matched_eval"
           mvn -B -ntp -e -f 02_MATHEMATIQUES/pilotes/obs_col09/learnlib_ttt/pom.xml \
             exec:java \
-            "-Dexec.args=$PWD/02_MATHEMATIQUES/pilotes/obs_col09/external_fixtures" \
+            "-Dexec.args=$PWD/02_MATHEMATIQUES/pilotes/obs_col09/external_fixtures $PWD/obs_col09_matched_eval" \
             2>&1 | tee obs_col09_ttt_output.log
           grep '^{"fixture"' obs_col09_ttt_output.log > obs_col09_ttt.jsonl
           python - <<'PY'
@@ -40,9 +41,12 @@ jobs:
           assert all(x['algorithm']=='TTT-LearnLib-0.18.0' for x in lines)
           assert all(x['equivalence_certified']==False and not x['directly_comparable_to_aalpy'] for x in lines)
           assert all(x['physical_symbols']<=50000 and x['physical_resets']<=10000 for x in lines)
+          assert all(x['heldout_total']==256 for x in lines)
+          assert all(x['heldout_unseen_scored'] + x['heldout_overlap_seen_during_training'] == 256 for x in lines)
+          assert all(x['heldout_unseen_scored'] > 0 for x in lines)
           for x in lines:
               print(x['fixture'], 'TTT states', x['learned_states'],
-                    'physical symbols', x['physical_symbols'], 'errors', x['heldout_errors'])
+                    'physical symbols', x['physical_symbols'], 'unseen', x['heldout_unseen_scored'], 'unseen errors', x['heldout_errors_unseen'])
           PY
       - uses: actions/upload-artifact@v4
         if: always()
@@ -51,4 +55,5 @@ jobs:
           path: |
             obs_col09_ttt.jsonl
             obs_col09_ttt_output.log
+            obs_col09_matched_eval/
           if-no-files-found: warn
