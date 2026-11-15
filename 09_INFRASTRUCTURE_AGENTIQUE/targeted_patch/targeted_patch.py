@@ -115,6 +115,24 @@ NODES=(ast.Expression,ast.BinOp,ast.Name,ast.Load,ast.Subscript,
        ast.Compare,ast.Eq,ast.NotEq,ast.BoolOp,ast.And,ast.Or,
        ast.UnaryOp,ast.Not,ast.Invert)
 
+def validate_patch_expression(expression):
+    """Pure AST validation for an already isolated single-line expression."""
+    if expression.startswith("if ") and expression.endswith(":"):
+        expression=expression[3:-1].strip()
+    if not expression or len(expression)>160 or any(c in expression for c in (";", "#",chr(96))):
+        raise ValueError("invalid expression characters")
+    t=ast.parse(expression,mode="eval")
+    for n in ast.walk(t):
+        if not isinstance(n,NODES):
+            raise ValueError("patch contains unapproved AST node "+type(n).__name__)
+        if isinstance(n,ast.Name) and n.id not in ("rows","result","i","j"):
+            raise ValueError("patch has unknown name")
+        if isinstance(n,ast.Constant) and (type(n.value)!=int or not 0<=n.value<=64):
+            raise ValueError("invalid patch constant")
+    if ast.dump(t)==ast.dump(ast.parse("rows[j] & (1 << i)",mode="eval")):
+        raise ValueError("no change to original condition")
+    return expression
+
 def parse_model_patch(raw,prompt_text=""):
     """Extract exactly one emitted expression, never the echoed CLI prompt.
 
@@ -146,24 +164,10 @@ def parse_model_patch(raw,prompt_text=""):
     if len(lines)!=1:
         raise ValueError("expected exactly one generated expression line")
     expression=lines[0]
-    if expression.startswith("if ") and expression.endswith(":"):
-        expression=expression[3:-1].strip()
-    if not expression or len(expression)>160 or any(c in expression for c in (";", "#",chr(96))):
-        raise ValueError("invalid expression characters")
-    t=ast.parse(expression,mode="eval")
-    for n in ast.walk(t):
-        if not isinstance(n,NODES):
-            raise ValueError("patch contains unapproved AST node "+type(n).__name__)
-        if isinstance(n,ast.Name) and n.id not in ("rows","result","i","j"):
-            raise ValueError("patch has unknown name")
-        if isinstance(n,ast.Constant) and (type(n.value)!=int or not 0<=n.value<=64):
-            raise ValueError("invalid patch constant")
-    if ast.dump(t)==ast.dump(ast.parse("rows[j] & (1 << i)",mode="eval")):
-        raise ValueError("no change to original condition")
-    return expression
+    return validate_patch_expression(expression)
 
 def apply_patch(expr):
-    expr=parse_model_patch(expr)
+    expr=validate_patch_expression(expr)
     modified=ORIGINAL.replace(OLD_LINE,"                if "+expr+":",1)
     a=ORIGINAL.splitlines(keepends=True)
     b=modified.splitlines(keepends=True)
