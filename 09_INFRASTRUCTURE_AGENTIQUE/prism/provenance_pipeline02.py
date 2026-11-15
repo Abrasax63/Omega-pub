@@ -43,7 +43,7 @@ def fingerprints(log: str, script: str, output: str) -> dict:
     )
     gzip_cmd = any(re.match(r"^\+\s+gzip(?:\s|$)", row) for row in observed)
     archive_hash = any(
-        row.startswith("+ sha256sum ") and row.endswith("/source.tar.gz")
+        re.match(r"^\\+{1,2}\\s+sha256sum\\s+", row) and row.endswith("/source.tar.gz")
         for row in observed
     )
     archive_use = any(
