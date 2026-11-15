@@ -77,6 +77,20 @@ class TestObsCol06(unittest.TestCase):
         self.assertEqual(set(coeff), set("0123"))
         self.assertTrue(all(Fraction(value) == 1 for value in coeff.values()))
 
+    def test_postselection_memory_certificate_amendment(self):
+        for rule in ("MEMORY_TOGGLE", "MEMORY_SET"):
+            episode = score_episode(rule)
+            witness = episode["markov_counterexample_training"]
+            self.assertIsNotNone(witness)
+            self.assertEqual(witness["same_action"], "read")
+            self.assertNotEqual(witness["witness_a"]["after"],
+                                witness["witness_b"]["after"])
+            if rule == "MEMORY_TOGGLE":
+                self.assertEqual(episode["post_run_diagnostic"]["status"],
+                                 "DIRECT_NONMARKOV_WITNESS")
+                self.assertEqual(episode["p1_diagnostic_calls"], 1)
+            self.assertLessEqual(episode["active_queries"], 5)
+
     def test_six_episodes_and_no_false_certificates(self):
         report = run()
         self.assertEqual(report["model_calls"], 0)
