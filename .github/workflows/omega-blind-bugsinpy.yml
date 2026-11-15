@@ -1,0 +1,233 @@
+name: Omega blind BugsInPy historical regression pilot
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-real-bugs-three-repos-2026-11-15
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/blind_bugsinpy/**'
+      - '.github/workflows/omega-blind-bugsinpy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  freeze-buggy-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check AST candidate generator and frozen cohort
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/blind_bugsinpy -p 'test_*.py' -v
+      - name: Retrieve ONLY buggy commits, no corrected sources or diffs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p blind-work
+          fetch_buggy() {
+            id="$1"; url="$2"; sha="$3"
+            dest="blind-work/$id"
+            git init -q "$dest"
+            git -C "$dest" remote add origin "$url"
+            git -C "$dest" fetch --depth 1 origin "$sha"
+            git -C "$dest" checkout -q --detach FETCH_HEAD
+            actual="$(git -C "$dest" rev-parse HEAD)"
+            [[ "$actual" == "$sha" ]] || exit 1
+            echo "BUGGY COMMIT VERIFIED $id $actual"
+          }
+          fetch_buggy B1 https://github.com/cool-RR/PySnooper.git e21a31162f4c54be693d8ca8260e42393b39abd3
+          fetch_buggy B2 https://github.com/tqdm/tqdm.git bef86db56654d271838b145ad77f7040a73a7b4d
+          fetch_buggy B3 https://github.com/cookiecutter/cookiecutter.git d7e7b28811e474e14d1bed747115e47dcdd15ba3
+      - name: Freeze all candidate patches and selections BEFORE opening any fixed repo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p blind-freeze
+          python 09_INFRASTRUCTURE_AGENTIQUE/blind_bugsinpy/blind_candidates.py \
+            --manifest 09_INFRASTRUCTURE_AGENTIQUE/blind_bugsinpy/COHORT_FREEZE.json \
+            --workdir blind-work \
+            --output blind-freeze/choices.json
+          python - <<'PY'
+          import json
+          f=json.load(open('blind-freeze/choices.json'))
+          assert f['phase']=='CANDIDATES_FROZEN_BUGGY_ONLY'
+          assert not f['fixed_source_seen'] and not f['fixed_diff_seen']
+          assert len(f['cases'])==3
+          assert f['commitment_sha256']
+          print('CANDIDATE FREEZE SHA-256:',f['commitment_sha256'])
+          for c in f['cases']:
+              print('PRECOMMITTED',c['id'],'patches',len(c['candidates']),'top1',c['top1'])
+          PY
+      - name: Archive immutable candidate commitment
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-blind-frozen-buggy-only
+          path: blind-freeze/choices.json
+          if-no-files-found: error
+          retention-days: 30
+
+  historical-oracle-after-freeze:
+    needs: freeze-buggy-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: omega-blind-frozen-buggy-only
+          path: blind-freeze
+      - name: Download original and corrected source snapshots ONLY after freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p oracle-work
+          fetch_ref() {
+            id="$1"; tag="$2"; url="$3"; sha="$4"
+            dir="oracle-work/$id/$tag"
+            mkdir -p "oracle-work/$id"
+            git init -q "$dir"
+            git -C "$dir" remote add origin "$url"
+            git -C "$dir" fetch --depth 1 origin "$sha"
+            git -C "$dir" checkout -q --detach FETCH_HEAD
+            actual="$(git -C "$dir" rev-parse HEAD)"
+            [[ "$actual" == "$sha" ]] || exit 1
+            echo "ORACLE PHASE VERIFIED $id $tag $actual"
+          }
+          fetch_ref B1 buggy https://github.com/cool-RR/PySnooper.git e21a31162f4c54be693d8ca8260e42393b39abd3
+          fetch_ref B2 buggy https://github.com/tqdm/tqdm.git bef86db56654d271838b145ad77f7040a73a7b4d
+          fetch_ref B3 buggy https://github.com/cookiecutter/cookiecutter.git d7e7b28811e474e14d1bed747115e47dcdd15ba3
+          fetch_ref B1 fixed https://github.com/cool-RR/PySnooper.git 56f22f8ffe1c6b2be4d2cf3ad1987fdb66113da2
+          fetch_ref B2 fixed https://github.com/tqdm/tqdm.git 127af5caf19e7d29c346f5ca8a9c7ef3004b664b
+          fetch_ref B3 fixed https://github.com/cookiecutter/cookiecutter.git 90434ff4ea4477941444f1e83313beb414838535
+          for id in B1 B2 B3; do
+            mkdir -p "oracle-work/$id/patched"
+            cp -a "oracle-work/$id/buggy/." "oracle-work/$id/patched/"
+          done
+          # BugsInPy's checkout mechanism uses regression tests from the
+          # corrected checkout on both source versions; only in oracle phase.
+          for tag in buggy patched; do
+            cp "oracle-work/B1/fixed/tests/test_chinese.py" "oracle-work/B1/$tag/tests/test_chinese.py"
+            cp "oracle-work/B2/fixed/tqdm/tests/tests_tqdm.py" "oracle-work/B2/$tag/tqdm/tests/tests_tqdm.py"
+            cp "oracle-work/B3/fixed/tests/test_hooks.py" "oracle-work/B3/$tag/tests/test_hooks.py"
+          done
+      - name: Verify frozen patches, then stage top-1 WITHOUT reading fixed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/blind_bugsinpy/historical_oracle.py \
+            --mode prepare --cohort 09_INFRASTRUCTURE_AGENTIQUE/blind_bugsinpy/COHORT_FREEZE.json \
+            --freeze blind-freeze/choices.json --workspace oracle-work \
+            --output oracle-work/prepared.json
+          sha256sum oracle-work/prepared.json
+      - name: Build dependency images with pinned legacy Python, no repository credentials
+        shell: bash
+        run: |
+          set -uo pipefail
+          for id in B1 B2 B3; do
+            case "$id" in
+              B1) image="python:3.8.1-slim";;
+              B2|B3) image="python:3.6.9-slim";;
+            esac
+            dir="oracle-work/$id"
+            cat > "$dir/Dockerfile.pilot" <<EOF
+          FROM $image
+          WORKDIR /src
+          COPY . /src
+          RUN python -m pip install --disable-pip-version-check --no-cache-dir "pip<22" "setuptools<60" "wheel<1" && python -m pip install --disable-pip-version-check --no-cache-dir "pytest<7" -e /src
+          ENV PYTHONDONTWRITEBYTECODE=1
+          EOF
+            docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=0 \
+              -f "$dir/Dockerfile.pilot" -t "omega-blind-$id:local" "$dir/buggy" \
+              >"$dir/build.log" 2>&1
+            rc=$?
+            echo "$rc" >"$dir/build.exit"
+            echo "$id DEPENDENCY_BUILD exit=$rc"
+            tail -n 8 "$dir/build.log" || true
+          done
+          exit 0
+      - name: Execute genuine original regression tests in network-isolated Docker
+        shell: bash
+        run: |
+          set -uo pipefail
+          for id in B1 B2 B3; do
+            dir="oracle-work/$id"
+            if [[ "$(cat "$dir/build.exit")" != "0" ]]; then
+              echo "SKIP $id because historical dependencies could not be installed"
+              continue
+            fi
+            case "$id" in
+              B1) targets="tests/test_chinese.py::test_chinese";;
+              B2) targets="tqdm/tests/tests_tqdm.py::test_format_meter";;
+              B3) targets="tests/test_hooks.py::TestFindHooks::test_find_hook tests/test_hooks.py::TestExternalHooks::test_run_hook";;
+            esac
+            for version in fixed buggy patched; do
+              docker run --rm --network none --read-only \
+                --cap-drop ALL --security-opt no-new-privileges \
+                --memory 1g --cpus 1 --pids-limit 96 \
+                --tmpfs /tmp:rw,exec,nosuid,size=224m \
+                --mount "type=bind,src=$PWD/$dir/$version,dst=/origin,readonly" \
+                -e PYTHONDONTWRITEBYTECODE=1 \
+                -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+                -e PYTHONPATH=/tmp/work \
+                "omega-blind-$id:local" sh -c \
+                  "cp -a /origin/. /tmp/work && cd /tmp/work && python -m pytest -q -p no:cacheprovider --maxfail=1 $targets" \
+                >"$dir/$version.log" 2>&1
+              rc=$?
+              echo "$rc" >"$dir/$version.exit"
+              echo "$id $version authentic pytest exit=$rc"
+              tail -n 10 "$dir/$version.log" || true
+            done
+          done
+          exit 0
+      - name: Audit provenance and label blocked environments honestly
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/blind_bugsinpy/historical_oracle.py \
+            --mode report --cohort 09_INFRASTRUCTURE_AGENTIQUE/blind_bugsinpy/COHORT_FREEZE.json \
+            --freeze blind-freeze/choices.json --workspace oracle-work \
+            --prepared oracle-work/prepared.json \
+            --output oracle-work/scientific-report.json
+          python - <<'PY'
+          import json
+          r=json.load(open('oracle-work/scientific-report.json'))
+          assert r['freeze_sha256'] and r['cohort_count']==3
+          assert not r['model_called'] and not r['promoted']
+          for x in r['cases']:
+              print(x['id'],x['repo'],'VERDICT:',x['verdict'],
+                    'bug reproducible?',x['historical_regression_reproduced'])
+          print('BUGGY/REFERENCE PAIRS CONFIRMED',r['buggy_fixed_reference_confirmed'])
+          print('TOP-1 REPAIRS VALIDATED',r['repairs_validated'])
+          print('NO INDEPENDENT THIRD-PARTY BLIND CERTIFICATION')
+          PY
+      - name: Archive full candidate choices, real test logs and failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-blind-bugsinpy-oracle-evidence
+          path: |
+            blind-freeze/choices.json
+            oracle-work/prepared.json
+            oracle-work/scientific-report.json
+            oracle-work/B1/*.log
+            oracle-work/B1/*.exit
+            oracle-work/B2/*.log
+            oracle-work/B2/*.exit
+            oracle-work/B3/*.log
+            oracle-work/B3/*.exit
+          retention-days: 30
+          if-no-files-found: warn
