@@ -1,0 +1,134 @@
+name: Omega multi-fault automatic site search plus Qwen A-C evaluation
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-symbolic-neural-repair-2026-11-15
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/multifault/**'
+      - '.github/workflows/omega-multifault.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-multifault-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate unknown-location AST generator, four simple fixes, composite abstention and parser
+        run: |
+          set -euo pipefail
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/multifault/multifault.py
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/multifault -p 'test_multifault.py' -v
+  multifault-evaluate-qwen-after-smoke:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests without model or remote inference
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: |
+          python -m py_compile gate.py runner.py model_proposal.py sandbox_runner.py model_pilot.py
+          python -m unittest -v test_gate.py test_variant_search.py test_model_proposal.py
+      - name: Pull isolated execution image
+        run: |
+          docker pull python:3.12-slim
+          docker image inspect python:3.12-slim --format '{{json .RepoDigests}}'
+      - name: Restore pinned llama.cpp build cache
+        uses: actions/cache@v4
+        id: llama-cache
+        with:
+          path: ${{ runner.temp }}/llama.cpp
+          key: omega-llama-cpu-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6-v1
+      - name: Build pinned llama.cpp CPU inference engine
+        if: steps.llama-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$RUNNER_TEMP/llama.cpp"
+          git -C "$RUNNER_TEMP/llama.cpp" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          git -C "$RUNNER_TEMP/llama.cpp" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          cmake -S "$RUNNER_TEMP/llama.cpp" -B "$RUNNER_TEMP/llama.cpp/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/llama.cpp/build" --target llama-cli -j 4
+          "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" --help >/dev/null
+      - name: Restore pinned Qwen model weight cache
+        uses: actions/cache@v4
+        id: model-cache
+        with:
+          path: ${{ runner.temp }}/model.gguf
+          key: omega-qwen2p5-coder-3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7-v1
+      - name: Download verified Qwen2.5 Coder 3B Q4_K_M weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f "$RUNNER_TEMP/model.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf" \
+              -o "$RUNNER_TEMP/model.gguf"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $RUNNER_TEMP/model.gguf" | sha256sum -c -
+      - name: Search unknown fault sites then test Qwen with and without RCE on five tasks
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/multifault
+        shell: bash
+        run: |
+          set -euo pipefail
+          python multifault.py \
+            --llama-cli "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" \
+            --model-file "$RUNNER_TEMP/model.gguf" \
+            --output multifault-result.json
+          python - <<'PY'
+          import json
+          x = json.load(open('multifault-result.json', encoding='utf-8'))
+          assert x['experiment_id'] == 'OMEGA-MULTIFAULT-01'
+          assert x['provenance']['valid']
+          assert x['p3_coverage']['completed'] == 1
+          assert x['comparison']['total_tasks'] == 5
+          assert len(x['task_summaries']) == 5
+          assert len(x['reserved_manifest']['holdout']) == 5
+          assert x['reserved_manifest_sha256'] and x['frozen_pre_holdout_choices_sha256']
+          assert all(t['candidate_count'] <= 100 for t in x['task_summaries'])
+          assert all(t['strong_passing_count'] >= 1 for t in x['task_summaries'][:4])
+          assert x['task_summaries'][4]['strong_passing_count'] == 0
+          assert x['comparison']['actual_model_calls'] == 10
+          assert all(t['qwen_control_status'] != 'CALL_FAILED' and
+                     t['qwen_rce_status'] != 'CALL_FAILED'
+                     for t in x['task_summaries'])
+          assert x['strong_classics']['square-scan']['correct'] == 5
+          assert x['strong_classics']['square-lowbit']['correct'] == 5
+          assert not x['promotion_to_core']
+          assert not x['comparison']['general_intelligence_gain_demonstrated']
+          for t in x['task_summaries']:
+              print(t['task'], 'hypotheses',t['candidate_count'],
+                    'weak',t['weak_passing_count'],
+                    'strong',t['strong_passing_count'],
+                    'choices',t['choices'])
+          print('Qwen actual calls:',x['comparison']['actual_model_calls'])
+          print('Provenance valid; no automatic scientific promotion')
+          PY
+      - name: Save audit data and candidate source (never merge automatically)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-multifault-evidence
+          path: 09_INFRASTRUCTURE_AGENTIQUE/multifault/multifault-result.json
+          if-no-files-found: warn
+          retention-days: 14
