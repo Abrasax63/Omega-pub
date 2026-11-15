@@ -105,6 +105,7 @@ def run(llama_cli, model_file, model_label):
 
     attempts = []
     valid = []
+    seen_semantic = {}
     training_feedback = None
     for variant in (0, 1):
         source, meta = generate_with_llama(llama_cli, model_file, variant,
@@ -116,6 +117,13 @@ def run(llama_cli, model_file, model_label):
                                  "Use exact Boolean matrix multiplication, not shifts/XOR.")
             attempts.append(meta)
             continue
+        sem = meta["semantic_sha256"]
+        if sem in seen_semantic:
+            meta["status"] = "DUPLICATE_SOURCE_NOT_REEXECUTED"
+            meta["duplicate_of_variant"] = seen_semantic[sem]
+            attempts.append(meta)
+            continue
+        seen_semantic[sem] = variant
         try:
             train_results = score(source, train)
             meta["training_correct"] = all(r["correct"] and r["delta_correct"] for r in train_results)
@@ -149,6 +157,7 @@ def run(llama_cli, model_file, model_label):
         "manifest_sha256": initial_commitment,
         "model_invocations": len(attempts),
         "attempts": attempts,
+        "distinct_programs": len(seen_semantic),
         "holdout_opened": False,
         "limits": [
             "Public task and model prompts; private holdout is generated within this run, not sealed by an external custodian",
