@@ -213,7 +213,7 @@ public final class RealTTTBenchmark {
             List<String> allOutputs = target.run(counterexample);
             // Moore output includes the initial state's output.
             DefaultQuery<String, Word<String>> query =
-                new DefaultQuery<>(counterexample, Word.fromList(allOutputs));
+                new DefaultQuery<>(Word.epsilon(), counterexample, Word.fromList(allOutputs));
             boolean refined = learner.refineHypothesis(query);
             if (!refined) {
                 throw new AssertionError("TTT did not refine on observed counterexample");
