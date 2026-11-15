@@ -1,0 +1,38 @@
+{
+  "experiment_id": "OMEGA-OPT02-2026-11-15",
+  "status": "NO_DEMONSTRATED_ADVANTAGE",
+  "scientific_status": "EXECUTED_EXACT_ON_TESTS_NOT_SUPERIOR",
+  "protocol_commit": "184241464ceb425175ab5a48ea7e771cc06e44f4",
+  "candidate_source_sha256": "46ddcea87b8640eae0d1757312f034d0d0ebe5db5c814264bf75751e08e0af77",
+  "original_generation_run": 43746056945,
+  "original_raw_generation_json_sha256": "35e5818fcccc239e38e315d164ce0938047e5909190b7b33403251dfd1b66a04",
+  "actual_model_calls": 3,
+  "distinct_ast_programs": 1,
+  "replay_success_run": 43747010721,
+  "external_evaluation_success_run": 43747225462,
+  "external_evaluation_commit": "a32559f7974b9797eb2795c284030d1700959c36",
+  "external_evaluation_artifact_id": 14175145328,
+  "external_evaluation_full_json_sha256": "52144b10469084a72c57944d50eb01e41f5c5b8d0048644ab959885011b21888",
+  "graph_source": "networkx==3.5 built-in social graphs",
+  "graph_evaluation_input_sha256": "c77f184837a1517d8e3e2f52a45024aaabaf2a7a9fa2d00c0ee355d984e5717c",
+  "git_status": "DRAFT_UNMERGED",
+  "correctness_cases": 48,
+  "correctness_errors": 0,
+  "timed_cases": 32,
+  "independent_graph_groups": 8,
+  "cpu_repetitions_per_arm_case": 9,
+  "cpu_batch_calls": 20,
+  "geometric_mean_speedup_vs_best_classical": 0.8853257650634475,
+  "positive_group_medians": 2,
+  "one_sided_sign_p": 0.96484375,
+  "baseline_gate_results": {
+    "square-lowbit": "REVIEW_REQUIRED",
+    "square-scan": "REJECTED"
+  },
+  "limitations": [
+    "public external data, no third-party blinded custodian",
+    "single hosted CPU machine, no independent replication",
+    "no code novelty: candidate copies inlined binary exponentiation",
+    "infrastructure-only replay after two early runner defects"
+  ]
+}
