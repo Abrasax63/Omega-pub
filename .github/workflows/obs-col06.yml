@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Run ten integration tests with actual P1 PR23 PR40 and PR86
+      - name: Run eleven integration tests with actual P1 PR23 PR40 and PR86
         run: python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col06 -p 'test_obs_col06.py' -v
       - name: Execute six fixed worlds and keep the raw JSON evidence
         run: |
