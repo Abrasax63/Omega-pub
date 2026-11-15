@@ -67,7 +67,7 @@ class TestObsCol08(unittest.TestCase):
     def test_true_target_retained(self):
         for index in TARGET_INDICES:
             outcome = run_arm(self.models, self.models[index], "omega")
-            self.assertFalse(outcome["out_of_catalog"])
+            self.assertFalse(outcome["version_space_empty_on_training"])
             self.assertGreaterEqual(outcome["survivors"], 1)
 
     def test_a_and_strong_b_same_query_and_predictions(self):
@@ -87,12 +87,18 @@ class TestObsCol08(unittest.TestCase):
             x = result["arms"][arm]
             self.assertFalse(x["scientific_certificate"])
             self.assertEqual(x["heldout_total"], 1792)
+            self.assertEqual(x["posthoc_status"], "OUT_OF_HORIZON_WARNING")
 
     def test_full_report_falsifiable(self):
         result = run()
         self.assertEqual(result["case_count"], 9)
         self.assertEqual(result["candidate_models"], 40)
-        self.assertTrue(result["p1_selects_actual_probe"])
+        for target in result["results"][:-1]:
+            self.assertEqual(target["arms"]["omega"]["posthoc_status"],
+                             "UNIQUE_IN_CATALOG_NOT_CERTIFIED")
+        self.assertTrue(result["omega_pipeline_selects_actual_probe"])
+        self.assertTrue(result["pr23_selects_probe"])
+        self.assertFalse(result["p1_alone_selects_probe"])
         self.assertFalse(result["not_a_TTT_or_Lsharp_implementation"] is False)
         self.assertTrue(result["no_claim_of_omega_superiority"])
         self.assertEqual(result["model_calls"], 0)
