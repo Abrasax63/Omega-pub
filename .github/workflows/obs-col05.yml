@@ -1,0 +1,41 @@
+name: OBS-COL-05 nonlinear representation audit
+on:
+  push:
+    branches:
+      - experiment/obs-col05-representation-expansion-2026-11-15
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col05/**"
+      - ".github/workflows/obs-col05.yml"
+  workflow_dispatch:
+jobs:
+  exact-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run exact ten-test suite with inherited Omega P1
+        run: python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col05 -p 'test_obs_col05.py' -v
+      - name: Generate detailed evidence and assert OOD detection
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col05/obs_col05.py > obs_col05_result.json
+          python - <<'PY'
+          import json
+          z=json.load(open('obs_col05_result.json'))
+          assert len(z['cases'])==4 and z['llm_calls']==0
+          assert [r['holdout_correct'] for r in z['cases']]==[12,12,12,10]
+          assert all(r['p1_calls']==52 for r in z['cases'])
+          assert z['cases'][3]['status']=='OUT_OF_FAMILY_WARNING'
+          assert all(r['cubic_baseline_correct']==r['holdout_correct'] for r in z['cases'])
+          print('OBS-COL-05 PASS: 4 synthetic systems, 10 tests, OOD warning, no model calls')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-col05-evidence
+          path: obs_col05_result.json
+          if-no-files-found: error
