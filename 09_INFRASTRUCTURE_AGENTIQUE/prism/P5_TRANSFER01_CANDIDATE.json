@@ -1,0 +1,26 @@
+{
+  "target": [
+    "cp"
+  ],
+  "failure_counts": [
+    {
+      "prefix": [
+        "cp"
+      ],
+      "false_confirmations": 0,
+      "missed_confirmations": 1
+    }
+  ],
+  "rules": [
+    {
+      "argv_prefix": [
+        "cp"
+      ],
+      "verdict": "copie"
+    }
+  ],
+  "training_fingerprints": [
+    "1de6ab379b486c3343af33211d2dff61bf3039eaf0d118c5eb8ab256a3958b30"
+  ],
+  "baseline_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+}
