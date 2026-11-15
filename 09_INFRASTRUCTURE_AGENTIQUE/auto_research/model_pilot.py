@@ -19,6 +19,7 @@ from variant_factory import generate
 
 TRAIN_SEEDS = (1101, 1102, 1103)
 BASELINE_STRONG = "square-scan"
+BASELINE_STRONG_ALTERNATE = "square-lowbit"
 BASELINE_WEAK = "linear-scan"
 MAX_COST_PER_CASE_US = 15_000_000
 
@@ -177,7 +178,7 @@ def run(llama_cli, model_file, model_label):
     if not all(x["delta_correct"] for x in winner_rows):
         raise RuntimeError("independent Δ_h comparison failed")
     comparisons = {}
-    for label in (BASELINE_WEAK, BASELINE_STRONG):
+    for label in (BASELINE_WEAK, BASELINE_STRONG, BASELINE_STRONG_ALTERNATE):
         baseline_source = candidates[label]["source"]
         baseline_rows = score(baseline_source, reserved)
         comparisons[label] = evaluate_against(
@@ -192,7 +193,18 @@ def run(llama_cli, model_file, model_label):
         "correct_on_holdout": sum(x["correct"] for x in winner_rows),
         "delta_exact_matches": sum(x["delta_correct"] for x in winner_rows),
         "baselines": comparisons,
-        "strong_baseline_passed": comparisons[BASELINE_STRONG]["candidate_for_independent_review"],
+        "strong_baseline_passed": (
+            comparisons[BASELINE_STRONG]["candidate_for_independent_review"]
+            and comparisons[BASELINE_STRONG_ALTERNATE]["candidate_for_independent_review"]
+            and champion["source_sha256"] not in (
+                candidates[BASELINE_STRONG]["sha256"],
+                candidates[BASELINE_STRONG_ALTERNATE]["sha256"],
+            )
+        ),
+        "candidate_equals_classical_source": champion["source_sha256"] in (
+            candidates[BASELINE_STRONG]["sha256"],
+            candidates[BASELINE_STRONG_ALTERNATE]["sha256"],
+        ),
         "scientific_status": "INDETERMINATE_NOT_INDEPENDENTLY_CERTIFIED",
         "withheld_manifest_after_evaluation": manifest,
     })
