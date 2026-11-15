@@ -47,3 +47,23 @@ def evaluate_blind_traces(cases):
             "totals": {key: sum(row[key] for row in results)
                        for key in ("true_positive", "false_positive", "false_negative")},
             "real_world_generalization": "indéterminé"}
+
+
+def infer_buildkit_copy(raw, output):
+    """Reuse the existing guarded BuildKit parser; do not parse displayed scripts."""
+    from provenance_xtrace import extract_buildkit_copy, fixed_verdict
+    parsed = extract_buildkit_copy(raw, output)
+    if not parsed["complete"] or fixed_verdict(parsed) != "copie":
+        return {"relations": [], "status": "indéterminé",
+                "scientific_certification": False}
+    import shlex
+    command = shlex.split(parsed["writers"][0]["command"])
+    if len(command) != 4 or command[:2] != ["cp", "-av"]:
+        return {"relations": [], "status": "indéterminé",
+                "scientific_certification": False}
+    return {"relations": [{"from": command[2].removeprefix("./"),
+                            "to": output.removeprefix("./"),
+                            "kind": "buildkit_observed_copy",
+                            "evidence": "traced command + verbose path + completed step",
+                            "status": "trace_observation"}],
+            "status": "observé_non_certifié", "scientific_certification": False}
