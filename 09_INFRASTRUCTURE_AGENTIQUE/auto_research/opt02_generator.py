@@ -140,6 +140,9 @@ def model_call(cli, weights, attempt, feedback):
 def training_run(source, cases):
     with tempfile.TemporaryDirectory(prefix="omega-opt02-dev-") as td:
         folder = Path(td)
+        # TemporaryDirectory defaults to 0700. The non-root Docker process
+        # cannot traverse it even when the mounted files are mode 0644.
+        os.chmod(folder, 0o755)
         (folder / "candidate.py").write_text(source)
         (folder / "cases.json").write_text(json.dumps(cases))
         (folder / "harness.py").write_text(HARNESS)
