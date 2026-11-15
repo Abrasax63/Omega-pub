@@ -252,7 +252,8 @@ def score_episode(world):
     for iteration in range(MAX_ACTIVE):
         if len(current) <= 1:
             break
-        case = make_case(current, observations, world, iteration)
+        # Never disclose the generating world label in Omega mission metadata.
+        case = make_case(current, observations, "UNLABELED", iteration)
         if not case["checks"]:
             break
         # Calls actual PR23 exact two-step policy and actual Omega P1 bridge.
@@ -278,7 +279,7 @@ def score_episode(world):
         observations.append((probe, actual))
         current = candidates_from_observations(observations)
         plans.append({
-            "status": "measured", "check_id": chosen,
+            "status": "measured", "mission_id": case["case_id"], "check_id": chosen,
             "probe": [probe[0], list(probe[1])],
             "trace": list(actual), "survivors_before": before,
             "survivors_after": len(current),
