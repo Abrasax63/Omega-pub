@@ -1,0 +1,127 @@
+name: Omega memory causal ablation — three Qwen arms and RCE
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-end-to-end-cycle-2026-11-15
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/memory_ablation/**'
+      - '.github/workflows/omega-memory-ablation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-memory-ablation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify real RCE lookup, prompt parity, AST and holdout guards
+        run: |
+          set -euo pipefail
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/memory_ablation/memory_ablation.py
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/memory_ablation -p 'test_memory_ablation.py' -v
+  model-ablation-after-smoke:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests without model or remote inference
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: |
+          python -m py_compile gate.py runner.py model_proposal.py sandbox_runner.py model_pilot.py
+          python -m unittest -v test_gate.py test_variant_search.py test_model_proposal.py
+      - name: Pull isolated execution image
+        run: |
+          docker pull python:3.12-slim
+          docker image inspect python:3.12-slim --format '{{json .RepoDigests}}'
+      - name: Restore pinned llama.cpp build cache
+        uses: actions/cache@v4
+        id: llama-cache
+        with:
+          path: ${{ runner.temp }}/llama.cpp
+          key: omega-llama-cpu-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6-v1
+      - name: Build pinned llama.cpp CPU inference engine
+        if: steps.llama-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$RUNNER_TEMP/llama.cpp"
+          git -C "$RUNNER_TEMP/llama.cpp" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          git -C "$RUNNER_TEMP/llama.cpp" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          cmake -S "$RUNNER_TEMP/llama.cpp" -B "$RUNNER_TEMP/llama.cpp/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/llama.cpp/build" --target llama-cli -j 4
+          "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" --help >/dev/null
+      - name: Restore pinned Qwen model weight cache
+        uses: actions/cache@v4
+        id: model-cache
+        with:
+          path: ${{ runner.temp }}/model.gguf
+          key: omega-qwen2p5-coder-3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7-v1
+      - name: Download verified Qwen2.5 Coder 3B Q4_K_M weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f "$RUNNER_TEMP/model.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf" \
+              -o "$RUNNER_TEMP/model.gguf"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $RUNNER_TEMP/model.gguf" | sha256sum -c -
+      - name: Run fresh three-arm causal context ablation using Qwen and actual RCE
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/memory_ablation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python memory_ablation.py \
+            --llama-cli "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" \
+            --model-file "$RUNNER_TEMP/model.gguf" \
+            --output memory-ablation-result.json
+          python - <<'PY'
+          import json
+          x = json.load(open('memory-ablation-result.json', encoding='utf-8'))
+          assert x['provenance']['valid']
+          assert x['p3_coverage']['completed'] == 1
+          assert x['model_calls'] == 3
+          assert len(x['records']) == 3
+          assert all(r.get('model_call_returncode') == 0 for r in x['records'])
+          assert len(set(x['prompt_sha256'].values())) == 3
+          assert x['prompt_character_count']['placebo_rce'] == x['prompt_character_count']['memoire_rce']
+          assert x['comparison']['retrieved_note_used_in_prompt']
+          assert x['frozen_manifest_sha256'] and len(x['holdout_manifest']['holdout']) == 5
+          assert x['strong_classical']['square-scan']['correct'] == 5
+          assert x['strong_classical']['square-lowbit']['correct'] == 5
+          assert not x['promotion_to_core']
+          print('RCE excerpt used in memory-arm prompt:', x['comparison']['retrieved_note_used_in_prompt'])
+          print('Three model calls:', x['model_calls'])
+          print('Statuses and decisions:', [(r['arm'],r['status'],r['decision']) for r in x['records']])
+          print('Memory minus placebo correct:', x['comparison']['relevant_minus_placebo_correct'])
+          print('Independent Q^h/Delta_h references and provenance chain valid.')
+          print('No scientific novelty or intelligence gain certified.')
+          PY
+      - name: Save audit data and candidate source (never merge automatically)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-context-ablation-three-arm-model
+          path: 09_INFRASTRUCTURE_AGENTIQUE/memory_ablation/memory-ablation-result.json
+          if-no-files-found: warn
+          retention-days: 14
