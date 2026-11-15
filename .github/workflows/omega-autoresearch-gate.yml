@@ -1,0 +1,37 @@
+name: Omega AutoResearch gate v0.2 checks
+
+on:
+  push:
+    branches:
+      - experiment/omega-autoresearch-transfer-gate-2026-11-15
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/auto_research/**'
+      - '.github/workflows/omega-autoresearch-gate.yml'
+  pull_request:
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/auto_research/**'
+      - '.github/workflows/omega-autoresearch-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-gate-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout candidate branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python syntax checks
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: python -m py_compile gate.py test_gate.py
+      - name: Deterministic and adversarial unit tests (no external models)
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_research
+        run: python -m unittest -v test_gate.py
