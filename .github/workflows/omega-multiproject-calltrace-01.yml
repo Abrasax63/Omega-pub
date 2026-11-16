@@ -1,0 +1,396 @@
+name: Omega multiproject calltrace 01 - preregistered 3-bug cohort
+
+on:
+  push:
+    branches:
+      - experiment/omega-multiproject-calltrace-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/**'
+      - '.github/workflows/omega-multiproject-calltrace-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-newbug-calltrace-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/**'
+      - '.github/workflows/omega-multiproject-calltrace-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-multiproject-calltrace-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  buggy-freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - case: pysnooper-2
+            py: '3.8-slim'
+          - case: tqdm-9
+            py: '3.6-slim'
+          - case: scrapy-2
+            py: '3.8-slim'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exactly eight no-network regression tests before exploring historical bugs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+              '09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01',
+              pattern='test_cohort.py')
+          n=suite.countTestCases()
+          print("COHORT_REGRESSION_TESTS_DISCOVERED",n)
+          assert n==8,("unexpected unit-test count",n)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Load exact preregistered case metadata
+        shell: bash
+        env:
+          CASE_NAME: ${{ matrix.case }}
+        run: |
+          set -euo pipefail
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json,os
+          with open('09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/cases.json') as f:
+              data=json.load(f)
+          case=next(c for c in data['cases'] if c['id']==os.environ['CASE_NAME'])
+          for k,v in {
+              'CASE_PROJECT':case['project'],
+              'CASE_PACKAGE':case['package'],
+              'CASE_BUGGY':case['buggy'],
+              'CASE_FIXED':case['fixed'],
+              'CASE_TEST_FILE':case['test_file'],
+              'CASE_FRAMEWORK':case['framework'],
+              'CASE_TESTS_JSON':json.dumps(case['tests'],separators=(',',':')),
+          }.items():
+              print(k+'='+v)
+          PY
+      - name: Checkout only BUGGY production and transplant only fixed historical TEST
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            "https://github.com/$CASE_PROJECT.git" "$RUNNER_TEMP/cohort-buggy"
+          git -C "$RUNNER_TEMP/cohort-buggy" fetch --depth 1 origin "$CASE_BUGGY"
+          git -C "$RUNNER_TEMP/cohort-buggy" checkout --quiet --detach "$CASE_BUGGY"
+          test "$(git -C "$RUNNER_TEMP/cohort-buggy" rev-parse HEAD)" = "$CASE_BUGGY"
+          mkdir -p "$RUNNER_TEMP/cohort-buggy/$(dirname "$CASE_TEST_FILE")"
+          curl --fail --location --silent --show-error --retry 3 \
+            --connect-timeout 30 --max-time 120 \
+            "https://raw.githubusercontent.com/$CASE_PROJECT/$CASE_FIXED/$CASE_TEST_FILE" \
+            -o "$RUNNER_TEMP/cohort-buggy/$CASE_TEST_FILE"
+          test -s "$RUNNER_TEMP/cohort-buggy/$CASE_TEST_FILE"
+          echo "BUGGY_COMMIT_VERIFIED $CASE_BUGGY"
+          echo "FIXED_TEST_ONLY_SHA256 $(sha256sum "$RUNNER_TEMP/cohort-buggy/$CASE_TEST_FILE" | cut -d ' ' -f1)"
+      - name: Prepare pinned pytest wheels OFFLINE for sandbox (download beforehand)
+        shell: bash
+        env:
+          CASE_IMAGE: ${{ matrix.py }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cohort-wheels"
+          docker pull "python:$CASE_IMAGE"
+          if [ "$CASE_FRAMEWORK" = "pytest" ]; then
+            docker run --rm -v "$RUNNER_TEMP/cohort-wheels:/wheels" \
+              "python:$CASE_IMAGE" \
+              sh -c 'python -m pip download --disable-pip-version-check -d /wheels "pytest==6.2.5"' \
+              > "$RUNNER_TEMP/wheels-download.log" 2>&1 || {
+                echo 'DEPENDENCY_WHEEL_DOWNLOAD_FAILED; keep as indeterminate'
+                tail -n 20 "$RUNNER_TEMP/wheels-download.log" || true
+              }
+          fi
+      - name: Execute only preregistered test under NO-NETWORK read-only Python sandbox
+        shell: bash
+        env:
+          CASE_IMAGE: ${{ matrix.py }}
+        run: |
+          set -euo pipefail
+          mkdir -p cohort-evidence
+          set +e
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=160m \
+            -v "$PWD:/agent:ro" \
+            -v "$RUNNER_TEMP/cohort-buggy:/repo:ro" \
+            -v "$RUNNER_TEMP/cohort-wheels:/wheels:ro" \
+            -e CASE_PACKAGE -e CASE_FRAMEWORK -e CASE_TESTS_JSON \
+            -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+            -w /repo "python:$CASE_IMAGE" \
+            sh -c '
+              if [ "$CASE_FRAMEWORK" = "pytest" ]; then
+                python -m pip install --no-index --find-links=/wheels \
+                  --target=/tmp/deps "pytest==6.2.5" >/tmp/install.log 2>&1 || {
+                    echo "OFFLINE_DEPENDENCY_INSTALL_FAILED" >&2
+                    cat /tmp/install.log >&2
+                  }
+              fi
+              PYTHONPATH=/tmp/deps:/repo timeout 180s \
+                python /agent/09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/run_tests_profile.py \
+                --repo-root /repo --package "$CASE_PACKAGE" \
+                --framework "$CASE_FRAMEWORK" --tests-json "$CASE_TESTS_JSON" \
+                --output /tmp/profile.json >&2
+              rc=$?
+              if test -s /tmp/profile.json; then cat /tmp/profile.json; fi
+              exit "$rc"
+            ' > cohort-evidence/buggy-profile.json 2> cohort-evidence/buggy-runner.log
+          rc="$?"
+          set -e
+          echo "$rc" > cohort-evidence/buggy-container-exit.txt
+          echo "BUGGY_SANDBOX_EXIT $rc"
+          tail -n 24 cohort-evidence/buggy-runner.log || true
+      - name: Freeze all A/B/C ranks from BUGGY and transplanted TEST only
+        shell: bash
+        env:
+          CASE_NAME: ${{ matrix.case }}
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/freeze_ranks.py \
+            --case "$CASE_NAME" --buggy-checkout "$RUNNER_TEMP/cohort-buggy" \
+            --profile cohort-evidence/buggy-profile.json \
+            --output cohort-evidence/frozen-ranks.json
+          sha256sum cohort-evidence/frozen-ranks.json > cohort-evidence/frozen-ranks.sha256
+          python - <<'PY'
+          import json,pathlib
+          x=json.loads(pathlib.Path('cohort-evidence/frozen-ranks.json').read_text())
+          assert x['phase']=='BUGGY_ONLY_THREE_ARM_COMMIT_BEFORE_FIXED'
+          assert not x['fixed_source_accessed'] and not x['oracle_accessed']
+          assert x['same_inventory_all_arms'] and x['same_inspection_budget_per_arm']==10
+          assert x['different_execution_and_information_budget']
+          assert not x['model_called'] and not x['patch_generated']
+          print("FROZEN_THREE_ARM_STATUS",x['case'],x['status'])
+          PY
+      - name: Archive all negative or positive buggy-only evidence, no selection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cohort-buggy-${{ matrix.case }}
+          path: cohort-evidence/*
+          if-no-files-found: warn
+          retention-days: 14
+
+  oracle-after-freeze:
+    needs: buggy-freeze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - case: pysnooper-2
+            py: '3.8-slim'
+          - case: tqdm-9
+            py: '3.6-slim'
+          - case: scrapy-2
+            py: '3.8-slim'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Recover frozen source and ranks from BUGGY job
+        uses: actions/download-artifact@v4
+        with:
+          name: cohort-buggy-${{ matrix.case }}
+          path: frozen
+      - name: Validate rank commitment BEFORE downloading FIXED source
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(cut -d ' ' -f1 frozen/frozen-ranks.sha256)"
+          test -n "$expected"
+          echo "$expected  frozen/frozen-ranks.json" | sha256sum --check
+          echo "FROZEN_RANKS_VERIFIED $expected"
+      - name: Load same preregistered case config
+        shell: bash
+        env:
+          CASE_NAME: ${{ matrix.case }}
+        run: |
+          set -euo pipefail
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json,os
+          with open('09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/cases.json') as f:
+              data=json.load(f)
+          case=next(c for c in data['cases'] if c['id']==os.environ['CASE_NAME'])
+          for k,v in {
+              'CASE_PROJECT':case['project'],
+              'CASE_PACKAGE':case['package'],
+              'CASE_BUGGY':case['buggy'],
+              'CASE_FIXED':case['fixed'],
+              'CASE_TEST_FILE':case['test_file'],
+              'CASE_FRAMEWORK':case['framework'],
+              'CASE_TESTS_JSON':json.dumps(case['tests'],separators=(',',':')),
+          }.items():
+              print(k+'='+v)
+          PY
+      - name: Clone exact buggy AND FIXED production, only after frozen SHA checked
+        shell: bash
+        run: |
+          set -euo pipefail
+          for side in buggy fixed; do
+            sha="$CASE_BUGGY"
+            if [ "$side" = fixed ]; then sha="$CASE_FIXED"; fi
+            git clone --quiet --no-checkout --filter=blob:none \
+              "https://github.com/$CASE_PROJECT.git" "$RUNNER_TEMP/cohort-$side"
+            git -C "$RUNNER_TEMP/cohort-$side" fetch --depth 1 origin "$sha"
+            git -C "$RUNNER_TEMP/cohort-$side" checkout --quiet --detach "$sha"
+            test "$(git -C "$RUNNER_TEMP/cohort-$side" rev-parse HEAD)" = "$sha"
+          done
+          mkdir -p "$RUNNER_TEMP/cohort-buggy/$(dirname "$CASE_TEST_FILE")"
+          cp "$RUNNER_TEMP/cohort-fixed/$CASE_TEST_FILE" \
+             "$RUNNER_TEMP/cohort-buggy/$CASE_TEST_FILE"
+          expected_test="$(python -c 'import json;print(json.load(open("frozen/frozen-ranks.json"))["test_sha256"])')"
+          test "$(sha256sum "$RUNNER_TEMP/cohort-fixed/$CASE_TEST_FILE" | cut -d ' ' -f1)" = "$expected_test"
+          test "$(sha256sum "$RUNNER_TEMP/cohort-buggy/$CASE_TEST_FILE" | cut -d ' ' -f1)" = "$expected_test"
+          echo "FIXED_SOURCE_AND_SHARED_TEST_SHA_CONFIRMED"
+      - name: Prepare same pytest wheelhouse; network only for dependency prep
+        shell: bash
+        env:
+          CASE_IMAGE: ${{ matrix.py }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cohort-wheels"
+          docker pull "python:$CASE_IMAGE"
+          if [ "$CASE_FRAMEWORK" = "pytest" ]; then
+            docker run --rm -v "$RUNNER_TEMP/cohort-wheels:/wheels" \
+              "python:$CASE_IMAGE" \
+              sh -c 'python -m pip download --disable-pip-version-check -d /wheels "pytest==6.2.5"' \
+              > "$RUNNER_TEMP/wheels-download.log" 2>&1 || {
+                echo 'FIXED_DEPENDENCY_DOWNLOAD_FAILED'
+                tail -n 20 "$RUNNER_TEMP/wheels-download.log" || true
+              }
+          fi
+      - name: Run same tests on FIXED with same no-network bounded sandbox
+        shell: bash
+        env:
+          CASE_IMAGE: ${{ matrix.py }}
+        run: |
+          set -euo pipefail
+          mkdir -p oracle-evidence
+          set +e
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=160m \
+            -v "$PWD:/agent:ro" \
+            -v "$RUNNER_TEMP/cohort-fixed:/repo:ro" \
+            -v "$RUNNER_TEMP/cohort-wheels:/wheels:ro" \
+            -e CASE_PACKAGE -e CASE_FRAMEWORK -e CASE_TESTS_JSON \
+            -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+            -w /repo "python:$CASE_IMAGE" \
+            sh -c '
+              if [ "$CASE_FRAMEWORK" = "pytest" ]; then
+                python -m pip install --no-index --find-links=/wheels \
+                  --target=/tmp/deps "pytest==6.2.5" >/tmp/install.log 2>&1 || {
+                    echo "OFFLINE_DEPENDENCY_INSTALL_FAILED" >&2
+                    cat /tmp/install.log >&2
+                  }
+              fi
+              PYTHONPATH=/tmp/deps:/repo timeout 180s \
+                python /agent/09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/run_tests_profile.py \
+                --repo-root /repo --package "$CASE_PACKAGE" \
+                --framework "$CASE_FRAMEWORK" --tests-json "$CASE_TESTS_JSON" \
+                --output /tmp/profile.json >&2
+              rc=$?
+              if test -s /tmp/profile.json; then cat /tmp/profile.json; fi
+              exit "$rc"
+            ' > oracle-evidence/fixed-profile.json 2> oracle-evidence/fixed-runner.log
+          rc="$?"
+          set -e
+          echo "$rc" > oracle-evidence/fixed-container-exit.txt
+          echo "FIXED_SANDBOX_EXIT $rc"
+          tail -n 24 oracle-evidence/fixed-runner.log || true
+      - name: Evaluate frozen A/B/C against complete source oracle after fixed TEST
+        shell: bash
+        env:
+          CASE_NAME: ${{ matrix.case }}
+        run: |
+          set -euo pipefail
+          expected="$(cut -d ' ' -f1 frozen/frozen-ranks.sha256)"
+          python 09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/oracle.py \
+            --case "$CASE_NAME" \
+            --frozen frozen/frozen-ranks.json --expected-sha256 "$expected" \
+            --buggy-checkout "$RUNNER_TEMP/cohort-buggy" \
+            --fixed-checkout "$RUNNER_TEMP/cohort-fixed" \
+            --buggy-profile frozen/buggy-profile.json \
+            --fixed-profile oracle-evidence/fixed-profile.json \
+            --output oracle-evidence/oracle.json
+          python - <<'PY'
+          import json,pathlib
+          o=json.loads(pathlib.Path('oracle-evidence/oracle.json').read_text())
+          assert o['phase']=='POST_FREEZE_FIXED_ORACLE_AND_NEGATIVE_CONTROL'
+          assert o['same_function_inspection_budget_10']
+          assert not o['same_runtime_or_information_budget']
+          assert o['real_repair_correctness'] is None
+          assert not o['model_called'] and not o['patch_generated']
+          print('COHORT_CASE_FINAL_STATUS',o['case'],o['status'])
+          PY
+      - name: Archive exact fixed test, oracle and negative outcomes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cohort-fixed-${{ matrix.case }}
+          path: oracle-evidence/*
+          if-no-files-found: warn
+          retention-days: 14
+
+  cohort-report:
+    if: always()
+    needs:
+      - buggy-freeze
+      - oracle-after-freeze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Collect all three case results, preserving missing and invalid outcomes
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: cohort-fixed-*
+          path: collected
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Always summarize all three PRESELECTED cases, even CI failures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/report_cohort.py \
+            --results-root collected --output cohort-summary/summary.json
+          python - <<'PY'
+          import json,pathlib
+          data=json.loads(pathlib.Path('cohort-summary/summary.json').read_text())
+          assert data['preregistered_cases']==3
+          assert len(data['case_results'])==3
+          assert not data['data_excluded_from_denominator']
+          assert not data['statistical_generalization_demonstrated']
+          print('COHORT_STRICT_STATUS',data['status'])
+          PY
+      - name: Archive all missing, negative and positive summaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-multiproject-calltrace-01-cohort-summary
+          path: cohort-summary/*.json
+          if-no-files-found: warn
+          retention-days: 14

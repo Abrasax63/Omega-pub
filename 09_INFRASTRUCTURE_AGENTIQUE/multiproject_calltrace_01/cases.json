@@ -1,0 +1,54 @@
+{
+  "experiment": "OMEGA-MULTIPROJECT-CALLTRACE-01",
+  "bugsinpy_commit": "11c5f1eea954a42132cfd06bf257766a7963e0fd",
+  "selected_before_fixed_source": true,
+  "never_replace_failed_case": true,
+  "cases": [
+    {
+      "id": "pysnooper-2",
+      "project": "cool-RR/PySnooper",
+      "package": "pysnooper",
+      "buggy": "e21a31162f4c54be693d8ca8260e42393b39abd3",
+      "fixed": "814abc34a098c1b98cb327105ac396f985d2413e",
+      "python_image": "3.8-slim",
+      "historical_python": "3.8.1",
+      "framework": "pytest",
+      "test_file": "tests/test_pysnooper.py",
+      "tests": [
+        "tests/test_pysnooper.py::test_custom_repr_single"
+      ],
+      "official_script": "pytest -q -s tests/test_pysnooper.py::test_custom_repr_single"
+    },
+    {
+      "id": "tqdm-9",
+      "project": "tqdm/tqdm",
+      "package": "tqdm",
+      "buggy": "9da1d5d116aec7a23d8f6dc22d5e23ecb1c40a7c",
+      "fixed": "d877c1dfb4739852105f7b967a8fceb869ac5042",
+      "python_image": "3.6-slim",
+      "historical_python": "3.6.9",
+      "framework": "pytest",
+      "test_file": "tqdm/tests/tests_tqdm.py",
+      "tests": [
+        "tqdm/tests/tests_tqdm.py::test_si_format",
+        "tqdm/tests/tests_tqdm.py::test_update"
+      ],
+      "official_script": "python3 -m pytest tqdm/tests/tests_tqdm.py::test_si_format; python3 -m pytest tqdm/tests/tests_tqdm.py::test_update"
+    },
+    {
+      "id": "scrapy-2",
+      "project": "scrapy/scrapy",
+      "package": "scrapy",
+      "buggy": "f02c3d1dcf3e4880388d19e961e7911be5dc54ff",
+      "fixed": "439a3e59b8e858441f8d97dbc32f398db392330d",
+      "python_image": "3.8-slim",
+      "historical_python": "3.8.3",
+      "framework": "unittest",
+      "test_file": "tests/test_utils_datatypes.py",
+      "tests": [
+        "tests.test_utils_datatypes.LocalCacheTest.test_cache_without_limit"
+      ],
+      "official_script": "python -m unittest -q tests.test_utils_datatypes.LocalCacheTest.test_cache_without_limit"
+    }
+  ]
+}

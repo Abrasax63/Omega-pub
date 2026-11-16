@@ -1,0 +1,5 @@
+# Addendum de périmètre avant le premier run — 2026-11-16
+
+L'inventaire des trois bras et de l'oracle exclut **les tests contenus dans un paquet de production** : chemins avec segments `test` ou `tests`, ou module dont le nom commence par `test_` / `tests_`. C'est indispensable pour `tqdm` dont le test officiel `tqdm/tests/tests_tqdm.py` est dans l'arbre du package. Sinon le classement pourrait privilégier les fonctions de l'énoncé du test plutôt que le code de production, et le transplant du test fixed pourrait être pris à tort pour une correction de code. Cette exclusion est fixée maintenant, **avant toute exécution/consultation des correctifs** et appliquée identiquement aux trois bras et à l'oracle. Les fichiers de tests continuent à fournir les noms et appels AST pour le score lexical, mais ne peuvent jamais être des fonctions candidates.
+
+Cette règle est ajoutée sans toucher à la formule du score, aux trois cas retenus, à l'ordre d'évaluation, aux SHA, aux commandes officielles ou à la politique d'échec. Tout nouveau changement exige un autre addendum et doit être visible avant les runs.
