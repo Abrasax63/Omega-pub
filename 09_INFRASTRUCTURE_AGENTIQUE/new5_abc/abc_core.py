@@ -106,6 +106,32 @@ def model_select(raw_response, allowed):
     return s if s in allowed else None
 
 
+def extract_llama_cli_id(stdout, allowed):
+    """Accept one exact choice, optionally enclosed by llama-cli's known footer.
+
+    The prompt may be echoed in stdout: never search for an arbitrary P-number.
+    Require a standalone answer immediately before an identifiable CLI footer,
+    and reject arbitrary chatter or an unexpected candidate ID.
+    """
+    direct = model_select(stdout, allowed)
+    if direct is not None:
+        return direct
+    footer = re.search(
+        r"(?m)^\[\s*Prompt:\s*[0-9.]+\s*t/s\s*\|\s*Generation:\s*[0-9.]+\s*t/s\s*\]$",
+        stdout,
+    )
+    if footer is None:
+        return None
+    suffix = stdout[footer.end():].strip()
+    if not re.fullmatch(r">\s*Exiting\.{3}", suffix):
+        return None
+    preceding = stdout[:footer.start()].strip()
+    if not preceding:
+        return None
+    tail = preceding.splitlines()[-1].strip()
+    return model_select(tail, allowed)
+
+
 def final_model_order(b_order, shortlist, selected_id):
     """Reorder at most the original four symbolic trials; do not expand budget."""
     if selected_id is None or selected_id not in shortlist:
