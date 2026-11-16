@@ -1,0 +1,92 @@
+name: Omega method scope 01 - frozen coverage comparison
+
+on:
+  push:
+    branches:
+      - experiment/omega-ast-method-scope-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/method_scope_01/**'
+      - '.github/workflows/omega-method-scope-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-blind-real-01-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/method_scope_01/**'
+      - '.github/workflows/omega-method-scope-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-method-scope-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test frozen baseline and method-only scanner
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            09_INFRASTRUCTURE_AGENTIQUE/method_scope_01/method_scope.py
+          python -m unittest discover -v \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/method_scope_01 \
+            -p 'test_method_scope.py'
+      - name: Fetch only Scrapy-1 BUGGY pinned source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/scrapy/scrapy.git "$RUNNER_TEMP/scrapy-buggy"
+          git -C "$RUNNER_TEMP/scrapy-buggy" fetch --depth 1 origin \
+            c57512fa669e6f6b1b766a7639206a380f0d10ce
+          git -C "$RUNNER_TEMP/scrapy-buggy" checkout --quiet --detach \
+            c57512fa669e6f6b1b766a7639206a380f0d10ce
+          test "$(git -C "$RUNNER_TEMP/scrapy-buggy" rev-parse HEAD)" = \
+            c57512fa669e6f6b1b766a7639206a380f0d10ce
+          echo "BUGGY SOURCE SHA CONFIRMED"
+      - name: Compare exact frozen rules on top-level functions and class methods
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/method_scope_01/method_scope.py \
+            --buggy-checkout "$RUNNER_TEMP/scrapy-buggy" \
+            --output method-scope-artifacts/comparison.json
+          python - <<'PY'
+          import hashlib,json,pathlib
+          p=pathlib.Path("method-scope-artifacts/comparison.json")
+          report=json.loads(p.read_text(encoding="utf-8"))
+          assert report["phase"] == "BUGGY_ONLY_COVERAGE_COMPARISON"
+          assert not report["historical_fixed_accessed"]
+          assert not report["model_called"]
+          assert not report["public_reproducer_executed"]
+          assert not report["reserved_tests_executed"]
+          assert report["repair_correctness"] is None
+          assert report["comparison_status"] in {
+              "COVERAGE_INCREASED", "NO_INCREMENTAL_CANDIDATE",
+              "BUDGET_EXCEEDED", "SOURCE_UNAVAILABLE",
+              "PARTIAL_COVERAGE_WITH_ERRORS"}
+          print("COMPARISON_STATUS",report["comparison_status"])
+          print("TOP_LEVEL",len(report["arm_a_top_level"]["candidates"]))
+          print("EXTRA_METHODS",len(report["arm_b_increment_methods"]["candidates"]))
+          print("REPORT_SHA256",hashlib.sha256(p.read_bytes()).hexdigest())
+          print("NO REPAIR CORRECTNESS OR MODEL ADVANTAGE CLAIMED")
+          PY
+      - name: Archive bounded raw comparison even when negative
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-method-scope-01-coverage
+          path: method-scope-artifacts/*.json
+          if-no-files-found: warn
+          retention-days: 14
