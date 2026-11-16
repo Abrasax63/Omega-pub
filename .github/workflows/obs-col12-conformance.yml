@@ -8,6 +8,8 @@ on:
       - "02_MATHEMATIQUES/pilotes/obs_col12/**"
       - ".github/workflows/obs-col12-conformance.yml"
   workflow_dispatch:
+env:
+  PYTHONHASHSEED: '0'
 jobs:
   conformance-calibration:
     runs-on: ubuntu-latest
