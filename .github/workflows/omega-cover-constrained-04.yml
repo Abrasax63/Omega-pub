@@ -1,0 +1,125 @@
+name: Omega cover constrained 04 - new minimal black boxes at binding budgets
+
+on:
+  push:
+    branches:
+      - experiment/omega-cover-constrained-04-2026-11-16
+    paths:
+      - 'experiments/omega-cover-constrained-04/**'
+      - '.github/workflows/omega-cover-constrained-04.yml'
+  pull_request:
+    branches:
+      - experiment/omega-counterexample-cover-03-2026-11-16
+    paths:
+      - 'experiments/omega-cover-constrained-04/**'
+      - '.github/workflows/omega-cover-constrained-04.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-cover-constrained-04-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  independent-constrained-holdout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned public AALpy reference
+        run: python -m pip install --disable-pip-version-check aalpy==1.6.2
+      - name: Require eight preregistered integrity controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-cover-constrained-04/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+              'experiments/omega-cover-constrained-04',
+              pattern='test_constrained.py')
+          print('OMEGA_CONSTRAINED_04_CONTROLS',suite.countTestCases())
+          assert suite.countTestCases()==8
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Frozen 12 x 4 x 2 new budget-constrained blackbox trials
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-cover-constrained-04/constrained_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Validate costs, conditional EQ, exact BFS and primary verdict
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-COVER-CONSTRAINED-04'
+          assert d['preregistered_commit']=='ae6a29814d8678e969c903cbc013ae895a80bfe5'
+          assert d['budgets']==[300,500] and d['primary']==500
+          assert d['learning_engine']=='unchanged_PR138_AALpy_1.6.2_run_Lstar'
+          assert d['EQ_word_length']==10
+          assert d['max_EQ_words_per_round']==32
+          assert d['same_algorithms_as_PR138'] and d['same_seed_across_budgets']
+          assert d['evaluator_only_truth_access'] and d['no_paid_api']
+          assert not d['generalization_proven'] and not d['main_modified']
+          assert d['models']==['RANDOM_LEN10','FIXED_LEN10','OLD_OMEGA_LEN10',
+                                'COVER_DISTINGUISH_LEN10']
+          assert len(d['cases'])==12
+          assert [x['size'] for x in d['cases']]==[4]*4+[5]*4+[6]*4
+          ids=[x['canonical_signature'] for x in d['cases']]
+          assert len(ids)==len(set(ids))
+          for x in d['cases']:
+              assert x['reachable_states']==x['size'] and x['distinguishable_states']
+              for cap in (300,500):
+                  for arm in d['models']:
+                      r=x['arms_by_budget'][str(cap)][arm]
+                      t=r['training']
+                      led=t['ledger']
+                      assert 0<=led['spent_symbols']<=cap
+                      assert sum(z['charge'] for z in led['query_log'])==led['spent_symbols']
+                      assert led['by_phase_spent']['MQ']+led['by_phase_spent']['EQ']==led['spent_symbols']
+                      assert all(len(z['inputs'])==10
+                                 for z in led['query_log'] if z['phase']=='EQ')
+                      assert t['eq_words_tested']==sum(z['phase']=='EQ'
+                                 for z in led['query_log'])
+                      held=r['reserved']
+                      assert held['evaluated_test_words']+held['excluded_identical_train_queries']==128
+                      eq=r['exact_equivalence']
+                      assert eq['status'] in ('EXACT_EQUIVALENT','NOT_EQUIVALENT','NO_HYPOTHESIS')
+                      if eq['status']=='EXACT_EQUIVALENT':
+                          assert held['whole_word_accuracy']==1.0
+                      if eq['status']=='NOT_EQUIVALENT':
+                          assert len(eq['counterexample'])==eq['shortest_counterexample_length']>0
+          primary=d['scores']['500']
+          candidate=primary['COVER_DISTINGUISH_LEN10']
+          others=[primary[k] for k in d['models'] if k!='COVER_DISTINGUISH_LEN10']
+          passed=(all(candidate['behavioral_exact']>x['behavioral_exact'] for x in others)
+                  and all(candidate['mean_heldout_word_accuracy']+1e-12>=
+                          x['mean_heldout_word_accuracy'] for x in others))
+          assert d['status']==(
+              'DESCRIPTIVE_CONSTRAINED_COVER_GAIN' if passed
+              else 'NO_DEMONSTRATED_CONSTRAINED_GAIN')
+          print('OMEGA_CONSTRAINED_04_VERDICT',d['status'])
+          print('OMEGA_CONSTRAINED_04_PRIMARY',d['scores']['500'])
+          print('OMEGA_CONSTRAINED_04_SECONDARY',d['scores']['300'])
+          PY
+      - name: Archive raw queries and any negative result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cover-constrained-04-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
