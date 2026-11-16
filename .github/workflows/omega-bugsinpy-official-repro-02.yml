@@ -40,9 +40,17 @@ jobs:
           python -m py_compile \
             09_INFRASTRUCTURE_AGENTIQUE/official_repro_02/official_rank.py \
             09_INFRASTRUCTURE_AGENTIQUE/official_repro_02/official_oracle.py
-          python -m unittest discover -v \
-            -s 09_INFRASTRUCTURE_AGENTIQUE/official_repro_02 \
-            -p 'test_official_repro.py'
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+              '09_INFRASTRUCTURE_AGENTIQUE/official_repro_02',
+              pattern='test_official_repro.py')
+          n=suite.countTestCases()
+          print('OFFICIAL_REPRO_TESTS_DISCOVERED',n)
+          assert n == 4, ('wrong test discovery',n)
+          result=unittest.TextTestRunner(verbosity=2).run(suite)
+          assert result.wasSuccessful()
+          PY
       - name: Checkout ONLY pinned historical BUGGY youtube-dl-1
         shell: bash
         run: |
