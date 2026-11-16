@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -60,9 +61,8 @@ def coverage_ranking(hypothesis, words, known_prefixes=(), memory=False):
                 tuple(word[:k]) not in known
                 for k in range(1, len(word) + 1)
             )
-        # Scale scores by 1000*(length+1) to avoid binary float ties;
-        # equivalent to 4*coverage + 2*flips + novelty/(len+1).
-        score = (4 * coverage + 2 * flips) * (len(word) + 1) + novelty
+        # Exact rational score frozen in the preregistration.
+        score = Fraction(4 * coverage + 2 * flips) + Fraction(novelty, len(word) + 1)
         scored.append((-score, len(word), original_index, word))
     return tuple(item[-1] for item in sorted(scored))
 
