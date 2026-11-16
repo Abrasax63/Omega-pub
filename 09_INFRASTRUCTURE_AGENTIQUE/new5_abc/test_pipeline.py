@@ -43,7 +43,7 @@ class PipelineContractTests(unittest.TestCase):
             test=root/"testfile.py"
             source.write_text("pass\n")
             test.write_text("def test_ok(): pass\n")
-            row={"test_file":"tests/testfile.py",
+            row={"project":"tqdm","test_file":"tests/testfile.py",
                  "test_id":"tests/testfile.py::test_ok"}
             result=run_regression("dummy-image",row,root,test,
                                   patch_file=MountedPatch(source,"mypackage/impl.py"))
