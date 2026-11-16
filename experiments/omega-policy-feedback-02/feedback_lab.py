@@ -163,10 +163,17 @@ def collect(machines,phase,seed,off_model,on_model,off_memory):
                     "steps":episode["steps"],
                     "weight_sha256_after_episode":digest(policy.weights),
                 })
+    # Count actual state cardinalities, not an assumed constant. The
+    # preregistered 4-state cohorts are unchanged; small unit-test machines
+    # can have 2 states. This is an integrity-check repair only.
+    expected_episodes=sum(
+        machine.size for _,machine in machines
+        if old.fully_identifiable(costs(machine,phase),machine.size)
+    )
     for arm in ("OFF","ON"):
         entry=result["arms"][arm]
         entry["records_sha256"]=digest(entry["records"])
-        if entry["episodes"]!=result["eligible"]*4:
+        if entry["episodes"]!=expected_episodes:
             raise AssertionError("EPISODE_COUNT_MISMATCH")
     if result["eligible"]+result["impossible"]!=len(machines):
         raise AssertionError("COHORT_DROPPED")
