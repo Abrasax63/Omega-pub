@@ -1,0 +1,141 @@
+{
+  "first_run_id": 43822021430,
+  "first_run_sha": "380eaa5f25089cb7a4da003023cd76b5a0aea1f0",
+  "meaning": "checks that post-hoc reruns reproduce EXACT costs/states from first frozen run, not success criteria",
+  "models": {
+    "register2.dot": {
+      "fixed": [
+        549,
+        5093,
+        4,
+        0
+      ],
+      "coverage_only": [
+        533,
+        5060,
+        4,
+        0
+      ],
+      "omega_candidate": [
+        533,
+        5060,
+        4,
+        0
+      ],
+      "Lstar": [
+        558,
+        5118,
+        4,
+        0
+      ],
+      "KV": [
+        628,
+        5310,
+        4,
+        0
+      ]
+    },
+    "register3.dot": {
+      "fixed": [
+        848,
+        6021,
+        8,
+        0
+      ],
+      "coverage_only": [
+        566,
+        5065,
+        8,
+        0
+      ],
+      "omega_candidate": [
+        566,
+        5065,
+        8,
+        0
+      ],
+      "Lstar": [
+        631,
+        5200,
+        8,
+        0
+      ],
+      "KV": [
+        1066,
+        6744,
+        8,
+        0
+      ]
+    },
+    "register4.dot": {
+      "fixed": [
+        1073,
+        7650,
+        16,
+        0
+      ],
+      "coverage_only": [
+        675,
+        6449,
+        16,
+        0
+      ],
+      "omega_candidate": [
+        631,
+        5967,
+        16,
+        0
+      ],
+      "Lstar": [
+        878,
+        7083,
+        16,
+        0
+      ],
+      "KV": [
+        2397,
+        15560,
+        16,
+        0
+      ]
+    },
+    "register5.dot": {
+      "fixed": [
+        2383,
+        16971,
+        32,
+        0
+      ],
+      "coverage_only": [
+        853,
+        8759,
+        27,
+        1
+      ],
+      "omega_candidate": [
+        854,
+        8783,
+        27,
+        1
+      ],
+      "Lstar": [
+        1174,
+        10383,
+        32,
+        0
+      ],
+      "KV": [
+        4048,
+        28479,
+        26,
+        2
+      ]
+    }
+  },
+  "fields": [
+    "physical_resets",
+    "physical_symbols",
+    "learned_states",
+    "heldout_unseen_errors"
+  ]
+}
