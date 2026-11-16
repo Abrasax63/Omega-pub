@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - experiment/omega-blind-bugsinpy-historical-2026-11-15
+      - experiment/omega-trace-guided-repair-2026-11-16
     paths:
       - '09_INFRASTRUCTURE_AGENTIQUE/trace_repair/**'
       - '.github/workflows/omega-trace-repair.yml'
