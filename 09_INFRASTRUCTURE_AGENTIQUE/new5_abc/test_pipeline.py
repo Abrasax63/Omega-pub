@@ -1,9 +1,12 @@
 import json
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
 import unittest
 
 from abc_core import ARMS, MAX_PER_ARM, sha
 from abc_oracle import verify_commitment
-from abc_runner import MODEL_CALLS_PER_REPRODUCED_BUG, MODEL_NEW_TOKENS
+from abc_runner import MODEL_CALLS_PER_REPRODUCED_BUG, MODEL_NEW_TOKENS, MountedPatch, run_regression
 
 def fixture():
     cases=[]
@@ -29,6 +32,26 @@ def fixture():
 
 
 class PipelineContractTests(unittest.TestCase):
+    @patch("abc_runner.subprocess.run")
+    def test_mounted_patch_is_converted_to_actual_file_path(self, mock_run):
+        mock_run.return_value.returncode=0
+        mock_run.return_value.stdout="1 passed"
+        mock_run.return_value.stderr=""
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            source=root/"patch.py"
+            test=root/"testfile.py"
+            source.write_text("pass\n")
+            test.write_text("def test_ok(): pass\n")
+            row={"test_file":"tests/testfile.py",
+                 "test_id":"tests/testfile.py::test_ok"}
+            result=run_regression("dummy-image",row,root,test,
+                                  patch_file=MountedPatch(source,"mypackage/impl.py"))
+            self.assertEqual(result["status"],"PASS")
+            command=mock_run.call_args.args[0]
+            self.assertIn("type=bind,src="+str(source.resolve())+
+                          ",dst=/omega-patch.py,readonly",command)
+
     def test_exact_model_budget(self):
         self.assertEqual(MODEL_CALLS_PER_REPRODUCED_BUG,1)
         self.assertEqual(MODEL_NEW_TOKENS,128)
