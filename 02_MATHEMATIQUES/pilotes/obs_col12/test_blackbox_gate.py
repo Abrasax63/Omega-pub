@@ -1,4 +1,5 @@
 """OBS-COL-12: black-box verifiers, budgets, source isolation, genuine AALpy."""
+import copy
 import json
 import os
 from pathlib import Path
@@ -22,6 +23,9 @@ class TestBlackBoxConformance(unittest.TestCase):
         cls.lock = json.loads((HERE.parent / "obs_col11" / "SOURCE_SHA_LOCK.json").read_text())["sha256"]
         if not SOURCES.is_dir():
             raise AssertionError("locked source cohort was not downloaded")
+        name = "register3.dot"
+        target = load_pinned_moore(SOURCES / name, cls.lock[name])[0]
+        cls.learned_register3, _ = fit_one(target, "fixed", name, list(cls.lock).index(name))
 
     def make_target(self, name):
         return load_pinned_moore(SOURCES / name, self.lock[name])[0]
@@ -51,7 +55,7 @@ class TestBlackBoxConformance(unittest.TestCase):
         self.assertTrue(WpMethodEqOracle.__module__.startswith("aalpy."))
 
     def test_ranked_wp_same_candidate_set_and_no_source_graph_used(self):
-        model = self.make_target("register3.dot")
+        model = copy.deepcopy(self.learned_register3)
         # For this unit test use hypothesis equal to the same kind of model,
         # but a separate instance from the target oracle.
         words = wp_candidate_suite(model, sorted(model.get_input_alphabet()))
@@ -62,7 +66,7 @@ class TestBlackBoxConformance(unittest.TestCase):
 
     def test_valid_hypothesis_does_not_produce_false_witness(self):
         for gate in VERIFIERS:
-            model = self.make_target("register3.dot")
+            model = copy.deepcopy(self.learned_register3)
             target = self.make_target("register3.dot")
             r = run_gate(model, target, gate, prior_prefixes=())
             self.assertIsNone(r["counterexample"])
