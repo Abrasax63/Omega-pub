@@ -317,8 +317,14 @@ class CandidateOracle(Oracle):
         try:
             for _ in range(MAX_EQ_WORDS_PER_ROUND):
                 word=self.next_word(hypothesis)
-                if not word or len(word)>self.sul.remaining:
-                    break
+                if not word:
+                    raise AssertionError("EMPTY_EQ_CANDIDATE_WORD")
+                if len(word)>self.sul.remaining:
+                    # An unexecutable test is NOT evidence of equivalence.
+                    # Propagate to train_one as an interrupted, unverified model.
+                    raise BudgetExhausted(
+                        "INSUFFICIENT_BUDGET_TO_TEST_EQ_CANDIDATE"
+                    )
                 predicted=tuple(hypothesis.compute_output_seq(
                     hypothesis.initial_state,word))
                 observed=tuple(self.sul.query(word))
