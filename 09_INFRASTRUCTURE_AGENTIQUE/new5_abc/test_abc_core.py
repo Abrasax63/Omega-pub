@@ -6,7 +6,7 @@ import unittest
 
 from abc_core import (_candidate_pool, CASE_IDS, MAX_POOL, MAX_PER_ARM, ARMS,
                       final_model_order, freeze_case, frozen_orders,
-                      model_select, verify_manifest)
+                      model_select, extract_llama_cli_id, verify_manifest)
 
 CASE = {"id":"N1", "project":"tqdm", "buggy_sha":"fixed-in-test-buggy",
         "test_id":"tqdm/tests/tests_tqdm.py::test_bool"}
@@ -74,6 +74,26 @@ class PilotABCTests(unittest.TestCase):
                     "", "P000 " * 900):
             self.assertIsNone(model_select(raw, allowed))
         self.assertEqual(model_select("P010", allowed),"P010")
+
+    def test_valid_qwen_id_with_actual_llama_cli_footer(self):
+        for answer in ("P038", "P027", "P058"):
+            raw = ("<|im_start|>user\nCandidates:\nP000 file function\n"
+                   + "one long echoed prompt ... (truncated)\n"
+                   + answer
+                   + "\n\n[ Prompt: 40.6 t/s | Generation: 15.9 t/s ]\n\n> \n\nExiting...")
+            self.assertEqual(extract_llama_cli_id(raw, [answer]), answer)
+            self.assertIsNone(extract_llama_cli_id(raw, ["P999"]))
+
+    def test_cli_parser_rejects_chatter_and_ambiguous_candidates(self):
+        candidates=["P010", "P020"]
+        sample=("P010\nP020\n\n[ Prompt: 40.6 t/s | Generation: 15.9 t/s ]"
+                "\n\n> \n\nExiting...")
+        self.assertIsNone(extract_llama_cli_id(sample,candidates))
+        self.assertIsNone(extract_llama_cli_id("I choose P010",candidates))
+        self.assertIsNone(extract_llama_cli_id("P010\nunaudited output",candidates))
+        self.assertIsNone(extract_llama_cli_id(
+            "P010\n\n[ Prompt: 40.6 t/s | Generation: 15.9 t/s ]\n> injected data",
+            candidates))
 
     def test_model_cannot_increase_patch_testing_budget(self):
         b=["P001","P002","P003","P004"]
