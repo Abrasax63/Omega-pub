@@ -82,8 +82,7 @@ def evaluate(manifest_bytes: bytes, expected_sha: str,
     for rel, recorded in manifest["source_file_hashes"].items():
         if sha((buggy / rel).read_bytes()) != recorded:
             raise ValueError("BUGGY_SOURCE_DRIFT:" + rel)
-    if set(t["key"] for t in manifest["targets"]) != set(
-            p["key"] for p in manifest["targets"]):
+    if len(set(t["key"] for t in manifest["targets"])) != len(manifest["targets"]):
         raise ValueError("DUPLICATE_KEYS")
     oracle = function_diff_targets(buggy, fixed, manifest)
     targets = {t["key"]:t for t in manifest["targets"]}
