@@ -184,9 +184,7 @@ def policies(off,on,memory):
 
 def evaluate(machines,phase,off,on,memory):
     # ONLY this function may call PR76's exact oracle through old.evaluate.
-    return old.evaluate(machines,costs_dummy(phase),
-                        policies(off,on,memory)) if False else _evaluate_per_machine(
-                            machines,phase,policies(off,on,memory))
+    return _evaluate_per_machine(machines,phase,policies(off,on,memory))
 
 
 def _evaluate_per_machine(machines,phase,arms):
@@ -308,9 +306,8 @@ def one_seed(cohorts_data,seed):
         "evaluation_B_after_B":eval_B_after_B,
         "checkpoints_Aprime":checkpoints,
         "retention_A_after_B_minus_A":{
-            arm:difference(eval_A_after_B,arm,arm) if False
-                else (eval_A_after_B["mean_by_policy"][arm]["mean_cost"]-
-                      eval_A_after_A["mean_by_policy"][arm]["mean_cost"])
+            arm:(eval_A_after_B["mean_by_policy"][arm]["mean_cost"]-
+                 eval_A_after_A["mean_by_policy"][arm]["mean_cost"])
             for arm in ("OFF","ON")
         },
         "Aprime_change_0_to_16":{
