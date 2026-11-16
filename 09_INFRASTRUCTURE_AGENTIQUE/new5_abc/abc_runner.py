@@ -73,7 +73,9 @@ def run_regression(image, case, source_root, test_file, profile_file=None, patch
     else:
         cmd.extend(["-e","PYTHONPATH=/tmp/work"])
     if patch_file is not None:
-        cmd.extend(["--mount",f"type=bind,src={Path(patch_file).resolve()},dst=/omega-patch.py,readonly"])
+        # MountedPatch intentionally wraps its path; Path(MountedPatch) has no __fspath__.
+        actual_patch_path = patch_file.resolve() if isinstance(patch_file, MountedPatch) else Path(patch_file).resolve()
+        cmd.extend(["--mount",f"type=bind,src={actual_patch_path},dst=/omega-patch.py,readonly"])
     cmd.extend(["-e","HOME=/tmp","-e","PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
                 "-e","PYTHONDONTWRITEBYTECODE=1",image])
     # Every path here originates from the preregistered case or verified patch
