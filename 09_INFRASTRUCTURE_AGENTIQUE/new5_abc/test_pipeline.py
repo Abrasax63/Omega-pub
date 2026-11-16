@@ -69,7 +69,24 @@ class PipelineContractTests(unittest.TestCase):
                 {"id":"N5","python":"3.7.3","project":"httpie"},Path(td))
         self.assertEqual(build["exit"],0)
         self.assertIn("'requests' 'pytest-httpbin==1.0.2'",text_seen[0])
+        self.assertIn("FROM python:3.7.3\\n".replace("\\n","\n"), text_seen[0])
         self.assertNotIn("'requests pytest-httpbin",text_seen[0])
+
+    @patch("abc_runner.subprocess.run")
+    def test_cookiecutter_requires_cov_and_mock_plugins(self, mock_run):
+        mock_run.return_value.returncode=0
+        mock_run.return_value.stdout="1 passed"
+        mock_run.return_value.stderr=""
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            test=root/"test.py"
+            test.write_text("def test_ok(): pass\n")
+            case={"project":"cookiecutter","test_file":"tests/test.py",
+                  "test_id":"tests/test.py::test_ok"}
+            x=run_regression("dummy-image",case,root,test)
+            self.assertEqual(x["status"],"PASS")
+            shell=mock_run.call_args.args[0][-1]
+            self.assertIn("-p pytest_cov -p pytest_mock",shell)
 
     @patch("abc_runner.subprocess.run")
     def test_profiler_json_not_sent_as_qwen_failure_message(self, mock_run):
