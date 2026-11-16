@@ -1,0 +1,96 @@
+name: Omega Mealy exact oracle - first learnable policy pilot
+
+on:
+  push:
+    branches:
+      - experiment/omega-mealy-plasticity-2026-11-16
+    paths:
+      - 'experiments/omega-mealy-learning/**'
+      - '.github/workflows/omega-mealy-learning-01.yml'
+  pull_request:
+    branches:
+      - experiment/p5-finite-verification
+    paths:
+      - 'experiments/omega-mealy-learning/**'
+      - '.github/workflows/omega-mealy-learning-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-mealy-learning-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-train-and-reserved-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Require exactly ten independent no-network unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-mealy-learning/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+              'experiments/omega-mealy-learning',pattern='test_mealy_lab.py')
+          n=suite.countTestCases()
+          print('OMEGA_MEALY_REGRESSIONS_DISCOVERED',n)
+          assert n==10,('unexpected number of scientific controls',n)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Execute frozen three-way benchmark without any model or paid API
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-mealy-learning/mealy_lab.py \
+              --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Assert splits/learning/exactness and retain negative outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('evidence/report.json').read_text())
+          assert r['experiment']=='OMEGA-MEALY-LEARN-01'
+          assert [r['splits'][x]['size'] for x in ('train','validation','test')]==[40,20,30]
+          groups=[set(r['splits'][x]['machine_signatures'])
+                  for x in ('train','validation','test')]
+          assert all(not(groups[a]&groups[b]) for a,b in ((0,1),(0,2),(1,2)))
+          assert r['training']['weights_changed'] and r['training']['actual_weight_updates']>0
+          assert r['training']['weights_initial_sha256'] != r['training']['weights_final_sha256']
+          for section in ('train_assessment','validation_assessment','test_assessment'):
+              row=r[section]
+              assert row['eligible']+row['indeterminate']==row['total']
+              for case in row['rows']:
+                  if case['identifiable_with_six_probes']:
+                      for arm in case['arms'].values():
+                          assert arm['all_states_correctly_identified']
+                          assert arm['worst_regret_to_exact']>=0
+          assert r['api_calls']==0 and r['main_modified'] is False
+          assert not r['language_model_training'] and not r['independent_generalization_proven']
+          print('OMEGA_MEALY_STRICT_RESULT',r['status'])
+          print('OMEGA_MEALY_PRIMARY_C_MINUS_B',
+                r['test_assessment'].get('primary_C_minus_B'))
+          print('OMEGA_MEALY_TEST_ELIGIBLE',
+                r['test_assessment']['eligible'],'of',r['test_assessment']['total'])
+          PY
+      - name: Publish complete evidence including failed scientific comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-mealy-learning-01-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
