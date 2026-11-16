@@ -1,0 +1,55 @@
+name: Omega NEW5 posthoc environment diagnostic (no model or patch)
+
+on:
+  push:
+    branches:
+      - experiment/omega-five-bug-equal-budget-abc-2026-11-16
+    paths:
+      - '.github/workflows/omega-new5-posthoc-env.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-new5-posthoc-environment
+  cancel-in-progress: false
+
+jobs:
+  posthoc-only-environment-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout experiment without retained credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm we are only testing environment with no model
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python -m py_compile abc_fetch.py abc_core.py abc_runner.py posthoc_env.py
+          python -m unittest -v test_abc_core.py test_pipeline.py
+      - name: Reproduce only previously blocked historical tests with corrected plugins
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python posthoc_env.py --cohort COHORT_FREEZE.json --output posthoc-env-result.json
+          python - <<'PY'
+          import json
+          d=json.load(open('posthoc-env-result.json'))
+          assert d['phase']=='POSTHOC_INFRA_ONLY_FIXED_ALREADY_EXPOSED'
+          assert d['new_model_calls']==0 and d['patch_candidates_tested']==0
+          assert [c['id'] for c in d['cases']] == ['N3','N5']
+          assert d['holdout_blindness'] is False
+          print('Posthoc environment verdict only; NOT a blind repair result.')
+          PY
+      - name: Preserve environment diagnosis with all failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-new5-posthoc-environment
+          path: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc/posthoc-env-result.json
+          if-no-files-found: warn
+          retention-days: 30
