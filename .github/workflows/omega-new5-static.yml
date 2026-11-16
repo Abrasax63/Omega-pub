@@ -1,0 +1,43 @@
+name: Omega NEW5 A/B/C safeguards (no fixed sources)
+
+on:
+  push:
+    branches:
+      - experiment/omega-five-bug-equal-budget-abc-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/new5_abc/**'
+      - '.github/workflows/omega-new5-static.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  protocol-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate recorded new cohort and source freeze
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('COHORT_FREEZE.json'))
+          assert len(x['cases']) == 5
+          assert len({c['buggy_sha'] for c in x['cases']}) == 5
+          assert {c['id'] for c in x['cases']} == {'N1','N2','N3','N4','N5'}
+          assert x['max_actual_patch_test_runs_per_arm_per_bug'] == 4
+          assert x['fixed_sources_prohibited_before_candidate_freeze']
+          print('Five distinct buggy SHA + A/B/C budgets frozen.')
+          PY
+      - name: Unit tests of candidates, ranking and safeguards
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python -m py_compile abc_core.py test_abc_core.py
+          python -m unittest -v test_abc_core.py
