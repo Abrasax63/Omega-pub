@@ -52,6 +52,32 @@ jobs:
           assert count==14
           assert unittest.TextTestRunner(verbosity=2).run(s).wasSuccessful()
           PY
+      - name: Original fourteen blackbox tests still succeed after the fail-closed fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s experiments/omega-blackbox-01 \
+            -p test_blackbox.py -v
+      - name: Reproduce all original 54 learner executions byte-for-byte
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-blackbox-01/blackbox_lab.py \
+            --output evidence/legacy_report.json | tee evidence/legacy_summary.jsonl
+          sha256sum evidence/legacy_report.json > evidence/legacy_report.sha256
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          raw=Path('evidence/legacy_report.json').read_bytes()
+          sha=hashlib.sha256(raw).hexdigest()
+          expected='ce373a5516218e9b560956119880791e33dc5dbb04b811db13859c9aae41716a'
+          assert sha==expected,('LEGACY_54_RUN_REGRESSION',sha,expected)
+          d=json.loads(raw)
+          assert len(d['machines'])==9
+          assert d['status']=='NO_DEMONSTRATED_QUERY_GAIN'
+          print('OMEGA_BLACKBOX_LEGACY_REPLAY_SHA256_MATCH',sha)
+          PY
       - name: Stress fully accessible and behaviorally minimal four-five-six-state worlds
         shell: bash
         run: |
