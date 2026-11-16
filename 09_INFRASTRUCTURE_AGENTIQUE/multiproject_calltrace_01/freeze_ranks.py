@@ -64,6 +64,15 @@ def rank(case:dict,buggy:Path,profile_bytes:bytes)->dict:
           "case":case["id"],"phase":"BUGGY_ONLY",
           "source_hashes":hashes,"targets":[]
         }
+    # Preregistered scope addendum: tests nested within a production package
+    # are informative only for lexical AST, never candidate functions.
+    def production_path(rel):
+        parts=Path(rel).parts
+        name=Path(rel).name
+        return (not any(p in ("test","tests") for p in parts)
+                and not name.startswith(("test_","tests_")))
+    inventory=[t for t in inventory if production_path(t["file"])]
+    hashes={rel:value for rel,value in hashes.items() if production_path(rel)}
     if not inventory:
         return {"status":"NO_FUNCTIONS","case":case["id"],
                 "phase":"BUGGY_ONLY","targets":[]}
