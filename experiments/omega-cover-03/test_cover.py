@@ -155,37 +155,27 @@ class Cover03Controls(unittest.TestCase):
         self.assertEqual(words,c.test_words(5,1))
         self.assertNotEqual(words,c.test_words(5,2))
 
-    def test_all_frozen_evaluation_measures_preserve_negative_status(self):
-        results=c.run()
-        self.assertEqual(results["experiment"],c.EXPERIMENT)
-        self.assertEqual(results["prereg_commit"],c.PREREG)
-        self.assertEqual(len(results["cases"]),12)
-        self.assertEqual(results["arms"],list(c.ARMS))
-        self.assertEqual(results["budgets"],[900,1800])
-        self.assertEqual(results["all_EQ_words_matched_length"],10)
-        self.assertFalse(results["general_gain_proven"])
-        self.assertFalse(results["main_modified"])
-        self.assertTrue(results["exact_oracle_evaluation_only"])
-        self.assertIn(results["status"],(
-            "DESCRIPTIVE_COVER_GAIN","NO_DEMONSTRATED_COVER_GAIN"
-        ))
-        for row in results["cases"]:
-            self.assertEqual(row["accessible_states"],row["n"])
-            self.assertTrue(row["all_states_distinguishable"])
-            for cap in c.BUDGETS:
-                for arm in c.ARMS:
-                    result=row["budgets"][str(cap)][arm]
-                    ledger=result["training"]["ledger"]
-                    self.assertLessEqual(ledger["spent_symbols"],cap)
-                    self.assertEqual(sum(x["charge"] for x in ledger["query_log"]),
-                                     ledger["spent_symbols"])
-                    self.assertEqual(sum(x["phase"]=="EQ"
-                                         for x in ledger["query_log"]),
-                                     result["training"]["eq_words_tested"])
-                    self.assertTrue(all(
-                        len(x["inputs"])==10
-                        for x in ledger["query_log"] if x["phase"]=="EQ"
-                    ))
+    def test_smoke_four_arm_replays_preserve_exact_evaluator(self):
+        # Keep test discovery light: workflow runs the 96-trial holdout ONCE.
+        # This independent small fully-known fixture is not the heldout set.
+        world=known_machine()
+        words=c.test_words(4,0)
+        for i,arm in enumerate(c.ARMS):
+            item=c.evaluate_one(world,arm,900,400+i,words)
+            led=item["training"]["ledger"]
+            self.assertGreater(led["spent_symbols"],0)
+            self.assertLessEqual(led["spent_symbols"],900)
+            self.assertEqual(sum(q["charge"] for q in led["query_log"]),
+                             led["spent_symbols"])
+            self.assertTrue(all(
+                len(q["inputs"])==10
+                for q in led["query_log"] if q["phase"]=="EQ"
+            ))
+            self.assertIn(item["exact_equivalence"]["status"],
+                          ("EXACT_EQUIVALENT","NOT_EQUIVALENT","NO_HYPOTHESIS"))
+            if item["exact_equivalence"]["status"]=="EXACT_EQUIVALENT":
+                self.assertEqual(item["reserved"]["whole_word_accuracy"],1.0)
+
 
 
 if __name__=="__main__":
