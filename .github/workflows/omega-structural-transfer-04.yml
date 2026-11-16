@@ -1,0 +1,136 @@
+name: Omega structural transfer 04 - matched labels cost unseen Mealy machines
+
+on:
+  push:
+    branches:
+      - experiment/omega-structural-transfer-2026-11-16
+    paths:
+      - 'experiments/omega-structural-transfer-04/**'
+      - '.github/workflows/omega-structural-transfer-04.yml'
+  pull_request:
+    branches:
+      - experiment/omega-equal-budget-transfer-2026-11-16
+    paths:
+      - 'experiments/omega-structural-transfer-04/**'
+      - '.github/workflows/omega-structural-transfer-04.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-structural-transfer-04-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  structural-heldout-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Require exactly fifteen controls and no external dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-structural-transfer-04/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+            'experiments/omega-structural-transfer-04',pattern='test_structural.py')
+          count=suite.countTestCases()
+          print('OMEGA_STRUCTURAL_TESTS_DISCOVERED',count)
+          assert count==15,('incorrect control count',count)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Run frozen, structure-disjoint, label-and-budget-matched holdout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-structural-transfer-04/structural_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Fail closed on cross-cohort contamination or misleading score claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-STRUCTURAL-TRANSFER-04'
+          assert d['prereg_commit']=='1da94d3afb76c27c9300ab7098695b02cc0c71aa'
+          assert d['seeds']==[171,172,173]
+          assert d['prepaid_budget_per_identifiable_training_episode']==6
+          assert d['same_training_machines_and_hidden_starts']
+          assert d['same_training_label_count_per_arm']
+          assert d['same_charged_observation_cost_per_arm']
+          assert d['information_content_not_equalized']
+          assert d['no_optimal_action_labels_in_training'] and d['oracle_evaluation_only']
+          assert d['paid_api_calls']==0 and d['main_modified'] is False
+          assert d['language_model_trained'] is False
+          assert d['scientific_generalization_proven'] is False
+          expected={'train_random':(64,'random_restricted'),
+                    'control_random':(20,'random_restricted'),
+                    'holdout_perm':(28,'permutation'),
+                    'holdout_reset_cycle':(28,'reset_cycle')}
+          for name,(count,kind) in expected.items():
+              assert d['splits'][name]['count']==count
+              assert d['splits'][name]['structural_family']==kind
+          signatures=[sig for item in d['splits'].values()
+                      for sig in item['signatures']]
+          assert len(signatures)==len(set(signatures))
+          assert len(d['repetitions'])==3
+          for rep in d['repetitions']:
+              t=rep['training']
+              n=t['same_completed_episode_count']
+              assert n==4*t['train_identifiable']
+              assert t['same_per_arm_charge']==6*n
+              assert len(t['records'])==n
+              for arm in ('OFF','ON'):
+                  x=t['ledgers'][arm]
+                  assert x['training_labels']==x['completed_episodes']==n
+                  assert t['parameters'][arm]['updates']==n
+                  assert x['charged_cost']==x['productive_cost']+x['filler_cost']==6*n
+                  assert len(t['memories'][arm]['examples'])==n
+              for obs in t['records']:
+                  for arm in ('OFF','ON'):
+                      row=obs['arms'][arm]
+                      assert row['observed_total_cost']==sum(
+                          v['probe_cost'] for v in row['actual_trajectory'])
+                      assert row['observed_total_cost']+len(row['calibration'])==6
+                      assert all(x['used_for_learning'] is False
+                                 for x in row['calibration'])
+              for name in ('control_random','holdout_perm','holdout_reset_cycle'):
+                  e=rep['evaluations'][name]
+                  assert e['total']==e['eligible']+e['impossible']
+                  for item in e['rows']:
+                      if item['identifiable']:
+                          assert all(x['worst_regret']>=0 for x in item['arms'].values())
+          flags=[
+              all(d['family_results'][name]['differences'][metric]<0
+                  for metric in ('ON_minus_FIXED','ON_minus_MEMORY_OFF'))
+              for name in ('holdout_perm','holdout_reset_cycle')
+          ]
+          assert sum(flags)==d['structural_family_gates_passed']
+          assert (d['status']=='DESCRIPTIVE_STRONG_BASELINE_TRANSFER')==(sum(flags)==2)
+          print('OMEGA_STRUCTURAL_VERDICT',d['status'])
+          print('OMEGA_STRUCTURAL_GATES_PASSED',d['structural_family_gates_passed'])
+          for name in ('holdout_perm','holdout_reset_cycle'):
+              print('OMEGA_STRUCTURAL_FAMILY',name,
+                    d['family_results'][name]['eligible'],
+                    d['family_results'][name]['differences'])
+          PY
+      - name: Archive observations, baselines and negative scientific results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-structural-transfer-04-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
