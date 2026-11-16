@@ -128,6 +128,10 @@ def extract_llama_cli_id(stdout, allowed):
     preceding = stdout[:footer.start()].strip()
     if not preceding:
         return None
+    # A second standalone ID is ambiguous even if the last line is valid.
+    isolated = re.findall(r"(?m)^[ \t]*(P[0-9]{3})[ \t]*$", preceding)
+    if len(isolated) != 1:
+        return None
     tail = preceding.splitlines()[-1].strip()
     return model_select(tail, allowed)
 
