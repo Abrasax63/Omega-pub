@@ -88,7 +88,7 @@ jobs:
             --signer-workflow "$SIGNER_WORKFLOW" --source-commit "$SOURCE_COMMIT" \
             > "$target/$KEY-omega.json"
           python3 - "$target/$KEY-gh-reference.json" "$target/$KEY-omega.json" <<'PY'
-          import json,sys
+          import json,sys,os
           gh=json.load(open(sys.argv[1]))
           omega=json.load(open(sys.argv[2]))
           assert isinstance(gh,list) and len(gh)>0, "No cryptographically verified source result"
@@ -96,6 +96,10 @@ jobs:
           assert omega["scientific_status"] == "INDETERMINATE"
           assert omega["status"] == "VERIFIED_BUILD_PROVENANCE_ONLY"
           print("External provenance verified; no independent scientific replication claimed")
+          assert all(any(dep.get("git_commit")==os.environ["SOURCE_COMMIT"]
+                         for dep in ev.get("reported_dependencies",[]))
+                     for ev in omega["evidence"]), "source commit not declared"
+          print("Signer-claimed source dependencies:", [ev["reported_dependencies"] for ev in omega["evidence"]])
           print("Declared dependencies:", [x.get("listed_dependency_count") for x in omega["evidence"]])
           PY
       - name: Adversarial checks reject altered artifact and fake repository ID
