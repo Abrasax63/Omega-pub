@@ -1,0 +1,119 @@
+name: Omega openmode 01 - historical Scrapy semantic gate
+
+on:
+  push:
+    branches:
+      - experiment/omega-openmode-validity-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/historical_gate.py'
+      - '09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/test_historical_gate.py'
+      - '.github/workflows/omega-openmode-historical-gate.yml'
+  pull_request:
+    branches:
+      - experiment/omega-ast-method-scope-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/historical_gate.py'
+      - '09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/test_historical_gate.py'
+      - '.github/workflows/omega-openmode-historical-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  source-backed-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify local historical gate tests and syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/historical_gate.py
+          python -m unittest discover -v \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01 \
+            -p 'test_historical_gate.py'
+      - name: Recover SHA-pinned filtered choices from completed earlier run
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p frozen-filter
+          gh run download 43858431061 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name omega-openmode-01-frozen-audit \
+            --dir frozen-filter
+          echo "ff7a3c0bce08c890a0f2a7bc23cffe01c87690b29d0ad48543f74d68d67aa9f3  frozen-filter/frozen-filter.json" | sha256sum --check
+          echo "FILTER CHOICES PRE-FROZEN VERIFIED"
+      - name: Download pinned original buggy and fixed sources only AFTER choice freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/scrapy/scrapy.git "$RUNNER_TEMP/scrapy-buggy"
+          git -C "$RUNNER_TEMP/scrapy-buggy" fetch --depth 1 origin \
+            c57512fa669e6f6b1b766a7639206a380f0d10ce
+          git -C "$RUNNER_TEMP/scrapy-buggy" checkout --quiet --detach \
+            c57512fa669e6f6b1b766a7639206a380f0d10ce
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/scrapy/scrapy.git "$RUNNER_TEMP/scrapy-fixed"
+          git -C "$RUNNER_TEMP/scrapy-fixed" fetch --depth 1 origin \
+            9d9dea0d69709ef0f7aef67ddba1bd7bda25d273
+          git -C "$RUNNER_TEMP/scrapy-fixed" checkout --quiet --detach \
+            9d9dea0d69709ef0f7aef67ddba1bd7bda25d273
+          test "$(git -C "$RUNNER_TEMP/scrapy-buggy" rev-parse HEAD)" = c57512fa669e6f6b1b766a7639206a380f0d10ce
+          test "$(git -C "$RUNNER_TEMP/scrapy-fixed" rev-parse HEAD)" = 9d9dea0d69709ef0f7aef67ddba1bd7bda25d273
+          test "$(git -C "$RUNNER_TEMP/scrapy-buggy" hash-object scrapy/spidermiddlewares/offsite.py)" = 232e96cbb2df4311767fc168a0d494190e780b83
+          test "$(git -C "$RUNNER_TEMP/scrapy-fixed" hash-object scrapy/spidermiddlewares/offsite.py)" = 36f809699d5ad31aae759a79731b5ad29ae8885a
+      - name: Run ORIGINAL upstream method AST in isolated no-network Docker
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p openmode-artifacts
+          docker pull python:3.11-slim
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=96m \
+            -v "$PWD:/repo:ro" \
+            -v "$RUNNER_TEMP/scrapy-buggy:/buggy:ro" \
+            -v "$RUNNER_TEMP/scrapy-fixed:/fixed:ro" \
+            -w /repo \
+            python:3.11-slim \
+            sh -c 'python 09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/historical_gate.py \
+              --buggy-file /buggy/scrapy/spidermiddlewares/offsite.py \
+              --fixed-file /fixed/scrapy/spidermiddlewares/offsite.py \
+              --filter-report /repo/frozen-filter/frozen-filter.json \
+              --output /tmp/historical-gate.json >&2 && cat /tmp/historical-gate.json' \
+            > openmode-artifacts/historical-gate.json
+          python - <<'PY'
+          import hashlib,json,pathlib
+          path=pathlib.Path("openmode-artifacts/historical-gate.json")
+          o=json.loads(path.read_text(encoding="utf-8"))
+          assert o["semantic_reproduction_verified"]
+          assert o["buggy_public"]["failure"]=="TypeError"
+          assert o["fixed_public"]["passed"]
+          assert o["buggy_control"]["passed"] and o["fixed_control"]["passed"]
+          assert not o["full_historical_upstream_suite_executed"]
+          assert not o["candidate_repair_executed"]
+          print("ORIGINAL HISTORICAL AST BUGGY_FAIL_FIXED_PASS VERIFIED")
+          print("DIRECT PATCHES",o["raw_direct_changed_file_count"],o["filtered_direct_changed_file_count"])
+          print("REPORT_SHA256",hashlib.sha256(path.read_bytes()).hexdigest())
+          PY
+      - name: Archive raw historical semantic evidence including negative conclusions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-openmode-01-historical-semantic-gate
+          path: openmode-artifacts/*.json
+          if-no-files-found: warn
+          retention-days: 14

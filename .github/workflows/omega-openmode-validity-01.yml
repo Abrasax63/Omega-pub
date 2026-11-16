@@ -1,0 +1,102 @@
+name: Omega openmode validity 01 - frozen controls
+
+on:
+  push:
+    branches:
+      - experiment/omega-openmode-validity-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/**'
+      - '.github/workflows/omega-openmode-validity-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-ast-method-scope-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/**'
+      - '.github/workflows/omega-openmode-validity-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: omega-openmode-validity-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frozen-static-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit tests for binary modes, ambiguity and source hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/openmode_filter.py
+          python -m unittest discover -v \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01 \
+            -p 'test_openmode_filter.py'
+      - name: Fetch frozen PR 117 candidate manifest (exact artifact)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p frozen-source
+          gh run download 43854161875 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name omega-method-scope-01-coverage \
+            --dir frozen-source
+          echo "759ef7231ac1baad6bb4f163db83870c7a417611d7011ca88b827666e6e799b4  frozen-source/comparison.json" | sha256sum --check
+      - name: Checkout ONLY historical BUGGY Scrapy-1 commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/scrapy/scrapy.git "$RUNNER_TEMP/scrapy-buggy"
+          git -C "$RUNNER_TEMP/scrapy-buggy" fetch --depth 1 origin \
+            c57512fa669e6f6b1b766a7639206a380f0d10ce
+          git -C "$RUNNER_TEMP/scrapy-buggy" checkout --quiet --detach \
+            c57512fa669e6f6b1b766a7639206a380f0d10ce
+          test "$(git -C "$RUNNER_TEMP/scrapy-buggy" rev-parse HEAD)" = \
+            c57512fa669e6f6b1b766a7639206a380f0d10ce
+          echo "BUGGY ONLY SHA VERIFIED"
+      - name: Audit identical 40 candidates with frozen static filter and real stdlib microprobes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/openmode_filter.py \
+            --buggy-checkout "$RUNNER_TEMP/scrapy-buggy" \
+            --frozen-manifest frozen-source/comparison.json \
+            --output openmode-artifacts/frozen-filter.json
+          python - <<'PY'
+          import hashlib,json,pathlib
+          path=pathlib.Path("openmode-artifacts/frozen-filter.json")
+          result=json.loads(path.read_text(encoding="utf-8"))
+          assert result["initial_candidate_count"] == 40
+          assert result["controls_A"] == result["controls_B"] == 40
+          assert result["candidate_budget_same"]
+          assert not result["generation_rules_modified"]
+          assert not result["reproduction_of_real_bug_executed"]
+          assert result["real_repair_correctness"] is None
+          assert result["static_filter_rejected_count"] + result["static_filter_retained_count"] == 40
+          print("FROZEN_FILTER_VERIFIED",result["static_filter_rejected_count"],
+                "rejected",result["static_filter_retained_count"],"retained")
+          print("REPORT_SHA256",hashlib.sha256(path.read_bytes()).hexdigest())
+          print("NO PROJECT BUG REPRODUCED OR REPAIR CLAIMED")
+          PY
+      - name: Archive static report and microprobes including all unknowns and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-openmode-01-frozen-audit
+          path: openmode-artifacts/*.json
+          if-no-files-found: warn
+          retention-days: 14
