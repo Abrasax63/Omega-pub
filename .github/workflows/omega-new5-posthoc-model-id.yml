@@ -1,0 +1,66 @@
+name: Omega NEW5 posthoc frozen-Qwen-ID decoding diagnostic
+
+on:
+  push:
+    branches:
+      - experiment/omega-five-bug-equal-budget-abc-2026-11-16
+    paths:
+      - '.github/workflows/omega-new5-posthoc-model-id.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: omega-new5-posthoc-model-ids
+  cancel-in-progress: false
+
+jobs:
+  replay-archived-id-selection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout audited experiment with read-only token
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate patch grammar and frozen ID decoder
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python -m py_compile replay_model_choices.py abc_runner.py abc_core.py abc_oracle.py
+          python -m unittest -v test_abc_core.py test_pipeline.py
+      - name: Fetch immutable original pre-oracle selection artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-new5-abc-frozen-buggy-only
+          run-id: 43811742090
+          github-token: ${{ github.token }}
+          path: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc/original-freeze/
+      - name: Verify original SHA-256 commitment and replay three ID candidates
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python replay_model_choices.py \
+            --cohort COHORT_FREEZE.json \
+            --original-freeze original-freeze/selection.json \
+            --output replay-model-choice-result.json
+          python - <<'PY'
+          import json
+          x=json.load(open('replay-model-choice-result.json'))
+          assert x['phase']=='POSTHOC_REPLAY_PREORACLE_QWEN_ID_OUTPUTS'
+          assert x['additional_model_calls']==0 and x['distinct_original_model_choices']==3
+          assert [c['id'] for c in x['case_results']]==['N1','N2','N4']
+          assert x['independent_blind_holdout'] is False
+          print('Posthoc replay only. Historical A/B/C verdict is unchanged.')
+          PY
+      - name: Archive negative and positive posthoc patch evaluations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-new5-posthoc-qwen-ids
+          path: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc/replay-model-choice-result.json
+          if-no-files-found: warn
+          retention-days: 30
