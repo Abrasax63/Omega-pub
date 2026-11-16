@@ -37,6 +37,10 @@ jobs:
           wrapped='P027\n\n[ Prompt: 41.1 t/s | Generation: 15.3 t/s ]\n\n> \n\nExiting...'
           assert extract_llama_cli_id(wrapped,['P027'])=='P027'
           print('Strict CLI wrapper parser verified without inference')
+          from abc_runner import PROJECT_EXTRA
+          assert 'pytest-mock==3.6.1' in PROJECT_EXTRA['cookiecutter']
+          assert 'pytest-httpbin==1.0.2' in PROJECT_EXTRA['httpie']
+          print('Posthoc historical fixtures and compiler requirements pinned')
           PY
       - name: Reproduce only previously blocked historical tests with corrected plugins
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
