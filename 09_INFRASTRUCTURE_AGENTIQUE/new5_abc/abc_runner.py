@@ -22,7 +22,7 @@ MODEL_HASH = "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7"
 MODEL_CALLS_PER_REPRODUCED_BUG = 1
 MODEL_NEW_TOKENS = 128
 MAX_PATCH_EXEC_SECONDS = 75
-PROJECT_EXTRA = {"tqdm":"nose", "cookiecutter":"pytest-cov<4", "httpie":"requests"}
+PROJECT_EXTRA = {"tqdm":"nose", "cookiecutter":"pytest-cov<4", "httpie":"requests pytest-httpbin==1.0.2"}
 
 
 def sha_bytes(data):
@@ -95,12 +95,20 @@ def run_regression(image, case, source_root, test_file, profile_file=None, patch
         if not re.fullmatch(r"[a-zA-Z0-9_./-]+",patchrel) or ".." in Path(patchrel).parts:
             raise ValueError("invalid patch path")
         script+="cp /omega-patch.py /tmp/work/"+patchrel+"; "
-    script+="python -m pytest -q -s -p no:cacheprovider --maxfail=1 "+pytest_target
+    # pytest's automatic plugin loading is disabled for determinism. Enable
+    # only required, already-installed historical plugins explicitly.
+    explicit_plugins = ("-p pytest_cov " if case["project"]=="cookiecutter" else "")
+    script+="python -m pytest -q -s -p no:cacheprovider "+explicit_plugins+"--maxfail=1 "+pytest_target
     cmd.extend(["sh","-c",script])
     started=time.perf_counter_ns()
     try:
         p=subprocess.run(cmd,capture_output=True,text=True,timeout=MAX_PATCH_EXEC_SECONDS)
         combined=p.stdout+"\n"+p.stderr
+        # The profiler appends potentially huge JSON. Keep full trace privately
+        # for ranking but never submit the trace blob as the LLM failure message.
+        from abc_core import parse_call_trace
+        trace_marker = "OMEGA_CALL_TRACE_V1="
+        diagnostic = combined.split(trace_marker, 1)[0] if profile_file else combined
         duration=max(1,(time.perf_counter_ns()-started)//1_000_000)
         # Pytest error vs authentic assertion FAIL are different statuses.
         if p.returncode==0:
@@ -112,7 +120,7 @@ def run_regression(image, case, source_root, test_file, profile_file=None, patch
         else:
             status="ENVIRONMENT_ERROR"
         return {"status":status,"exit":p.returncode,"duration_ms":duration,
-                "log_sha256":sha_bytes(combined.encode()),"log_tail":combined[-1800:],
+                "log_sha256":sha_bytes(combined.encode()),"log_tail":diagnostic[-1800:],
                 "trace_log":combined if profile_file else None}
     except (OSError,subprocess.TimeoutExpired) as exc:
         return {"status":"ENVIRONMENT_ERROR","error":str(exc)[:400],
