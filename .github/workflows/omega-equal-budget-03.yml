@@ -1,0 +1,111 @@
+name: Omega equal cost 03 - unseen tariff transfer
+
+on:
+  push:
+    branches:
+      - experiment/omega-equal-budget-transfer-2026-11-16
+    paths:
+      - 'experiments/omega-equal-budget-03/**'
+      - '.github/workflows/omega-equal-budget-03.yml'
+  pull_request:
+    branches:
+      - experiment/omega-policy-feedback-2026-11-16
+    paths:
+      - 'experiments/omega-equal-budget-03/**'
+      - '.github/workflows/omega-equal-budget-03.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-equal-budget-03-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  holdout-cost-transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Discover and pass exactly twelve scientific controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-equal-budget-03/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+            'experiments/omega-equal-budget-03',pattern='test_equal_budget.py')
+          count=suite.countTestCases()
+          print('OMEGA_EQUAL_BUDGET_TESTS_DISCOVERED',count)
+          assert count==12,("expected twelve controls",count)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Execute all preregistered budgets and unseen cost-families
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-equal-budget-03/equal_budget_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Strict scientific evidence gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('evidence/report.json').read_text())
+          assert r['experiment']=='OMEGA-EQUAL-BUDGET-03'
+          assert r['prereg_commit']=='3fac324fb89307d14eb152b31de3011ad4dbf9a0'
+          assert r['per_phase_budgets']==[120,240,360]
+          assert r['seeds']==[881,882,883]
+          assert r['primary_budget_total_charged_per_arm']==480
+          assert r['primary_unseen_cost_families']==['C','D']
+          assert r['no_optimal_labels_in_train'] and r['oracle_evaluation_only']
+          assert r['paid_api_calls']==0 and r['main_modified'] is False
+          assert not r['language_model_trained'] and not r['scientific_generalization_proven']
+          assert [r['split_manifests'][x]['size'] for x in (
+            'train_A','train_B','eval_A','eval_B','eval_C','eval_D')]==[
+            64,64,24,24,28,28]
+          sig=[s for entry in r['split_manifests'].values()
+                 for s in entry['signatures']]
+          assert len(sig)==len(set(sig))
+          assert len(r['observations'])==9
+          for observation in r['observations']:
+            cost=observation['per_phase_budget']
+            assert observation['charged_total_cost']=={'OFF':2*cost,'ON':2*cost}
+            assert observation['comparison_valid_at_charged_budget']
+            for arm in ('ON','OFF'):
+              for phase in ('A','B'):
+                d=observation['train'][arm][phase]
+                assert d['charged_cost']==d['episode_cost_used']+d['filler_cost']==cost
+                assert d['unspent_due_to_cohort_exhaustion']==0
+                assert all(z.get('trained_on_this') is False for z in d['calibration'])
+            for family,num in (('A',24),('B',24),('C',28),('D',28)):
+              ev=observation['evaluation'][family]
+              assert ev['total']==num
+              assert ev['total']==ev['eligible']+ev['impossible']
+              for row in ev['rows']:
+                if row['identifiable']:
+                  assert all(x['worst_regret']>=0 for x in row['arms'].values())
+          print('OMEGA_EQUAL_BUDGET_VERDICT',r['status'])
+          print('OMEGA_EQUAL_BUDGET_PRIMARY_ON_MINUS_OFF',r['primary_ON_minus_OFF'])
+          print('OMEGA_EQUAL_BUDGET_NO_GENERALIZATION_CLAIM',
+                not r['scientific_generalization_proven'])
+          PY
+      - name: Archive full episode traces, all deviations and negative outcomes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-equal-budget-03-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
