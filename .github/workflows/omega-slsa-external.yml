@@ -35,6 +35,13 @@ jobs:
             asset: fulcio-linux-amd64
             source_commit: 172a6d44c839cbd152a6b9e3fc41b1b66c2710e4
             signer_workflow: sigstore/fulcio/.github/workflows/release.yml
+          - key: rekor
+            repository: sigstore/rekor
+            repository_id: "272963353"
+            tag: v1.6.1
+            asset: rekor-cli-linux-amd64
+            source_commit: 30ae802eec547479bc3334ca92b9e9c4df27d9a5
+            signer_workflow: sigstore/rekor/.github/workflows/release.yml
     steps:
       - uses: actions/checkout@v4
         with:
@@ -211,12 +218,18 @@ jobs:
           python3 09_INFRASTRUCTURE_AGENTIQUE/prism/slsa_dependency_compare.py \
             external-results/cli-omega.json external-results/fulcio-omega.json \
             --output external-results/omega-dependency-report.json
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/slsa_dependency_compare.py \
+            external-results/rekor-omega.json external-results/fulcio-omega.json \
+            --output external-results/omega-rekor-dependencies.json
           python3 - <<'PY'
           import json
           x=json.load(open("external-results/omega-dependency-report.json"))
           assert x["status"]=="SIGNED_PROVENANCE_CLAIMS_COMPARED"
           assert x["distinct_certified_repositories"] is True
           assert x["scientific_independence"]=="NOT_ESTABLISHED"
+          new=json.load(open("external-results/omega-rekor-dependencies.json"))
+          assert new["status"]=="SIGNED_PROVENANCE_CLAIMS_COMPARED"
+          assert new["scientific_independence"]=="NOT_ESTABLISHED"
           print("No scientific independence or correctness implied")
           PY
       - uses: actions/upload-artifact@v4
