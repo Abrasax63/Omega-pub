@@ -108,7 +108,7 @@ def freeze(checkout,log,pytest_exit,output):
     except (ValueError,json.JSONDecodeError):
         trace_status="INVALID_OR_MISSING"
     static=sites[:INSPECT]
-    dynamic=rank_sites(sites,trace)[:INSPECT] if trace_status=="VALID" and pytest_exit!=0 else []
+    dynamic=rank_sites(sites,trace)[:INSPECT] if trace_status=="VALID" and pytest_exit==1 else []
     result=seal({
         "experiment":"OMEGA-LOC-01",
         "phase":"BUGGY_ONLY_FROZEN",
@@ -128,7 +128,7 @@ def freeze(checkout,log,pytest_exit,output):
         "trace_line_count":len(trace),
         "trace_events":record["event_count"] if record else None,
         "pytest_buggy_exit":pytest_exit,
-        "buggy_test_failed":pytest_exit!=0,
+        "buggy_test_failed":pytest_exit==1,
         "trace_overhead_is_not_cost_matched":True,
     })
     write(output,result)
@@ -161,14 +161,14 @@ def evaluate(frozen,diff_text,buggy_exit,fixed_exit):
         raise ValueError("unexpected cohort")
     sites,insertions=diff_old_sites(diff_text)
     pool={(x["path"],x["line"]) for x in frozen["candidate_sites"]}
-    eligible=buggy_exit!=0 and fixed_exit==0 and frozen["buggy_test_failed"] and frozen["trace_status"]=="VALID"
+    eligible=buggy_exit==1 and fixed_exit==0 and frozen["buggy_test_failed"] and frozen["trace_status"]=="VALID"
     report={
         "experiment":"OMEGA-LOC-01",
         "phase":"HISTORICAL_ORACLE_AFTER_FREEZE",
         "freeze_sha256":frozen["commitment_sha256"],
         "historical_diff_sha256":sha(diff_text),
         "buggy_exit":buggy_exit,"fixed_exit":fixed_exit,
-        "bug_reproduced":buggy_exit!=0 and fixed_exit==0,
+        "bug_reproduced":buggy_exit==1 and fixed_exit==0,
         "old_modified_site_count":len(sites),
         "pure_insertions":insertions,
         "candidate_pool_hits_any":len(pool&sites),
@@ -189,7 +189,7 @@ def evaluate(frozen,diff_text,buggy_exit,fixed_exit):
             "exact_hit_top10":bool(hits),
             "nearby_rank_diagnostic_only":min(near) if near else None,
         }
-    if not (buggy_exit!=0 and fixed_exit==0):
+    if not (buggy_exit==1 and fixed_exit==0):
         report["status"]="BUG_NOT_REPRODUCED" if buggy_exit==0 and fixed_exit==0 else "ENVIRONMENT_OR_REFERENCE_BLOCKED"
     elif frozen["trace_status"]!="VALID":
         report["status"]="TRACE_UNUSABLE"
