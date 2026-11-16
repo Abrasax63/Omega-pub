@@ -350,11 +350,11 @@ def evaluate(cohort,trained):
                     if arm=="BELIEF_VALUE":
                         ep=run_value_episode(m,hidden,value)
                     elif arm=="TOTAL9":
-                        ep=run_episode(m,hidden,"learned",baseline.weights,(),)
+                        ep=run_episode(m,checks,hidden,"learned",weights=baseline.weights,log=False)
                     elif arm=="MEMORY":
-                        ep=run_episode(m,hidden,"memory",(),memory)
+                        ep=run_episode(m,checks,hidden,"memory",memory=memory,log=False)
                     else:
-                        ep=run_episode(m,hidden,"fixed",(),())
+                        ep=run_episode(m,checks,hidden,"fixed",log=False)
                     if not ep["success"]:
                         raise AssertionError("INADMISSIBLE_ABSTENTION")
                     outcomes.append(ep.get("cost",ep.get("total_cost")))
