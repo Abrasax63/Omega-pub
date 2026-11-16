@@ -18,7 +18,7 @@ ALLOW_TEST_PREFIXES = ("tests/", "tqdm/tests/")
 
 def fetch(cohort_file, checkouts_dir, tests_dir, phase):
     cohort=json.loads(cohort_file.read_text(encoding="utf8"))
-    if cohort.get("experiment")!="OMEGA-NEW5-ABC-01" or len(cohort["cases"])!=5:
+    if cohort.get("experiment")!="OMEGA-NEW5-ABC-02" or len(cohort["cases"])!=5:
         raise ValueError("wrong experiment/case count")
     if phase not in ("buggy-only","fixed-oracle"):
         raise ValueError("invalid phase")

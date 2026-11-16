@@ -180,12 +180,15 @@ def ask_qwen(cli,weights,case,row,public_failure):
             +"\nReturn one exact ID.\n<|im_end|>\n<|im_start|>assistant\n")
     command=[str(cli),"-m",str(weights),"-p",prompt,"-n",str(MODEL_NEW_TOKENS),
              "-c","4096","-t","4","--temp","0","--seed","1626"]
+    inference_start = time.perf_counter()
     try:
         result=subprocess.run(command,capture_output=True,text=True,timeout=250)
     except (OSError,subprocess.TimeoutExpired) as e:
         return {"status":"MODEL_INFRA_ERROR","model_called":True,
+                "inference_elapsed_ms":round(1000*(time.perf_counter()-inference_start)),
                 "error":str(e)[:300],"candidate_id":None,
                 "prompt_sha256":sha_bytes(prompt.encode())}
+    inference_elapsed_ms = round(1000*(time.perf_counter()-inference_start))
     raw=result.stdout
     # CLI prints the prompt and a performance/status footer. Do not confuse
     # the footer with model chatter; validate one answer against frozen IDs.
@@ -197,7 +200,8 @@ def ask_qwen(cli,weights,case,row,public_failure):
             "prompt_sha256":sha_bytes(prompt.encode()),
             "raw_sha256":sha_bytes(raw.encode()),
             "returned_tail":tail[-500:],
-            "max_output_tokens":MODEL_NEW_TOKENS}
+            "max_output_tokens":MODEL_NEW_TOKENS,
+            "inference_elapsed_ms":inference_elapsed_ms}
 
 
 def evaluate_orders(image,case,buggy_root,test_file,row,model_choice):
