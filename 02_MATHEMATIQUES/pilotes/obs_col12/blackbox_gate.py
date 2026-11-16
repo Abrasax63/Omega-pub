@@ -37,7 +37,7 @@ FROZEN_ARMS = {
     "register3.dot": ("fixed", "omega_candidate"),
     "register5.dot": ("fixed", "coverage_only", "omega_candidate", "KV"),
 }
-VERIFIERS = ("W", "Wp", "Wp_memory_ranked")
+VERIFIERS = ("W", "Wp", "Wp_coverage_ranked", "Wp_memory_ranked")
 RESET_BUDGET = 600
 SYMBOL_BUDGET = 8000
 
@@ -98,7 +98,7 @@ def wp_candidate_suite(hypothesis, alphabet, extra_states=1):
     return tuple(dict.fromkeys(sequences))
 
 
-def ranked_wp_gate(hypothesis, sul, alphabet, previously_measured_prefixes):
+def ranked_wp_gate(hypothesis, sul, alphabet, previously_measured_prefixes, *, use_memory):
     """Execute fixed Wp candidate set in precommitted classical memory ranking."""
     words = wp_candidate_suite(hypothesis, alphabet)
     source_digest = hashlib.sha256(
@@ -107,7 +107,7 @@ def ranked_wp_gate(hypothesis, sul, alphabet, previously_measured_prefixes):
     ranked = coverage_ranking(
         hypothesis, words,
         known_prefixes=previously_measured_prefixes,
-        memory=True,
+        memory=use_memory,
     )
     if len(words) != len(ranked) or set(ranked) != set(words):
         raise AssertionError("ranking dropped/added Wp candidate words")
@@ -129,6 +129,7 @@ def ranked_wp_gate(hypothesis, sul, alphabet, previously_measured_prefixes):
                     "wp_candidate_sha256": source_digest,
                     "ordered_sha256": order_digest,
                     "reordered": ranked != words,
+                    "memory_component": use_memory,
                 }
         sul.post()
     return None, {
@@ -136,6 +137,7 @@ def ranked_wp_gate(hypothesis, sul, alphabet, previously_measured_prefixes):
         "wp_candidate_sha256": source_digest,
         "ordered_sha256": order_digest,
         "reordered": ranked != words,
+        "memory_component": use_memory,
     }
 
 
@@ -145,7 +147,7 @@ def run_gate(hypothesis, oracle_target, verifier, prior_prefixes=()):
         raise ValueError("unknown preregistered verification policy")
     alphabet = sorted(hypothesis.get_input_alphabet(), key=str)
     # P1 gate is the ONLY Omega additional cost; it cannot access the truth.
-    metered = MeteredBlackBox(oracle_target, with_p1=(verifier == "Wp_memory_ranked"))
+    metered = MeteredBlackBox(oracle_target, with_p1=(verifier in ("Wp_coverage_ranked", "Wp_memory_ranked")))
     start_wall, start_cpu = time.perf_counter(), time.process_time()
     metadata = {}
     cex = None
@@ -159,7 +161,10 @@ def run_gate(hypothesis, oracle_target, verifier, prior_prefixes=()):
             cex = oracle.find_cex(hypothesis)
             metadata["aalpy_native_oracle"] = "WpMethodEqOracle"
         else:
-            cex, metadata = ranked_wp_gate(hypothesis, metered, alphabet, prior_prefixes)
+            cex, metadata = ranked_wp_gate(
+                hypothesis, metered, alphabet, prior_prefixes,
+                use_memory=(verifier == "Wp_memory_ranked"),
+            )
             metadata["aalpy_native_oracle"] = "AALpy_Wp_test_generators_with_PR110_ranking"
         status = ("REFUTED_BY_MEASURED_COUNTEREXAMPLE" if cex else
                   "NO_COUNTEREXAMPLE_WITHIN_BOUNDED_SUITE")
@@ -181,7 +186,7 @@ def run_gate(hypothesis, oracle_target, verifier, prior_prefixes=()):
     }
     assert result["physical_resets"] <= RESET_BUDGET
     assert result["physical_symbols"] <= SYMBOL_BUDGET
-    if verifier == "Wp_memory_ranked":
+    if verifier in ("Wp_coverage_ranked", "Wp_memory_ranked"):
         assert result["p1_calls"] == result["physical_resets"]
     else:
         assert result["p1_calls"] == 0
