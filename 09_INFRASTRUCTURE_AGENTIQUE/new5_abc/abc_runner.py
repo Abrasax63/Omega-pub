@@ -22,7 +22,7 @@ MODEL_HASH = "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7"
 MODEL_CALLS_PER_REPRODUCED_BUG = 1
 MODEL_NEW_TOKENS = 128
 MAX_PATCH_EXEC_SECONDS = 75
-PROJECT_EXTRA = {"tqdm":("nose",), "cookiecutter":("pytest-cov<4",),
+PROJECT_EXTRA = {"tqdm":("nose",), "cookiecutter":("pytest-cov<4","pytest-mock==3.6.1"),
                  "httpie":("requests","pytest-httpbin==1.0.2")}
 
 
@@ -36,7 +36,7 @@ def build_project_image(case, buggy_root):
     with tempfile.TemporaryDirectory(prefix="omega-new5-builder-") as tmp:
         df=Path(tmp)/"Dockerfile"
         df.write_text(
-            "FROM python:"+case["python"]+"-slim\n"
+            "FROM python:"+case["python"]+("" if case["project"]=="httpie" else "-slim")+"\n"
             "WORKDIR /src\n"
             "COPY . /src\n"
             "RUN python -m pip install --disable-pip-version-check --no-cache-dir "
@@ -98,7 +98,7 @@ def run_regression(image, case, source_root, test_file, profile_file=None, patch
         script+="cp /omega-patch.py /tmp/work/"+patchrel+"; "
     # pytest's automatic plugin loading is disabled for determinism. Enable
     # only required, already-installed historical plugins explicitly.
-    explicit_plugins = ("-p pytest_cov " if case["project"]=="cookiecutter" else "")
+    explicit_plugins = ("-p pytest_cov -p pytest_mock " if case["project"]=="cookiecutter" else "")
     script+="python -m pytest -q -s -p no:cacheprovider "+explicit_plugins+"--maxfail=1 "+pytest_target
     cmd.extend(["sh","-c",script])
     started=time.perf_counter_ns()
