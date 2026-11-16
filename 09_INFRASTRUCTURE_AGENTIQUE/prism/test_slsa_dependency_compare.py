@@ -61,5 +61,17 @@ class DependencyCompareTests(unittest.TestCase):
         self.assertTrue(result["unresolved_dependency_provenance"])
 
 
+    def test_source_git_commits_are_retained_and_disjoint(self):
+        a=report("212613049", [{"uri":"git+https://github.com/cli/cli@refs/heads/trunk",
+                                 "git_commit":"a"*40,"sha256":None}])
+        b=report("341596960", [{"uri":"git+https://github.com/sigstore/fulcio@refs/tags/v1.10.0",
+                                 "git_commit":"b"*40,"sha256":None}])
+        result=compare_reports(a,b)
+        self.assertEqual(result["shared_claimed_dependency_count"],0)
+        self.assertEqual(result["subjects"][0]["reported_dependencies"][0]["git_commit"],"a"*40)
+        self.assertEqual(result["subjects"][1]["reported_dependencies"][0]["git_commit"],"b"*40)
+        self.assertEqual(result["scientific_independence"],"NOT_ESTABLISHED")
+
+
 if __name__=="__main__":
     unittest.main()
