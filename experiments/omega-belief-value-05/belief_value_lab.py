@@ -354,7 +354,7 @@ def evaluate(cohort,trained):
                     elif arm=="MEMORY":
                         ep=run_episode(m,hidden,"memory",(),memory)
                     else:
-                        ep=run_episode(m,hidden,"A_fixed",(),())
+                        ep=run_episode(m,hidden,"fixed",(),())
                     if not ep["success"]:
                         raise AssertionError("INADMISSIBLE_ABSTENTION")
                     outcomes.append(ep.get("cost",ep.get("total_cost")))
