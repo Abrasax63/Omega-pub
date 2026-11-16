@@ -1,0 +1,164 @@
+name: Omega cover replication 05 - 48 new minimal machines paired statistical audit
+
+on:
+  push:
+    branches:
+      - experiment/omega-cover-replication-05-2026-11-16
+    paths:
+      - 'experiments/omega-cover-replication-05/**'
+      - '.github/workflows/omega-cover-replication-05.yml'
+  pull_request:
+    branches:
+      - experiment/omega-cover-constrained-04-2026-11-16
+    paths:
+      - 'experiments/omega-cover-replication-05/**'
+      - '.github/workflows/omega-cover-replication-05.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-cover-replication-05-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  independent-48-world-replication:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact public baseline
+        run: python -m pip install --disable-pip-version-check aalpy==1.6.2
+      - name: Ten independent cheap regression controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-cover-replication-05/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+            'experiments/omega-cover-replication-05',
+            pattern='test_replication.py')
+          n=suite.countTestCases()
+          print('OMEGA_REPLICATION_05_TESTS',n)
+          assert n==10,('WRONG_PRECOMMITTED_TEST_COUNT',n)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Execute ONE 48-by-four-by-two full new holdout experiment
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-cover-replication-05/replication_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Independently recheck exact contingency, Holm, budget, test words and prereg
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from math import comb
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-COVER-REPLICATION-05'
+          assert d['preregistered_commit']=='8ba60bd44553b439d109302f9a6d0a07c99e7188'
+          assert d['learning_backend']=='unchanged_AALpy_1.6.2_Lstar_from_PR138'
+          assert d['same_algorithm_and_hyperparameters_as_PR139']
+          assert d['same_rng_seed_across_budgets'] and d['exact_oracle_evaluation_only']
+          assert d['eq_word_length']==10 and d['max_eq_per_round']==32
+          assert d['budgets']==[300,500] and d['primary_budget']==500
+          assert d['paired_unit']=='Mealy machine'
+          assert d['bootstrap_reps']==5000 and d['bootstrap_seed']==48319
+          assert d['alpha']==0.05
+          assert d['no_paid_api'] and not d['main_modified']
+          assert not d['generalization_certified']
+          names=('RANDOM_LEN10','FIXED_LEN10','OLD_OMEGA_LEN10','COVER_DISTINGUISH_LEN10')
+          assert d['methods']==list(names)
+          assert len(d['cases'])==48 and d['worlds']==48
+          assert [a['size'] for a in d['cases']]==[4]*16+[5]*16+[6]*16
+          sigs=[x['canonical_signature'] for x in d['cases']]
+          assert len(set(sigs))==48
+          for case in d['cases']:
+            assert case['accessible_states']==case['size']
+            assert case['pairwise_distinguishable']
+            for budget in (300,500):
+              for arm in names:
+                result=case['budgets'][str(budget)][arm]
+                led=result['training']['ledger']
+                assert 0<led['spent_symbols']<=budget
+                assert sum(x['charge'] for x in led['query_log'])==led['spent_symbols']
+                assert sum(led['by_phase_spent'].values())==led['spent_symbols']
+                eq=[x for x in led['query_log'] if x['phase']=='EQ']
+                assert len(eq)==result['training']['eq_words_tested']
+                assert all(len(x['inputs'])==10 for x in eq)
+                reserved=result['reserved']
+                assert reserved['evaluated_test_words']+reserved['excluded_identical_train_queries']==128
+                exact=result['exact_equivalence']
+                assert exact['status'] in ('EXACT_EQUIVALENT','NOT_EQUIVALENT','NO_HYPOTHESIS')
+                if exact['status']=='EXACT_EQUIVALENT':
+                  assert reserved['whole_word_accuracy']==1.0
+                if exact['status']=='NOT_EQUIVALENT':
+                  assert len(exact['counterexample'])==exact['shortest_counterexample_length']>0
+          for budget,summary in ((300,d['secondary']),(500,d['primary'])):
+            assert summary['budget_cap']==budget
+            assert summary['independent_machine_units']==48
+            assert summary['stratum_sizes']=={'4':16,'5':16,'6':16}
+            pvals=[]
+            refs=names[:-1]
+            for ref in refs:
+              records=[(
+                case['budgets'][str(budget)]['COVER_DISTINGUISH_LEN10']['exact_equivalence']['status']=='EXACT_EQUIVALENT',
+                case['budgets'][str(budget)][ref]['exact_equivalence']['status']=='EXACT_EQUIVALENT',
+              ) for case in d['cases']]
+              wins=sum(c and not b for c,b in records)
+              losses=sum(b and not c for c,b in records)
+              proof=summary['paired'][ref]
+              assert proof['cover_only_exact']==wins
+              assert proof['reference_only_exact']==losses
+              assert proof['exact_count_delta']==wins-losses
+              assert abs(proof['exact_rate_delta']-(wins-losses)/48)<1e-14
+              n=wins+losses
+              p=(sum(comb(n,k) for k in range(wins,n+1))/2**n) if n else 1.0
+              assert abs(proof['one_sided_exact_mcnemar_p']-p)<1e-14
+              pvals.append((ref,p))
+              boot=proof['stratified_paired_bootstrap_95']
+              assert boot['replications']==5000
+              assert -1<=boot['lower_95']<=boot['upper_95']<=1
+            pvals.sort(key=lambda x:(x[1],x[0]))
+            adj={}
+            prior=0
+            for idx,(ref,p) in enumerate(pvals):
+              prior=max(prior,min(1,(3-idx)*p))
+              adj[ref]=prior
+            for ref in refs:
+              proof=summary['paired'][ref]
+              assert abs(proof['holm_adjusted_p']-adj[ref])<1e-14
+              gates=(proof['exact_count_delta']>0 and
+                     adj[ref]<=.05 and
+                     proof['stratified_paired_bootstrap_95']['lower_95']>0 and
+                     proof['mean_reserved_word_accuracy_delta']>=-1e-12)
+              assert gates==proof['strong_condition']
+            assert summary['all_three_strong']==all(
+              summary['paired'][ref]['strong_condition'] for ref in refs)
+          assert (d['status']=='REPLICATED_STRONG_QUERY_GAIN')==d['primary']['all_three_strong']
+          if not d['primary']['all_three_strong']:
+            assert d['status']=='NO_ROBUST_QUERY_GAIN_DEMONSTRATED'
+          print('OMEGA_REPLICATION_05_VERDICT',d['status'])
+          print('OMEGA_REPLICATION_05_PRIMARY',d['primary'])
+          print('OMEGA_REPLICATION_05_SECONDARY',d['secondary'])
+          PY
+      - name: Preserve full positive and negative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cover-replication-05-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
