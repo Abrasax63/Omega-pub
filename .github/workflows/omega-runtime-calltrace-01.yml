@@ -1,0 +1,198 @@
+name: Omega runtime calltrace 01 - last-call locality
+
+on:
+  push:
+    branches:
+      - experiment/omega-runtime-calltrace-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/runtime_calltrace_01/**'
+      - '.github/workflows/omega-runtime-calltrace-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-bugsinpy-official-repro-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/runtime_calltrace_01/**'
+      - '.github/workflows/omega-runtime-calltrace-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: omega-runtime-calltrace-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  profile-buggy-freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Strict regression test discovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/runtime_calltrace_01/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+              '09_INFRASTRUCTURE_AGENTIQUE/runtime_calltrace_01',
+              pattern='test_runtime_calltrace.py')
+          n=suite.countTestCases()
+          print('RUNTIME_PROFILE_REGRESSION_TESTS_DISCOVERED',n)
+          assert n==5
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Download exact historical lexical A baseline BEFORE profiling
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p baseline
+          gh run download 43865942146 --repo "$GITHUB_REPOSITORY" \
+            --name omega-official-repro-02-buggy-sealed --dir baseline
+          echo "1c26411c771bb4acbd1f14fba9d55e51ab28bc7e8eebee3290aaeb49ee9e5d23  baseline/frozen-rankings.json" | sha256sum --check
+      - name: Checkout BUGGY only and restore fixed regression TEST only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/ytdl-org/youtube-dl.git "$RUNNER_TEMP/youtube-buggy"
+          git -C "$RUNNER_TEMP/youtube-buggy" fetch --depth 1 origin \
+            99036a1298089068dcf80c0985bfcc3f8c24f281
+          git -C "$RUNNER_TEMP/youtube-buggy" checkout --quiet --detach \
+            99036a1298089068dcf80c0985bfcc3f8c24f281
+          test "$(git -C "$RUNNER_TEMP/youtube-buggy" rev-parse HEAD)" = \
+            99036a1298089068dcf80c0985bfcc3f8c24f281
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 30 --max-time 120 \
+            "https://raw.githubusercontent.com/ytdl-org/youtube-dl/1cc47c667419e0eadc0a6989256ab7b276852adf/test/test_utils.py" \
+            -o "$RUNNER_TEMP/youtube-buggy/test/test_utils.py"
+          echo "9f89df328fda10e6249c7fd89d85f62eec7888508c6c1e5c5fc7aefe44949054  $RUNNER_TEMP/youtube-buggy/test/test_utils.py" | sha256sum --check
+          echo "BUGGY_SOURCE_AND_FIXED_TEST_ONLY_PINNED"
+      - name: Profile function CALLS during failing regression, no network or writable project
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p runtime-evidence
+          docker pull python:3.7-slim
+          set +e
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=96m \
+            -v "$PWD:/agent:ro" \
+            -v "$RUNNER_TEMP/youtube-buggy:/repo:ro" \
+            -w /repo python:3.7-slim \
+            sh -c 'timeout 180s python /agent/09_INFRASTRUCTURE_AGENTIQUE/runtime_calltrace_01/profile_test.py --repo-root /repo --output /tmp/profile.json >/tmp/unittest.log 2>&1; result=$?; cat /tmp/unittest.log >&2; cat /tmp/profile.json; exit "$result"' \
+            > runtime-evidence/profile-raw.json 2> runtime-evidence/unittest.log
+          status="$?"
+          set -e
+          echo "$status" > runtime-evidence/profile-exit.txt
+          echo "PROFILED_BUGGY_TEST_EXIT $status"
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path("runtime-evidence/profile-raw.json")
+          if p.is_file() and p.stat().st_size:
+              o=json.loads(p.read_text())
+              print("PROFILED_CALLS",o["observed_calls"],
+                    "TESTS",o["tests_run"],"FAILURES",o["failures"],
+                    "TRUNCATED",o["truncated"])
+          else:
+              print("PROFILE_EVIDENCE_MISSING")
+          PY
+      - name: Rank same frozen inventory with runtime last-call evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/runtime_calltrace_01/profile_rank.py \
+            --baseline baseline/frozen-rankings.json \
+            --profile runtime-evidence/profile-raw.json \
+            --output runtime-evidence/profile-ranks.json
+          sha256sum runtime-evidence/profile-ranks.json > runtime-evidence/profile-ranks.sha256
+          python - <<'PY'
+          import json,pathlib
+          o=json.loads(pathlib.Path("runtime-evidence/profile-ranks.json").read_text())
+          assert o["phase"]=="BUGGY_PROFILE_RANKS_SEALED_BEFORE_ORACLE"
+          assert not o["oracle_accessed"] and not o["fixed_source_accessed"]
+          assert o["same_function_inventory"] and o["same_top10_inspection_budget"]
+          assert not o["same_information_and_execution_budget"]
+          assert not o["model_called"] and o["repair_correctness"] is None
+          print("CALL_PROFILE_RANK_STATUS",o["status"])
+          PY
+      - name: Archive raw function calls and SEALED ranks even if negative
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-runtime-calltrace-01-frozen
+          path: runtime-evidence/*
+          if-no-files-found: warn
+          retention-days: 14
+
+  known-oracle-after-freeze:
+    needs: profile-buggy-freeze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download newly SEALED dynamic ranking
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-runtime-calltrace-01-frozen
+          path: frozen
+      - name: Verify dynamic SHA commitment BEFORE reading old oracle
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(cut -d ' ' -f1 frozen/profile-ranks.sha256)"
+          test -n "$expected"
+          echo "$expected  frozen/profile-ranks.json" | sha256sum --check
+          echo "PROFILE_RANKS_SHA_VERIFIED $expected"
+      - name: Download previously frozen known oracle ONLY AFTER dynamic SHA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p oracle
+          gh run download 43865942146 --repo "$GITHUB_REPOSITORY" \
+            --name omega-official-repro-02-fixed-oracle --dir oracle
+          echo "25f212a267670e2bfe945d4eaabc91cea5c95cbc269b1ffdeefcccc497d5bc18  oracle/oracle.json" | sha256sum --check
+      - name: Compare to known oracle without score tuning or source execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p comparison-evidence
+          expected="$(cut -d ' ' -f1 frozen/profile-ranks.sha256)"
+          python 09_INFRASTRUCTURE_AGENTIQUE/runtime_calltrace_01/compare_oracle.py \
+            --profile-ranks frozen/profile-ranks.json \
+            --expected-sha256 "$expected" \
+            --historical-oracle oracle/oracle.json \
+            --output comparison-evidence/known-oracle.json
+          python - <<'PY'
+          import json,pathlib
+          d=json.loads(pathlib.Path("comparison-evidence/known-oracle.json").read_text())
+          assert d["phase"]=="POST_FREEZE_KNOWN_ORACLE_DESCRIPTIVE_COMPARISON"
+          assert d["known_nonblind_case"] and not d["generalization_demonstrated"]
+          assert d["repair_correctness"] is None and not d["model_called"]
+          print("FINAL_CALLTRACE_VERDICT",d["status"])
+          PY
+      - name: Archive exact descriptive metrics and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-runtime-calltrace-01-known-oracle
+          path: comparison-evidence/*
+          if-no-files-found: warn
+          retention-days: 14
