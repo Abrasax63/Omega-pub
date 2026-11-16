@@ -8,7 +8,7 @@ import unittest
 from blackbox_gate import (
     SOURCE_NAMES, FROZEN_ARMS, VERIFIERS, RESET_BUDGET, SYMBOL_BUDGET,
     VerificationBudgetExceeded, MeteredBlackBox,
-    wp_candidate_suite, ranked_wp_gate, run_gate,
+    wp_candidate_suite, ranked_wp_gate, run_gate, admission_verdict,
 )
 from external_transfer import load_pinned_moore, fit_one
 from policy_divergence import coverage_ranking
@@ -94,6 +94,26 @@ class TestBlackBoxConformance(unittest.TestCase):
         self.assertEqual(right["p1_calls"], right["physical_resets"])
         self.assertFalse(left["universal_equivalence_certified"])
         self.assertFalse(right["universal_equivalence_certified"])
+
+    def test_admission_is_fail_closed_and_no_silent_promotion(self):
+        negative = admission_verdict({
+            "Wp": {"status": "BUDGET_EXHAUSTED"},
+            "W": {"status": "NO_COUNTEREXAMPLE_WITHIN_BOUNDED_SUITE"},
+        })
+        self.assertEqual(negative["decision"], "DEFER_UNVERIFIED")
+        self.assertFalse(negative["certified"])
+        positive = admission_verdict({
+            "Wp": {"status": "REFUTED_BY_MEASURED_COUNTEREXAMPLE",
+                   "witness_verified_after_measurement": True},
+            "W": {"status": "NO_COUNTEREXAMPLE_WITHIN_BOUNDED_SUITE"},
+        })
+        self.assertEqual(positive["decision"], "REJECT_MODEL")
+        self.assertEqual(positive["verified_by"], ["Wp"])
+        unverified = admission_verdict({
+            "Wp": {"status": "REFUTED_BY_MEASURED_COUNTEREXAMPLE",
+                   "witness_verified_after_measurement": False},
+        })
+        self.assertEqual(unverified["decision"], "DEFER_UNVERIFIED")
 
     def test_measure_only_real_oracle_and_no_perfect_knowledge(self):
         name = "register5.dot"
