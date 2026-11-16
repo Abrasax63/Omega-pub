@@ -182,7 +182,6 @@ def replay_uniform_exact(machine,oracle,hidden):
     spent=0
     steps=[]
     while len(group)>1:
-        values=q_tables(group,oracle,None) if False else None
         actions=oracle.actions(group)
         n=len(group)
         root=min(actions,key=lambda a:(
