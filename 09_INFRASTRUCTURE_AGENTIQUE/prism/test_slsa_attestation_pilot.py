@@ -188,5 +188,20 @@ class SlsaAttestationTests(unittest.TestCase):
         self.assertEqual(result["verified_statement_count"], 1)
 
 
+    def test_slsa_git_commit_dep_is_recorded_but_not_certified(self):
+        entry = self.entry()
+        entry["verificationResult"]["statement"]["predicate"]["buildDefinition"]["resolvedDependencies"] = [
+            {"uri": "git+https://example.invalid/source@refs/tags/v1",
+             "digest": {"gitCommit": "c" * 40}}
+        ]
+        result = self.verify(self.mock_success(entry))
+        self.assertTrue(result["signature_verified"])
+        evidence = result["evidence"][0]
+        self.assertEqual(evidence["reported_dependencies"][0]["git_commit"], "c" * 40)
+        self.assertIsNone(evidence["reported_dependencies"][0]["sha256"])
+        self.assertIn("SIGNER_CLAIM", evidence["dependency_trust"])
+        self.assertEqual(evidence["scientific_independence"], "NOT_ESTABLISHED")
+
+
 if __name__ == "__main__":
     unittest.main()
