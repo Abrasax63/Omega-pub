@@ -417,7 +417,7 @@ def conduct():
         }
         if before!=after:
             raise AssertionError("HOLDOUT_CHANGED_TRAINED_PARAMETERS")
-        if trained["baseline"].updates!=trained["structured"].updates!=shared["episodes"]:
+        if not (trained["baseline"].updates==trained["structured"].updates==shared["episodes"]):
             raise AssertionError("TRAINED_LABEL_COUNT_CHANGED")
         repeat.append({
             "seed":seed,
