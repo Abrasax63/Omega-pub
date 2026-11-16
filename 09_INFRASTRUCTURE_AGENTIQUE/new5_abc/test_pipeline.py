@@ -6,7 +6,7 @@ import unittest
 
 from abc_core import ARMS, MAX_PER_ARM, sha
 from abc_oracle import verify_commitment
-from abc_runner import MODEL_CALLS_PER_REPRODUCED_BUG, MODEL_NEW_TOKENS, MountedPatch, run_regression
+from abc_runner import MODEL_CALLS_PER_REPRODUCED_BUG, MODEL_NEW_TOKENS, MountedPatch, run_regression, build_project_image
 
 def fixture():
     cases=[]
@@ -51,6 +51,45 @@ class PipelineContractTests(unittest.TestCase):
             command=mock_run.call_args.args[0]
             self.assertIn("type=bind,src="+str(source.resolve())+
                           ",dst=/omega-patch.py,readonly",command)
+
+    @patch("abc_runner.subprocess.run")
+    def test_httpie_installs_separate_pinned_requirements(self, mock_run):
+        mock_run.return_value.returncode = 0
+        mock_run.return_value.stdout = ""
+        mock_run.return_value.stderr = ""
+        text_seen = []
+        def capture(command, **kwargs):
+            idx = command.index("-f")
+            dockerfile=Path(command[idx+1])
+            text_seen.append(dockerfile.read_text())
+            return mock_run.return_value
+        mock_run.side_effect=capture
+        with tempfile.TemporaryDirectory() as td:
+            tag,build=build_project_image(
+                {"id":"N5","python":"3.7.3","project":"httpie"},Path(td))
+        self.assertEqual(build["exit"],0)
+        self.assertIn("'requests' 'pytest-httpbin==1.0.2'",text_seen[0])
+        self.assertNotIn("'requests pytest-httpbin",text_seen[0])
+
+    @patch("abc_runner.subprocess.run")
+    def test_profiler_json_not_sent_as_qwen_failure_message(self, mock_run):
+        mock_run.return_value.returncode = 1
+        mock_run.return_value.stdout = ("FAILED tests/testcase.py::test_a - AssertionError\n"
+                                         "OMEGA_CALL_TRACE_V1={\\"schema\\":\\"omega-calltrace-v1\\",\\"files\\":[]}")
+        mock_run.return_value.stderr=""
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            test=root/"test.py"
+            test.write_text("def test_a(): assert False\n")
+            probe=root/"sitecustomize.py"
+            probe.write_text("# mocked\n")
+            c={"project":"tqdm","test_file":"tests/test.py",
+               "test_id":"tests/test.py::test_a"}
+            result=run_regression("dummy-image",c,root,test,profile_file=probe)
+        self.assertEqual(result["status"],"FAIL")
+        self.assertIn("AssertionError",result["log_tail"])
+        self.assertNotIn("OMEGA_CALL_TRACE_V1=",result["log_tail"])
+        self.assertIn("OMEGA_CALL_TRACE_V1=",result["trace_log"])
 
     def test_exact_model_budget(self):
         self.assertEqual(MODEL_CALLS_PER_REPRODUCED_BUG,1)
