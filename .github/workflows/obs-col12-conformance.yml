@@ -1,0 +1,73 @@
+name: OBS-COL-12 black-box conformance falsification gate
+on:
+  push:
+    branches:
+      - experiment/obs-col12-blackbox-conformance-gate-2026-11-16
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col12/**"
+      - ".github/workflows/obs-col12-conformance.yml"
+  workflow_dispatch:
+env:
+  PYTHONHASHSEED: '0'
+jobs:
+  conformance-calibration:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install real AALpy 2.0.0
+        run: python -m pip install --disable-pip-version-check aalpy==2.0.0
+      - name: Retrieve pre-locked third-party models without substitution
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col11/fetch_fixtures.py "$PWD/obs_col12_sources" > obs_col12_download_log.json
+      - name: Run eight anti-falsification and fail-closed admission checks
+        env:
+          OBS_COL12_SOURCES: obs_col12_sources
+        run: |
+          python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col12 -p 'test_blackbox_gate.py' -v
+      - name: Replay 6 frozen models and compare 4 genuine black-box verifiers
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col12/blackbox_gate.py "$PWD/obs_col12_sources" > obs_col12_result.json
+          python - <<'PY'
+          import json
+          x=json.load(open("obs_col12_result.json"))
+          assert len(x["samples"])==6
+          assert x["no_new_blind_holdout"] and x["practical_detection_not_equivalence_certification"]
+          for case in x["samples"]:
+              assert set(case["verifiers"]) == {"W","Wp","Wp_coverage_ranked","Wp_memory_ranked"}
+              assert case["admission"]["decision"] in ("REJECT_MODEL", "DEFER_UNVERIFIED")
+              assert not case["admission"]["certified"]
+              if case["model_is_known_exact_from_prior_posthoc_audit"]:
+                  assert case["admission"]["decision"] == "DEFER_UNVERIFIED"
+              else:
+                  assert case["admission"]["decision"] == "REJECT_MODEL"
+              for name, v in case["verifiers"].items():
+                  assert v["physical_resets"]<=600 and v["physical_symbols"]<=8000
+                  assert not v["universal_equivalence_certified"]
+                  assert v["status"] in (
+                      "REFUTED_BY_MEASURED_COUNTEREXAMPLE",
+                      "BUDGET_EXHAUSTED",
+                      "NO_COUNTEREXAMPLE_WITHIN_BOUNDED_SUITE",
+                  )
+                  if v["counterexample"] is not None:
+                      assert v["status"]=="REFUTED_BY_MEASURED_COUNTEREXAMPLE"
+                      assert v["witness_verified_after_measurement"]
+                  print(case["source_name"],case["learned_arm"],name,
+                        v["status"],"resets",v["physical_resets"],
+                        "symbols",v["physical_symbols"],
+                        "witness",v["counterexample"])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: obs-col12-blackbox-conformance-evidence
+          path: |
+            obs_col12_result.json
+            obs_col12_download_log.json
+          if-no-files-found: warn
