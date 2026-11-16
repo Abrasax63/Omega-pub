@@ -41,7 +41,7 @@ jobs:
             09_INFRASTRUCTURE_AGENTIQUE/official_repro_02/official_rank.py \
             09_INFRASTRUCTURE_AGENTIQUE/official_repro_02/official_oracle.py
           python -m unittest discover -v \
-            -s 09_INFRASTRUCTURE_AGENTIQUE/traceback_loc_01 \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/official_repro_02 \
             -p 'test_official_repro.py'
       - name: Checkout ONLY pinned historical BUGGY youtube-dl-1
         shell: bash
@@ -63,7 +63,7 @@ jobs:
             -o "$RUNNER_TEMP/youtube-buggy/test/test_utils.py"
           test -s "$RUNNER_TEMP/youtube-buggy/test/test_utils.py"
           echo "FIXED_TEST_ONLY_TRANSPLANTED_SHA256 $(sha256sum "$RUNNER_TEMP/youtube-buggy/test/test_utils.py" | cut -d ' ' -f1)"
-      - name: Execute full historical declared test file under isolated Python 3.7
+      - name: Execute canonical BugsInPy targeted regression test on BUGGY under Python 3.7
         shell: bash
         run: |
           set -euo pipefail
@@ -166,7 +166,7 @@ jobs:
           test "$(sha256sum "$RUNNER_TEMP/youtube-buggy/test/test_utils.py" | cut -d ' ' -f1)" = \
                "$(sha256sum "$RUNNER_TEMP/youtube-fixed/test/test_utils.py" | cut -d ' ' -f1)"
           echo "ORACLE_TEST_TRANSPLANT_VERIFIED"
-      - name: Execute same historical unittest module on FIXED under same isolation
+      - name: Execute same canonical targeted test on FIXED under same isolation
         shell: bash
         run: |
           set -euo pipefail
