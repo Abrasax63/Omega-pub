@@ -14,6 +14,20 @@ def official_evaluate(manifest_bytes:bytes, manifest_sha:str, buggy:Path,
                       fixed:Path, fixed_log:str, fixed_exit:int)->dict:
     base=evaluate(manifest_bytes,manifest_sha,buggy,fixed,fixed_log,fixed_exit)
     base["experiment"]="OMEGA-BUGSINPY-OFFICIAL-REPRO-02"
+    # Keep the original frozen localization gate unchanged: no package frame
+    # means no valid traceback-based ranking, despite a reproduced test failure.
+    original=json.loads(manifest_bytes)
+    buggy_failed=(original.get("test_exit_code") not in (None,0,124,125,126,127,137)
+                  and bool(original.get("test_suite_reported_tests"))
+                  and original["test_suite_reported_tests"][-1] >= 1)
+    fixed_counts=base.get("fixed_reported_test_counts",[])
+    fixed_passed=(fixed_exit == 0 and bool(fixed_counts)
+                  and fixed_counts[-1] >= 1)
+    base["historical_regression_test_buggy_fail_fixed_pass"]=bool(buggy_failed and fixed_passed)
+    base["usable_buggy_package_stack_frames"]=bool(original.get("ordered_unique_mapped_frame_keys"))
+    base["localization_gate_distinct_from_reproducer_gate"]=True
+    if base["historical_regression_test_buggy_fail_fixed_pass"] and not base["usable_buggy_package_stack_frames"]:
+        base["reproduction_detail"]="HISTORICAL_REGRESSION_REPRODUCED_BUT_NO_PACKAGE_TRACEBACK_FRAMES"
     base["official_test_command"]="python -m unittest -q test.test_utils.TestUtil.test_match_str"
     base["transplanted_fixed_test_only"]=True
     base["claim_independent_blind_generalization"]=False
