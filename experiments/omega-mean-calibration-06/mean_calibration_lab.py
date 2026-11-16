@@ -33,14 +33,28 @@ TEST_OBSERVATION_SEED=44321
 EPS=1e-10
 
 
-def new_holdouts(old_cohorts=None):
-    """No old pilot machine, no new cross-family state-renaming duplicates."""
+def old_signatures(old_cohorts=None):
+    """All six older pilots, not just the current PR132 train/test partitions."""
     if old_cohorts is None:
         old_cohorts=b.cohorts()
-    seen={sig for part in old_cohorts.values()
-          for sig,_ in part["machines"]}
-    if len(seen)!=858:
+    earlier=(
+        b.make_cohorts(),                         # PR127: 90
+        b.previous.previous.p.group_machines(),   # PR128: 148
+        b.previous.previous.previous.cohorts(),   # PR129: 124
+        b.previous.previous.machine_groups(),     # PR130: 232
+        b.previous.make_new_cohorts(),             # PR131: 140
+        old_cohorts,                               # PR132: 124
+    )
+    signatures={s for source in earlier for part in source.values()
+                for s,_ in part["machines"]}
+    if len(signatures)!=858:
         raise AssertionError("OLD_HOLDOUT_COUNT_CHANGED")
+    return signatures
+
+
+def new_holdouts(old_cohorts=None):
+    """No old pilot machine, no new cross-family state-renaming duplicates."""
+    seen=old_signatures(old_cohorts)
     data={}
     for name,seed,count,kind in SPLITS:
         rng=random.Random(seed)
