@@ -67,6 +67,22 @@ def describe_verified_entry(entry, digest, repository_id):
     dependencies = definition.get("resolvedDependencies")
     if dependencies is not None and not isinstance(dependencies, list):
         return None
+    # The list below is *reported by the signer*, not independently reconstructed.
+    # Bound size and strings before echoing into a machine-readable report.
+    reported_deps = []
+    if isinstance(dependencies, list):
+        for entry in dependencies[:100]:
+            if not isinstance(entry, dict):
+                continue
+            uri = entry.get("uri")
+            digest_map = entry.get("digest")
+            if not isinstance(uri, str) or len(uri) > 1024:
+                continue
+            sha256_value = digest_map.get("sha256") if isinstance(digest_map, dict) else None
+            if sha256_value is not None and (not isinstance(sha256_value, str)
+                    or not re.fullmatch(r"[0-9a-f]{64}", sha256_value)):
+                sha256_value = None
+            reported_deps.append({"uri": uri, "sha256": sha256_value})
     metadata = details.get("metadata")
     invocation = metadata.get("invocationId") if isinstance(metadata, dict) else None
     return {
@@ -76,6 +92,9 @@ def describe_verified_entry(entry, digest, repository_id):
         "claimed_build_type": definition["buildType"],
         "claimed_invocation_id": invocation if isinstance(invocation, str) else None,
         "listed_dependency_count": len(dependencies) if isinstance(dependencies, list) else None,
+        "reported_dependencies": reported_deps,
+        "dependencies_truncated": isinstance(dependencies, list) and len(dependencies) > 100,
+        "dependency_trust": "SIGNED_STATEMENT_SIGNER_CLAIM_NOT_INDEPENDENTLY_RECONSTRUCTED",
         "scientific_independence": "NOT_ESTABLISHED",
         "scientific_correctness": "NOT_ESTABLISHED",
     }
