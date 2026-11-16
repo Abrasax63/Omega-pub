@@ -1,0 +1,127 @@
+{
+  "experiment": "OMEGA-PR94-EXTERNAL-COVERAGE-2026-11-16",
+  "preregistration_commit": "245d088b0ac07b9b8fdcf403f375893d28d905ac",
+  "status": "BENCHMARK_INSUFFISANT",
+  "scope": "external public GitHub workflow job logs",
+  "project_count": 4,
+  "workflow_count": 4,
+  "jobs_available": 12,
+  "jobs_read": 12,
+  "eligible_jobs": 0,
+  "independently_adjudicated_cases": 0,
+  "confirmed_gain": false,
+  "rate_of_correct_verdicts": null,
+  "reason": "No job has both supported xtrace writer and exact SHA256 output line; no independently validated pairing/oracle",
+  "sources": [
+    {
+      "repo": "astral-sh/ruff",
+      "run_id": 43498186653,
+      "jobs": [
+        {
+          "job_id": 132136718410,
+          "chars": 247875,
+          "lines": 2203,
+          "xtrace": 0,
+          "digests": 0
+        },
+        {
+          "job_id": 132137019816,
+          "chars": 215416,
+          "lines": 2335,
+          "xtrace": 0,
+          "digests": 0
+        },
+        {
+          "job_id": 132137019828,
+          "chars": 121662,
+          "lines": 1555,
+          "xtrace": 0,
+          "digests": 0
+        },
+        {
+          "job_id": 132137019883,
+          "chars": 23800,
+          "lines": 316,
+          "xtrace": 0,
+          "digests": 0
+        },
+        {
+          "job_id": 132137019958,
+          "chars": 166386,
+          "lines": 1949,
+          "xtrace": 0,
+          "digests": 0
+        }
+      ]
+    },
+    {
+      "repo": "actions/checkout",
+      "run_id": 42463640255,
+      "jobs": [],
+      "blocker": "workflow action_required; API returned no jobs"
+    },
+    {
+      "repo": "sigstore/cosign",
+      "run_id": 43493856053,
+      "jobs": [
+        {
+          "job_id": 132121683715,
+          "chars": 9268,
+          "lines": 102,
+          "xtrace": 0,
+          "digests": 1
+        },
+        {
+          "job_id": 132121799477,
+          "chars": 48097,
+          "lines": 474,
+          "xtrace": 0,
+          "digests": 1
+        }
+      ]
+    },
+    {
+      "repo": "google/osv-scanner",
+      "run_id": 43783961437,
+      "jobs": [
+        {
+          "job_id": 133027304674,
+          "chars": 22102,
+          "lines": 274,
+          "xtrace": 0,
+          "digests": 0
+        },
+        {
+          "job_id": 133027304791,
+          "chars": 16592,
+          "lines": 189,
+          "xtrace": 0,
+          "digests": 0
+        },
+        {
+          "job_id": 133027304817,
+          "chars": 27085,
+          "lines": 333,
+          "xtrace": 0,
+          "digests": 0
+        },
+        {
+          "job_id": 133027304830,
+          "chars": 16060,
+          "lines": 180,
+          "xtrace": 0,
+          "digests": 0
+        },
+        {
+          "job_id": 133027304889,
+          "chars": 15881,
+          "lines": 179,
+          "xtrace": 0,
+          "digests": 0
+        }
+      ]
+    }
+  ],
+  "integrity": "GitHub API connector job logs inspected read-only; no cryptographic attestation verified",
+  "method": "prefix normalized timestamp; count ^+ (cp | install | python3? -c ) and ^[a-f0-9]{64} whitespace path; screen only"
+}
