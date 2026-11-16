@@ -26,7 +26,7 @@ jobs:
       - name: Retrieve pre-locked third-party models without substitution
         run: |
           python 02_MATHEMATIQUES/pilotes/obs_col11/fetch_fixtures.py "$PWD/obs_col12_sources" > obs_col12_download_log.json
-      - name: Run seven anti-falsification and classical-ablation checks
+      - name: Run eight anti-falsification and fail-closed admission checks
         env:
           OBS_COL12_SOURCES: obs_col12_sources
         run: |
@@ -41,6 +41,12 @@ jobs:
           assert x["no_new_blind_holdout"] and x["practical_detection_not_equivalence_certification"]
           for case in x["samples"]:
               assert set(case["verifiers"]) == {"W","Wp","Wp_coverage_ranked","Wp_memory_ranked"}
+              assert case["admission"]["decision"] in ("REJECT_MODEL", "DEFER_UNVERIFIED")
+              assert not case["admission"]["certified"]
+              if case["model_is_known_exact_from_prior_posthoc_audit"]:
+                  assert case["admission"]["decision"] == "DEFER_UNVERIFIED"
+              else:
+                  assert case["admission"]["decision"] == "REJECT_MODEL"
               for name, v in case["verifiers"].items():
                   assert v["physical_resets"]<=600 and v["physical_symbols"]<=8000
                   assert not v["universal_equivalence_certified"]
