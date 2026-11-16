@@ -22,7 +22,8 @@ MODEL_HASH = "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7"
 MODEL_CALLS_PER_REPRODUCED_BUG = 1
 MODEL_NEW_TOKENS = 128
 MAX_PATCH_EXEC_SECONDS = 75
-PROJECT_EXTRA = {"tqdm":"nose", "cookiecutter":"pytest-cov<4", "httpie":"requests pytest-httpbin==1.0.2"}
+PROJECT_EXTRA = {"tqdm":("nose",), "cookiecutter":("pytest-cov<4",),
+                 "httpie":("requests","pytest-httpbin==1.0.2")}
 
 
 def sha_bytes(data):
@@ -41,7 +42,7 @@ def build_project_image(case, buggy_root):
             "RUN python -m pip install --disable-pip-version-check --no-cache-dir "
             "'pip<22' 'setuptools<60' 'wheel<1' && "
             "python -m pip install --disable-pip-version-check --no-cache-dir "
-            "'pytest<7' '"+PROJECT_EXTRA[case["project"]]+"' -e /src\n"
+            "'pytest<7' " + " ".join("'"+req+"'" for req in PROJECT_EXTRA[case["project"]]) + " -e /src\n"
             "ENV PYTHONDONTWRITEBYTECODE=1\n",encoding="utf8")
         command=["docker","build","--pull=false","-f",str(df),"-t",tag,str(buggy_root)]
         try:
