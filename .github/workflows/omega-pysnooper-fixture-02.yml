@@ -1,0 +1,220 @@
+name: Omega PySnooper test fixture 02 - byte-identical auxiliary test tree
+
+on:
+  push:
+    branches:
+      - experiment/omega-pysnooper-test-fixture-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/pysnooper_fixture_02/**'
+      - '.github/workflows/omega-pysnooper-fixture-02.yml'
+  pull_request:
+    branches:
+      - experiment/omega-env-reproduction-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/pysnooper_fixture_02/**'
+      - '.github/workflows/omega-pysnooper-fixture-02.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-pysnooper-fixture-02-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reproduction-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 24
+    strategy:
+      fail-fast: false
+      matrix:
+        case: [pysnooper-2]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exactly five fail-closed fixture provenance unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/pysnooper_fixture_02/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+            '09_INFRASTRUCTURE_AGENTIQUE/pysnooper_fixture_02',pattern='test_verify_fixture.py')
+          n=suite.countTestCases()
+          print('PYSNOOPER_FIXTURE_UNIT_TESTS_DISCOVERED',n)
+          assert n==5
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Load unchanged case selection and officially targeted tests
+        shell: bash
+        env:
+          CASE_NAME: ${{ matrix.case }}
+        run: |
+          set -euo pipefail
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json,os
+          with open('09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/cases.json') as f:
+              cases=json.load(f)['cases']
+          c=next(c for c in cases if c['id']==os.environ['CASE_NAME'])
+          for k,v in {
+            'CASE_PROJECT':c['project'],
+            'CASE_PACKAGE':c['package'],
+            'CASE_BUGGY':c['buggy'],
+            'CASE_FIXED':c['fixed'],
+            'CASE_TEST_FILE':c['test_file'],
+            'CASE_FRAMEWORK':c['framework'],
+            'CASE_TESTS_JSON':json.dumps(c['tests'],separators=(',',':')),
+          }.items(): print(k+'='+v)
+          PY
+      - name: Fetch both original pinned production versions and SAME regression test
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p env-evidence
+          for side in buggy fixed; do
+            sha="$CASE_BUGGY"
+            if [ "$side" = fixed ]; then sha="$CASE_FIXED"; fi
+            git clone --quiet --no-checkout --filter=blob:none \
+              "https://github.com/$CASE_PROJECT.git" "$RUNNER_TEMP/env-$side"
+            git -C "$RUNNER_TEMP/env-$side" fetch --depth 1 origin "$sha"
+            git -C "$RUNNER_TEMP/env-$side" checkout --quiet --detach "$sha"
+            test "$(git -C "$RUNNER_TEMP/env-$side" rev-parse HEAD)" = "$sha"
+          done
+          mkdir -p "$RUNNER_TEMP/env-buggy/$(dirname "$CASE_TEST_FILE")"
+          cp "$RUNNER_TEMP/env-fixed/$CASE_TEST_FILE" \
+             "$RUNNER_TEMP/env-buggy/$CASE_TEST_FILE"
+          test "$(sha256sum "$RUNNER_TEMP/env-buggy/$CASE_TEST_FILE" | cut -d ' ' -f1)" = \
+               "$(sha256sum "$RUNNER_TEMP/env-fixed/$CASE_TEST_FILE" | cut -d ' ' -f1)"
+          sha256sum "$RUNNER_TEMP/env-fixed/$CASE_TEST_FILE" > env-evidence/test-sha.txt
+          echo 'SHARED_FIXED_TEST_TRANSPLANTED_AND_VERIFIED'
+          # This is TEST-ONLY auxiliary source, absent on buggy, required by fixed test.
+          # Never bring fixed production code into the buggy checkout.
+          test -d "$RUNNER_TEMP/env-fixed/tests/mini_toolbox"
+          test ! -e "$RUNNER_TEMP/env-buggy/tests/mini_toolbox"
+          cp -a "$RUNNER_TEMP/env-fixed/tests/mini_toolbox" \
+                "$RUNNER_TEMP/env-buggy/tests/mini_toolbox"
+          # Preserve historical tests/utils.py and the production package untouched.
+          test "$(git -C "$RUNNER_TEMP/env-buggy" hash-object tests/utils.py)" = \
+               b77e1f6409cd3dfe3593dca550935555cfd55474
+          test "$(git -C "$RUNNER_TEMP/env-fixed" hash-object tests/utils.py)" = \
+               5772f8b0b265bdfff5d3a2478cd4c993d79e1414
+          test -z "$(git -C "$RUNNER_TEMP/env-buggy" status --porcelain -- pysnooper)"
+          test -z "$(git -C "$RUNNER_TEMP/env-fixed" status --porcelain -- pysnooper)"
+          (cd "$RUNNER_TEMP/env-buggy/tests/mini_toolbox" && \
+             find . -type f -print0 | sort -z | xargs -0 sha256sum) \
+             > env-evidence/buggy-test-helper-files.sha256
+          (cd "$RUNNER_TEMP/env-fixed/tests/mini_toolbox" && \
+             find . -type f -print0 | sort -z | xargs -0 sha256sum) \
+             > env-evidence/fixed-test-helper-files.sha256
+          cmp -s env-evidence/buggy-test-helper-files.sha256 \
+                 env-evidence/fixed-test-helper-files.sha256
+          grep -q './__init__.py' env-evidence/buggy-test-helper-files.sha256
+          echo "FIXED_TEST_ONLY_AUXILIARY_HELPER_TREE_VERIFIED"
+      - name: Download ONLY preregistered missing dependencies before offline sandbox
+        shell: bash
+        env:
+          CASE_NAME: ${{ matrix.case }}
+        run: |
+          set -euo pipefail
+          docker pull python:3.8-slim
+          mkdir -p "$RUNNER_TEMP/env-wheels"
+          if [ "$CASE_NAME" = pysnooper-2 ]; then
+            deps='pytest==6.2.5 six==1.15.0 python-toolbox'
+          else
+            deps='six==1.15.0'
+          fi
+          echo "$deps" > env-evidence/declared-dependencies.txt
+          set +e
+          docker run --rm -v "$RUNNER_TEMP/env-wheels:/wheels" \
+            python:3.8-slim sh -c "python -m pip download -d /wheels $deps" \
+            > env-evidence/wheel-download.log 2>&1
+          rc="$?"
+          set -e
+          echo "$rc" > env-evidence/wheel-download-exit.txt
+          if [ "$rc" != 0 ]; then
+            echo 'PREREGISTERED_WHEEL_DOWNLOAD_FAILED'
+            tail -n 22 env-evidence/wheel-download.log || true
+          fi
+          if find "$RUNNER_TEMP/env-wheels" -maxdepth 1 -type f | grep -q .; then
+            (cd "$RUNNER_TEMP/env-wheels" && sha256sum * ) > env-evidence/resolved-wheel-hashes.txt
+          else
+            echo 'NO_WHEELS_DOWNLOADED' > env-evidence/resolved-wheel-hashes.txt
+          fi
+      - name: Re-run official test on BUGGY and FIXED in identical no-network Docker
+        shell: bash
+        run: |
+          set -euo pipefail
+          for side in buggy fixed; do
+            echo "TESTING_SIDE $side"
+            set +e
+            docker run --rm --network none --read-only \
+              --cap-drop ALL --security-opt no-new-privileges \
+              --pids-limit 64 --memory 512m --cpus 1 \
+              --tmpfs /tmp:rw,nosuid,size=160m \
+              -v "$PWD:/agent:ro" \
+              -v "$RUNNER_TEMP/env-$side:/repo:ro" \
+              -v "$RUNNER_TEMP/env-wheels:/wheels:ro" \
+              -e CASE_PACKAGE -e CASE_FRAMEWORK -e CASE_TESTS_JSON \
+              -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+              -w /repo python:3.8-slim \
+              sh -c '
+                python -m pip install --no-index --find-links=/wheels \
+                  --target=/tmp/deps \
+                  $(cat /agent/env-evidence/declared-dependencies.txt) \
+                  >/tmp/install.log 2>&1 || {
+                    echo "OFFLINE_PREREGISTERED_DEPENDENCY_INSTALL_FAILED" >&2
+                    cat /tmp/install.log >&2
+                  }
+                PYTHONPATH=/tmp/deps:/repo timeout 180s \
+                  python /agent/09_INFRASTRUCTURE_AGENTIQUE/multiproject_calltrace_01/run_tests_profile.py \
+                  --repo-root /repo --package "$CASE_PACKAGE" \
+                  --framework "$CASE_FRAMEWORK" \
+                  --tests-json "$CASE_TESTS_JSON" \
+                  --output /tmp/result.json >&2
+                result=$?
+                if test -s /tmp/result.json; then cat /tmp/result.json; fi
+                exit "$result"
+              ' > "env-evidence/$side-profile.json" \
+                2> "env-evidence/$side-test.log"
+            rc="$?"
+            set -e
+            echo "$rc" > "env-evidence/$side-container-exit.txt"
+            echo "ENV_SIDE_SANDBOX_EXIT $side $rc"
+            tail -n 12 "env-evidence/$side-test.log" || true
+          done
+      - name: Verify exact restored fixture and differential original test without reranking
+        shell: bash
+        env:
+          CASE_NAME: ${{ matrix.case }}
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/pysnooper_fixture_02/verify_fixture.py \
+            --buggy-checkout "$RUNNER_TEMP/env-buggy" \
+            --fixed-checkout "$RUNNER_TEMP/env-fixed" \
+            --buggy-profile env-evidence/buggy-profile.json \
+            --fixed-profile env-evidence/fixed-profile.json \
+            --output env-evidence/gate.json
+          python - <<'PY'
+          import json,pathlib
+          o=json.loads(pathlib.Path('env-evidence/gate.json').read_text())
+          assert o['ranks_not_computed'] and not o['new_holdout_blindness']
+          assert o['test_fixture_provenance']['file_count'] >= 3
+          assert o['all_source_code_scores_and_ranks_unchanged']
+          assert o['original_pr124_results_unchanged']
+          assert o['status'] in ('BUGGY_FAIL_FIXED_PASS','REPRODUCER_UNCONFIRMED')
+          print('PYSNOOPER_FIXTURE_REPRODUCTION_VERDICT',o['case'],o['status'])
+          PY
+      - name: Archive environments, hashes, negative and positive tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-pysnooper-fixture-02-${{ matrix.case }}
+          path: env-evidence/*
+          if-no-files-found: warn
+          retention-days: 14
