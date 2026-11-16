@@ -1,0 +1,260 @@
+name: Omega new bug calltrace 01 - independent historical case
+
+on:
+  push:
+    branches:
+      - experiment/omega-newbug-calltrace-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/newbug_calltrace_01/**'
+      - '.github/workflows/omega-newbug-calltrace-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-runtime-calltrace-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/newbug_calltrace_01/**'
+      - '.github/workflows/omega-newbug-calltrace-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: omega-newbug-calltrace-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  buggy-rank-freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exactly seven regression tests; no empty test discovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            09_INFRASTRUCTURE_AGENTIQUE/newbug_calltrace_01/rank_new.py \
+            09_INFRASTRUCTURE_AGENTIQUE/newbug_calltrace_01/oracle_new.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+              '09_INFRASTRUCTURE_AGENTIQUE/newbug_calltrace_01',
+              pattern='test_newbug.py')
+          n=suite.countTestCases()
+          print('NEWBUG_REGRESSION_TESTS_DISCOVERED',n)
+          assert n==7, ('unexpected test discovery',n)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Checkout ONLY new BUGGY youtube-dl-2 production
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/ytdl-org/youtube-dl.git "$RUNNER_TEMP/ytdl2-buggy"
+          git -C "$RUNNER_TEMP/ytdl2-buggy" fetch --depth 1 origin \
+            84f085d4bdb66ee025fb337bcd571eab7469da97
+          git -C "$RUNNER_TEMP/ytdl2-buggy" checkout --quiet --detach \
+            84f085d4bdb66ee025fb337bcd571eab7469da97
+          test "$(git -C "$RUNNER_TEMP/ytdl2-buggy" rev-parse HEAD)" = \
+            84f085d4bdb66ee025fb337bcd571eab7469da97
+          echo 'NEW_BUGGY_COMMIT_VERIFIED'
+      - name: Transplant ONLY public regression TEST file from fixed revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 \
+            --connect-timeout 30 --max-time 120 \
+            "https://raw.githubusercontent.com/ytdl-org/youtube-dl/9d6ac71c27b1dfb662c795ef598dbfd0286682da/test/test_InfoExtractor.py" \
+            -o "$RUNNER_TEMP/ytdl2-buggy/test/test_InfoExtractor.py"
+          test -s "$RUNNER_TEMP/ytdl2-buggy/test/test_InfoExtractor.py"
+          echo "PINNED_FIXED_TEST_ONLY_SHA256 $(sha256sum "$RUNNER_TEMP/ytdl2-buggy/test/test_InfoExtractor.py" | cut -d ' ' -f1)"
+          # No historical fixed production has been fetched or imported.
+      - name: Capture real failing test calls under bounded Python 3.7 no-network Docker
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p newbug-evidence
+          docker pull python:3.7-slim
+          set +e
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=96m \
+            -v "$PWD:/agent:ro" \
+            -v "$RUNNER_TEMP/ytdl2-buggy:/repo:ro" \
+            -w /repo \
+            python:3.7-slim \
+            sh -c 'timeout 180s python /agent/09_INFRASTRUCTURE_AGENTIQUE/runtime_calltrace_01/profile_test.py \
+                 --repo-root /repo \
+                 --test test.test_InfoExtractor.TestInfoExtractor.test_parse_mpd_formats \
+                 --output /tmp/profile.json >/tmp/test.log 2>&1; rc=$?; \
+                 cat /tmp/test.log >&2; test -s /tmp/profile.json && cat /tmp/profile.json; exit "$rc"' \
+            > newbug-evidence/buggy-profile.json 2> newbug-evidence/buggy-unittest.log
+          rc="$?"
+          set -e
+          echo "$rc" > newbug-evidence/buggy-exit.txt
+          echo "NEWBUG_OFFICIAL_BUGGY_PROFILE_EXIT $rc"
+          echo "BUGGY_UNITTTEST_LOG_SHA256 $(sha256sum newbug-evidence/buggy-unittest.log | cut -d ' ' -f1)"
+          tail -n 40 newbug-evidence/buggy-unittest.log || true
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path("newbug-evidence/buggy-profile.json")
+          if not p.exists() or not p.stat().st_size:
+              print("PROFILE_OUTPUT_MISSING")
+          else:
+              x=json.loads(p.read_text())
+              print("BUGGY_PROFILE_TEST_RESULT",x["test_passed"],"RUN",x["tests_run"],
+                    "FAIL",x["failures"],"ERROR",x["errors"],
+                    "CALLS",x["observed_calls"])
+          PY
+      - name: Freeze A/B ranking from BUGGY and test only — no fixed production
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/newbug_calltrace_01/rank_new.py \
+            --buggy-checkout "$RUNNER_TEMP/ytdl2-buggy" \
+            --profile newbug-evidence/buggy-profile.json \
+            --output newbug-evidence/frozen-ranks.json
+          sha256sum newbug-evidence/frozen-ranks.json > newbug-evidence/frozen-ranks.sha256
+          python - <<'PY'
+          import json,pathlib
+          o=json.loads(pathlib.Path('newbug-evidence/frozen-ranks.json').read_text())
+          assert o['phase']=='BUGGY_ONLY_RANKS_SEALED_BEFORE_PRODUCTION_FIXED'
+          assert not o['production_fixed_accessed']
+          assert not o['oracle_accessed'] and not o['source_diff_accessed']
+          assert o['same_inventory'] and o['same_top10_inspection_budget']
+          assert not o['same_information_and_runtime_budget']
+          assert not o['model_called'] and o['repair_correctness'] is None
+          assert len(o['targets'])==o['target_count']
+          assert len({t['key'] for t in o['targets']})==o['target_count']
+          print('SEALED_BUGGY_STATUS',o['status'])
+          PY
+      - name: Archive all frozen raw logs, profiles and ranks including negative outcomes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-newbug-calltrace-01-buggy-frozen
+          path: newbug-evidence/*
+          if-no-files-found: warn
+          retention-days: 14
+
+  official-fixed-oracle-after-freeze:
+    needs: buggy-rank-freeze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Recover frozen buggy-only data
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-newbug-calltrace-01-buggy-frozen
+          path: frozen
+      - name: Verify SHA commitment BEFORE accessing fixed production
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(cut -d ' ' -f1 frozen/frozen-ranks.sha256)"
+          test -n "$expected"
+          echo "$expected  frozen/frozen-ranks.json" | sha256sum --check
+          echo 'NEWBUG_RANKS_SHA_COMMITTED' "$expected"
+      - name: Fetch BUGGY and FIXED production separately only in oracle job
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/ytdl-org/youtube-dl.git "$RUNNER_TEMP/ytdl2-buggy"
+          git -C "$RUNNER_TEMP/ytdl2-buggy" fetch --depth 1 origin \
+            84f085d4bdb66ee025fb337bcd571eab7469da97
+          git -C "$RUNNER_TEMP/ytdl2-buggy" checkout --quiet --detach \
+            84f085d4bdb66ee025fb337bcd571eab7469da97
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/ytdl-org/youtube-dl.git "$RUNNER_TEMP/ytdl2-fixed"
+          git -C "$RUNNER_TEMP/ytdl2-fixed" fetch --depth 1 origin \
+            9d6ac71c27b1dfb662c795ef598dbfd0286682da
+          git -C "$RUNNER_TEMP/ytdl2-fixed" checkout --quiet --detach \
+            9d6ac71c27b1dfb662c795ef598dbfd0286682da
+          test "$(git -C "$RUNNER_TEMP/ytdl2-buggy" rev-parse HEAD)" = \
+            84f085d4bdb66ee025fb337bcd571eab7469da97
+          test "$(git -C "$RUNNER_TEMP/ytdl2-fixed" rev-parse HEAD)" = \
+            9d6ac71c27b1dfb662c795ef598dbfd0286682da
+          # Exactly same fixed TEST file as in the frozen buggy job.
+          cp "$RUNNER_TEMP/ytdl2-fixed/test/test_InfoExtractor.py" \
+             "$RUNNER_TEMP/ytdl2-buggy/test/test_InfoExtractor.py"
+          expected_test_sha="$(python -c 'import json;print(json.load(open("frozen/frozen-ranks.json"))["test_sha256"])')"
+          test "$(sha256sum "$RUNNER_TEMP/ytdl2-fixed/test/test_InfoExtractor.py" | cut -d ' ' -f1)" = "$expected_test_sha"
+          test "$(sha256sum "$RUNNER_TEMP/ytdl2-buggy/test/test_InfoExtractor.py" | cut -d ' ' -f1)" = "$expected_test_sha"
+          echo "ORACLE_FIXED_PRODUCTION_AND_TEST_HASH_VERIFIED"
+      - name: Passing FIXED test is a negative causality control (same profiler)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p newbug-oracle
+          docker pull python:3.7-slim
+          set +e
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=96m \
+            -v "$PWD:/agent:ro" \
+            -v "$RUNNER_TEMP/ytdl2-fixed:/repo:ro" \
+            -w /repo \
+            python:3.7-slim \
+            sh -c 'timeout 180s python /agent/09_INFRASTRUCTURE_AGENTIQUE/runtime_calltrace_01/profile_test.py \
+                 --repo-root /repo \
+                 --test test.test_InfoExtractor.TestInfoExtractor.test_parse_mpd_formats \
+                 --output /tmp/profile.json >/tmp/test.log 2>&1; rc=$?; \
+                 cat /tmp/test.log >&2; test -s /tmp/profile.json && cat /tmp/profile.json; exit "$rc"' \
+            > newbug-oracle/fixed-profile.json 2> newbug-oracle/fixed-unittest.log
+          rc="$?"
+          set -e
+          echo "$rc" > newbug-oracle/fixed-exit.txt
+          echo "NEWBUG_OFFICIAL_FIXED_PROFILE_EXIT $rc"
+          tail -n 40 newbug-oracle/fixed-unittest.log || true
+      - name: Evaluate historical source oracle and controlled differential behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(cut -d ' ' -f1 frozen/frozen-ranks.sha256)"
+          python 09_INFRASTRUCTURE_AGENTIQUE/newbug_calltrace_01/oracle_new.py \
+            --buggy-checkout "$RUNNER_TEMP/ytdl2-buggy" \
+            --fixed-checkout "$RUNNER_TEMP/ytdl2-fixed" \
+            --frozen-ranks frozen/frozen-ranks.json \
+            --expected-sha256 "$expected" \
+            --buggy-profile frozen/buggy-profile.json \
+            --fixed-profile newbug-oracle/fixed-profile.json \
+            --output newbug-oracle/oracle-evaluation.json
+          python - <<'PY'
+          import json,pathlib
+          o=json.loads(pathlib.Path('newbug-oracle/oracle-evaluation.json').read_text())
+          assert o['phase']=='POST_FREEZE_DIFFERENTIAL_ORACLE_EVALUATION'
+          assert o['status'] in {
+            'REPRODUCER_UNCONFIRMED','ORACLE_OUT_OF_SCOPE',
+            'ORACLE_PARTIAL_NO_COMPARATIVE_CLAIM',
+            'LOCAL_IMPROVEMENT_ONE_NEW_BUG','LOCAL_REGRESSION_ONE_NEW_BUG',
+            'NO_DIFFERENCE'}
+          assert not o['independent_generalization_demonstrated']
+          assert o['only_one_new_case'] and not o['same_information_and_execution_budget']
+          assert o['passing_fixed_calls_not_used_for_ranking']
+          assert not o['model_called'] and not o['patch_generated']
+          assert o['repair_correctness'] is None
+          print('NEWBUG_FINAL_SCIENTIFIC_STATUS',o['status'])
+          PY
+      - name: Archive exact oracle and passing negative control even when negative
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-newbug-calltrace-01-oracle
+          path: newbug-oracle/*
+          if-no-files-found: warn
+          retention-days: 14
