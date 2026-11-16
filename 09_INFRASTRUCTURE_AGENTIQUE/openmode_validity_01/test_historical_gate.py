@@ -15,7 +15,7 @@ class HistoricalGateTests(unittest.TestCase):
         text = ("import re\n"
                 "class OffsiteMiddleware:\n"
                 "    def get_host_regex(self, spider):\n"
-                "        return re.compile(r'^(.*\\.)?(scrapytest\\.org)$')\n")
+                "        return re.compile(r'^(.*[.])?(scrapytest[.]org)$')\n")
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp) / "offsite.py"
             p.write_text(text, encoding="utf-8")
@@ -36,7 +36,7 @@ class HistoricalGateTests(unittest.TestCase):
 
     def test_semantic_missing_none_is_not_historical_reproduction(self):
         def all_ok(_self, spider):
-            return re.compile(r"^(.*\\.)?(scrapytest\\.org)$")
+            return re.compile(r"^(.*[.])?(scrapytest[.]org)$")
         r = semantic_input(all_ok, ["scrapytest.org", None])
         self.assertTrue(r["passed"])
         # Only an original pinned buggy/fixed pair can establish the status,
