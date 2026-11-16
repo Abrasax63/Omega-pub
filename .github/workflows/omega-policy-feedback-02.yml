@@ -1,0 +1,108 @@
+name: Omega policy feedback 02 - on-policy versus uniform experience
+
+on:
+  push:
+    branches:
+      - experiment/omega-policy-feedback-2026-11-16
+    paths:
+      - 'experiments/omega-policy-feedback-02/**'
+      - '.github/workflows/omega-policy-feedback-02.yml'
+  pull_request:
+    branches:
+      - experiment/omega-plasticity-aba-2026-11-16
+    paths:
+      - 'experiments/omega-policy-feedback-02/**'
+      - '.github/workflows/omega-policy-feedback-02.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-policy-feedback-02-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prospective-feedback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Require twelve scientific non-regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-policy-feedback-02/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+              'experiments/omega-policy-feedback-02',pattern='test_feedback.py')
+          n=suite.countTestCases()
+          print('OMEGA_POLICY_FEEDBACK_UNIT_TESTS_DISCOVERED',n)
+          assert n==12,('test discovery changed',n)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Execute frozen A-B-Aprime three-seed feedback-only trial
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-policy-feedback-02/feedback_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Verify split, exact evaluation, oracle-free train and complete negative results
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-POLICY-FEEDBACK-02'
+          assert d['prereg_commit']=='3a88640aa947ec7f1de829d8d601578d8eb3263d'
+          assert d['three_seeds']==[410,411,412]
+          assert [d['splits'][n]['size'] for n in (
+            'train_A','train_B','train_Aprime','eval_A','eval_B','eval_Aprime')]==[
+            24,24,16,18,18,24]
+          sig=[s for entry in d['splits'].values() for s in entry['signatures']]
+          assert len(sig)==len(set(sig))
+          assert d['epsilon']==0.2 and d['learning_rate']==0.025
+          assert d['learner_trained_on_oracle'] is False
+          assert d['paid_API_calls']==0 and d['main_modified'] is False
+          assert d['language_model_trained'] is False
+          assert d['scientific_generalization_proven'] is False
+          assert d['primary_sample_points']==9 and len(d['repetitions'])==3
+          for r in d['repetitions']:
+            assert r['actual_training_episode_count']['OFF']==r['actual_training_episode_count']['ON']
+            assert r['actual_training_probe_cost']['OFF']>0
+            assert r['actual_training_probe_cost']['ON']>0
+            assert [c['after_training_machines'] for c in r['checkpoints_Aprime']]==[0,8,16]
+            for phase in r['phase_logs'].values():
+              assert phase['eligible']+phase['impossible']==phase['machines']
+              for arm in ('OFF','ON'):
+                assert phase['arms'][arm]['episodes']==phase['eligible']*4
+                assert phase['arms'][arm]['records_sha256']
+            for ev in [r['evaluation_A_after_A'],r['evaluation_A_after_B'],r['evaluation_B_after_B']] + [
+                    c['evaluation'] for c in r['checkpoints_Aprime']]:
+              assert ev['eligible']+ev['impossible']==ev['total']
+              for row in ev['rows']:
+                if row['identifiable']:
+                  assert all(x['worst_regret']>=0 for x in row['arms'].values())
+          print('OMEGA_POLICY_FINAL_VERDICT',d['status'])
+          print('OMEGA_POLICY_ON_MINUS_OFF',d['primary_mean_ON_minus_OFF'])
+          print('OMEGA_POLICY_NOT_EQUAL_TRAINING_COSTS',
+                [r['actual_training_probe_cost'] for r in d['repetitions']])
+          PY
+      - name: Archive complete evidence, including failures and unfavorable decisions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-policy-feedback-02-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
