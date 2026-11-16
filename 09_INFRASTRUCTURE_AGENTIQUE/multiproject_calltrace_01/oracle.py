@@ -18,8 +18,15 @@ def changed_functions(buggy:Path,fixed:Path,report:dict,package:str)->dict:
         mapping.setdefault(t["file"],[]).append(t)
     oldfiles=set(report["source_hashes"])
     fixedpkg=fixed/package
+    def production_path(rel):
+        from pathlib import Path
+        path=Path(rel)
+        return (not any(p in ("test","tests") for p in path.parts)
+                and not path.name.startswith(("test_","tests_")))
     fixedfiles=({p.relative_to(fixed).as_posix()
-                 for p in fixedpkg.rglob("*.py")} if fixedpkg.exists() else set())
+                 for p in fixedpkg.rglob("*.py")
+                 if production_path(p.relative_to(fixed).as_posix())}
+                if fixedpkg.exists() else set())
     modified=set()
     unresolved=[]
     changed=[]
