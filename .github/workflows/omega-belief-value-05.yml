@@ -1,0 +1,136 @@
+name: Omega belief value 05 - common trajectories and unseen five-state transfer
+
+on:
+  push:
+    branches:
+      - experiment/omega-belief-value-transfer-2026-11-16
+    paths:
+      - 'experiments/omega-belief-value-05/**'
+      - '.github/workflows/omega-belief-value-05.yml'
+  pull_request:
+    branches:
+      - experiment/omega-structural-transfer-2026-11-16
+    paths:
+      - 'experiments/omega-belief-value-05/**'
+      - '.github/workflows/omega-belief-value-05.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-belief-value-05-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frozen-belief-value-structural-holdout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Require fifteen independent scientific controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-belief-value-05/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+            'experiments/omega-belief-value-05',pattern='test_belief_value.py')
+          count=suite.countTestCases()
+          print('OMEGA_BELIEF_VALUE_TESTS_DISCOVERED',count)
+          assert count==15,('Unexpected number of scientific controls',count)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Execute frozen identical-experience holdout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-belief-value-05/belief_value_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Verify evidence for same data and abstentions without asserting a positive outcome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('evidence/report.json').read_text())
+          assert r['experiment']=='OMEGA-BELIEF-VALUE-05'
+          assert r['prereg_commit']=='c6c2c40f49662b04fbbd9f1525bfccb186c8db73'
+          assert r['seeds']==[271,272,273]
+          assert all(r[k] for k in (
+            'shared_experience_between_learners',
+            'same_observed_episode_labels_and_costs',
+            'same_one_update_per_episode',
+            'same_training_trajectories_for_learners',
+            'memory_training_data_same_stream',
+            'oracle_used_during_evaluation',
+          ))
+          assert r['oracle_used_during_training'] is False
+          assert r['paid_api_calls']==0 and r['main_modified'] is False
+          assert r['language_model_trained'] is False
+          assert r['scientific_generalization_proven'] is False
+          expected={
+            'train_random4':(56,'random4'),
+            'eval_control4':(20,'random4'),
+            'eval_holdout_perm5':(24,'perm5'),
+            'eval_holdout_reset5':(24,'reset5'),
+          }
+          for name,(n,family) in expected.items():
+            assert r['splits'][name]['count']==n
+            assert r['splits'][name]['family']==family
+          allids=[sid for x in r['splits'].values() for sid in x['signatures']]
+          assert len(allids)==len(set(allids))
+          assert len(r['repetitions'])==3
+          for one in r['repetitions']:
+            n=one['shared_training']['episodes']
+            assert n==one['models']['TOTAL9']['updates']
+            assert n==one['models']['BELIEF_VALUE']['updates']
+            assert n==one['memory']['count']
+            assert len(one['shared_training']['raw_trajectories'])==n
+            assert len(one['learning_audit']['rows'])==n
+            for row in one['shared_training']['raw_trajectories']:
+              assert row['total_observed_cost']==sum(
+                s['probe_cost'] for s in row['trajectory'])
+              assert row['total_observed_cost']==(
+                row['first_cost']+row['observed_continuation_cost'])
+            for family in ('eval_control4','eval_holdout_perm5','eval_holdout_reset5'):
+              ev=one['evaluations'][family]
+              assert ev['total']==ev['eligible']+ev['impossible']
+              for case in ev['rows']:
+                if case['identifiable']:
+                  for arm in case['arms'].values():
+                    assert arm['worst_regret_to_oracle']>=0
+                    assert len(arm['state_costs'])==case['size']
+          passed=sum(
+            all(r['family_results'][family]['differences'][
+                 'BELIEF_VALUE_minus_'+arm]<0
+                for arm in ('TOTAL9','FIXED','MEMORY'))
+            for family in ('eval_holdout_perm5','eval_holdout_reset5')
+          )
+          assert passed==r['strong_family_gates_passed']
+          assert ((r['status']=='DESCRIPTIVE_BELIEF_VALUE_TRANSFER')
+                  == (passed==2))
+          print('OMEGA_BELIEF_VALUE_FINAL_VERDICT',r['status'])
+          print('OMEGA_BELIEF_VALUE_STRONG_GATES',r['strong_family_gates_passed'])
+          for name in ('eval_holdout_perm5','eval_holdout_reset5'):
+            print('OMEGA_BELIEF_VALUE_FAMILY',name,
+                  r['family_results'][name]['eligible'],
+                  r['family_results'][name]['differences'])
+          PY
+      - name: Archive all observations, parameters, negative outcomes and hashes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-belief-value-05-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
