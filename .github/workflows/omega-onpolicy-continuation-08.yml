@@ -1,0 +1,146 @@
+name: Omega onpolicy continuation 08 - own-return versus uniform heldout
+
+on:
+  push:
+    branches:
+      - experiment/omega-onpolicy-continuation-08-2026-11-16
+    paths:
+      - 'experiments/omega-onpolicy-continuation-08/**'
+      - '.github/workflows/omega-onpolicy-continuation-08.yml'
+  pull_request:
+    branches:
+      - experiment/omega-action-ranking-07-2026-11-16
+    paths:
+      - 'experiments/omega-onpolicy-continuation-08/**'
+      - '.github/workflows/omega-onpolicy-continuation-08.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-onpolicy-continuation-08-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  new-heldout-self-feedback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Sixteen no-leak scientific controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-onpolicy-continuation-08/*.py
+          python - <<'PY'
+          import unittest
+          s=unittest.TestLoader().discover(
+              'experiments/omega-onpolicy-continuation-08',
+              pattern='test_onpolicy.py')
+          print('OMEGA_ONPOLICY_08_TEST_COUNT',s.countTestCases())
+          assert s.countTestCases()==16
+          assert unittest.TextTestRunner(verbosity=2).run(s).wasSuccessful()
+          PY
+      - name: Execute preregistered own-feedback versus uniform policy trial
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-onpolicy-continuation-08/onpolicy_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Fail on leaked data, broken exact bounds, missing episodes or synthetic costs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from fractions import Fraction
+          from pathlib import Path
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-ONPOLICY-CONTINUATION-08'
+          assert d['prereg_commit']=='2fee9541c64ad379060f1a27fceaf8c0e8d87b3a'
+          assert d['training_seed_list']==[361,362,363]
+          assert d['epsilon']==0.2
+          assert d['same_training_cases_and_label_count']
+          assert not d['equal_train_cost_claim']
+          assert d['no_oracle_training'] and d['exact_mean_oracle_evaluation_only']
+          assert d['model_unchanged_during_evaluation']
+          assert d['main_modified'] is False and d['paid_api_calls']==0
+          assert d['language_model_trained'] is False
+          assert d['scientific_generalization_proven'] is False
+          expected={'eval_random4':(26,'random4'),
+                    'eval_perm5':(30,'perm5'),
+                    'eval_reset5':(30,'reset5')}
+          ids=[]
+          for name,(num,kind) in expected.items():
+              split=d['splits'][name]
+              assert split['size']==num and split['kind']==kind
+              ids.extend(split['signatures'])
+          assert len(ids)==len(set(ids))
+          assert len(d['repetitions'])==3
+          for rep in d['repetitions']:
+              assert rep['model_sha_before']==rep['model_sha_after']
+              t=rep['training_self']
+              n=rep['training_uniform']['episodes']
+              assert t['episodes']==t['observed_labels']==n
+              assert t['cost_spent']==sum(x['total_cost'] for x in t['records'])
+              assert len(t['records'])==n
+              assert n==4*(56-len(t['impossible']))
+              for item in t['records']:
+                  assert item['total_cost']==item['first_cost']+item['actual_continuation_cost']
+                  assert item['total_cost']==sum(p['cost'] for p in item['trajectory'])
+                  assert item['first_observation']==item['trajectory'][0]['observed_outputs']
+                  assert item['successor_belief']==item['trajectory'][0]['belief_after']
+              for name,(total,kind) in expected.items():
+                  ev=rep['evaluations'][name]
+                  assert ev['summary']['total']==total
+                  assert ev['summary']['eligible']+ev['summary']['impossible']==total
+                  for machine in ev['rows']:
+                      if not machine['identifiable']:
+                          assert machine['policies']=={} and machine['beliefs']==[]
+                          continue
+                      optimum=machine['exact_optimum']
+                      exact=Fraction(optimum['numerator'],optimum['denominator'])
+                      for policy in machine['policies'].values():
+                          costs=policy['cost_by_state']
+                          mean=Fraction(sum(costs),machine['states'])
+                          assert mean>=exact
+                          r=policy['exact_mean_regret']
+                          assert Fraction(r['numerator'],r['denominator'])==mean-exact
+                          assert policy['worst_minimax_regret']>=0
+                      for belief in machine['beliefs']:
+                          for key in ('SELF_VALUE','UNIFORM_VALUE'):
+                              reg=belief[key]['local_regret']
+                              assert reg['numerator']>=0
+          gates=sum(
+              all(d['aggregate'][f]['mean_cost']['SELF_VALUE']<
+                  d['aggregate'][f]['mean_cost'][baseline]-1e-10
+                  for baseline in ('UNIFORM_VALUE','FIXED','MEMORY'))
+              for f in ('eval_perm5','eval_reset5')
+          )
+          if all(d['aggregate'][f]['eligible'] for f in ('eval_perm5','eval_reset5')):
+              assert gates==d['strong_families_passed']
+              assert (d['status']=='DESCRIPTIVE_SELF_CONTINUATION_ADVANTAGE')==(gates==2)
+          print('OMEGA_ONPOLICY_08_VERDICT',d['status'])
+          print('OMEGA_ONPOLICY_08_GATES',d['strong_families_passed'])
+          for f in ('eval_perm5','eval_reset5'):
+              print('OMEGA_ONPOLICY_08_FAMILY',f,
+                    d['aggregate'][f]['eligible'],
+                    d['aggregate'][f].get('mean_cost'),
+                    d['aggregate'][f].get('local_underopt_rate'))
+          PY
+      - name: Preserve all raw observations, costs and negative results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-onpolicy-continuation-08-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
