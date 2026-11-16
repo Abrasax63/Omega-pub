@@ -34,7 +34,7 @@ class TestBlackBoxConformance(unittest.TestCase):
         self.assertEqual(SOURCE_NAMES, ("register3.dot", "register5.dot"))
         self.assertEqual(FROZEN_ARMS["register5.dot"],
                          ("fixed", "coverage_only", "omega_candidate", "KV"))
-        self.assertEqual(VERIFIERS, ("W", "Wp", "Wp_memory_ranked"))
+        self.assertEqual(VERIFIERS, ("W", "Wp", "Wp_coverage_ranked", "Wp_memory_ranked"))
 
     def test_budget_guard_refuses_one_extra_reset_or_symbol(self):
         model = self.make_target("register3.dot")
@@ -74,6 +74,26 @@ class TestBlackBoxConformance(unittest.TestCase):
             self.assertFalse(r["universal_equivalence_certified"])
             self.assertLessEqual(r["physical_resets"], RESET_BUDGET)
             self.assertLessEqual(r["physical_symbols"], SYMBOL_BUDGET)
+
+    def test_memory_vs_coverage_ablation_controls_same_candidate_set(self):
+        name = "register5.dot"
+        hypothesis, metrics = fit_one(
+            self.make_target(name), "omega_candidate", name, list(self.lock).index(name))
+        observed = metrics["_physical"].observed_prefixes
+        results = {}
+        for method in ("Wp_coverage_ranked", "Wp_memory_ranked"):
+            results[method] = run_gate(
+                copy.deepcopy(hypothesis), self.make_target(name), method,
+                prior_prefixes=observed,
+            )
+        left, right = results.values()
+        self.assertEqual(left["wp_candidate_sha256"], right["wp_candidate_sha256"])
+        self.assertFalse(left["memory_component"])
+        self.assertTrue(right["memory_component"])
+        self.assertEqual(left["p1_calls"], left["physical_resets"])
+        self.assertEqual(right["p1_calls"], right["physical_resets"])
+        self.assertFalse(left["universal_equivalence_certified"])
+        self.assertFalse(right["universal_equivalence_certified"])
 
     def test_measure_only_real_oracle_and_no_perfect_knowledge(self):
         name = "register5.dot"
