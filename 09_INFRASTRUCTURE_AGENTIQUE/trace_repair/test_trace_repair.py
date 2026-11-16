@@ -102,5 +102,19 @@ class TraceGuidedTests(unittest.TestCase):
             self.assertLessEqual(candidates["candidate_count"],MAX_CANDIDATES)
             self.assertFalse(candidates["fixed_source_inspected"])
 
+    def test_prioritize_named_function_inside_traced_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            (root/"pkg").mkdir()
+            source=("def unrelated(x):\n    if x:\n        return x\n    return None\n"
+                    "def target(x):\n    if x is None:\n        return None\n    return x\n")
+            (root/"pkg"/"f.py").write_text(source,encoding="utf8")
+            rank={"status":"RANKED","top3":["pkg/f.py"],
+                  "test_evidence":{"symbols":["target"]}}
+            data=select_candidates(root,rank)
+            self.assertTrue(data["candidates"])
+            self.assertEqual(data["candidates"][0]["function_name"],"target")
+            self.assertLessEqual(data["candidate_count"],MAX_CANDIDATES)
+
 if __name__=="__main__":
     unittest.main()
