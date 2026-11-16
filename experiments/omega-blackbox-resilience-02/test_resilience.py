@@ -111,7 +111,7 @@ class ResilienceTests(unittest.TestCase):
             ((0,0),(2,2),(1,1)),
             ((1,1),(2,2),(0,0)),
         )
-        simple=Mealy(((0,0),),((1,1),))
+        simple=Mealy(((0,0),(1,1)),((1,1),(0,0)))
         candidate=candidate_machine(simple)
         self.assertEqual(len(t.accessible_truth_states(truth)),1)
         self.assertEqual(
@@ -121,7 +121,7 @@ class ResilienceTests(unittest.TestCase):
 
     def test_deliberately_false_model_gives_real_shortest_witness(self):
         true=basic()
-        guess=Mealy(((0,0),),((0,0),))
+        guess=Mealy(((0,0),(1,1)),((0,0),(0,0)))
         hypothesis=candidate_machine(guess)
         answer=b.exact_equivalence(true,hypothesis)
         shortest=exhaustive_shortest_witness(true,hypothesis)
