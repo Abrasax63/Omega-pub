@@ -102,6 +102,47 @@ jobs:
           print("Signer-claimed source dependencies:", [ev["reported_dependencies"] for ev in omega["evidence"]])
           print("Declared dependencies:", [x.get("listed_dependency_count") for x in omega["evidence"]])
           PY
+      - name: Reuse Omega selector on genuinely signed external artifact (no execution log)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXTERNAL_REPO: ${{ matrix.repository }}
+          EXTERNAL_ID: ${{ matrix.repository_id }}
+          SIGNER_WORKFLOW: ${{ matrix.signer_workflow }}
+          SOURCE_COMMIT: ${{ matrix.source_commit }}
+          ASSET: ${{ matrix.asset }}
+          KEY: ${{ matrix.key }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, "09_INFRASTRUCTURE_AGENTIQUE/prism")
+          from attested_evidence_bridge import select_with_attested_artifact
+          target = Path(os.environ["RUNNER_TEMP"]) / ("omega-external-" + os.environ["KEY"])
+          bundle = Path((target / "bundlepaths").read_text().strip())
+          result = select_with_attested_artifact(
+              [], lambda _: (_ for _ in ()).throw(AssertionError("No raw log may be invented")),
+              job="unknown_external_job", output=os.environ["ASSET"], budget=0,
+              artifact=target / os.environ["ASSET"], bundle=bundle,
+              trusted_root=target / "trusted-root.jsonl",
+              repository=os.environ["EXTERNAL_REPO"],
+              repository_id=os.environ["EXTERNAL_ID"],
+              signer_workflow=os.environ["SIGNER_WORKFLOW"],
+              source_commit=os.environ["SOURCE_COMMIT"])
+          assert result["signed_build_provenance"] == "VERIFIED_BUILD_ONLY", result
+          assert result["operation_from_untrusted_log"] == "indéterminé", result
+          assert result["scientific_verdict"] == "INDETERMINATE", result
+          assert result["scientific_independence"] == "NOT_ESTABLISHED", result
+          assert result["routing"] == "LINK_LOG_OUTPUT_TO_SIGNED_BYTES", result
+          assert result["log_read_count"] == 0
+          assert result["signature_verification_attempts"] == 1
+          (target / (os.environ["KEY"] + "-bridge.json")).write_text(
+              json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          print("REAL SIGNED ARTIFACT: verified; scientific and raw-log verdicts stay indeterminate")
+          PY
       - name: Adversarial checks reject altered artifact and fake repository ID
         env:
           GH_TOKEN: ${{ github.token }}
