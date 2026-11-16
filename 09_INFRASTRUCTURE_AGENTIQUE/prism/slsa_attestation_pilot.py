@@ -76,13 +76,18 @@ def describe_verified_entry(entry, digest, repository_id):
                 continue
             uri = entry.get("uri")
             digest_map = entry.get("digest")
-            if not isinstance(uri, str) or len(uri) > 1024:
+            if not isinstance(uri, str) or not uri or len(uri) > 1024:
                 continue
             sha256_value = digest_map.get("sha256") if isinstance(digest_map, dict) else None
+            git_commit = digest_map.get("gitCommit") if isinstance(digest_map, dict) else None
             if sha256_value is not None and (not isinstance(sha256_value, str)
                     or not re.fullmatch(r"[0-9a-f]{64}", sha256_value)):
                 sha256_value = None
-            reported_deps.append({"uri": uri, "sha256": sha256_value})
+            if git_commit is not None and (not isinstance(git_commit, str)
+                    or not re.fullmatch(r"[0-9a-f]{40}", git_commit)):
+                git_commit = None
+            reported_deps.append({"uri": uri, "sha256": sha256_value,
+                                  "git_commit": git_commit})
     metadata = details.get("metadata")
     invocation = metadata.get("invocationId") if isinstance(metadata, dict) else None
     return {
