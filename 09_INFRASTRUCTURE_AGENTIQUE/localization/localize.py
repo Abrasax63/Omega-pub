@@ -1,4 +1,4 @@
-"""OMEGA-LOC-01: freeze identical AST site pools before fixed-source oracle.
+"""OMEGA-LOC-02: freeze identical AST site pools before fixed-source oracle.
 
 Does NOT generate or execute new patches, alter the #105 baseline, or call a model.
 """
@@ -15,8 +15,8 @@ HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(HERE.parent/"blind_bugsinpy"))
 from blind_candidates import freeze_case  # unchanged existing #105 grammar
 
-BUGGY="c2599e3cd6087429f48bae34347ec5d2473c8392"
-FIXED="73962a47026dd980ac0758820efc9c41cbf938e0"
+BUGGY="03b347646492131d889871939b40457d29147216"
+FIXED="964dee631d0ed30e2f799b42fc58ba5e73795a08"
 CASE={"id":"B2","repo":"tqdm/tqdm","buggy_sha":BUGGY}
 INSPECT=10
 TAG="OMEGA_TRACE_JSON="
@@ -110,9 +110,9 @@ def freeze(checkout,log,pytest_exit,output):
     static=sites[:INSPECT]
     dynamic=rank_sites(sites,trace)[:INSPECT] if trace_status=="VALID" and pytest_exit==1 else []
     result=seal({
-        "experiment":"OMEGA-LOC-01",
+        "experiment":"OMEGA-LOC-02",
         "phase":"BUGGY_ONLY_FROZEN",
-        "bug_id":"tqdm-3",
+        "bug_id":"tqdm-4",
         "source_commit":BUGGY,
         "fixed_source_seen":False,
         "model_called":False,
@@ -163,7 +163,7 @@ def evaluate(frozen,diff_text,buggy_exit,fixed_exit):
     pool={(x["path"],x["line"]) for x in frozen["candidate_sites"]}
     eligible=buggy_exit==1 and fixed_exit==0 and frozen["buggy_test_failed"] and frozen["trace_status"]=="VALID"
     report={
-        "experiment":"OMEGA-LOC-01",
+        "experiment":"OMEGA-LOC-02",
         "phase":"HISTORICAL_ORACLE_AFTER_FREEZE",
         "freeze_sha256":frozen["commitment_sha256"],
         "historical_diff_sha256":sha(diff_text),
