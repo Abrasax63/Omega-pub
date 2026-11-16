@@ -30,8 +30,14 @@ jobs:
       - name: Confirm we are only testing environment with no model
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
         run: |
-          python -m py_compile abc_fetch.py abc_core.py abc_runner.py posthoc_env.py
+          python -m py_compile abc_fetch.py abc_core.py abc_runner.py posthoc_env.py test_abc_core.py test_pipeline.py
           python -m unittest -v test_abc_core.py test_pipeline.py
+          python - <<'PY'
+          from abc_core import extract_llama_cli_id
+          wrapped='P027\n\n[ Prompt: 41.1 t/s | Generation: 15.3 t/s ]\n\n> \n\nExiting...'
+          assert extract_llama_cli_id(wrapped,['P027'])=='P027'
+          print('Strict CLI wrapper parser verified without inference')
+          PY
       - name: Reproduce only previously blocked historical tests with corrected plugins
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
         run: |
