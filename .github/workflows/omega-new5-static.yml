@@ -39,5 +39,5 @@ jobs:
       - name: Unit tests of candidates, ranking and safeguards
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
         run: |
-          python -m py_compile abc_core.py test_abc_core.py
-          python -m unittest -v test_abc_core.py
+          python -m py_compile abc_core.py abc_runner.py abc_oracle.py test_abc_core.py test_pipeline.py
+          python -m unittest -v test_abc_core.py test_pipeline.py
