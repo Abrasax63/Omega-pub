@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/localization -p 'test_localize.py' -v
-      - name: Fetch ONLY genuine buggy tqdm-3 SHA
+      - name: Fetch ONLY genuine buggy tqdm-4 SHA
         run: |
           set -euo pipefail
           mkdir -p loc-work/buggy loc-freeze
