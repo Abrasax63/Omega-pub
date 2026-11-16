@@ -33,6 +33,12 @@ Le **coût des appels du modèle** n'est pas égalisé avec les bras A/B. Il est
 - `test_abc_core.py` et `test_pipeline.py` : contrôles unitaires et tentatives de falsification.
 - Workflow GitHub `.github/workflows/omega-new5-abc-real.yml` : deux jobs, lecteur seul ; chaque étape et chaque échec restent dans les journaux et artefacts. Aucune API payante.
 
+### Limites causales de la comparaison à garder visibles
+
+Le pool commun de 90 patches au maximum est construit comme l'union de candidats lexicaux et de candidats qui correspondent aux fichiers observés dans la trace. **Le bras A ne voit pas les scores de trace**, mais bénéficie indirectement d'un pool qui a été partiellement guidé par les traces pour garantir l'égalité des candidates. **B−A mesure donc surtout l'effet du classement guidé**, pas l'effet total de l'existence d'une instrumentation par rapport à une vraie recherche sans trace. C−B teste seulement l'effet d'une sélection d'ID via Qwen, pas une génération libre de nouveau programme.
+
+Les mêmes tests upstream authentiques peuvent servir au diagnostic et à la sélection, puis à la reproduction par l'oracle : **aucun test extérieur inconnu n'est évalué**. Un éventuel patch PASS peut surapprendre le test ciblé. Seule une nouvelle cohorte de tests jamais vus permettra d'avancer vers une revendication de réparation générale.
+
 ### Interprétation correcte
 
 Les cas dont les dépendances ne s'installent pas, dont le test échoue pour une raison infrastructure, ou dont le buggy ne FAIL pas sont **bloqués** et ne sont pas considérés comme réparés. Seuls les cas `buggy FAIL / fixed PASS / patched PASS` permettent de constater la correction **du seul test cible**.
