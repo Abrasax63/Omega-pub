@@ -1,0 +1,63 @@
+{
+  "experiment": "OMEGA-PR94-PROSPECTIVE-ATTESTED-OPERATIONS-01",
+  "version": 1,
+  "preregistered_at_utc": "2026-11-16",
+  "status": "CONSTRUCTED_CONTROLLED_INTERVENTION_NOT_INDEPENDENT_EXTERNAL_HOLDOUT",
+  "hypothesis": "SLSA verification may establish artifact integrity but will not improve copy-vs-recompute classification without additional execution evidence",
+  "baseline": "provenance_selection.select_verdict on unchanged provenance_xtrace output",
+  "candidate": "attested_evidence_bridge.select_with_attested_artifact on identical log record and same budget, plus SLSA verification",
+  "scoring_question": "For each output, was it produced by copy or by recomputation?",
+  "scope": "FOUR actual GitHub Actions operations, preselected, all results signed by same job",
+  "budget": {
+    "raw_log_reads_per_case": 1,
+    "baseline_signature_verifications": 0,
+    "candidate_signature_verifications": 1,
+    "noncomparable_costs_recorded_separately": true
+  },
+  "cases": [
+    {
+      "id": "A",
+      "file": "evidence/case-a-copy.json",
+      "expected": "copie",
+      "operation": "cp seed-a evidence/case-a-copy.json",
+      "source_file": "seed-a"
+    },
+    {
+      "id": "B",
+      "file": "evidence/case-b-recalc.json",
+      "expected": "recalcul",
+      "operation": "python3 -c with controlled sum-of-squares expression",
+      "source_file": null
+    },
+    {
+      "id": "C",
+      "file": "evidence/case-c-install.json",
+      "expected": "copie",
+      "operation": "install -m 0644 seed-c evidence/case-c-install.json",
+      "source_file": "seed-c"
+    },
+    {
+      "id": "D",
+      "file": "evidence/case-d-hidden.json",
+      "expected": "copie",
+      "operation": "cp seed-d evidence/case-d-hidden.json executed outside trace capture",
+      "source_file": "seed-d"
+    }
+  ],
+  "labels_source": "precommitted interventions (workflow commands), not independently authenticated by a second observer",
+  "nonpromotion_conditions": [
+    "any science_certification",
+    "any mismatch of baseline selector output and candidate selector output",
+    "any case without valid signature wrongly marked verified",
+    "artifact bytes not bound by SHA-256",
+    "less than all 4 target executions present"
+  ],
+  "independent_holdout": false,
+  "not_claimed": [
+    "scientific independence",
+    "external origin oracle",
+    "better copy-recompute accuracy from signatures",
+    "economically equal total compute budget",
+    "generalized performance"
+  ]
+}

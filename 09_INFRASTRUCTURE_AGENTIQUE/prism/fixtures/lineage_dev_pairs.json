@@ -1,0 +1,58 @@
+[
+  {
+    "case_id": "DEV-RUN-2-RECOMPUTES",
+    "outputs": [
+      {
+        "job_id": 132106598273,
+        "path": "evidence/build-a.json"
+      },
+      {
+        "job_id": 132106598116,
+        "path": "evidence/reserved-b.json"
+      }
+    ],
+    "meaning": "two explicitly computed files, same checksum, distinct jobs"
+  },
+  {
+    "case_id": "DEV-RUN-2-COPIES-UNKNOWN-ROOT",
+    "outputs": [
+      {
+        "job_id": 132106598116,
+        "path": "evidence/reserved-a.json"
+      },
+      {
+        "job_id": 132106598116,
+        "path": "evidence/reserved-c.json"
+      }
+    ],
+    "meaning": "two copies of original.json; root is not visible in the traced commands"
+  },
+  {
+    "case_id": "DEV-RUN-COPY-VS-RECOMPUTE",
+    "outputs": [
+      {
+        "job_id": 132106598116,
+        "path": "evidence/reserved-a.json"
+      },
+      {
+        "job_id": 132106598116,
+        "path": "evidence/reserved-b.json"
+      }
+    ],
+    "meaning": "one unresolvable copy, one recomputation"
+  },
+  {
+    "case_id": "DEV-RUN-INSTALL-AND-COPY",
+    "outputs": [
+      {
+        "job_id": 132106598328,
+        "path": "evidence/copy.json"
+      },
+      {
+        "job_id": 132106598116,
+        "path": "evidence/reserved-a.json"
+      }
+    ],
+    "meaning": "sources not linked across jobs"
+  }
+]

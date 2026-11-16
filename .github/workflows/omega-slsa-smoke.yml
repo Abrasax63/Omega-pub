@@ -1,0 +1,97 @@
+name: Omega SLSA isolated attestation smoke
+
+on:
+  push:
+    branches:
+      - experiment/omega-lineage-routing-pilot-2026-11-15
+    paths:
+      - .github/workflows/omega-slsa-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  attest-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Checkout candidate branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Create harmless demonstration artifact
+        shell: bash
+        run: |
+          printf '%s\n' 'omega-slsa-provenance-smoke-v1' > omega-slsa-smoke.txt
+          sha256sum omega-slsa-smoke.txt
+      - name: Sign SLSA provenance
+        id: signing
+        uses: actions/attest@v4
+        with:
+          subject-path: omega-slsa-smoke.txt
+      - name: Obtain a separate trusted Sigstore root
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh attestation trusted-root > "$RUNNER_TEMP/omega-trusted-root.jsonl"
+          test -s "$RUNNER_TEMP/omega-trusted-root.jsonl"
+      - name: Verify cryptography and pinned Omega policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNED_BUNDLE: ${{ steps.signing.outputs.bundle-path }}
+          NUMERIC_REPO_ID: ${{ github.repository_id }}
+        shell: bash
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/slsa_attestation_pilot.py \
+            omega-slsa-smoke.txt "$SIGNED_BUNDLE" \
+            --trusted-root "$RUNNER_TEMP/omega-trusted-root.jsonl" \
+            --repo "$GITHUB_REPOSITORY" \
+            --repo-id "$NUMERIC_REPO_ID" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/omega-slsa-smoke.yml" \
+            --source-commit "$GITHUB_SHA" > "$RUNNER_TEMP/omega-slsa-result.json"
+          python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["signature_verified"] is True; assert r["scientific_status"] == "INDETERMINATE"; print("Signed build provenance verified; scientific proof NOT established")' "$RUNNER_TEMP/omega-slsa-result.json"
+
+      - name: Adversarial checks refuse altered bytes and wrong repository ID
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNED_BUNDLE: ${{ steps.signing.outputs.bundle-path }}
+          NUMERIC_REPO_ID: ${{ github.repository_id }}
+        shell: bash
+        run: |
+          cp omega-slsa-smoke.txt omega-slsa-smoke-tampered.txt
+          printf '%s\\n' 'tampered-after-attestation' >> omega-slsa-smoke-tampered.txt
+          set +e
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/slsa_attestation_pilot.py \
+            omega-slsa-smoke-tampered.txt "$SIGNED_BUNDLE" \
+            --trusted-root "$RUNNER_TEMP/omega-trusted-root.jsonl" \
+            --repo "$GITHUB_REPOSITORY" \
+            --repo-id "$NUMERIC_REPO_ID" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/omega-slsa-smoke.yml" \
+            --source-commit "$GITHUB_SHA" > "$RUNNER_TEMP/omega-slsa-tamper.json"
+          tamper_exit=$?
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/slsa_attestation_pilot.py \
+            omega-slsa-smoke.txt "$SIGNED_BUNDLE" \
+            --trusted-root "$RUNNER_TEMP/omega-trusted-root.jsonl" \
+            --repo "$GITHUB_REPOSITORY" \
+            --repo-id 9999999 \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/omega-slsa-smoke.yml" \
+            --source-commit "$GITHUB_SHA" > "$RUNNER_TEMP/omega-slsa-wrong-repo.json"
+          wrong_repo_exit=$?
+          set -e
+          test "$tamper_exit" -ne 0
+          test "$wrong_repo_exit" -ne 0
+          python3 - "$RUNNER_TEMP/omega-slsa-tamper.json" "$RUNNER_TEMP/omega-slsa-wrong-repo.json" <<'PY'
+          import json
+          import sys
+          for filename in sys.argv[1:]:
+              result = json.load(open(filename))
+              assert result["signature_verified"] is False
+              assert result["scientific_status"] == "INDETERMINATE"
+              print("Expected refusal:", result["reason"])
+          PY

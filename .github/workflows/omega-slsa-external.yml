@@ -1,0 +1,239 @@
+name: Omega external signed provenance (experimental)
+
+on:
+  push:
+    branches:
+      - experiment/omega-lineage-routing-pilot-2026-11-15
+    paths:
+      - ".github/workflows/omega-slsa-external.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  attestations: read
+
+jobs:
+  verify-external:
+    name: Verify externally signed ${{ matrix.key }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - key: cli
+            repository: cli/cli
+            repository_id: "212613049"
+            tag: v2.62.0
+            asset: gh_2.62.0_linux_amd64.tar.gz
+            source_commit: cd3f2ad064fbeca17d330e321fef0591eaa0fea5
+            signer_workflow: cli/cli/.github/workflows/deployment.yml
+          - key: fulcio
+            repository: sigstore/fulcio
+            repository_id: "341596960"
+            tag: v1.10.0
+            asset: fulcio-linux-amd64
+            source_commit: 172a6d44c839cbd152a6b9e3fc41b1b66c2710e4
+            signer_workflow: sigstore/fulcio/.github/workflows/release.yml
+          - key: rekor
+            repository: sigstore/rekor
+            repository_id: "272963353"
+            tag: v1.6.1
+            asset: rekor-cli-linux-amd64
+            source_commit: 30ae802eec547479bc3334ca92b9e9c4df27d9a5
+            signer_workflow: sigstore/rekor/.github/workflows/release.yml
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download pinned public release, attestation bundle and trusted roots
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXTERNAL_REPO: ${{ matrix.repository }}
+          RELEASE_TAG: ${{ matrix.tag }}
+          ASSET: ${{ matrix.asset }}
+          KEY: ${{ matrix.key }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$RUNNER_TEMP/omega-external-$KEY"
+          mkdir -p "$target"
+          gh release download "$RELEASE_TAG" -R "$EXTERNAL_REPO" -p "$ASSET" --dir "$target"
+          test -s "$target/$ASSET"
+          (
+            cd "$target"
+            gh attestation download "$ASSET" -R "$EXTERNAL_REPO" --predicate-type https://slsa.dev/provenance/v1
+          )
+          gh attestation trusted-root > "$target/trusted-root.jsonl"
+          test -s "$target/trusted-root.jsonl"
+          find "$target" -maxdepth 1 -name 'sha256*.jsonl' | sort > "$target/bundlepaths"
+          test "$(wc -l < "$target/bundlepaths")" -eq 1
+          sha256sum "$target/$ASSET"
+      - name: Compare official GitHub CLI verification to Omega policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXTERNAL_REPO: ${{ matrix.repository }}
+          EXTERNAL_ID: ${{ matrix.repository_id }}
+          SIGNER_WORKFLOW: ${{ matrix.signer_workflow }}
+          SOURCE_COMMIT: ${{ matrix.source_commit }}
+          ASSET: ${{ matrix.asset }}
+          KEY: ${{ matrix.key }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$RUNNER_TEMP/omega-external-$KEY"
+          bundle="$(cat "$target/bundlepaths")"
+          root="$target/trusted-root.jsonl"
+          gh attestation verify "$target/$ASSET" \
+            --bundle "$bundle" --custom-trusted-root "$root" \
+            --repo "$EXTERNAL_REPO" --signer-workflow "$SIGNER_WORKFLOW" \
+            --source-digest "$SOURCE_COMMIT" --cert-oidc-issuer https://token.actions.githubusercontent.com \
+            --predicate-type https://slsa.dev/provenance/v1 --format json > "$target/$KEY-gh-reference.json"
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/slsa_attestation_pilot.py \
+            "$target/$ASSET" "$bundle" --trusted-root "$root" \
+            --repo "$EXTERNAL_REPO" --repo-id "$EXTERNAL_ID" \
+            --signer-workflow "$SIGNER_WORKFLOW" --source-commit "$SOURCE_COMMIT" \
+            > "$target/$KEY-omega.json"
+          python3 - "$target/$KEY-gh-reference.json" "$target/$KEY-omega.json" <<'PY'
+          import json,sys,os
+          gh=json.load(open(sys.argv[1]))
+          omega=json.load(open(sys.argv[2]))
+          assert isinstance(gh,list) and len(gh)>0, "No cryptographically verified source result"
+          assert omega["signature_verified"] is True, omega
+          assert omega["scientific_status"] == "INDETERMINATE"
+          assert omega["status"] == "VERIFIED_BUILD_PROVENANCE_ONLY"
+          print("External provenance verified; no independent scientific replication claimed")
+          assert all(any(dep.get("git_commit")==os.environ["SOURCE_COMMIT"]
+                         for dep in ev.get("reported_dependencies",[]))
+                     for ev in omega["evidence"]), "source commit not declared"
+          print("Signer-claimed source dependencies:", [ev["reported_dependencies"] for ev in omega["evidence"]])
+          print("Declared dependencies:", [x.get("listed_dependency_count") for x in omega["evidence"]])
+          PY
+      - name: Reuse Omega selector on genuinely signed external artifact (no execution log)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXTERNAL_REPO: ${{ matrix.repository }}
+          EXTERNAL_ID: ${{ matrix.repository_id }}
+          SIGNER_WORKFLOW: ${{ matrix.signer_workflow }}
+          SOURCE_COMMIT: ${{ matrix.source_commit }}
+          ASSET: ${{ matrix.asset }}
+          KEY: ${{ matrix.key }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, "09_INFRASTRUCTURE_AGENTIQUE/prism")
+          from attested_evidence_bridge import select_with_attested_artifact
+          target = Path(os.environ["RUNNER_TEMP"]) / ("omega-external-" + os.environ["KEY"])
+          bundle = Path((target / "bundlepaths").read_text().strip())
+          result = select_with_attested_artifact(
+              [], lambda _: (_ for _ in ()).throw(AssertionError("No raw log may be invented")),
+              job="unknown_external_job", output=os.environ["ASSET"], budget=0,
+              artifact=target / os.environ["ASSET"], bundle=bundle,
+              trusted_root=target / "trusted-root.jsonl",
+              repository=os.environ["EXTERNAL_REPO"],
+              repository_id=os.environ["EXTERNAL_ID"],
+              signer_workflow=os.environ["SIGNER_WORKFLOW"],
+              source_commit=os.environ["SOURCE_COMMIT"])
+          assert result["signed_build_provenance"] == "VERIFIED_BUILD_ONLY", result
+          assert result["operation_from_untrusted_log"] == "indéterminé", result
+          assert result["scientific_verdict"] == "INDETERMINATE", result
+          assert result["scientific_independence"] == "NOT_ESTABLISHED", result
+          assert result["routing"] == "LINK_LOG_OUTPUT_TO_SIGNED_BYTES", result
+          assert result["log_read_count"] == 0
+          assert result["signature_verification_attempts"] == 1
+          (target / (os.environ["KEY"] + "-bridge.json")).write_text(
+              json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          print("REAL SIGNED ARTIFACT: verified; scientific and raw-log verdicts stay indeterminate")
+          PY
+      - name: Adversarial checks reject altered artifact and fake repository ID
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXTERNAL_REPO: ${{ matrix.repository }}
+          EXTERNAL_ID: ${{ matrix.repository_id }}
+          SIGNER_WORKFLOW: ${{ matrix.signer_workflow }}
+          SOURCE_COMMIT: ${{ matrix.source_commit }}
+          ASSET: ${{ matrix.asset }}
+          KEY: ${{ matrix.key }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$RUNNER_TEMP/omega-external-$KEY"
+          bundle="$(cat "$target/bundlepaths")"
+          root="$target/trusted-root.jsonl"
+          cp "$target/$ASSET" "$target/tampered"
+          printf 'tampered\n' >> "$target/tampered"
+          set +e
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/slsa_attestation_pilot.py \
+            "$target/tampered" "$bundle" --trusted-root "$root" \
+            --repo "$EXTERNAL_REPO" --repo-id "$EXTERNAL_ID" \
+            --signer-workflow "$SIGNER_WORKFLOW" --source-commit "$SOURCE_COMMIT" > "$target/$KEY-tamper.json"
+          altered_exit=$?
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/slsa_attestation_pilot.py \
+            "$target/$ASSET" "$bundle" --trusted-root "$root" \
+            --repo "$EXTERNAL_REPO" --repo-id 999999999 \
+            --signer-workflow "$SIGNER_WORKFLOW" --source-commit "$SOURCE_COMMIT" > "$target/$KEY-wrong-repo.json"
+          wrong_exit=$?
+          set -e
+          test "$altered_exit" -ne 0
+          test "$wrong_exit" -ne 0
+          python3 - "$target/$KEY-tamper.json" "$target/$KEY-wrong-repo.json" <<'PY'
+          import json,sys
+          for file in sys.argv[1:]:
+              report=json.load(open(file))
+              assert report["signature_verified"] is False
+              assert report["scientific_status"]=="INDETERMINATE"
+              print("Expected refusal:", report["reason"])
+          PY
+      - name: Preserve machine-readable comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-external-${{ matrix.key }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/omega-external-${{ matrix.key }}/*json
+          retention-days: 14
+          if-no-files-found: warn
+
+  compare-declared-dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: verify-external
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: omega-external-*-${{ github.run_id }}
+          path: ./external-results
+          merge-multiple: true
+      - name: Compare SIGNER CLAIMS only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/slsa_dependency_compare.py \
+            external-results/cli-omega.json external-results/fulcio-omega.json \
+            --output external-results/omega-dependency-report.json
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/slsa_dependency_compare.py \
+            external-results/rekor-omega.json external-results/fulcio-omega.json \
+            --output external-results/omega-rekor-dependencies.json
+          python3 - <<'PY'
+          import json
+          x=json.load(open("external-results/omega-dependency-report.json"))
+          assert x["status"]=="SIGNED_PROVENANCE_CLAIMS_COMPARED"
+          assert x["distinct_certified_repositories"] is True
+          assert x["scientific_independence"]=="NOT_ESTABLISHED"
+          new=json.load(open("external-results/omega-rekor-dependencies.json"))
+          assert new["status"]=="SIGNED_PROVENANCE_CLAIMS_COMPARED"
+          assert new["scientific_independence"]=="NOT_ESTABLISHED"
+          print("No scientific independence or correctness implied")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-external-dependency-comparison-${{ github.run_id }}
+          path: external-results/omega-dependency-report.json
+          retention-days: 14

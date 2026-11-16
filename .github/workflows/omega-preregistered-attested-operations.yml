@@ -1,0 +1,98 @@
+name: Omega controlled signed operations — preregistered pilot
+
+on:
+  push:
+    branches:
+      - experiment/omega-lineage-routing-pilot-2026-11-15
+    paths:
+      - ".github/workflows/omega-preregistered-attested-operations.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  produce-attest-compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Checkout branch and frozen control labels
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Produce four controlled genuine files and execution evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          printf '101\n' > seed-a
+          printf '303\n' > seed-c
+          printf '404\n' > seed-d
+          # Capture only the bounded execution window, as preregistered.
+          bash -e -x <<'CASES' 2> evidence/producer-xtrace.log
+          cp seed-a evidence/case-a-copy.json
+          python3 -c 'from pathlib import Path; Path("evidence/case-b-recalc.json").write_text(str(sum(i*i for i in range(1,12)))+chr(10))'
+          install -m 0644 seed-c evidence/case-c-install.json
+          CASES
+          # Intentionally no executed-command trace provided for case D.
+          cp seed-d evidence/case-d-hidden.json
+          sha256sum evidence/case-*.json >> evidence/producer-xtrace.log
+          sha256sum evidence/case-*.json
+          test "$(find evidence -name 'case-*.json' -type f | wc -l)" -eq 4
+      - name: Attest all four output artifacts
+        id: sign
+        uses: actions/attest@v4
+        with:
+          subject-path: evidence/case-*.json
+      - name: Obtain trusted Sigstore root independently
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh attestation trusted-root > evidence/trusted-root.jsonl
+          test -s evidence/trusted-root.jsonl
+      - name: Compare same-label decisions with equal raw-log read budget
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNED_BUNDLE: ${{ steps.sign.outputs.bundle-path }}
+          NUMERIC_REPO_ID: ${{ github.repository_id }}
+        run: |
+          set -euo pipefail
+          python3 09_INFRASTRUCTURE_AGENTIQUE/prism/attested_operations_benchmark.py \
+            --manifest 09_INFRASTRUCTURE_AGENTIQUE/prism/fixtures/ATTESTED_OPERATIONS_PREREG_V1.json \
+            --log evidence/producer-xtrace.log \
+            --bundle "$SIGNED_BUNDLE" \
+            --trusted-root evidence/trusted-root.jsonl \
+            --repo "$GITHUB_REPOSITORY" --repo-id "$NUMERIC_REPO_ID" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/omega-preregistered-attested-operations.yml" \
+            --commit "$GITHUB_SHA" \
+            --output evidence/compare-report.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path("evidence/compare-report.json").read_text())
+          assert r["total"]==4
+          assert r["candidate_verified_signatures"]==4
+          assert r["scientific_certifications"]==0
+          assert r["baseline_log_reads"]==r["candidate_log_reads"]==4
+          print("Baseline operation accuracy:",r["baseline_correct"],"/4")
+          print("Candidate operation accuracy:",r["candidate_correct"],"/4")
+          print("Extra cryptographic verifications:",r["candidate_signature_checks"])
+          print("Scientific gain: NOT DEMONSTRATED")
+          PY
+          cp "$SIGNED_BUNDLE" evidence/signature-bundle.json
+          cp 09_INFRASTRUCTURE_AGENTIQUE/prism/fixtures/ATTESTED_OPERATIONS_PREREG_V1.json evidence/frozen-labels.json
+      - name: Preserve raw evidence and reports (not scientific certification)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-attested-operations-${{ github.run_id }}
+          path: evidence/
+          if-no-files-found: warn
+          retention-days: 14
