@@ -1,0 +1,61 @@
+name: OBS-COL-10 actual differential probe policy gate
+on:
+  push:
+    branches:
+      - experiment/obs-col10-probe-policy-divergence-2026-11-16
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col10/**"
+      - "02_MATHEMATIQUES/pilotes/obs_col09_common/**"
+      - ".github/workflows/obs-col10-policy-gate.yml"
+  workflow_dispatch:
+jobs:
+  calibration-only:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install authentic AALpy 2.0.0
+        run: python -m pip install --disable-pip-version-check aalpy==2.0.0
+      - name: Generate same bounded 512-word EQ suite and holdout as PR 96
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col09_common/generate_manifests.py "$PWD/obs_col10_manifests"
+      - name: Execute five tests with genuine Lsharp and Omega P1
+        run: python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col10 -p 'test_policy_divergence.py' -v
+      - name: Execute all three policy arms on the three calibration models
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col10/policy_divergence.py "$PWD/obs_col10_manifests" > obs_col10_result.json
+          python - <<'PY'
+          import json
+          d=json.load(open("obs_col10_result.json"))
+          assert len(d["results"]) == 9
+          assert not d["new_independent_blind_holdout_executed"]
+          assert not d["omega_p1_selects_probes"]
+          assert d["omega_like_eq_policy_selects_probes"]
+          for r in d["results"]:
+              assert r["eq_policy"] == r["requested_policy"]
+              assert r["physical_symbols"] <= 50000 and r["physical_resets"] <= 10000
+              assert r["evaluation_count"] == 256 and r["evaluation_unseen_count"] > 0
+              assert not r["omega_gains_demonstrated"] and not r["equivalence_certified"]
+          for name in sorted({r["fixture"] for r in d["results"]}):
+              print("CALIBRATION",name)
+              for r in (x for x in d["results"] if x["fixture"] == name):
+                  print(r["requested_policy"],
+                        "first-probes",r["eq_first_proposals"][0][:2] if r["eq_first_proposals"] else [],
+                        "resets",r["physical_resets"],"symbols",r["physical_symbols"],
+                        "errors-unseen",r["evaluation_unseen_errors"])
+          print("POLICY_DIVERGENCE_COUNT",d["policy_divergence_count"])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: obs-col10-policy-divergence-calibration-only
+          path: |
+            obs_col10_result.json
+            obs_col10_manifests/
+          if-no-files-found: warn
