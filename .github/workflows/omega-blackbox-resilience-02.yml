@@ -1,0 +1,110 @@
+name: Omega blackbox resilience 02 - fail-closed integration gates
+
+on:
+  push:
+    branches:
+      - test/omega-blackbox-resilience-2026-11-16
+    paths:
+      - 'experiments/omega-blackbox-resilience-02/**'
+      - 'experiments/omega-blackbox-01/blackbox_lab.py'
+      - '.github/workflows/omega-blackbox-resilience-02.yml'
+  pull_request:
+    branches:
+      - experiment/omega-blackbox-01-2026-11-16
+    paths:
+      - 'experiments/omega-blackbox-resilience-02/**'
+      - 'experiments/omega-blackbox-01/blackbox_lab.py'
+      - '.github/workflows/omega-blackbox-resilience-02.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-blackbox-resilience-02-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  critical-blackbox-resilience:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install real pinned AALpy
+        run: python -m pip install --disable-pip-version-check aalpy==1.6.2
+      - name: Require fourteen controls including budget ambiguity protection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-blackbox-resilience-02/*.py
+          python - <<'PY'
+          import unittest
+          s=unittest.TestLoader().discover(
+              'experiments/omega-blackbox-resilience-02',
+              pattern='test_resilience.py')
+          count=s.countTestCases()
+          print('OMEGA_RESILIENCE_02_TESTS_DISCOVERED',count)
+          assert count==14
+          assert unittest.TextTestRunner(verbosity=2).run(s).wasSuccessful()
+          PY
+      - name: Stress fully accessible and behaviorally minimal four-five-six-state worlds
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-blackbox-resilience-02/resilience_lab.py \
+              --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Independently verify report accounting and fail-closed criteria
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('evidence/report.json').read_text())
+          assert r['experiment']=='OMEGA-BLACKBOX-RESILIENCE-02'
+          assert r['preregistered_commit']=='d2f191c1340fae2b8be19a2acdaf02008a013547'
+          assert r['external_aalpy_version']=='1.6.2'
+          assert r['caps']==[120,400,900]
+          assert r['modes']==['RANDOM_LSTAR','FIXED_LSTAR','OMEGA_GUIDED_LSTAR']
+          assert r['same_random_seed_per_arm_across_caps']
+          assert r['test_worlds_all_accessible_and_distinguishable']
+          assert r['oracle_evaluation_only']
+          assert not r['any_budget_interruption_accepted_as_normal_verification']
+          assert not r['scientific_gain_certified']
+          assert not r['main_modified'] and r['no_paid_api']
+          assert len(r['report'])==3
+          assert [x['machine_size'] for x in r['report']]==[4,5,6]
+          for row in r['report']:
+              assert row['reachable_states']==row['machine_size']
+              assert row['distinguishable_physical_states']
+              for arm in r['modes']:
+                  for cap in r['caps']:
+                      a=row['arms'][arm][str(cap)]
+                      assert 0<=a['spent_symbols']<=cap
+                      assert a['membership_symbols']+a['equivalence_symbols']==a['spent_symbols']
+                      assert a['queries_completed']<=a['queries_logged']
+                      assert a['exact_bfs']['status'] in ('EXACT_EQUIVALENT','NOT_EQUIVALENT','NO_HYPOTHESIS')
+                      if a['exact_bfs']['status']=='NOT_EQUIVALENT':
+                          assert a['exact_bfs']['shortest_counterexample_length']>0
+                      if a['exact_bfs']['status']=='NO_HYPOTHESIS':
+                          assert a['hypothesis_state_count'] is None
+                      if a['status']=='PROVISIONAL_LSTAR_COMPLETED':
+                          assert a['incomplete_queries']==0
+          print('OMEGA_RESILIENCE_02_STATUS',r['technical_status'])
+          print('OMEGA_RESILIENCE_02_TOTALS',r['totals'])
+          PY
+      - name: Archive stress and negative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-blackbox-resilience-02-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
