@@ -1,0 +1,132 @@
+name: Omega blackbox 01 - AALpy Lstar opaque Mealy with exact evaluator
+
+on:
+  push:
+    branches:
+      - experiment/omega-blackbox-01-2026-11-16
+    paths:
+      - 'experiments/omega-blackbox-01/**'
+      - '.github/workflows/omega-blackbox-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-onpolicy-continuation-08-2026-11-16
+    paths:
+      - 'experiments/omega-blackbox-01/**'
+      - '.github/workflows/omega-blackbox-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-blackbox-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  black-box-active-automata-learning:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install public pinned academic baseline (no paid API)
+        run: |
+          python -m pip install --disable-pip-version-check aalpy==1.6.2
+          python -m pip show aalpy
+      - name: Run fourteen independent scientific unit controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-blackbox-01/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+              'experiments/omega-blackbox-01',pattern='test_blackbox.py')
+          n=suite.countTestCases()
+          print('OMEGA_BLACKBOX_TESTS_DISCOVERED',n)
+          assert n==14,('test discovery changed',n)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Execute frozen 9-machine x 3-method x 2-budget benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-blackbox-01/blackbox_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Independent evidence gate (do NOT assume positive result)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('evidence/report.json').read_text())
+          assert r['experiment']=='OMEGA-BLACKBOX-01'
+          assert r['preregistered_commit']=='2715f3255ed4527c0a411998a62d48e971e7cc97'
+          assert r['external_dependency_version']=='1.6.2'
+          assert r['budget_caps']==[700,1400] and r['primary_budget']==1400
+          assert r['reserved_words_per_machine']==128
+          assert r['equivalence_test_approximate_word_limit']==32
+          assert r['learning_modes']==[
+              'RANDOM_LSTAR','FIXED_LSTAR','OMEGA_GUIDED_LSTAR']
+          assert r['same_learning_backend_for_all_arms']
+          assert r['same_budget_caps_for_all_arms']
+          assert r['actual_costs_may_differ']
+          assert r['exact_oracle_evaluation_only']
+          assert r['target_machine_hidden_from_learners']
+          assert r['no_paid_api'] and not r['main_modified']
+          assert not r['general_scientific_gain_proven']
+          assert len(r['machines'])==9
+          sigs=[w['canonical_signature'] for w in r['machines']]
+          assert len(sigs)==len(set(sigs))
+          assert [w['size'] for w in r['machines']]==[4]*3+[5]*3+[6]*3
+          for item in r['machines']:
+              for cap in (700,1400):
+                  for arm in r['learning_modes']:
+                      row=item['budgets'][str(cap)][arm]
+                      t=row['train']
+                      ledger=t['ledger']
+                      assert 0 < ledger['spent_symbols'] <= cap
+                      assert sum(x['charge'] for x in ledger['query_log'])==ledger['spent_symbols']
+                      assert ledger['by_phase_spent']['MQ']+ledger['by_phase_spent']['EQ']==ledger['spent_symbols']
+                      assert all(len(x['inputs'])==len(x['outputs'])==x['charge']
+                                 for x in ledger['query_log'])
+                      assert ledger['completed_queries']<=ledger['logged_queries']
+                      ev=row['reserved_word_evaluation']
+                      assert ev['evaluated_test_words']+ev['excluded_identical_train_queries']==128
+                      assert 0<=ev['whole_word_accuracy']<=1
+                      assert 0<=ev['symbol_accuracy']<=1
+                      eq=row['independent_exact_equivalence']
+                      assert eq['status'] in ('EXACT_EQUIVALENT','NOT_EQUIVALENT','NO_HYPOTHESIS')
+                      if eq['status']=='EXACT_EQUIVALENT':
+                          assert ev['whole_word_accuracy']==ev['symbol_accuracy']==1.0
+                      elif eq['status']=='NOT_EQUIVALENT':
+                          assert eq['shortest_counterexample_length']>=1
+                      else:
+                          assert t['model_states'] is None
+          primary=r['comparisons']['1400']
+          omega=primary['OMEGA_GUIDED_LSTAR']
+          ref=[primary['RANDOM_LSTAR'],primary['FIXED_LSTAR']]
+          p=(all(omega['exact_equivalent_models']>a['exact_equivalent_models']
+                 for a in ref)
+             and all(omega['mean_whole_word_accuracy']+1e-12>=
+                     a['mean_whole_word_accuracy'] for a in ref))
+          assert r['status']==('DESCRIPTIVE_QUERY_GAIN' if p else 'NO_DEMONSTRATED_QUERY_GAIN')
+          print('OMEGA_BLACKBOX_VERDICT',r['status'])
+          for budget in ('700','1400'):
+              print('OMEGA_BLACKBOX_RESULTS',budget,r['comparisons'][budget])
+          PY
+      - name: Archive every actual query, model outcome, counterexample and negative result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-blackbox-01-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
