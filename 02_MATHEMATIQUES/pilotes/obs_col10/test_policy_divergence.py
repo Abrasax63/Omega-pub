@@ -4,12 +4,12 @@ import unittest
 from pathlib import Path
 from fractions import Fraction
 
-from generate_manifests import generate
-from common_eq import FIXTURES
-from benchmark import external_fixture
 from policy_divergence import (
     AdaptiveEqOracle, coverage_ranking, model_probe_features, run,
 )
+from generate_manifests import generate
+from common_eq import FIXTURES
+from benchmark import external_fixture
 
 
 class TestPolicyDivergence(unittest.TestCase):
