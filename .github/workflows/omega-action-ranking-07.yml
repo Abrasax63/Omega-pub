@@ -1,0 +1,150 @@
+name: Omega action ranking 07 - exact mean versus uniform-target diagnostics
+
+on:
+  push:
+    branches:
+      - experiment/omega-action-ranking-07-2026-11-16
+    paths:
+      - 'experiments/omega-action-ranking-07/**'
+      - '.github/workflows/omega-action-ranking-07.yml'
+  pull_request:
+    branches:
+      - experiment/omega-exact-mean-calibration-2026-11-16
+    paths:
+      - 'experiments/omega-action-ranking-07/**'
+      - '.github/workflows/omega-action-ranking-07.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-action-ranking-07-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-action-diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Assert exactly fifteen no-network scientific controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-action-ranking-07/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+            'experiments/omega-action-ranking-07',pattern='test_action_ranking.py')
+          count=suite.countTestCases()
+          print('OMEGA_ACTION_RANKING_DISCOVERED',count)
+          assert count==15,('unexpected scientific control count',count)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Execute frozen fresh holdout and archive all per-action Q values
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-action-ranking-07/action_ranking_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Verify exact local regrets, cross-tab, decisions and no learning leaks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from fractions import Fraction
+          from pathlib import Path
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-ACTION-RANKING-07'
+          assert d['prereg_commit']=='e274149fd8e42658f68b8c6320a2c39e41b2f119'
+          assert d['training_seeds']==[271,272,273]
+          assert d['all_oracles_evaluation_only']
+          assert d['evaluation_weights_unchanged']
+          assert d['original_PR132_training_unchanged']
+          assert d['exact_average_cost_oracle_rational']
+          assert d['test_shares_machines_across_seeds']
+          assert d['paid_api_calls']==0 and not d['main_modified']
+          assert not d['language_model_trained'] and d['no_claim_of_generalization']
+          expected={'eval_random4':(24,'random4'),
+                    'eval_perm5':(30,'perm5'),
+                    'eval_reset5':(30,'reset5')}
+          signatures=[]
+          for name,(size,kind) in expected.items():
+            cohort=d['new_split_manifests'][name]
+            assert cohort['count']==size and cohort['kind']==kind
+            signatures+=cohort['signatures']
+          assert len(signatures)==len(set(signatures))
+          assert len(d['repetitions'])==3
+          for rep in d['repetitions']:
+            assert rep['training_fingerprints_before']==rep['training_fingerprints_after']
+            for name,(size,kind) in expected.items():
+              e=rep['evaluations'][name]
+              s=e['summary']
+              assert s['total']==size and s['eligible']+s['impossible']==size
+              seen=0
+              for machine in e['rows']:
+                if not machine['identifiable']:
+                  assert machine['reachable_beliefs']==[]
+                  assert machine['policy_scores']=={}
+                  continue
+                for belief in machine['reachable_beliefs']:
+                  seen+=1
+                  q=belief['oracle_best_Q_rational']
+                  optimal=Fraction(q['numerator'],q['denominator'])
+                  actions=belief['actions']
+                  assert all(a['Q_optimal_rational']['denominator']>0 for a in actions)
+                  exacts=[Fraction(a['Q_optimal_rational']['numerator'],
+                                   a['Q_optimal_rational']['denominator']) for a in actions]
+                  assert optimal==min(exacts)
+                  chosen=next(a for a in actions if a['name']==belief['learned_action'])
+                  selected=Fraction(chosen['Q_optimal_rational']['numerator'],
+                                    chosen['Q_optimal_rational']['denominator'])
+                  regret=belief['learned_local_one_step_regret_rational']
+                  assert Fraction(regret['numerator'],regret['denominator'])==selected-optimal>=0
+                  assert belief['learned_suboptimal']==(selected>optimal)
+                for policy in machine['policy_scores'].values():
+                  assert policy['regret_to_exact_mean_rational']['numerator']>=0
+                  assert policy['worst_regret_minimax']>=0
+                  assert len(policy['cost_by_initial'])==machine['num_states']
+              if s['eligible']>0:
+                assert s['reachable_nontrivial_beliefs']==seen
+                matrix=s['surrogate_x_approximation_matrix']
+                assert sum(x['beliefs'] for x in matrix.values())==seen
+                assert sum(x['learned_suboptimal_count'] for x in matrix.values())==s['learned_suboptimal_beliefs']
+          flags=[
+            d['aggregate'][name].get('surrogate_unique_beliefs',0)>0
+            for name in ('eval_perm5','eval_reset5')
+          ]
+          if all(d['aggregate'][name]['eligible']>0 for name in ('eval_perm5','eval_reset5')):
+            assert sum(flags)==d['structural_families_with_exact_surrogate_mismatch']
+            statuses={
+              0:'TARGET_MISMATCH_NOT_OBSERVED',
+              1:'TARGET_MISMATCH_OBSERVED_ONE',
+              2:'TARGET_MISMATCH_OBSERVED_BOTH',
+            }
+            assert d['status']==statuses[sum(flags)]
+          print('OMEGA_ACTION_RANKING_VERDICT',d['status'])
+          for name in ('eval_perm5','eval_reset5'):
+            x=d['aggregate'][name]
+            print('OMEGA_ACTION_RANKING_FAMILY',name,
+                  x['eligible'],x.get('learned_suboptimal_rate'),
+                  x.get('surrogate_mismatch_rate'),
+                  x.get('approximation_disagreement_rate'))
+          PY
+      - name: Archive exact fractions, every ranked probe, counters and negatives
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-action-ranking-07-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
