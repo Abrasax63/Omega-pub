@@ -1,0 +1,14 @@
+{
+  "source": "Radboud University Automata Wiki / BenchmarkMoore-RivestShapire1993",
+  "pre_reg_commit": "6a37ca2e7b10c5222f17dd5058ccf701e15c64e8",
+  "retrieval_run_url": "https://github.com/Abrasax63/Omega-pub/actions/runs/43821245653",
+  "retrieval_artifact_id": 14204572129,
+  "sha256": {
+    "crossword2x2.dot": "07096c0644c822a990a6942f905dc42bfadcf0530b98f21b6f9a030b7bb64ec6",
+    "crossword3x3.dot": "796c0d727c8414ce3466522522638f6af2b044e68621aeb57f0c3f4e5d1e086e",
+    "register2.dot": "190826f2276273577b05c907fbd7bedd28f7e649bb9e481ba5c8a22fe1000468",
+    "register3.dot": "77aed351c3ec4c55d2a95cbb80b72e3cd03ae5ec80c89cf7d00ec2e1e8f9ae16",
+    "register4.dot": "b3a2d4599f6334dab8ae2c70d8aabc849c0a304ea65b75f548534c65a18c6708",
+    "register5.dot": "201fae612e769268b3c56a5aab92fe7f1dfd3266e1c4e213978e061a7eaa6895"
+  }
+}
