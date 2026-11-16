@@ -1,9 +1,9 @@
-name: Omega NEW5 A/B/C authentic bugs and fixed-after-freeze oracle
+name: Omega NEW5 ABC cohort02 tqdm-5to9 prospective run
 
 on:
   push:
     branches:
-      - experiment/omega-five-bug-equal-budget-abc-2026-11-16
+      - experiment/omega-new5-abc-02-tqdm-5to9-2026-11-16
     paths:
       - '.github/workflows/omega-new5-abc-real.yml'
   workflow_dispatch:
@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: omega-new5-abc-first-prospective-campaign
+  group: omega-new5-abc-second-prospective-campaign
   cancel-in-progress: false
 
 jobs:
@@ -31,12 +31,12 @@ jobs:
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
         run: |
           python -m py_compile abc_core.py abc_runner.py abc_oracle.py abc_fetch.py
-          python -m unittest -v test_abc_core.py test_pipeline.py
+          python -m unittest -v test_abc_core.py test_pipeline.py test_cohort02.py
       - name: Fetch five buggy commits and public regression test FILES only
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
         run: |
           python abc_fetch.py --phase buggy-only \
-            --cohort COHORT_FREEZE.json \
+            --cohort COHORT_02_FREEZE.json \
             --checkouts "$RUNNER_TEMP/omega-new5-buggy" \
             --tests "$RUNNER_TEMP/omega-new5-tests" \
             --manifest-output "$RUNNER_TEMP/buggy-source-manifest.json"
@@ -78,7 +78,7 @@ jobs:
         run: |
           set -euo pipefail
           python abc_runner.py \
-            --cohort COHORT_FREEZE.json \
+            --cohort COHORT_02_FREEZE.json \
             --buggy-dir "$RUNNER_TEMP/omega-new5-buggy" \
             --tests-dir "$RUNNER_TEMP/omega-new5-tests" \
             --llama-cli "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" \
@@ -87,7 +87,7 @@ jobs:
           python - <<'PY'
           import json
           from abc_core import verify_manifest
-          c=json.load(open('COHORT_FREEZE.json'))
+          c=json.load(open('COHORT_02_FREEZE.json'))
           s=json.load(open('selection.json'))
           assert verify_manifest(s,c)
           assert len(s['cases'])==5 and s['new_model_calls']<=5
@@ -99,7 +99,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: omega-new5-abc-frozen-buggy-only
+          name: omega-new5-abc02-frozen-buggy-only
           path: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc/selection.json
           if-no-files-found: warn
           retention-days: 30
@@ -119,7 +119,7 @@ jobs:
       - name: Download immutable frozen source and A/B/C selections first
         uses: actions/download-artifact@v4
         with:
-          name: omega-new5-abc-frozen-buggy-only
+          name: omega-new5-abc02-frozen-buggy-only
           path: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc/freeze-artifact
       - name: Validate SHA commitment and budget before any fixed source fetch
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
@@ -128,14 +128,14 @@ jobs:
           import json
           from abc_oracle import verify_commitment
           a=json.load(open('freeze-artifact/selection.json'))
-          c=json.load(open('COHORT_FREEZE.json'))
+          c=json.load(open('COHORT_02_FREEZE.json'))
           print('REVALIDATED BEFORE FIXED FETCH',verify_commitment(a,c))
           PY
       - name: Retrieve same exact buggy Git revisions for reproducibility
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
         run: |
           python abc_fetch.py --phase buggy-only \
-            --cohort COHORT_FREEZE.json \
+            --cohort COHORT_02_FREEZE.json \
             --checkouts "$RUNNER_TEMP/omega-new5-oracle-buggy" \
             --tests "$RUNNER_TEMP/omega-new5-tests" \
             --manifest-output "$RUNNER_TEMP/oracle-buggy-manifest.json"
@@ -143,7 +143,7 @@ jobs:
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
         run: |
           python abc_fetch.py --phase fixed-oracle \
-            --cohort COHORT_FREEZE.json \
+            --cohort COHORT_02_FREEZE.json \
             --checkouts "$RUNNER_TEMP/omega-new5-oracle-fixed" \
             --tests "$RUNNER_TEMP/omega-new5-fixed-tests" \
             --manifest-output "$RUNNER_TEMP/oracle-fixed-manifest.json"
@@ -151,7 +151,7 @@ jobs:
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
         run: |
           python abc_oracle.py \
-            --cohort COHORT_FREEZE.json \
+            --cohort COHORT_02_FREEZE.json \
             --selection freeze-artifact/selection.json \
             --buggy-dir "$RUNNER_TEMP/omega-new5-oracle-buggy" \
             --fixed-dir "$RUNNER_TEMP/omega-new5-oracle-fixed" \
@@ -171,7 +171,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: omega-new5-abc-historical-oracle
+          name: omega-new5-abc02-historical-oracle
           path: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc/new5-abc-result.json
           retention-days: 30
           if-no-files-found: warn
