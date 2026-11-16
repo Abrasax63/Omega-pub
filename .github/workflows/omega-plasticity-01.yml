@@ -1,0 +1,110 @@
+name: Omega plasticity 01 - fixed-memory-learned A-B-Aprime
+
+on:
+  push:
+    branches:
+      - experiment/omega-plasticity-aba-2026-11-16
+    paths:
+      - 'experiments/omega-plasticity-01/**'
+      - '.github/workflows/omega-plasticity-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-mealy-plasticity-2026-11-16
+    paths:
+      - 'experiments/omega-plasticity-01/**'
+      - '.github/workflows/omega-plasticity-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-plasticity-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frozen-aba-benchmark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check exactly 15 deterministic regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-plasticity-01/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+            'experiments/omega-plasticity-01', pattern='test_plasticity.py')
+          n=suite.countTestCases()
+          print('OMEGA_PLASTICITY_REGRESSIONS_DISCOVERED',n)
+          assert n==15,('Unexpected unit test discovery',n)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Execute exact frozen A-B-Aprime trial
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-plasticity-01/plasticity_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Fail closed on oracle leakage, split contamination and empty trials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-PLASTICITY-01'
+          assert d['prereg_commit']=='a97fff4b57bebb01ed28c412d05f1e66a9e2cb9f'
+          assert d['phase_costs']=={'A':[1,2],'B':[3,1],'A_prime':[1,2]}
+          sizes={k:d['data_splits'][k]['size'] for k in d['data_splits']}
+          assert sizes=={'train_A':36,'train_B':36,'relearn_A':16,
+                         'eval_A':18,'eval_B':18,'eval_Aprime':24}
+          signatures=[set(g['signatures']) for g in d['data_splits'].values()]
+          assert all(not (signatures[i] & signatures[j])
+                     for i in range(len(signatures)) for j in range(i))
+          assert d['training_uses_oracle'] is False
+          assert d['learned_parameters_changed'] is True
+          assert d['api_calls']==0 and d['main_modified'] is False
+          assert d['language_model_trained'] is False
+          assert d['scientific_generalization_proven'] is False
+          assert len(d['relearn_checkpoints'])==3
+          assert [v['relearn_machines'] for v in d['relearn_checkpoints']]==[0,8,16]
+          assert d['relearn_checkpoints'][-1]['cold']['updates']>0
+          for phase in d['training_logs'].values():
+              assert phase['eligible']+phase['impossible']==phase['machines']
+              for episode in phase['episodes']:
+                  if episode['status']=='IDENTIFIED':
+                      assert sum(s['cost'] for s in episode['observed_decisions'])==episode['episode_cost']
+          for entry in (d['evaluation_A_after_A'],d['evaluation_A_after_B'],
+                        d['evaluation_B_after_B'],
+                        *(x['evaluation'] for x in d['relearn_checkpoints'])):
+              assert entry['total']==entry['eligible']+entry['impossible']
+              for m in entry['rows']:
+                  if m['identifiable']:
+                      assert all(x['worst_regret']>=0 for x in m['arms'].values())
+          print('OMEGA_PLASTICITY_FINAL_STATUS',d['status'])
+          print('OMEGA_PLASTICITY_PRIMARY',
+                d['primary_WARM_minus_COLD_mean_over_Aprime_checkpoints'])
+          print('OMEGA_PLASTICITY_RETENTION',
+                d['retention_delta_A_after_B_minus_A_after_A'])
+          print('OMEGA_PLASTICITY_NEW_LEARNING',
+                d['plasticity_delta_Aprime_after_16_minus_0'])
+          PY
+      - name: Archive all traces, weight snapshots, failures and negative metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-plasticity-01-A-B-Aprime-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
