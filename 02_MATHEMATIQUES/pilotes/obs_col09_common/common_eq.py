@@ -61,7 +61,7 @@ class SharedWordEquivalenceOracle(Oracle):
         return None
 
 
-def run_method(index, name, blob, algorithm, manifest_dir):
+def run_method(index, name, blob, algorithm, manifest_dir, *, oracle_factory=SharedWordEquivalenceOracle):
     target, provenance = external_fixture(name, blob)
     alphabet = sorted(target.get_input_alphabet(), key=str)
     alphabet_as_text = tuple(map(str, alphabet))
@@ -77,7 +77,7 @@ def run_method(index, name, blob, algorithm, manifest_dir):
     oracle_words = [tuple(mapping[x] for x in word) for word in words]
 
     physical = PhysicalCounter(target, use_p1=(algorithm == "Lsharp_P1"))
-    eq = SharedWordEquivalenceOracle(alphabet, physical, oracle_words)
+    eq = oracle_factory(alphabet, physical, oracle_words)
     learner = {"Lstar": run_Lstar, "KV": run_KV,
                "Lsharp": run_Lsharp, "Lsharp_P1": run_Lsharp}[algorithm]
 
@@ -121,6 +121,9 @@ def run_method(index, name, blob, algorithm, manifest_dir):
         "eq_rounds": eq.rounds,
         "eq_candidates_executed": eq.proposed_words,
         "eq_counterexamples": eq.found_counterexamples,
+        "eq_order_sha256": getattr(eq, "order_digest", lambda: None)(),
+        "eq_first_proposals": getattr(eq, "first_proposals", []),
+        "eq_policy": getattr(eq, "policy", "fixed"),
         "source_states_posthoc_only": len(target.states),
         "learned_states": len(learned.states),
         "physical_resets": physical.physical_resets,
