@@ -67,8 +67,8 @@ def run_regression(image, case, source_root, test_file, profile_file=None, patch
         "--mount",f"type=bind,src={test_file},dst=/omega-test.py,readonly",
     ]
     if profile_file:
-        cmd.extend(["--mount",f"type=bind,src={Path(profile_file).resolve()},dst=/probe/sitecustomize.py,readonly",
-                    "-e","PYTHONPATH=/probe:/tmp/work"])
+        cmd.extend(["--mount",f"type=bind,src={Path(profile_file).resolve()},dst=/opt/sitecustomize.py,readonly",
+                    "-e","PYTHONPATH=/opt:/tmp/work"])
         cmd.extend(["-e","OMEGA_TRACE_ROOT=/tmp/work/"+case["project"]])
     else:
         cmd.extend(["-e","PYTHONPATH=/tmp/work"])
