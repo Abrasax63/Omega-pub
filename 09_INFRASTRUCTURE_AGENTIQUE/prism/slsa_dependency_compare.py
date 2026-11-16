@@ -49,18 +49,24 @@ def compare_reports(left, right):
                 continue
             uri = entry.get("uri")
             sha = entry.get("sha256")
+            commit = entry.get("git_commit")
             if not isinstance(uri, str) or not uri:
                 continue
             if sha is not None and (not isinstance(sha, str) or len(sha) != 64
                                     or any(ch not in "0123456789abcdef" for ch in sha)):
                 sha = None
-            deps.append((uri, sha))
+            if commit is not None and (not isinstance(commit, str) or len(commit) != 40
+                                       or any(ch not in "0123456789abcdef" for ch in commit)):
+                commit = None
+            deps.append((uri, sha, commit))
         return set(deps)
     dep_a, dep_b = normalized(a), normalized(b)
-    overlap = sorted(dep_a & dep_b, key=lambda item: (item[0], item[1] or ""))
-    conflicting_uri = sorted({u for u, h in dep_a if h is not None}
-                             & {u for u, h in dep_b if h is not None}
-                             - {u for u, h in overlap})
+    overlap = sorted(dep_a & dep_b, key=lambda item: (item[0], item[1] or "", item[2] or ""))
+    digest_by_uri_a = {(uri, sha or commit) for uri, sha, commit in dep_a if sha or commit}
+    digest_by_uri_b = {(uri, sha or commit) for uri, sha, commit in dep_b if sha or commit}
+    conflicting_uri = sorted({uri for uri, _ in digest_by_uri_a} &
+                             {uri for uri, _ in digest_by_uri_b} -
+                             {uri for uri, sha, commit in overlap})
     names = ["artifact_A", "artifact_B"]
     return {
         **base,
@@ -73,12 +79,13 @@ def compare_reports(left, right):
              "claimed_builder_id": v.get("claimed_builder_id"),
              "claimed_invocation_id": v.get("claimed_invocation_id"),
              "reported_dependency_count": v.get("listed_dependency_count"),
-             "dependencies_truncated": v.get("dependencies_truncated")}
+             "dependencies_truncated": v.get("dependencies_truncated"),
+             "reported_dependencies": v.get("reported_dependencies")}
             for i, v in enumerate((a, b))
         ],
         "reported_dependency_edges": len(dep_a) + len(dep_b),
-        "shared_claimed_dependencies": [{"uri": uri, "sha256": sha}
-                                        for uri, sha in overlap],
+        "shared_claimed_dependencies": [{"uri": uri, "sha256": sha, "git_commit": commit}
+                                        for uri, sha, commit in overlap],
         "shared_claimed_dependency_count": len(overlap),
         "same_uri_without_matching_digest": conflicting_uri,
         "unresolved_dependency_provenance": True,
