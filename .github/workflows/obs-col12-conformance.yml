@@ -24,12 +24,12 @@ jobs:
       - name: Retrieve pre-locked third-party models without substitution
         run: |
           python 02_MATHEMATIQUES/pilotes/obs_col11/fetch_fixtures.py "$PWD/obs_col12_sources" > obs_col12_download_log.json
-      - name: Run six anti-falsification and original-implementation checks
+      - name: Run seven anti-falsification and classical-ablation checks
         env:
           OBS_COL12_SOURCES: obs_col12_sources
         run: |
           python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col12 -p 'test_blackbox_gate.py' -v
-      - name: Replay 6 frozen models and compare 3 genuine black-box verifiers
+      - name: Replay 6 frozen models and compare 4 genuine black-box verifiers
         run: |
           python 02_MATHEMATIQUES/pilotes/obs_col12/blackbox_gate.py "$PWD/obs_col12_sources" > obs_col12_result.json
           python - <<'PY'
@@ -38,7 +38,7 @@ jobs:
           assert len(x["samples"])==6
           assert x["no_new_blind_holdout"] and x["practical_detection_not_equivalence_certification"]
           for case in x["samples"]:
-              assert set(case["verifiers"]) == {"W","Wp","Wp_memory_ranked"}
+              assert set(case["verifiers"]) == {"W","Wp","Wp_coverage_ranked","Wp_memory_ranked"}
               for name, v in case["verifiers"].items():
                   assert v["physical_resets"]<=600 and v["physical_symbols"]<=8000
                   assert not v["universal_equivalence_certified"]
