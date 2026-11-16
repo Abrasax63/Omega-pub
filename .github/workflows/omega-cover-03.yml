@@ -1,0 +1,125 @@
+name: Omega cover 03 - matched length counterexample hunt on new minimal machines
+
+on:
+  push:
+    branches:
+      - experiment/omega-counterexample-cover-03-2026-11-16
+    paths:
+      - 'experiments/omega-cover-03/**'
+      - '.github/workflows/omega-cover-03.yml'
+  pull_request:
+    branches:
+      - test/omega-blackbox-resilience-2026-11-16
+    paths:
+      - 'experiments/omega-cover-03/**'
+      - '.github/workflows/omega-cover-03.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-cover-03-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  equal-length-eq-holdout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned academic learner
+        run: python -m pip install --disable-pip-version-check aalpy==1.6.2
+      - name: Verify fifteen controls and fail-closed budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-cover-03/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+            'experiments/omega-cover-03',pattern='test_cover.py')
+          count=suite.countTestCases()
+          print('OMEGA_COVER_03_TESTS_DISCOVERED',count)
+          assert count==15,('UNEXPECTED_REGRESSION_TEST_COUNT',count)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Execute 12 machines x 4 equal-length EQ searchers x 2 caps
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-cover-03/cover_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Independent heldout evidence verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          r=json.loads(Path('evidence/report.json').read_text())
+          assert r['experiment']=='OMEGA-COUNTEREXAMPLE-COVER-03'
+          assert r['prereg_commit']=='2306aca73c7839c11f340f0102bda1f87548db71'
+          assert r['dependency']=='aalpy==1.6.2'
+          assert r['all_arms_share_actual_Lstar_engine']
+          assert r['all_EQ_words_matched_length']==10
+          assert r['same_seed_per_arm_across_budgets']
+          assert r['exact_oracle_evaluation_only']
+          assert not r['no_paid_api'] is False
+          assert r['main_modified'] is False and r['general_gain_proven'] is False
+          assert r['budgets']==[900,1800] and r['primary_cap']==1800
+          assert r['arms']==[
+             'RANDOM_LEN10','FIXED_LEN10','OLD_OMEGA_LEN10',
+             'COVER_DISTINGUISH_LEN10']
+          assert len(r['cases'])==12
+          assert [x['n'] for x in r['cases']]==[4]*4+[5]*4+[6]*4
+          signatures=[x['canonical_signature'] for x in r['cases']]
+          assert len(signatures)==len(set(signatures))
+          for world in r['cases']:
+            assert world['accessible_states']==world['n']
+            assert world['all_states_distinguishable']
+            for cap in (900,1800):
+              for arm in r['arms']:
+                record=world['budgets'][str(cap)][arm]
+                train=record['training']
+                led=train['ledger']
+                assert led['spent_symbols']<=cap
+                assert sum(x['charge'] for x in led['query_log'])==led['spent_symbols']
+                assert led['by_phase_spent']['MQ']+led['by_phase_spent']['EQ']==led['spent_symbols']
+                assert len([x for x in led['query_log'] if x['phase']=='EQ'])==train['eq_words_tested']
+                assert all(len(x['inputs'])==10 for x in led['query_log'] if x['phase']=='EQ')
+                assert len(train['proposal_original_lengths'])==train['generated_words_count']
+                test=record['reserved']
+                assert test['requested_test_words']==128
+                assert test['evaluated_test_words']+test['excluded_identical_train_queries']==128
+                eq=record['exact_equivalence']
+                assert eq['status'] in ('EXACT_EQUIVALENT','NOT_EQUIVALENT','NO_HYPOTHESIS')
+                if eq['status']=='EXACT_EQUIVALENT':
+                    assert test['whole_word_accuracy']==1.0
+                if eq['status']=='NOT_EQUIVALENT':
+                    assert len(eq['counterexample'])==eq['shortest_counterexample_length']>0
+          main=r['comparison']['1800']
+          candidate=main['COVER_DISTINGUISH_LEN10']
+          base=[main[a] for a in r['arms'] if a!='COVER_DISTINGUISH_LEN10']
+          positive=all(candidate['exact_equivalent']>x['exact_equivalent'] for x in base) and all(
+              candidate['mean_whole_word_accuracy']+1e-12>=x['mean_whole_word_accuracy'] for x in base)
+          assert r['status']==('DESCRIPTIVE_COVER_GAIN' if positive else 'NO_DEMONSTRATED_COVER_GAIN')
+          print('OMEGA_COVER_03_VERDICT',r['status'])
+          print('OMEGA_COVER_03_MAIN',r['comparison']['1800'])
+          print('OMEGA_COVER_03_SECONDARY',r['comparison']['900'])
+          PY
+      - name: Archive full queries, counterexamples and negative scores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cover-03-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
