@@ -1,0 +1,66 @@
+name: OBS-COL-11 prospective external Moore transfer
+on:
+  push:
+    branches:
+      - experiment/obs-col11-prospective-radboud-transfer-2026-11-16
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col11/**"
+      - ".github/workflows/obs-col11-transfer.yml"
+  workflow_dispatch:
+jobs:
+  transfer-preregistered:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install genuine AALpy, not substitute fake model learner
+        run: python -m pip install --disable-pip-version-check aalpy==2.0.0
+      - name: Retrieve six frozen Radboud external sources and hash them
+        run: python 02_MATHEMATIQUES/pilotes/obs_col11/fetch_fixtures.py "$PWD/obs_col11_sources" > obs_col11_retrieval.json
+      - name: Execute seven unit and genuine Lsharp P1 tests
+        env:
+          OBS_COL11_SOURCES: obs_col11_sources
+        run: python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col11 -p 'test_external_transfer.py' -v
+      - name: Run all frozen learning policies on six selected external sources
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col11/external_transfer.py "$PWD/obs_col11_sources" > obs_col11_transfer.json
+          python - <<'PY'
+          import json
+          r=json.load(open('obs_col11_transfer.json'))
+          assert r["pilot"] == "OBS-COL-11"
+          assert r["model_calls"] == 0
+          assert r["not_independent_private_holdout"]
+          assert not r["omega_superiority_claim"] if "omega_superiority_claim" in r else r["no_global_superiority_or_certification"]
+          assert len(r["models"]) == 6 and len(r["arms"]) == 5
+          assert [x["status"] for x in r["models"][:2]] == ["BLOCKED_INPUT_INCOMPLETE"]*2
+          for target in r["models"]:
+              print("MODEL", target["model"], target["status"])
+              if target["status"] != "SOURCE_COMPATIBLE":
+                  print("REASON",target.get("missing_state_actions",target.get("reason","")))
+                  continue
+              for arm, row in target["arms"].items():
+                  print("ARM", arm, row["status"],
+                        "states",row.get("learned_states"),
+                        "resets",row.get("physical_resets"),
+                        "symbols",row.get("physical_symbols"),
+                        "unseen_errors",row.get("heldout_unseen_errors"),
+                        "cpu",row.get("cpu_seconds"))
+                  assert not row.get("equivalence_certified",False)
+                  assert not row.get("omega_superiority_claim",False)
+          print("LOCAL_VERDICTS",r["local_verdicts"])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: obs-col11-external-prospective-benchmark-evidence
+          path: |
+            obs_col11_transfer.json
+            obs_col11_sources/
+            obs_col11_retrieval.json
+          if-no-files-found: warn

@@ -1,0 +1,28 @@
+name: OBS-COL-11 frozen university Moore fixture retrieval
+on:
+  push:
+    branches:
+      - experiment/obs-col11-prospective-radboud-transfer-2026-11-16
+  workflow_dispatch:
+jobs:
+  preregistered-data-retrieval:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch exactly six external models, no replacement after failure
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col11/fetch_fixtures.py "$PWD/obs_col11_fixtures" | tee obs_col11_download_status.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: obs-col11-frozen-external-download-provenance
+          path: |
+            obs_col11_fixtures/
+            obs_col11_download_status.json
+          if-no-files-found: error

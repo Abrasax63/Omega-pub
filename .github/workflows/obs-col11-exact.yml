@@ -1,0 +1,56 @@
+name: OBS-COL-11 posthoc exact finite product oracle
+on:
+  push:
+    branches:
+      - experiment/obs-col11-prospective-radboud-transfer-2026-11-16
+  pull_request:
+    paths:
+      - "02_MATHEMATIQUES/pilotes/obs_col11/audit_exact_equivalence.py"
+      - "02_MATHEMATIQUES/pilotes/obs_col11/test_exact_audit.py"
+      - ".github/workflows/obs-col11-exact.yml"
+  workflow_dispatch:
+jobs:
+  posthoc-exact:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install unchanged AALpy 2.0.0
+        run: python -m pip install --disable-pip-version-check aalpy==2.0.0
+      - name: Download and hash six pre-committed external Moore sources
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col11/fetch_fixtures.py "$PWD/obs_col11_sources" > obs_col11_download_exacts.json
+      - name: Execute independent product oracle and exact-replay tests
+        env:
+          OBS_COL11_SOURCES: obs_col11_sources
+        run: python -m unittest discover -s 02_MATHEMATIQUES/pilotes/obs_col11 -p 'test_exact_audit.py' -v
+      - name: Publish all 20 posthoc finite-state counterexample verdicts
+        run: |
+          python 02_MATHEMATIQUES/pilotes/obs_col11/audit_exact_equivalence.py "$PWD/obs_col11_sources" > obs_col11_exact_result.json
+          python - <<'PY'
+          import json
+          r=json.load(open("obs_col11_exact_result.json"))
+          assert r["posthoc_not_preregistered_in_initial_trial"]
+          assert r["no_policy_or_training_changes"]
+          assert len(r["models"]) == 4
+          for model in r["models"]:
+              assert len(model["cases"]) == 5
+              for policy, outcome in model["cases"].items():
+                  assert outcome["reproduced_training_costs"]
+                  assert outcome["status"] in ("EXACT_EQUIVALENT_FINITE_MOORE", "EXACT_COUNTEREXAMPLE")
+                  assert outcome["visited_product_states"] <= outcome["product_upper_bound"]
+                  print(model["model"], policy, outcome["status"], outcome["shortest_length"])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: obs-col11-posthoc-exact-finite-equivalence-evidence
+          path: |
+            obs_col11_exact_result.json
+            obs_col11_download_exacts.json
+          if-no-files-found: warn
