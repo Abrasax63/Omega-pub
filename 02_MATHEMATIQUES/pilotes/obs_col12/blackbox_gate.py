@@ -193,6 +193,27 @@ def run_gate(hypothesis, oracle_target, verifier, prior_prefixes=()):
     return result
 
 
+
+def admission_verdict(verifier_results):
+    """Fail closed: reject witnessed contradictions; otherwise defer approval.
+
+    This is an opt-in EXPERIMENTAL gate; it does not mutate the Omega agent,
+    scientific CORE, or repository main. Even a complete bounded W/Wp test
+    does not certify a universe with an unknown implementation state bound.
+    """
+    rejecting = [
+        name for name, row in verifier_results.items()
+        if row["status"] == "REFUTED_BY_MEASURED_COUNTEREXAMPLE"
+        and row.get("witness_verified_after_measurement") is True
+    ]
+    if rejecting:
+        return {"decision": "REJECT_MODEL", "verified_by": rejecting,
+                "certified": False, "reason": "Measured counterexample"}
+    return {"decision": "DEFER_UNVERIFIED", "verified_by": [],
+            "certified": False,
+            "reason": "No decisive measured contradiction; unknown state bound"}
+
+
 def run(sources):
     lock = json.loads((HERE.parent / "obs_col11" / "SOURCE_SHA_LOCK.json").read_text())["sha256"]
     previous = json.loads((HERE.parent / "obs_col11" / "FROZEN_FIRST_RUN.json").read_text())["models"]
@@ -231,6 +252,7 @@ def run(sources):
                 results[verifier] = res
             samples.append({
                 "source_name": name, "learned_arm": arm,
+                "admission": admission_verdict(results),
                 "model_is_known_exact_from_prior_posthoc_audit": (
                     not (name == "register5.dot" and arm in ("coverage_only", "omega_candidate", "KV"))
                 ),
