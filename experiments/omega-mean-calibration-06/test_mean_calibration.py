@@ -148,7 +148,7 @@ class CalibrationControls(unittest.TestCase):
     def test_train_and_holdouts_are_nonisomorphic_and_structurally_new(self):
         old=m.b.cohorts()
         new=m.new_holdouts(old)
-        used={s for row in old.values() for s,_ in row["machines"]}
+        used=m.old_signatures(old)
         self.assertEqual(len(used),858)
         for name,seed,count,kind in m.SPLITS:
             sigs=[sig for sig,_ in new[name]["machines"]]
