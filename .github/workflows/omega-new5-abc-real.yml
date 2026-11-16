@@ -100,9 +100,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: omega-new5-abc-frozen-buggy-only
-          path: |
-            09_INFRASTRUCTURE_AGENTIQUE/new5_abc/selection.json
-            ${{ runner.temp }}/buggy-source-manifest.json
+          path: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc/selection.json
           if-no-files-found: warn
           retention-days: 30
 
