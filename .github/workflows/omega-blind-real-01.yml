@@ -1,0 +1,88 @@
+name: Omega blind real 01 - buggy-only frozen coverage
+
+on:
+  push:
+    branches:
+      - experiment/omega-blind-real-01-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/blind_real_01/**'
+      - '.github/workflows/omega-blind-real-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-real-bugs-three-repos-2026-11-15
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/blind_real_01/**'
+      - '.github/workflows/omega-blind-real-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-blind-real-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify frozen scan and negative-control regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            09_INFRASTRUCTURE_AGENTIQUE/blind_real_01/blind_scan.py
+          python -m unittest discover -v \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/blind_real_01 \
+            -p 'test_blind_scan.py'
+      - name: Fetch only historical BUGGY FastAPI commit (no fixed checkout)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/tiangolo/fastapi.git "$RUNNER_TEMP/fastapi-buggy"
+          git -C "$RUNNER_TEMP/fastapi-buggy" fetch --depth 1 origin \
+            766157bfb4e7dfccba09ab398e8ec444d14e947c
+          git -C "$RUNNER_TEMP/fastapi-buggy" checkout --quiet --detach \
+            766157bfb4e7dfccba09ab398e8ec444d14e947c
+          test "$(git -C "$RUNNER_TEMP/fastapi-buggy" rev-parse HEAD)" = \
+            766157bfb4e7dfccba09ab398e8ec444d14e947c
+          echo "BUGGY ONLY SHA VERIFIED"
+      - name: Freeze bounded proposals without fixed code or model
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/blind_real_01/blind_scan.py \
+            --buggy-checkout "$RUNNER_TEMP/fastapi-buggy" \
+            --output blind-real-artifacts/buggy-candidates.json
+          python - <<'PY'
+          import hashlib,json,pathlib
+          p=pathlib.Path("blind-real-artifacts/buggy-candidates.json")
+          o=json.loads(p.read_text(encoding="utf-8"))
+          assert o["phase"] == "BUGGY_ONLY_GENERATION"
+          assert o["status"] in {"NO_CANDIDATE", "BUDGET_EXCEEDED",
+                                "CANDIDATES_UNTESTED", "SOURCE_UNAVAILABLE"}
+          assert not o["historical_fixed_accessed"]
+          assert not o["model_called"] and not o["public_reproducer_executed"]
+          assert not o["reserved_tests_executed"]
+          assert o["repair_correctness"] is None
+          print("GATE_STATUS",o["status"])
+          print("CANDIDATE_COUNT",len(o["candidates"]))
+          print("MANIFEST_SHA256",hashlib.sha256(p.read_bytes()).hexdigest())
+          print("NO SCIENTIFIC SUCCESS CLAIMED: SOURCE-ONLY COVERAGE")
+          PY
+      - name: Preserve raw candidate evidence including negative findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-blind-real-01-buggy-only
+          path: blind-real-artifacts/*.json
+          if-no-files-found: warn
+          retention-days: 14
