@@ -1,0 +1,237 @@
+name: Omega LOC02 authentic regression trace vs static localization
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-loc01-trace-vs-static-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/localization/**'
+      - '.github/workflows/omega-loc02.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  freeze-buggy-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate protocol invariants and ranking logic
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/localization -p 'test_localize.py' -v
+      - name: Fetch ONLY genuine buggy tqdm-4 SHA
+        run: |
+          set -euo pipefail
+          mkdir -p loc-work/buggy loc-freeze
+          git -C loc-work/buggy init -q
+          git -C loc-work/buggy remote add origin https://github.com/tqdm/tqdm.git
+          git -C loc-work/buggy fetch --depth 1 origin 03b347646492131d889871939b40457d29147216
+          git -C loc-work/buggy checkout --detach -q FETCH_HEAD
+          [[ "$(git -C loc-work/buggy rev-parse HEAD)" == "03b347646492131d889871939b40457d29147216" ]]
+      - name: Stage pinned authentic regression TEST only (never fixed implementation)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 25 --max-time 120 \
+            https://raw.githubusercontent.com/tqdm/tqdm/964dee631d0ed30e2f799b42fc58ba5e73795a08/tqdm/tests/tests_tqdm.py \
+            -o loc-freeze/historical_test.py
+          [[ "$(git hash-object loc-freeze/historical_test.py)" == "f39218dbb4ec5f9b2d72a3d8df4f7a9d2054ec29" ]]
+          grep -q '^def test_nototal' loc-freeze/historical_test.py
+          cp loc-freeze/historical_test.py loc-work/buggy/tqdm/tests/tests_tqdm.py
+          echo "Only original regression test whitelisted; no fixed implementation fetched"
+      - name: Build historical Python environment, without model credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >loc-work/Dockerfile <<'EOF'
+          FROM python:3.6.9-slim
+          WORKDIR /src
+          COPY . /src
+          RUN python -m pip install --disable-pip-version-check --no-cache-dir "pip<22" "setuptools<60" "wheel<1" && python -m pip install --disable-pip-version-check --no-cache-dir "pytest<7" "nose" -e /src
+          ENV PYTHONDONTWRITEBYTECODE=1
+          EOF
+          docker build --pull=false -f loc-work/Dockerfile -t omega-loc02:historical loc-work/buggy >loc-freeze/build.log 2>&1
+      - name: Trace authentic buggy test in offline read-only Docker
+        shell: bash
+        run: |
+          set +e
+          set -uo pipefail
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --memory 1g --cpus 1 --pids-limit 96 \
+            --tmpfs /tmp:rw,exec,nosuid,size=224m \
+            --mount "type=bind,src=$PWD/loc-work/buggy,dst=/origin,readonly" \
+            --mount "type=bind,src=$PWD/09_INFRASTRUCTURE_AGENTIQUE/localization/trace_runner.py,dst=/runner/trace_runner.py,readonly" \
+            -e PYTHONDONTWRITEBYTECODE=1 \
+            -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+            -e PYTHONPATH=/tmp/work \
+            omega-loc02:historical sh -c \
+            'mkdir -p /tmp/work && cp -R /origin/. /tmp/work/ && cd /tmp/work && python /runner/trace_runner.py /tmp/work tqdm/tests/tests_tqdm.py::test_nototal' \
+            >loc-freeze/pytest-trace.log 2>&1
+          rc=$?
+          echo "$rc" >loc-freeze/pytest-trace.exit
+          echo "Original test exit $rc; expected 1 for reproducible pytest failure"
+          tail -n 8 loc-freeze/pytest-trace.log | cut -c1-300 || true
+          exit 0
+      - name: Freeze unchanged static candidate pool and trace ranking before oracle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/localization/localize.py \
+            --mode freeze --checkout loc-work/buggy \
+            --trace-log loc-freeze/pytest-trace.log \
+            --buggy-exit loc-freeze/pytest-trace.exit \
+            --output loc-freeze/frozen.json
+          python - <<'PY'
+          import json
+          d=json.load(open("loc-freeze/frozen.json"))
+          assert d["fixed_source_seen"] is False
+          assert d["candidate_count"]<=60
+          assert d["budget_unique_sites"]==10
+          assert len(d["static_top10"])<=10 and len(d["trace_top10"])<=10
+          print("Frozen commitment:",d["commitment_sha256"])
+          print("Sites:",len(d["candidate_sites"]),"trace:",d["trace_status"])
+          PY
+      - name: Archive frozen rankings and true trace transcript
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-loc02-buggy-only-freeze
+          path: |
+            loc-freeze/frozen.json
+            loc-freeze/pytest-trace.log
+            loc-freeze/pytest-trace.exit
+            loc-freeze/historical_test.py
+            loc-freeze/build.log
+          retention-days: 30
+          if-no-files-found: warn
+
+  historical-oracle-after-freeze:
+    needs: freeze-buggy-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Retrieve and validate earlier frozen rankings BEFORE fixed source
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-loc02-buggy-only-freeze
+          path: loc-freeze
+      - name: Check commitment before retrieving historical oracle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,sys
+          sys.path.insert(0,"09_INFRASTRUCTURE_AGENTIQUE/localization")
+          from localize import verify_seal
+          d=json.load(open("loc-freeze/frozen.json"))
+          verify_seal(d)
+          assert d["candidate_count"]<=60 and d["model_called"] is False
+          print("Pre-oracle freeze:",d["commitment_sha256"])
+          PY
+      - name: Fetch pinned upstream original and fixed ONLY AFTER freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p loc-oracle/upstream loc-oracle/buggy loc-oracle/fixed
+          git -C loc-oracle/upstream init -q
+          git -C loc-oracle/upstream remote add origin https://github.com/tqdm/tqdm.git
+          git -C loc-oracle/upstream fetch --depth 1 origin 03b347646492131d889871939b40457d29147216
+          git -C loc-oracle/upstream fetch --depth 1 origin 964dee631d0ed30e2f799b42fc58ba5e73795a08
+          git -C loc-oracle/upstream archive 03b347646492131d889871939b40457d29147216 | tar -x -C loc-oracle/buggy
+          git -C loc-oracle/upstream archive 964dee631d0ed30e2f799b42fc58ba5e73795a08 | tar -x -C loc-oracle/fixed
+          # Identical frozen authentic regression test on BOTH source revisions.
+          [[ "$(git hash-object loc-freeze/historical_test.py)" == "f39218dbb4ec5f9b2d72a3d8df4f7a9d2054ec29" ]]
+          cp loc-freeze/historical_test.py loc-oracle/buggy/tqdm/tests/tests_tqdm.py
+          cp loc-freeze/historical_test.py loc-oracle/fixed/tqdm/tests/tests_tqdm.py
+          git -C loc-oracle/upstream diff --unified=0 \
+            03b347646492131d889871939b40457d29147216 \
+            964dee631d0ed30e2f799b42fc58ba5e73795a08 -- tqdm/ \
+            >loc-oracle/historical.diff
+          sha256sum loc-oracle/historical.diff
+      - name: Build same pinned Python environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >loc-oracle/Dockerfile <<'EOF'
+          FROM python:3.6.9-slim
+          WORKDIR /src
+          COPY . /src
+          RUN python -m pip install --disable-pip-version-check --no-cache-dir "pip<22" "setuptools<60" "wheel<1" && python -m pip install --disable-pip-version-check --no-cache-dir "pytest<7" "nose" -e /src
+          ENV PYTHONDONTWRITEBYTECODE=1
+          EOF
+          docker build --pull=false -f loc-oracle/Dockerfile -t omega-loc02:oracle loc-oracle/buggy >loc-oracle/build.log 2>&1
+      - name: Same genuine historical pytest on original and fixed snapshots
+        shell: bash
+        run: |
+          set +e
+          set -uo pipefail
+          for version in buggy fixed; do
+            docker run --rm --network none --read-only \
+              --cap-drop ALL --security-opt no-new-privileges \
+              --memory 1g --cpus 1 --pids-limit 96 \
+              --tmpfs /tmp:rw,exec,nosuid,size=224m \
+              --mount "type=bind,src=$PWD/loc-oracle/$version,dst=/origin,readonly" \
+              -e PYTHONDONTWRITEBYTECODE=1 \
+              -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+              -e PYTHONPATH=/tmp/work \
+              omega-loc02:oracle sh -c \
+              'mkdir -p /tmp/work && cp -R /origin/. /tmp/work/ && cd /tmp/work && python -m pytest -q -p no:cacheprovider --maxfail=1 tqdm/tests/tests_tqdm.py::test_nototal' \
+              >"loc-oracle/$version.log" 2>&1
+            rc=$?
+            echo "$rc" >"loc-oracle/$version.exit"
+            echo "$version test exit=$rc"
+            tail -n 7 "loc-oracle/$version.log" || true
+          done
+          exit 0
+      - name: Compare pre-frozen sites to genuine changed lines, with abstention
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/localization/localize.py \
+            --mode oracle --freeze-file loc-freeze/frozen.json \
+            --diff loc-oracle/historical.diff \
+            --buggy-exit loc-oracle/buggy.exit \
+            --fixed-exit loc-oracle/fixed.exit \
+            --output loc-oracle/report.json
+          python - <<'PY'
+          import json
+          r=json.load(open("loc-oracle/report.json"))
+          assert r["model_called"] is False and r["main_modified"] is False
+          assert r["status"] in ("LOCALIZATION_EVALUATED","GRAMMAR_COVERAGE_MISSING",
+             "TRACE_UNUSABLE","BUG_NOT_REPRODUCED","ENVIRONMENT_OR_REFERENCE_BLOCKED","NO_MODIFIED_OLD_LINES")
+          print("VERDICT:",r["status"])
+          for name,data in r["arms"].items():
+              print(name,data)
+          PY
+      - name: Keep raw errors, freeze, diff and scientific report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-loc02-after-oracle-evidence
+          path: |
+            loc-freeze/frozen.json
+            loc-freeze/historical_test.py
+            loc-oracle/historical.diff
+            loc-oracle/report.json
+            loc-oracle/buggy.log
+            loc-oracle/buggy.exit
+            loc-oracle/fixed.log
+            loc-oracle/fixed.exit
+            loc-oracle/build.log
+          retention-days: 30
+          if-no-files-found: warn
