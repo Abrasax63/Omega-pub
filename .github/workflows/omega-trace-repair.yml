@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - experiment/omega-blind-bugsinpy-historical-2026-11-15
+      - experiment/omega-trace-guided-repair-2026-11-16
     paths:
       - '09_INFRASTRUCTURE_AGENTIQUE/trace_repair/**'
       - '.github/workflows/omega-trace-repair.yml'
@@ -241,6 +242,34 @@ jobs:
           for case in result['cases']:
               print('TRACE_LOCALIZER',case['id'],case['status'],case.get('ranked_top3'), 'repairs',case.get('repairs_validated'))
           print('POSTHOC_DIAGNOSTIC_ONLY, NOT INDEPENDENT BLIND VALIDATION')
+          PY
+      - name: Audit remaining 14 frozen patch candidates per bug (NO new synthesis)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/trace_repair -p test_pool_coverage.py -v
+          python 09_INFRASTRUCTURE_AGENTIQUE/trace_repair/pool_coverage.py \
+            --workspace oracle-work \
+            --evidence-dir trace-evidence \
+            --oracle-report oracle-work/scientific-report.json \
+            --output trace-evidence/pool-coverage.json
+          python - <<'PY'
+          import json
+          r=json.load(open('trace-evidence/pool-coverage.json',encoding='utf-8'))
+          assert r['experiment']=='OMEGA-REPAIR-COVERAGE-01'
+          assert r['new_real_regression_tests']==28
+          assert r['previously_tested']==12
+          assert r['new_candidates_generated']==0
+          assert not r['model_called'] and not r['main_modified'] and not r['core_promoted']
+          for case in r['cases']:
+              assert case['executed_new_tests']==14
+              assert case['source_candidates_total']==20
+              assert case['verdict'] in ('LATE_SUCCESS_BUDGET_LIMITATION',
+                  'NO_REPAIR_IN_PREDEFINED_20_CANDIDATES','INDETERMINATE_EXECUTION')
+              print('FROZEN_POOL',case['id'],case['verdict'],
+                    'late_passes',case['late_passes'],
+                    'candidate_list_sha',case['frozen_candidate_pool_sha256'])
+          print('POSTHOC EXPRESSION-ADEQUACY DIAGNOSTIC; NO GENERALIZATION CLAIM')
           PY
       - name: Archive full candidate choices, real test logs and failure diagnostics
         if: always()
