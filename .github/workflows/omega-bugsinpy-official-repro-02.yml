@@ -1,0 +1,224 @@
+name: Omega BugsInPy official repro 02 - transplanted fixed test
+
+on:
+  push:
+    branches:
+      - experiment/omega-bugsinpy-official-repro-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/official_repro_02/**'
+      - '.github/workflows/omega-bugsinpy-official-repro-02.yml'
+  pull_request:
+    branches:
+      - experiment/omega-traceback-localization-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/official_repro_02/**'
+      - '.github/workflows/omega-bugsinpy-official-repro-02.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-official-repro-02-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  buggy-only-freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit-test frozen static and trace ranking logic
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            09_INFRASTRUCTURE_AGENTIQUE/official_repro_02/official_rank.py \
+            09_INFRASTRUCTURE_AGENTIQUE/official_repro_02/official_oracle.py
+          python -m unittest discover -v \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/traceback_loc_01 \
+            -p 'test_official_repro.py'
+      - name: Checkout ONLY pinned historical BUGGY youtube-dl-1
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/ytdl-org/youtube-dl.git "$RUNNER_TEMP/youtube-buggy"
+          git -C "$RUNNER_TEMP/youtube-buggy" fetch --depth=1 origin \
+            99036a1298089068dcf80c0985bfcc3f8c24f281
+          git -C "$RUNNER_TEMP/youtube-buggy" checkout --quiet --detach \
+            99036a1298089068dcf80c0985bfcc3f8c24f281
+          test "$(git -C "$RUNNER_TEMP/youtube-buggy" rev-parse HEAD)" = \
+            99036a1298089068dcf80c0985bfcc3f8c24f281
+          test -f "$RUNNER_TEMP/youtube-buggy/test/test_utils.py"
+          echo "BUGGY_ONLY_SHA_VERIFIED"
+          # BugsInPy canonical checkout overlays the FIXED TEST ONLY on BUGGY production.
+          curl --fail --location --silent --show-error --retry 3 --connect-timeout 30 --max-time 120 \
+            "https://raw.githubusercontent.com/ytdl-org/youtube-dl/1cc47c667419e0eadc0a6989256ab7b276852adf/test/test_utils.py" \
+            -o "$RUNNER_TEMP/youtube-buggy/test/test_utils.py"
+          test -s "$RUNNER_TEMP/youtube-buggy/test/test_utils.py"
+          echo "FIXED_TEST_ONLY_TRANSPLANTED_SHA256 $(sha256sum "$RUNNER_TEMP/youtube-buggy/test/test_utils.py" | cut -d ' ' -f1)"
+      - name: Execute full historical declared test file under isolated Python 3.7
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p official-evidence
+          docker pull python:3.7-slim
+          set +e
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=96m \
+            -v "$RUNNER_TEMP/youtube-buggy:/repo:ro" \
+            -w /repo \
+            python:3.7-slim \
+            timeout 180s python -m unittest -q test.test_utils.TestUtil.test_match_str \
+            > official-evidence/buggy-unittest.log 2>&1
+          result="$?"
+          set -e
+          echo "$result" > official-evidence/buggy-exit.txt
+          echo "BUGGY_TEST_EXIT_CODE $result"
+          echo "BUGGY_TEST_LOG_SHA256 $(sha256sum official-evidence/buggy-unittest.log | cut -d ' ' -f1)"
+          tail -n 35 official-evidence/buggy-unittest.log || true
+      - name: Freeze lexical and real traceback rankings (no fixed oracle yet)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/official_repro_02/official_rank.py \
+            --buggy-checkout "$RUNNER_TEMP/youtube-buggy" \
+            --test-log official-evidence/buggy-unittest.log \
+            --exit-code "$(cat official-evidence/buggy-exit.txt)" \
+            --output official-evidence/frozen-rankings.json
+          sha256sum official-evidence/frozen-rankings.json > official-evidence/frozen-rankings.sha256
+          python - <<'PY'
+          import json,pathlib
+          obj=json.loads(pathlib.Path("official-evidence/frozen-rankings.json").read_text())
+          assert obj["phase"]=="BUGGY_ONLY_RANKING_FROZEN_BEFORE_FIXED",obj
+          assert not obj["fixed_source_accessed"]
+          assert not obj["model_called"] and not obj["patch_generated"]
+          assert obj["actual_repair_correctness"] is None
+          assert obj["same_ranking_slots"] and not obj["same_information_budget"]
+          assert len({t["key"] for t in obj["target_inventory"]})==len(obj["target_inventory"])
+          print("PHASE_A_FROZEN",obj["status"],obj["total_targets"],"targets")
+          PY
+      - name: Preserve original buggy failures, full test logs and sealed ranks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-official-repro-02-buggy-sealed
+          path: official-evidence/*
+          if-no-files-found: warn
+          retention-days: 14
+
+  fixed-oracle-after-freeze:
+    needs: buggy-only-freeze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Retrieve frozen buggy-only rankings and logs
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-official-repro-02-buggy-sealed
+          path: frozen
+      - name: Verify SHA commitment BEFORE downloading fixed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(cut -d ' ' -f1 frozen/frozen-rankings.sha256)"
+          test -n "$expected"
+          echo "$expected  frozen/frozen-rankings.json" | sha256sum --check
+          echo "FROZEN_RANKINGS_VERIFIED $expected"
+      - name: Checkout pinned BUGGY and FIXED commits (oracle job ONLY)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/ytdl-org/youtube-dl.git "$RUNNER_TEMP/youtube-buggy"
+          git -C "$RUNNER_TEMP/youtube-buggy" fetch --depth=1 origin \
+            99036a1298089068dcf80c0985bfcc3f8c24f281
+          git -C "$RUNNER_TEMP/youtube-buggy" checkout --quiet --detach \
+            99036a1298089068dcf80c0985bfcc3f8c24f281
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/ytdl-org/youtube-dl.git "$RUNNER_TEMP/youtube-fixed"
+          git -C "$RUNNER_TEMP/youtube-fixed" fetch --depth=1 origin \
+            1cc47c667419e0eadc0a6989256ab7b276852adf
+          git -C "$RUNNER_TEMP/youtube-fixed" checkout --quiet --detach \
+            1cc47c667419e0eadc0a6989256ab7b276852adf
+          test "$(git -C "$RUNNER_TEMP/youtube-buggy" rev-parse HEAD)" = \
+            99036a1298089068dcf80c0985bfcc3f8c24f281
+          test "$(git -C "$RUNNER_TEMP/youtube-fixed" rev-parse HEAD)" = \
+            1cc47c667419e0eadc0a6989256ab7b276852adf
+          echo "ORACLE_ONLY_FIXED_SOURCE_COMMIT_VERIFIED"
+          # This is the canonical BugsInPy test transplant, NOT source-code repair.
+          cp "$RUNNER_TEMP/youtube-fixed/test/test_utils.py" \
+             "$RUNNER_TEMP/youtube-buggy/test/test_utils.py"
+          test "$(sha256sum "$RUNNER_TEMP/youtube-buggy/test/test_utils.py" | cut -d ' ' -f1)" = \
+               "$(sha256sum "$RUNNER_TEMP/youtube-fixed/test/test_utils.py" | cut -d ' ' -f1)"
+          echo "ORACLE_TEST_TRANSPLANT_VERIFIED"
+      - name: Execute same historical unittest module on FIXED under same isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p official-oracle-evidence
+          docker pull python:3.7-slim
+          set +e
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,size=96m \
+            -v "$RUNNER_TEMP/youtube-fixed:/repo:ro" \
+            -w /repo \
+            python:3.7-slim \
+            timeout 180s python -m unittest -q test.test_utils.TestUtil.test_match_str \
+            > official-oracle-evidence/fixed-unittest.log 2>&1
+          result="$?"
+          set -e
+          echo "$result" > official-oracle-evidence/fixed-exit.txt
+          echo "FIXED_TEST_EXIT_CODE $result"
+          tail -n 35 official-oracle-evidence/fixed-unittest.log || true
+      - name: Compare frozen rankings against historical diff, fail closed on incomplete evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(cut -d ' ' -f1 frozen/frozen-rankings.sha256)"
+          python 09_INFRASTRUCTURE_AGENTIQUE/official_repro_02/official_oracle.py \
+            --buggy-checkout "$RUNNER_TEMP/youtube-buggy" \
+            --fixed-checkout "$RUNNER_TEMP/youtube-fixed" \
+            --frozen-manifest frozen/frozen-rankings.json \
+            --expected-sha256 "$expected" \
+            --fixed-log official-oracle-evidence/fixed-unittest.log \
+            --fixed-exit "$(cat official-oracle-evidence/fixed-exit.txt)" \
+            --output official-oracle-evidence/oracle.json
+          python - <<'PY'
+          import json,pathlib
+          x=json.loads(pathlib.Path("official-oracle-evidence/oracle.json").read_text())
+          assert x["phase"]=="POST_FREEZE_FIXED_RUNTIME_AND_SOURCE_ORACLE"
+          assert x["status"] in {
+            "REPRODUCER_UNCONFIRMED","ORACLE_OUT_OF_SCOPE",
+            "ORACLE_PARTIAL_NO_COMPARATIVE_CLAIM",
+            "LOCAL_IMPROVEMENT_ONE_CASE","LOCAL_REGRESSION_ONE_CASE",
+            "NO_DIFFERENCE"}
+          assert not x["patch_generated"] and not x["model_called"]
+          assert x["repair_correctness"] is None
+          assert not x["same_information_budget"]
+          print("FINAL_STATUS",x["status"])
+          PY
+      - name: Preserve raw fixed logs and oracle output even when negative
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-official-repro-02-fixed-oracle
+          path: official-oracle-evidence/*
+          if-no-files-found: warn
+          retention-days: 14
