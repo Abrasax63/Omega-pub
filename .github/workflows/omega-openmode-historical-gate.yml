@@ -8,6 +8,13 @@ on:
       - '09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/historical_gate.py'
       - '09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/test_historical_gate.py'
       - '.github/workflows/omega-openmode-historical-gate.yml'
+  pull_request:
+    branches:
+      - experiment/omega-ast-method-scope-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/historical_gate.py'
+      - '09_INFRASTRUCTURE_AGENTIQUE/openmode_validity_01/test_historical_gate.py'
+      - '.github/workflows/omega-openmode-historical-gate.yml'
   workflow_dispatch:
 
 permissions:
