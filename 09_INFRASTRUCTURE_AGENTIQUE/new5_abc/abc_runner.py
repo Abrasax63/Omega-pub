@@ -15,7 +15,7 @@ import subprocess
 import tempfile
 import time
 
-from abc_core import ARMS, CASE_IDS, MAX_PER_ARM, freeze_case, final_model_order, model_select, verify_manifest
+from abc_core import ARMS, CASE_IDS, MAX_PER_ARM, freeze_case, final_model_order, extract_llama_cli_id, verify_manifest
 from abc_core import rewrite, sha
 
 MODEL_HASH = "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7"
@@ -186,10 +186,10 @@ def ask_qwen(cli,weights,case,row,public_failure):
                 "error":str(e)[:300],"candidate_id":None,
                 "prompt_sha256":sha_bytes(prompt.encode())}
     raw=result.stdout
-    # llama-cli may echo the prompt, so consider only its last assistant turn.
-    tail=raw.rsplit("<|im_start|>assistant",1)[-1]
-    tail=tail.replace("<|im_end|>","").replace("[end of text]","").strip()
-    choice=model_select(tail,shortlist) if result.returncode==0 else None
+    # CLI prints the prompt and a performance/status footer. Do not confuse
+    # the footer with model chatter; validate one answer against frozen IDs.
+    choice=extract_llama_cli_id(raw,shortlist) if result.returncode==0 else None
+    tail=raw[-500:].strip()
     return {"status":"SELECTED" if choice else "ABSTAINED_OR_ERROR",
             "model_called":True,"model_exit":result.returncode,
             "candidate_id":choice,
