@@ -1,0 +1,143 @@
+name: Omega mean-calibration 06 - exact rational mean and belief-value evaluation
+
+on:
+  push:
+    branches:
+      - experiment/omega-exact-mean-calibration-2026-11-16
+    paths:
+      - 'experiments/omega-mean-calibration-06/**'
+      - '.github/workflows/omega-mean-calibration-06.yml'
+  pull_request:
+    branches:
+      - experiment/omega-belief-value-transfer-2026-11-16
+    paths:
+      - 'experiments/omega-mean-calibration-06/**'
+      - '.github/workflows/omega-mean-calibration-06.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-mean-calibration-06-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  independent-mean-and-calibration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate all fifteen scientific controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-mean-calibration-06/*.py
+          python - <<'PY'
+          import unittest
+          suite=unittest.TestLoader().discover(
+            'experiments/omega-mean-calibration-06',
+            pattern='test_mean_calibration.py')
+          count=suite.countTestCases()
+          print('OMEGA_MEAN_CALIBRATION_TESTS_DISCOVERED',count)
+          assert count==15,('Unexpected scientific test count',count)
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+      - name: Run the fully frozen heldout test of calibration and exact mean regret
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-mean-calibration-06/mean_calibration_lab.py \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Fail closed on leakage, impossible oracle results and hidden test promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from fractions import Fraction
+          from pathlib import Path
+          r=json.loads(Path('evidence/report.json').read_text())
+          assert r['experiment']=='OMEGA-CALIBRATION-06'
+          assert r['prereg_commit']=='188336dfb8629c50e09ed8f0eb3a133e1c7e8c99'
+          assert r['training_seeds']==[271,272,273]
+          assert r['exact_mean_oracle_rational'] and r['uniform_policy_calibration_oracle_rational']
+          assert r['training_original_PR132_code_unchanged']
+          assert not r['model_updated_during_evaluation']
+          assert not r['oracle_used_for_training']
+          assert r['oracle_used_for_evaluation_only']
+          assert r['same_raw_training_data_for_learners']
+          assert not r['scientific_generalization_proven']
+          assert r['paid_api_calls']==0 and r['main_modified'] is False
+          assert not r['language_model_trained']
+          exp={
+            'eval_random4':(24,'random4'),
+            'eval_perm5':(30,'perm5'),
+            'eval_reset5':(30,'reset5'),
+          }
+          allids=[]
+          for name,(n,family) in exp.items():
+              s=r['splits'][name]
+              assert s['count']==n and s['family']==family
+              allids+=s['signatures']
+          assert len(allids)==len(set(allids))
+          assert len(r['repetitions'])==3
+          for repetition in r['repetitions']:
+              assert repetition['training_weights_sha']==repetition['evaluation_weights_sha']
+              for name,(n,family) in exp.items():
+                  ev=repetition['evaluations'][name]
+                  assert ev['total']==n
+                  assert ev['eligible']+ev['impossible']==n
+                  for row in ev['rows']:
+                      if not row['identifiable']:
+                          assert row['decisions']=={} and row['calibration'] is None
+                          continue
+                      exact=row['oracle_exact_mean']
+                      v=Fraction(exact['numerator'],exact['denominator'])
+                      assert v==Fraction(sum(row['oracle_exact_mean_per_state']),row['num_states'])
+                      for arm in ('FIXED','MEMORY','TOTAL9','BELIEF_VALUE'):
+                          a=row['decisions'][arm]
+                          realized=Fraction(sum(a['cost_per_hidden_initial']),row['num_states'])
+                          assert realized >= v
+                          regret=a['mean_regret_to_exact']
+                          assert Fraction(regret['numerator'],regret['denominator'])==realized-v
+                          assert a['worst_regret_to_old_minimax']>=0
+                      assert row['calibration']['reachable_nontrivial_beliefs']>0
+                      for x in row['calibration']['per_belief']:
+                          val=x['V_uniform_rational']
+                          assert val['numerator']>0 and val['denominator']>0
+          flags=[]
+          for family in ('eval_perm5','eval_reset5'):
+              s=r['summary'][family]
+              c=s['calibration']
+              d=s['decision_regret_differences']
+              flags.append(
+                  c['mae_belief']<c['mae_size']-1e-10
+                  and c['mae_belief']<c['mae_zero']-1e-10
+                  and all(v < -1e-10 for v in d.values())
+              )
+          assert sum(flags)==r['strong_families_passed']
+          assert (r['status']=='DESCRIPTIVE_CALIBRATED_MEAN_GAIN')==(sum(flags)==2)
+          print('OMEGA_MEAN_CALIBRATION_VERDICT',r['status'])
+          print('OMEGA_MEAN_CALIBRATION_FAMILIES_PASSED',sum(flags))
+          for name in ('eval_perm5','eval_reset5'):
+              print('OMEGA_MEAN_CALIBRATION_FAMILY',name,
+                    r['summary'][name]['eligible'],
+                    r['summary'][name]['calibration'],
+                    r['summary'][name]['decision_regret_differences'])
+          PY
+      - name: Archive results including all errors and unfavorable observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-mean-calibration-06-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
