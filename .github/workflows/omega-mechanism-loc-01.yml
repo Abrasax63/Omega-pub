@@ -1,0 +1,161 @@
+name: Omega mechanism localization 01 - frozen test AST vs oracle
+
+on:
+  push:
+    branches:
+      - experiment/omega-mechanism-localize-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/mechanism_loc_01/**'
+      - '.github/workflows/omega-mechanism-loc-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-openmode-validity-2026-11-16
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/mechanism_loc_01/**'
+      - '.github/workflows/omega-mechanism-loc-01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-mechanism-loc-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  blind-rank-freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify localizer and oracle regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/mechanism_loc_01/*.py
+          python -m unittest discover -v \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/mechanism_loc_01 \
+            -p 'test_mechanism_loc.py'
+      - name: Checkout ONLY HTTPie-1 buggy commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/jakubroztocil/httpie.git "$RUNNER_TEMP/httpie-buggy"
+          git -C "$RUNNER_TEMP/httpie-buggy" fetch --depth=1 origin \
+            001bda19450ad85c91345eea3cfa3991e1d492ba
+          git -C "$RUNNER_TEMP/httpie-buggy" checkout --quiet --detach \
+            001bda19450ad85c91345eea3cfa3991e1d492ba
+          test "$(git -C "$RUNNER_TEMP/httpie-buggy" rev-parse HEAD)" = \
+            001bda19450ad85c91345eea3cfa3991e1d492ba
+          echo "BUGGY_CHECKOUT_VERIFIED"
+      - name: Commit two ranked lists without ever reading fixed
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python 09_INFRASTRUCTURE_AGENTIQUE/mechanism_loc_01/localize.py \
+            --buggy-checkout "$RUNNER_TEMP/httpie-buggy" \
+            --output evidence/frozen-ranks.json
+          sha256sum evidence/frozen-ranks.json > evidence/frozen-ranks.sha256
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path("evidence/frozen-ranks.json")
+          obj=json.loads(p.read_text(encoding="utf-8"))
+          assert obj["status"]=="CHOICES_FROZEN", obj
+          assert not obj["historic_fixed_accessed"]
+          assert not obj["fixed_diff_accessed"]
+          assert not obj["actual_test_executed"]
+          assert obj["budget_primary"] == 10
+          assert len(obj["targets"]) == obj["total_targets"]
+          assert len({x["key"] for x in obj["targets"]}) == len(obj["targets"])
+          print("PHASE_A_FROZEN", obj["total_targets"],"targets")
+          PY
+      - name: Archive frozen ranks, including failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-mechanism-loc-01-frozen-before-oracle
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 14
+
+  post-freeze-oracle:
+    needs: blind-rank-freeze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download SEALED ranks from previous job
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-mechanism-loc-01-frozen-before-oracle
+          path: frozen
+      - name: Verify pre-committed SHA before any historical fixed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(cut -d ' ' -f1 frozen/frozen-ranks.sha256)"
+          test -n "$expected"
+          echo "$expected  frozen/frozen-ranks.json" | sha256sum --check
+          echo "RANK_COMMITMENT_VERIFIED $expected"
+      - name: Fetch BUGGY and then FIXED HTTPie-1 exact commits (oracle job only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/jakubroztocil/httpie.git "$RUNNER_TEMP/httpie-buggy"
+          git -C "$RUNNER_TEMP/httpie-buggy" fetch --depth=1 origin \
+            001bda19450ad85c91345eea3cfa3991e1d492ba
+          git -C "$RUNNER_TEMP/httpie-buggy" checkout --quiet --detach \
+            001bda19450ad85c91345eea3cfa3991e1d492ba
+          git clone --quiet --no-checkout --filter=blob:none \
+            https://github.com/jakubroztocil/httpie.git "$RUNNER_TEMP/httpie-fixed"
+          git -C "$RUNNER_TEMP/httpie-fixed" fetch --depth=1 origin \
+            5300b0b490b8db48fac30b5e32164be93dc574b7
+          git -C "$RUNNER_TEMP/httpie-fixed" checkout --quiet --detach \
+            5300b0b490b8db48fac30b5e32164be93dc574b7
+          test "$(git -C "$RUNNER_TEMP/httpie-buggy" rev-parse HEAD)" = \
+            001bda19450ad85c91345eea3cfa3991e1d492ba
+          test "$(git -C "$RUNNER_TEMP/httpie-fixed" rev-parse HEAD)" = \
+            5300b0b490b8db48fac30b5e32164be93dc574b7
+          echo "ORACLE_GIT_COMMITS_VERIFIED"
+      - name: Evaluate once against historical changed functions, do not mutate frozen ranking
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence-oracle
+          expected="$(cut -d ' ' -f1 frozen/frozen-ranks.sha256)"
+          python 09_INFRASTRUCTURE_AGENTIQUE/mechanism_loc_01/evaluate_oracle.py \
+            --buggy-checkout "$RUNNER_TEMP/httpie-buggy" \
+            --fixed-checkout "$RUNNER_TEMP/httpie-fixed" \
+            --frozen-manifest frozen/frozen-ranks.json \
+            --expected-sha256 "$expected" \
+            --output evidence-oracle/oracle-evaluation.json
+          python - <<'PY'
+          import json,pathlib
+          o=json.loads(pathlib.Path("evidence-oracle/oracle-evaluation.json").read_text())
+          assert o["phase"] == "ORACLE_REVEALED_AFTER_SHA_FROZEN"
+          assert not o["test_suite_executed"]
+          assert not o["model_called"] and not o["patch_generated"]
+          assert o["repair_correctness"] is None
+          print("ORACLE_STATUS",o["status"])
+          PY
+      - name: Preserve exact comparison and indeterminate outcomes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-mechanism-loc-01-oracle-evidence
+          path: evidence-oracle/*.json
+          if-no-files-found: warn
+          retention-days: 14
