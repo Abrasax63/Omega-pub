@@ -14,7 +14,7 @@ import sys
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "blind_real_01"))
-from blind_scan import candidate_manifest, sha, MAX_CASE_CANDIDATES
+from blind_scan import sha, MAX_CASE_CANDIDATES
 from external_real import CASES, find_patches, one_line_change
 
 BUGGY_COMMIT = "c57512fa669e6f6b1b766a7639206a380f0d10ce"
@@ -39,6 +39,61 @@ def _method_fragment(rows: list[str], method: ast.FunctionDef) -> tuple[str, str
     if len(tree.body) != 1 or not isinstance(tree.body[0], ast.FunctionDef):
         raise ValueError("method fragment not a single regular function")
     return prefix, source
+
+
+def scan_top_level(source_root: Path, max_candidates: int = MAX_CASE_CANDIDATES) -> dict:
+    """Same scanning policy as PR #115, with only package root fastapi -> scrapy.
+
+    The frozen generator itself is imported unchanged.
+    """
+    root = source_root / "scrapy"
+    if not root.is_dir():
+        return {"status": "SOURCE_UNAVAILABLE", "candidates": [],
+                "scanned_files": 0, "parse_errors": []}
+    candidates = []
+    errors = []
+    scanned = 0
+    for path in sorted(root.rglob("*.py")):
+        if path.is_symlink():
+            raise RuntimeError("untrusted symlink")
+        scanned += 1
+        rel = path.relative_to(source_root).as_posix()
+        try:
+            source = path.read_text(encoding="utf-8")
+            tree = ast.parse(source)
+        except (OSError, UnicodeError, SyntaxError) as exc:
+            errors.append({"file": rel, "reason": type(exc).__name__})
+            continue
+        names = sorted({n.name for n in tree.body if isinstance(n, ast.FunctionDef)})
+        for name in names:
+            if sum(isinstance(n, ast.FunctionDef) and n.name == name for n in tree.body) != 1:
+                continue
+            CASES["_BLIND_SCAN"] = {"function": name}
+            try:
+                patches = find_patches("_BLIND_SCAN", source)
+            except (ValueError, SyntaxError) as exc:
+                errors.append({"file": rel, "function": name,
+                               "reason": type(exc).__name__})
+                continue
+            finally:
+                CASES.pop("_BLIND_SCAN", None)
+            for patch in patches:
+                candidates.append({
+                    "id": "P" + str(len(candidates)).zfill(2),
+                    "file": rel, "function": name, "line": patch["line"],
+                    "rule": patch["rule"], "old": patch["old"],
+                    "new": patch["new"], "source_sha256": patch["sha256"],
+                    "buggy_file_sha256": sha(source),
+                })
+                if len(candidates) > max_candidates:
+                    return {"status": "BUDGET_EXCEEDED",
+                            "candidates": candidates[:max_candidates],
+                            "total_seen_at_least": len(candidates),
+                            "scanned_files": scanned, "parse_errors": errors,
+                            "max_candidates": max_candidates}
+    return {"status": "CANDIDATES_UNTESTED" if candidates else "NO_CANDIDATE",
+            "candidates": candidates, "scanned_files": scanned,
+            "parse_errors": errors, "max_candidates": max_candidates}
 
 
 def scan_methods(source_root: Path, max_candidates: int = MAX_CASE_CANDIDATES) -> dict:
@@ -141,7 +196,7 @@ def scan_methods(source_root: Path, max_candidates: int = MAX_CASE_CANDIDATES) -
 
 
 def compare(source_root: Path, max_candidates: int = MAX_CASE_CANDIDATES) -> dict:
-    base = candidate_manifest(source_root, max_candidates=max_candidates)
+    base = scan_top_level(source_root, max_candidates=max_candidates)
     method = scan_methods(source_root, max_candidates=max_candidates)
     if base["status"] == "SOURCE_UNAVAILABLE":
         status = "SOURCE_UNAVAILABLE"
