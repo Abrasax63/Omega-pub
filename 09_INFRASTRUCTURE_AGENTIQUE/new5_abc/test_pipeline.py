@@ -75,7 +75,7 @@ class PipelineContractTests(unittest.TestCase):
     def test_profiler_json_not_sent_as_qwen_failure_message(self, mock_run):
         mock_run.return_value.returncode = 1
         mock_run.return_value.stdout = ("FAILED tests/testcase.py::test_a - AssertionError\n"
-                                         "OMEGA_CALL_TRACE_V1={\\"schema\\":\\"omega-calltrace-v1\\",\\"files\\":[]}")
+                                         'OMEGA_CALL_TRACE_V1={"schema":"omega-calltrace-v1","files":[]}')
         mock_run.return_value.stderr=""
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)
