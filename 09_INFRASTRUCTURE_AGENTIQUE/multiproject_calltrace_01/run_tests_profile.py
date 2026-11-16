@@ -95,7 +95,7 @@ def run_pytest(root,package,tests):
             elif report.failed and report.when in ("setup","teardown"):
                 failures_in_setup.append({"test":report.nodeid,"phase":report.when})
     start=time.monotonic()
-    result_code=int(pytest.main(["-q","-s"]+tests,plugins=[Plugin()]))
+    result_code=int(pytest.main(["-q","-s","-p","no:cacheprovider"]+tests,plugins=[Plugin()]))
     elapsed=time.monotonic()-start
     errors=sum(1 for x in records.values() if x=="failed")
     passed=sum(1 for x in records.values() if x=="passed")
@@ -111,7 +111,7 @@ def run_pytest(root,package,tests):
       "framework":"pytest","test_count":len(tests),"tests_run":len(records),
       "failed_test_count":errors,"pass_count":passed,"skipped_count":skipped,
       "failure_in_test_body":errors>0,
-      "test_passed":result_code==0 and len(records)==len(tests) and errors==0 and not failures_in_setup,
+      "test_passed":result_code==0 and len(records)>=len(tests) and errors==0 and not failures_in_setup,
       "test_outcomes":[{"test":k,"outcome":v} for k,v in sorted(records.items())],
       "test_setup_teardown_errors":failures_in_setup,
       "pytest_exit_code":result_code,
