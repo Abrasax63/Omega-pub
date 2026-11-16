@@ -1,0 +1,177 @@
+name: Omega NEW5 A/B/C authentic bugs and fixed-after-freeze oracle
+
+on:
+  push:
+    branches:
+      - experiment/omega-five-bug-equal-budget-abc-2026-11-16
+    paths:
+      - '.github/workflows/omega-new5-abc-real.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-new5-abc-first-prospective-campaign
+  cancel-in-progress: false
+
+jobs:
+  buggy-only-freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    steps:
+      - name: Checkout only Omega experiment (read-only token)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate provenance and budget protocol BEFORE any upstream fetch
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python -m py_compile abc_core.py abc_runner.py abc_oracle.py abc_fetch.py
+          python -m unittest -v test_abc_core.py test_pipeline.py
+      - name: Fetch five buggy commits and public regression test FILES only
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python abc_fetch.py --phase buggy-only \
+            --cohort COHORT_FREEZE.json \
+            --checkouts "$RUNNER_TEMP/omega-new5-buggy" \
+            --tests "$RUNNER_TEMP/omega-new5-tests" \
+            --manifest-output "$RUNNER_TEMP/buggy-source-manifest.json"
+      - name: Cache pinned llama.cpp CPU inference implementation
+        id: llama-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/llama.cpp
+          key: omega-llama-cpu-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6-v1
+      - name: Build pinned local llama.cpp if cache is absent
+        if: steps.llama-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth=1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$RUNNER_TEMP/llama.cpp"
+          git -C "$RUNNER_TEMP/llama.cpp" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          git -C "$RUNNER_TEMP/llama.cpp" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          cmake -S "$RUNNER_TEMP/llama.cpp" -B "$RUNNER_TEMP/llama.cpp/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/llama.cpp/build" --target llama-cli -j 4
+      - name: Cache pinned Qwen2.5-Coder-3B weights
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/model.gguf
+          key: omega-qwen2p5-coder-3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7-v1
+      - name: Verify open-weight Qwen model SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f "$RUNNER_TEMP/model.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              'https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf' \
+              -o "$RUNNER_TEMP/model.gguf"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $RUNNER_TEMP/model.gguf" | sha256sum -c -
+      - name: Reproduce buggy cases, trace, choose bounded A/B/C and freeze all patches
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        shell: bash
+        run: |
+          set -euo pipefail
+          python abc_runner.py \
+            --cohort COHORT_FREEZE.json \
+            --buggy-dir "$RUNNER_TEMP/omega-new5-buggy" \
+            --tests-dir "$RUNNER_TEMP/omega-new5-tests" \
+            --llama-cli "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" \
+            --model-file "$RUNNER_TEMP/model.gguf" \
+            --output selection.json
+          python - <<'PY'
+          import json
+          from abc_core import verify_manifest
+          c=json.load(open('COHORT_FREEZE.json'))
+          s=json.load(open('selection.json'))
+          assert verify_manifest(s,c)
+          assert len(s['cases'])==5 and s['new_model_calls']<=5
+          assert s['fixed_source_seen'] is False and s['external_oracle_opened'] is False
+          assert s['selection_sha256']
+          print('COMMITTED BUGGY-ONLY SELECTION',s['selection_sha256'])
+          PY
+      - name: Archive frozen A/B/C source patch choices before fixed code is opened
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-new5-abc-frozen-buggy-only
+          path: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc/selection.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  external-historical-fixed-oracle:
+    needs: buggy-only-freeze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    steps:
+      - name: Checkout independent fixed-code oracle (read-only)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download immutable frozen source and A/B/C selections first
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-new5-abc-frozen-buggy-only
+          path: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc/freeze-artifact
+      - name: Validate SHA commitment and budget before any fixed source fetch
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python - <<'PY'
+          import json
+          from abc_oracle import verify_commitment
+          a=json.load(open('freeze-artifact/selection.json'))
+          c=json.load(open('COHORT_FREEZE.json'))
+          print('REVALIDATED BEFORE FIXED FETCH',verify_commitment(a,c))
+          PY
+      - name: Retrieve same exact buggy Git revisions for reproducibility
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python abc_fetch.py --phase buggy-only \
+            --cohort COHORT_FREEZE.json \
+            --checkouts "$RUNNER_TEMP/omega-new5-oracle-buggy" \
+            --tests "$RUNNER_TEMP/omega-new5-tests" \
+            --manifest-output "$RUNNER_TEMP/oracle-buggy-manifest.json"
+      - name: FIRST retrieval of full fixed production commits (after source freeze)
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python abc_fetch.py --phase fixed-oracle \
+            --cohort COHORT_FREEZE.json \
+            --checkouts "$RUNNER_TEMP/omega-new5-oracle-fixed" \
+            --tests "$RUNNER_TEMP/omega-new5-fixed-tests" \
+            --manifest-output "$RUNNER_TEMP/oracle-fixed-manifest.json"
+      - name: Verify historical buggy-fail fixed-pass, then replay frozen A/B/C
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc
+        run: |
+          python abc_oracle.py \
+            --cohort COHORT_FREEZE.json \
+            --selection freeze-artifact/selection.json \
+            --buggy-dir "$RUNNER_TEMP/omega-new5-oracle-buggy" \
+            --fixed-dir "$RUNNER_TEMP/omega-new5-oracle-fixed" \
+            --tests-dir "$RUNNER_TEMP/omega-new5-fixed-tests" \
+            --output new5-abc-result.json
+          python - <<'PY'
+          import json
+          s=json.load(open('new5-abc-result.json'))
+          assert s['phase']=='HISTORICAL_ORACLE_AFTER_FROZEN_ABC'
+          assert s['case_count']==5
+          assert not s['main_modified'] and not s['promoted_to_core']
+          print('REAL BUGS REPRODUCED',s['historically_reproduced'])
+          print('PATCHED TARGET TEST PASSES',s['repairs_by_arm'])
+          print('NO INDEPENDENT HOLDOUT / NO GENERAL INTELLIGENCE CLAIM')
+          PY
+      - name: Archive full scientific and infrastructure verdict, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-new5-abc-historical-oracle
+          path: 09_INFRASTRUCTURE_AGENTIQUE/new5_abc/new5-abc-result.json
+          retention-days: 30
+          if-no-files-found: warn
