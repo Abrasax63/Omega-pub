@@ -1,0 +1,37 @@
+name: Omega semantic dependency pilot (nonblind)
+on:
+  push:
+    branches:
+      - experiment/omega-semantic-dependency-pilot-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cpu-only-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test parser and provenance locks (no model, no API)
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/semantic_dependency
+        run: python3 -m unittest -v test_pilot.py
+      - name: Reproduce 14-case pre-registered metrics
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/semantic_dependency/pilot.py --output /tmp/omega-sem-depend.json
+          python3 - /tmp/omega-sem-depend.json <<'PY'
+          import json, sys
+          r = json.load(open(sys.argv[1], encoding="utf-8"))
+          print("status:", r["status"])
+          print("card_sections:", r["card_sections_available"], "cases:", r["case_count"])
+          for name, m in r["metrics"].items():
+              print(name, "TP", m["tp"], "FP", m["fp"], "FN", m["fn"], "precision", m["precision"], "recall", m["recall"])
+          print("pre_registered_local_criterion_met:", r["pre_registered_local_criterion_met"])
+          PY
+      - name: Archive evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-semantic-dependency-nonblind
+          path: /tmp/omega-sem-depend.json
+          retention-days: 14
