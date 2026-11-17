@@ -1,0 +1,60 @@
+name: Omega exploration 10 - divergent hypotheses with strict proof gate
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-external-folio-holdout-09-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exploratory-falsification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and test exploration ledger + strict epistemic gates
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/exploration10
+        run: |
+          set -euo pipefail
+          python -m py_compile explorer.py test_explorer.py
+          python -m unittest -v test_explorer.py
+      - name: Evaluate fresh external FOLIO rows 31-60 without tuning
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/exploration10/explorer.py \
+            --output /tmp/omega-exploration10-raw.json
+          python - <<'PY'
+          import json
+          report=json.load(open('/tmp/omega-exploration10-raw.json',encoding='utf-8'))
+          assert report['experiment']=='OMEGA-EXPLORATION-10'
+          assert report['sample_cases']==30
+          assert report['hypotheses_proposed']>=60
+          assert report['hypotheses_proposed']==report['hypotheses_provenance_valid']
+          assert report['independent_semantic_tests_executed']==0
+          assert report['scientific_hypotheses_certified']==0
+          assert report['no_automatic_promotion'] and report['model_calls']==0
+          assert report['predictions_and_hypotheses_sha256_before_gold']
+          print({k:report[k] for k in ('status','sample_cases',
+              'distinct_theories','scientific_answers','scientific_correct',
+              'baseline_always_abstain_correct','hypotheses_proposed',
+              'hypotheses_provenance_valid','different_perspectives',
+              'independent_semantic_tests_executed',
+              'predictions_and_hypotheses_sha256_before_gold')})
+          PY
+      - name: Archive unpromoted hypotheses and exact provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-exploration10-raw-hypothesis-ledger
+          path: /tmp/omega-exploration10-raw.json
+          retention-days: 14
+          if-no-files-found: warn
