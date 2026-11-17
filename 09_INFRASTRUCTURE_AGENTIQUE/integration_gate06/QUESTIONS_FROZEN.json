@@ -1,0 +1,115 @@
+{
+  "experiment": "OMEGA-INTEGRATION-06",
+  "dataset_status": "NEW_QUESTIONS_SAME_AUTHOR_NOT_EXTERNAL_HOLDOUT",
+  "source_manifest": "SOURCES_FROZEN.json",
+  "cases": [
+    {
+      "id": "ACC-01",
+      "source_id": "BR-ACC-01",
+      "question": "Dans le contre-exemple à deux états de BR-ACC-01, le mot 11 peut-il être produit comme mot complet depuis l'ensemble initial E ?",
+      "oracle_kind": "access",
+      "access_test": "start",
+      "word": "11"
+    },
+    {
+      "id": "ACC-02",
+      "source_id": "BR-ACC-01",
+      "question": "Pour BR-ACC-01, la chaîne 11 est-elle un facteur d'un mot produit depuis E dans le système a→b→b ?",
+      "oracle_kind": "access",
+      "access_test": "factor",
+      "word": "11"
+    },
+    {
+      "id": "ACC-03",
+      "source_id": "BR-ACC-01",
+      "question": "Dans BR-ACC-01 avec l'observation 0 puis des 1, le mot 011 appartient-il au langage L_E des trajectoires depuis E ?",
+      "oracle_kind": "access",
+      "access_test": "start",
+      "word": "011"
+    },
+    {
+      "id": "ACC-04",
+      "source_id": "BR-ACC-01",
+      "question": "Dans l'exemple a→b→b de BR-ACC-01, le facteur 00 peut-il apparaître dans un mot de L_E ?",
+      "oracle_kind": "access",
+      "access_test": "factor",
+      "word": "00"
+    },
+    {
+      "id": "ACC-05",
+      "source_id": "BR-ACC-01",
+      "question": "Dans BR-ACC-01, le mot 1 seul appartient-il directement à L_E quand le départ est l'état a ?",
+      "oracle_kind": "access",
+      "access_test": "start",
+      "word": "1"
+    },
+    {
+      "id": "ACC-06",
+      "source_id": "BR-ACC-01",
+      "question": "La chaîne 01 est-elle un facteur réalisable d'un mot de L_E dans le petit exemple de BR-ACC-01 ?",
+      "oracle_kind": "access",
+      "access_test": "factor",
+      "word": "01"
+    },
+    {
+      "id": "CAP-01",
+      "source_id": "BR-OBS-CAP-03",
+      "question": "Pour deux témoins de type A et deux de type B dans BR-OBS-CAP-03, les multiplicités sélectionnées (2,1) sont-elles réalisables ?",
+      "oracle_kind": "capacity",
+      "multiplicities": [
+        2,
+        1
+      ]
+    },
+    {
+      "id": "CAP-02",
+      "source_id": "BR-OBS-CAP-03",
+      "question": "Dans BR-OBS-CAP-03 avec exactement deux témoins A et deux B, peut-on sélectionner (3,0) ?",
+      "oracle_kind": "capacity",
+      "multiplicities": [
+        3,
+        0
+      ]
+    },
+    {
+      "id": "CAP-03",
+      "source_id": "BR-OBS-CAP-03",
+      "question": "Dans la boîte de coexistence de BR-OBS-CAP-03 pour deux A et deux B, (0,2) est-il atteignable par sélection ?",
+      "oracle_kind": "capacity",
+      "multiplicities": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "CAP-04",
+      "source_id": "BR-OBS-CAP-03",
+      "question": "Dans une fibre avec deux témoins A et deux témoins B comme BR-OBS-CAP-03, le vecteur (2,3) est-il possible ?",
+      "oracle_kind": "capacity",
+      "multiplicities": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "CAP-05",
+      "source_id": "BR-OBS-CAP-03",
+      "question": "Si les témoins distincts A,A,B,B sont sélectionnables librement, BR-OBS-CAP-03 autorise-t-il (1,1) ?",
+      "oracle_kind": "capacity",
+      "multiplicities": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "CAP-06",
+      "source_id": "BR-OBS-CAP-03",
+      "question": "Dans BR-OBS-CAP-03 avec A,A,B,B, existe-t-il une sélection donnant (0,4) ?",
+      "oracle_kind": "capacity",
+      "multiplicities": [
+        0,
+        4
+      ]
+    }
+  ]
+}
