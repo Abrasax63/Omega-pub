@@ -1,0 +1,163 @@
+name: Omega raw provenance lab 08 - actual subprocess evidence and blind scoring
+
+on:
+  push:
+    branches:
+      - experiment/omega-raw-provenance-lab-08-2026-11-17
+    paths:
+      - 'experiments/omega-raw-provenance-lab-08/**'
+      - '.github/workflows/omega-raw-provenance-lab-08.yml'
+  pull_request:
+    branches:
+      - experiment/omega-real-provenance-07-2026-11-17
+
+permissions:
+  contents: read
+
+jobs:
+  controls-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fourteen local/adversarial tests on ephemeral calibration fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-raw-provenance-lab-08/*.py
+          (cd experiments/omega-raw-provenance-lab-08 && python - <<'PY'
+          import unittest
+          suite=unittest.defaultTestLoader.discover('.',pattern='test_raw_lab.py')
+          assert suite.countTestCases()==14,suite.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+          )
+
+  produce-raw:
+    if: github.event_name == 'pull_request'
+    needs: controls-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Four actual overlapping child-process calculations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/omega-raw-provenance-lab-08/generate.py \
+            --raw-dir evidence/raw \
+            --gold-file evidence/private-gold/gold.json
+          test -f evidence/raw/inventory.json
+          test -f evidence/raw/copy_events.jsonl
+          test -f evidence/private-gold/gold.json
+          test "$(find evidence/raw/cases -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 7
+          test ! -e evidence/raw/gold.json
+          sha256sum evidence/raw/inventory.json
+      - name: Upload ONLY raw documents for blind inference
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-raw-08-raw-evidence
+          path: evidence/raw/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload isolated answer key for scoring job
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-raw-08-answer-key
+          path: evidence/private-gold/gold.json
+          if-no-files-found: error
+          retention-days: 30
+
+  blind-inference:
+    if: github.event_name == 'pull_request'
+    needs: produce-raw
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download raw-evidence ONLY, no gold artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-raw-08-raw-evidence
+          path: evidence/raw
+      - name: Infer provenance from raw receipts, worker logs, inputs and outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e evidence/private-gold
+          test ! -e evidence/raw/gold.json
+          python experiments/omega-raw-provenance-lab-08/infer.py \
+            --raw-dir evidence/raw \
+            --output evidence/predictions/predictions.json
+          sha256sum evidence/predictions/predictions.json
+      - name: Publish frozen blind predictions
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-raw-08-frozen-predictions
+          path: evidence/predictions/predictions.json
+          if-no-files-found: error
+          retention-days: 30
+
+  independent-scoring:
+    if: github.event_name == 'pull_request'
+    needs: [produce-raw, blind-inference]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download frozen RAW evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-raw-08-raw-evidence
+          path: evidence/raw
+      - name: Download inference output WITHOUT modifying it
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-raw-08-frozen-predictions
+          path: evidence/predictions
+      - name: Download GOLD only in independent scoring job
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-raw-08-answer-key
+          path: evidence/private-gold
+      - name: Score independently against actual process-derived gold
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/omega-raw-provenance-lab-08/score.py \
+            --raw-dir evidence/raw \
+            --predictions evidence/predictions/predictions.json \
+            --gold evidence/private-gold/gold.json \
+            --output evidence/score/score.json | tee evidence/score.log
+          sha256sum evidence/score/score.json > evidence/score/score.sha256
+          sha256sum evidence/predictions/predictions.json > evidence/score/predictions.sha256
+      - name: Archive scoring evidence including negative outcomes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-raw-08-score-and-audit
+          path: |
+            evidence/score/*
+            evidence/score.log
+          if-no-files-found: warn
+          retention-days: 30
