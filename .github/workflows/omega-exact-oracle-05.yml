@@ -37,7 +37,7 @@ jobs:
           assert unittest.TextTestRunner(verbosity=2).run(tests).wasSuccessful()
           PY
           )
-  frozen-exact-oracle-holdout:
+  posthoc-exact-oracle-evaluation:
     if: github.event_name == 'pull_request'
     needs: independent-small-controls
     runs-on: ubuntu-24.04
@@ -49,23 +49,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Run exactly one full 24-instance exact oracle experiment
+      - name: Run retrospective oracle on 24 exposed PR160 instances only
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p evidence
-          python -u experiments/omega-exact-oracle-05/exact_oracle.py --output evidence/report.json | tee evidence/summary.jsonl
+          python -u experiments/omega-exact-oracle-05/exact_oracle.py --mode retrospective --output evidence/report.json | tee evidence/summary.jsonl
           sha256sum evidence/report.json > evidence/report.sha256
       - name: Independently audit all 1152 model-policy paths
         shell: bash
         run: |
           set -euo pipefail
           python experiments/omega-exact-oracle-05/audit_report.py evidence/report.json | tee evidence/audit.txt
-      - name: Archive exact mathematical witness and negative results
+      - name: Archive retrospective witness, failed fresh-cohort status and negative results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: omega-exact-oracle-05-evidence
+          name: omega-exact-oracle-05-retrospective-evidence
           path: evidence/*
           if-no-files-found: warn
           retention-days: 30
