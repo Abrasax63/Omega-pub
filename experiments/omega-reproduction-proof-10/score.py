@@ -122,8 +122,11 @@ def audit(raw_dir,predictions,gold):
                                      "seed","result_sha256")) and
             a["dependency_sha256"]!=d["dependency_sha256"],
             "ACTUAL_DEPENDENCY_DRIFT_CONTROL_BROKEN")
-    enforce(all(a[k]==e[k] for k in ("input_sha256","dependency_sha256",
-                                     "worker_sha256")) and
+    # inputs.json also contains the seed, hence its SHA MUST change with
+    # the seed even when the mathematical values stay identical.
+    enforce(records["A"]["input"]["values"]==records["E"]["input"]["values"] and
+            all(a[k]==e[k] for k in ("dependency_sha256","worker_sha256")) and
+            a["input_sha256"]!=e["input_sha256"] and
             a["seed"]!=e["seed"] and a["result_sha256"]!=e["result_sha256"],
             "SEED_DRIFT_CONTROL_BROKEN")
     enforce(sum(r["decision"]=="SC_REPLAY_CERTIFIED" for r in results)==1,
