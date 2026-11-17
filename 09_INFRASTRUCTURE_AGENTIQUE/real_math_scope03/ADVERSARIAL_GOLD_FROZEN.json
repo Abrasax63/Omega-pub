@@ -1,0 +1,78 @@
+{
+  "version": "adversarial-v1-same-author-adjudication",
+  "caveat": "negative cases consciously selected after source and engine were known; not external blind benchmark",
+  "cases": [
+    {
+      "id": "A01",
+      "source_id": "BR-R90-01",
+      "verdict": "SUPPORTED",
+      "rationale": "N12 t2 donne dim ker=4"
+    },
+    {
+      "id": "A02",
+      "source_id": "BR-R90-01",
+      "verdict": "SUPPORTED",
+      "rationale": "N12 t2 donne dim ker=4"
+    },
+    {
+      "id": "A03",
+      "source_id": "BR-R90-01",
+      "verdict": "CONTRADICTED",
+      "rationale": "N10 t3 donne rang=8, pas 7"
+    },
+    {
+      "id": "A04",
+      "source_id": "BR-R90-01",
+      "verdict": "SUPPORTED",
+      "rationale": "N12 t2 donne rang=8, mot en lettres"
+    },
+    {
+      "id": "A05",
+      "source_id": "BR-R90-02",
+      "verdict": "SUPPORTED",
+      "rationale": "N7 h2 respecte N>=2h+3, uniforme"
+    },
+    {
+      "id": "A06",
+      "source_id": "BR-R90-02",
+      "verdict": "CONTRADICTED",
+      "rationale": "N6 n'atteint pas la condition suffisante N>=7, la revendication d'application du théorème est fausse"
+    },
+    {
+      "id": "A07",
+      "source_id": "BR-R90-02",
+      "verdict": "CONTRADICTED",
+      "rationale": "N7 h2 implique uniformité"
+    },
+    {
+      "id": "A08",
+      "source_id": "BR-R90-02",
+      "verdict": "CONTRADICTED",
+      "rationale": "H2=4 pour N9 h3"
+    },
+    {
+      "id": "A09",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "SUPPORTED",
+      "rationale": "coexistence à neuf états documentée"
+    },
+    {
+      "id": "A10",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "CONTRADICTED",
+      "rationale": "absence de coexistence à huit états"
+    },
+    {
+      "id": "A11",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "CONTRADICTED",
+      "rationale": "Lean non réalisé"
+    },
+    {
+      "id": "A12",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "ABSTAIN",
+      "rationale": "sans contrat V19, le dossier ne donne pas cette portée"
+    }
+  ]
+}

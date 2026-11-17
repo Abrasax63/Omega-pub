@@ -1,0 +1,150 @@
+{
+  "version": "03-hand-annotated-before-engine",
+  "annotation_caution": "same author, not independent human adjudication; mathematical finite checks separately in code",
+  "cases": [
+    {
+      "id": "K01",
+      "source_id": "BR-R90-01",
+      "verdict": "SUPPORTED",
+      "rationale": "dim ker(A_12^2)=min(4,4)=4"
+    },
+    {
+      "id": "K02",
+      "source_id": "BR-R90-01",
+      "verdict": "SUPPORTED",
+      "rationale": "10=2×5, dim ker=min(6,2)=2"
+    },
+    {
+      "id": "K03",
+      "source_id": "BR-R90-01",
+      "verdict": "SUPPORTED",
+      "rationale": "16=2^4 et min(2,16)=2"
+    },
+    {
+      "id": "K04",
+      "source_id": "BR-R90-01",
+      "verdict": "SUPPORTED",
+      "rationale": "12-min(4,4)=8"
+    },
+    {
+      "id": "K05",
+      "source_id": "BR-R90-01",
+      "verdict": "CONTRADICTED",
+      "rationale": "10-min(6,2)=8, pas 7"
+    },
+    {
+      "id": "K06",
+      "source_id": "BR-R90-01",
+      "verdict": "CONTRADICTED",
+      "rationale": "min(4,4)=4, pas 2"
+    },
+    {
+      "id": "K07",
+      "source_id": "BR-R90-01",
+      "verdict": "SUPPORTED",
+      "rationale": "dim ker(A^0)=0"
+    },
+    {
+      "id": "K08",
+      "source_id": "BR-R90-01",
+      "verdict": "ABSTAIN",
+      "rationale": "N n'est pas fixé"
+    },
+    {
+      "id": "W01",
+      "source_id": "BR-R90-02",
+      "verdict": "SUPPORTED",
+      "rationale": "N=7=2h+3, condition suffisante satisfaite"
+    },
+    {
+      "id": "W02",
+      "source_id": "BR-R90-02",
+      "verdict": "SUPPORTED",
+      "rationale": "N=5=2h+3, H=h+1=2"
+    },
+    {
+      "id": "W03",
+      "source_id": "BR-R90-02",
+      "verdict": "SUPPORTED",
+      "rationale": "N=9=2h+3, H2=h+1=4"
+    },
+    {
+      "id": "W04",
+      "source_id": "BR-R90-02",
+      "verdict": "CONTRADICTED",
+      "rationale": "la condition garantit uniforme"
+    },
+    {
+      "id": "W05",
+      "source_id": "BR-R90-02",
+      "verdict": "SUPPORTED",
+      "rationale": "H=h+1=3"
+    },
+    {
+      "id": "W06",
+      "source_id": "BR-R90-02",
+      "verdict": "ABSTAIN",
+      "rationale": "condition suffisante N>=7 non remplie"
+    },
+    {
+      "id": "W07",
+      "source_id": "BR-R90-02",
+      "verdict": "ABSTAIN",
+      "rationale": "condition suffisante N>=7 non remplie; pas de converse"
+    },
+    {
+      "id": "W08",
+      "source_id": "BR-R90-02",
+      "verdict": "CONTRADICTED",
+      "rationale": "H=h+1=3, pas 2"
+    },
+    {
+      "id": "C01",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "SUPPORTED",
+      "rationale": "minimum 9 sous contrat V19(2), huit classes"
+    },
+    {
+      "id": "C02",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "CONTRADICTED",
+      "rationale": "absence de témoin <=8 pour coexistence des huit classes"
+    },
+    {
+      "id": "C03",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "SUPPORTED",
+      "rationale": "témoin à 9 états sous contrat borné"
+    },
+    {
+      "id": "C04",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "ABSTAIN",
+      "rationale": "fiche n'énonce rien pour C5 ou L3"
+    },
+    {
+      "id": "C05",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "CONTRADICTED",
+      "rationale": "la fiche mentionne Lean NON RÉALISÉE"
+    },
+    {
+      "id": "C06",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "ABSTAIN",
+      "rationale": "borne établie pour coexistence des huit, pas pour un seul motif"
+    },
+    {
+      "id": "C07",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "ABSTAIN",
+      "rationale": "sort du contrat V19(2)"
+    },
+    {
+      "id": "C08",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "verdict": "SUPPORTED",
+      "rationale": "l'énumération globale n'a aucun témoin N<=8"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+name: Omega real math scope 03 (no API)
+on:
+  push:
+    branches:
+      - experiment/omega-real-math-scope-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-controlled-entailment-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  finite-source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact finite checks and provenance tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/real_math_scope03
+        run: python3 -m unittest -v test_real_math.py
+      - name: Evaluate 24 frozen real document claims
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/real_math_scope03/evaluate.py --output /tmp/omega-real-math-scope03.json
+          python3 - /tmp/omega-real-math-scope03.json <<'PY'
+          import json, sys
+          r = json.load(open(sys.argv[1], encoding="utf-8"))
+          print("status", r["status"])
+          print("candidate", r["engine_metrics"])
+          print("baseline", r["lexical_baseline_metrics"])
+          print("finite_oracle_count", r["finite_independent_checks"])
+          print("finite_checks_passed", r["finite_checks_passed"])
+          print("source_citations_valid", r["all_source_citations_valid"])
+          print("false_confident_decisions", r["false_confident_decisions"])
+          print("preregistered_local_criterion_met", r["preregistered_local_criterion_met"])
+          assert r["finite_checks_passed"] and r["all_source_citations_valid"]
+          PY
+      - name: Check original engine pin and evaluate 12 unseen paraphrases
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          p = Path("09_INFRASTRUCTURE_AGENTIQUE/real_math_scope03/engine.py")
+          b = p.read_bytes()
+          blob = hashlib.sha1(b"blob " + str(len(b)).encode() + b"\0" + b).hexdigest()
+          assert blob == "ed05eacff6ab4e3b8f81ca35bdcccdc243ba697b", blob
+          print("original_engine_blob_pinned", blob)
+          PY
+          python3 09_INFRASTRUCTURE_AGENTIQUE/real_math_scope03/evaluate_adversarial.py --output /tmp/omega-real-math-adversarial.json
+          python3 - /tmp/omega-real-math-adversarial.json <<'PY'
+          import json, sys
+          r = json.load(open(sys.argv[1], encoding="utf-8"))
+          print("adversarial_status", r["status"])
+          print("adversarial_correct", r["correct"], "of", r["cases"])
+          print("adversarial_confident_errors", r["confident_errors"])
+          print("adversarial_criterion_met", r["preregistered_transfer_criterion_met"])
+          for row in r["rows"]:
+              print(row["id"], "gold", row["gold"], "engine", row["engine"],
+                    "correct", row["correct"], "textual_numbers", row["number_words_diagnostic"])
+          PY
+      - name: Archive raw evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-real-math-scope03-raw
+          path: |
+            /tmp/omega-real-math-scope03.json
+            /tmp/omega-real-math-adversarial.json
+          retention-days: 14

@@ -1,0 +1,126 @@
+{
+  "version": "03-frozen-before-engine",
+  "source_commit": "639dc01ca3ea58c61b075adb9a6d860bf41db7bc",
+  "cases": [
+    {
+      "id": "K01",
+      "source_id": "BR-R90-01",
+      "question": "Pour la règle 90, N=12 et t=2 : la dimension du noyau vaut 4."
+    },
+    {
+      "id": "K02",
+      "source_id": "BR-R90-01",
+      "question": "Sur le cycle N=10, t=3, le noyau de A_N^t a dimension 2."
+    },
+    {
+      "id": "K03",
+      "source_id": "BR-R90-01",
+      "question": "Avec 16 sites et t=1, dim ker(A_N^t)=2."
+    },
+    {
+      "id": "K04",
+      "source_id": "BR-R90-01",
+      "question": "À N=12 et t=2, le rang est égal à 8."
+    },
+    {
+      "id": "K05",
+      "source_id": "BR-R90-01",
+      "question": "Avec N=10, t=3, le rang de A_N^t vaut 7."
+    },
+    {
+      "id": "K06",
+      "source_id": "BR-R90-01",
+      "question": "Pour N=12, t=2 : dim ker(A_N^t)=2."
+    },
+    {
+      "id": "K07",
+      "source_id": "BR-R90-01",
+      "question": "Règle 90 sur N=9, t=0 : noyau de dimension 0."
+    },
+    {
+      "id": "K08",
+      "source_id": "BR-R90-01",
+      "question": "Si N est inconnu et t=2, le noyau a dimension 4."
+    },
+    {
+      "id": "W01",
+      "source_id": "BR-R90-02",
+      "question": "Pour N=7 et h=2, le mot W_h de Majority est uniforme."
+    },
+    {
+      "id": "W02",
+      "source_id": "BR-R90-02",
+      "question": "N=5, h=1 : H(W_h) vaut 2 bits."
+    },
+    {
+      "id": "W03",
+      "source_id": "BR-R90-02",
+      "question": "N=9, h=3, H_2(W_h)=4 est garanti."
+    },
+    {
+      "id": "W04",
+      "source_id": "BR-R90-02",
+      "question": "Pour N=5, h=1, W_h n'est pas uniforme."
+    },
+    {
+      "id": "W05",
+      "source_id": "BR-R90-02",
+      "question": "Avec N=7, h=2, l'entropie H(W_h) vaut 3."
+    },
+    {
+      "id": "W06",
+      "source_id": "BR-R90-02",
+      "question": "N=6, h=2 : W_h est uniforme."
+    },
+    {
+      "id": "W07",
+      "source_id": "BR-R90-02",
+      "question": "N=6 et h=2, W_h n'est pas uniforme."
+    },
+    {
+      "id": "W08",
+      "source_id": "BR-R90-02",
+      "question": "N=7 et h=2, entropie H(W_h)=2."
+    },
+    {
+      "id": "C01",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "Sous V19(2), C4 à L=2 : le minimum pour les huit classes C4O-00…07 vaut 9 états."
+    },
+    {
+      "id": "C02",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "V19(2), C4 L=2 : huit états suffisent pour toutes les classes C4O-00…07."
+    },
+    {
+      "id": "C03",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "Dans le cadre V19(2) C4 L=2, le témoin simultané contient neuf états."
+    },
+    {
+      "id": "C04",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "Pour C5 et L=3 sous V19(2), le minimum est également 9 états."
+    },
+    {
+      "id": "C05",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "Dans V19(2) C4 L=2, la minimalité est certifiée par Lean."
+    },
+    {
+      "id": "C06",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "Pour le seul motif C4O-00, neuf états sont indispensables."
+    },
+    {
+      "id": "C07",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "Pour C4 et L=2 sans la définition V19, neuf états sont toujours nécessaires."
+    },
+    {
+      "id": "C08",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "En V19(2) sur C4 L=2, aucun témoin simultané à huit états pour C4O-00…07 n'existe."
+    }
+  ]
+}
