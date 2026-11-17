@@ -125,7 +125,8 @@ class ExactOracleControls(unittest.TestCase):
         oracle=e.ExactOracle(words,rows,[7,4])
         oracle.solve()
         chosen=oracle.words[oracle.decision[oracle.full]]
-        self.assertEqual(chosen, (1,))
+        # Both orders cost 4*(7+4); the tie-break is lexicographic.
+        self.assertEqual(chosen, (0,))
         self.assertEqual(len(set(x["hidden_index"] for x in oracle.oracle_paths())),4)
         self.assertEqual(oracle.solve(),independent_brute(rows,(7,4)))
 
