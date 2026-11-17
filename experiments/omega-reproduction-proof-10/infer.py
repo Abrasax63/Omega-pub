@@ -125,6 +125,11 @@ def classify(reference,candidate):
 
 
 def resolve(raw_root):
+    # Operational blindness: do not process a bundle accidentally containing
+    # the evaluator's answer key, even when the score is otherwise correct.
+    if any("gold" in path.name.lower() or "answer-key" in path.name.lower()
+           for path in raw_root.rglob("*") if path.is_file()):
+        raise BadEvidence("GOLD_LEAK_IN_RAW")
     inventory=json.loads((raw_root/"inventory.json").read_bytes())
     if inventory.get("schema")!="omega_reproduction_proof_10" or             inventory.get("gold_excluded") is not True:
         raise BadEvidence("INVALID_BLIND_DOSSIER")
