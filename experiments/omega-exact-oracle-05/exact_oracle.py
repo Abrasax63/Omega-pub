@@ -199,8 +199,16 @@ class ExactOracle:
         if n == 1:
             self.optimal[mask] = 0
             return 0
-        upper = self.cheap_tree(mask)
+        # Tighten the feasible incumbent with EXACT solutions of its two
+        # children, and materialize a complete witness decision tree.
+        # A greedy-only upper bound may have incomplete/locally suboptimal
+        # child choices; it must not be treated as a certified Bellman tree.
+        self.cheap_tree(mask)
         incumbent = self.greedy_decision[mask]
+        ia = mask & self.masks[incumbent]
+        ib = mask ^ ia
+        upper = (n * self.prices[incumbent] +
+                 self.exact(ia) + self.exact(ib))
         cuts = sorted(self.cuts(mask), key=lambda v: (
             n * self.prices[v[0]] + self.lb(v[1]) + self.lb(v[2]),
             self.words[v[0]]))
