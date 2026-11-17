@@ -1,0 +1,66 @@
+{
+  "version": "adversarial-v1-engine-frozen",
+  "engine_sha": "3fe30ea94da55d97186416cec3870bd88754a845",
+  "cases": [
+    {
+      "id": "A01",
+      "source_id": "BR-R90-01",
+      "question": "Dans une couronne de douze cellules, après deux itérations, la nullité de A vaut quatre."
+    },
+    {
+      "id": "A02",
+      "source_id": "BR-R90-01",
+      "question": "Pour N=12, au temps t=2, le noyau possède quatre dimensions."
+    },
+    {
+      "id": "A03",
+      "source_id": "BR-R90-01",
+      "question": "Avec N=10 au temps t=3, il existe sept vecteurs indépendants dans l'image de A^t."
+    },
+    {
+      "id": "A04",
+      "source_id": "BR-R90-01",
+      "question": "N=12, t=2 : le rang de la transformation est huit."
+    },
+    {
+      "id": "A05",
+      "source_id": "BR-R90-02",
+      "question": "Au-dessus du seuil, pour h=2 et N=7, l'observation Majority suit une loi équiprobable."
+    },
+    {
+      "id": "A06",
+      "source_id": "BR-R90-02",
+      "question": "Pour N=6 et h=2, on peut appliquer le théorème d'uniformité."
+    },
+    {
+      "id": "A07",
+      "source_id": "BR-R90-02",
+      "question": "h=2, N=7 : il n'y a pas uniformité du mot observé."
+    },
+    {
+      "id": "A08",
+      "source_id": "BR-R90-02",
+      "question": "N=9, h=3 : l'entropie de Rényi d'ordre 2 du mot observé est trois bits."
+    },
+    {
+      "id": "A09",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "Dans le cadre de V19(2), avec un cycle de longueur quatre et un horizon de deux, neuf états suffisent pour les huit signatures."
+    },
+    {
+      "id": "A10",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "Sous V19(2), C4, L=2, 8 états permettent la coexistence des huit ombres."
+    },
+    {
+      "id": "A11",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "V19(2), C4 L=2 : le minimum N=9 pour les huit classes est prouvé par Lean."
+    },
+    {
+      "id": "A12",
+      "source_id": "PILOTE-EXT-C4-L2-2026-11-04",
+      "question": "Sans les contraintes forcées du contrat V19, le minimum à 9 états demeure acquis pour C4 L=2."
+    }
+  ]
+}
