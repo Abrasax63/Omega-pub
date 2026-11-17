@@ -42,14 +42,13 @@ def audit(d):
         assert d["posthoc_scope_commit"] == "10b302ab49b8d6e46bda01f8b89c5ea4006b845c"
     else:
         assert d["pool_size"] == 32 and d["new_instances"] == 24
-            assert d["prior_exposure"] is None
+        assert d["eligible_new_models"] >= 32
+        assert d["prior_exposure"] is None
         assert d["posthoc_scope_commit"] is None
     assert d["policies"] == ["OPTIMUM","PRICE_AWARE","BALANCED"]
     assert d["tariffs"] == [[1,5],[5,1]]
     assert d["no_training"] and d["no_paid_api"] and not d["main_modified"]
     assert not d["generalization_proven"]
-    assert d["eligible_new_models"] >= 32
-
     # Source-based pool/instance hashes must agree with the original arrays;
     # each trial carries all candidate models, but the 32-member pool itself
     # is not embedded as a separate array (its digest remains provenance).
