@@ -15,7 +15,7 @@ HEAD = re.compile(r"^##\s+(.+?)\s*$")
 CODE = re.compile(r"(?<!\x60)\x60([^\x60\n]+)\x60(?!\x60)")
 OPS = re.compile(r"(<=|>=|≤|≥|≠|=|<|>)")
 IFF = re.compile(r"\bsi\s+et\s+seulement\s+si\b", re.I)
-NEGATIVE = re.compile(r"non[-‑\s]?théorème|limites?|contre[- ]exemple|barrière\s+de\s+généralisation", re.I)
+NEGATIVE = re.compile(r"non[-‑\s]?théorème|limites?|contre[- ]exemple|barrière\s+de\s+généralisation|^preuve(?:\s|$)", re.I)
 PROOF = re.compile(r"^\s*\*\*(?:preuve|démonstration)\b", re.I)
 
 
