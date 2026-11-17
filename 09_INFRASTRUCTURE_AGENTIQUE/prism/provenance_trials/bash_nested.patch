@@ -1,0 +1,15 @@
+--- a/09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_xtrace.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_xtrace.py
+@@ -25,9 +25,10 @@
+     unparsed = False
+     for line in log.splitlines():
+         line = re.sub(r"^\ufeff?\d{4}-\d\d-\d\dT\S+Z ", "", line)
+-        if not line.startswith("+ "):
++        trace = re.fullmatch(r"\++ (.*)", line)
++        if trace is None:
+             continue
+-        command = line[2:]
++        command = trace[1]
+         if command.lstrip().startswith("#"):
+             continue
+         try:
