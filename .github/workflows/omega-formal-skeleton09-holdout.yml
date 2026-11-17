@@ -1,0 +1,46 @@
+name: Omega formal skeleton 09 prospectively heldout
+on:
+  push:
+    branches:
+      - experiment/omega-formal-skeleton09-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-logic-translation-gate08-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  two-unseen-math-cards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Calibration, adversarial and sealed holdout checks
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08
+        run: python3 -m unittest -v test_translate.py test_skeleton09.py test_skeleton09_holdout.py
+      - name: Produce raw scientific evaluation (including negative findings)
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08/evaluate_skeleton09.py --output /tmp/omega-formal-skeleton09-heldout.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-formal-skeleton09-heldout.json", encoding="utf-8"))
+          print("status:", r["status"])
+          print("per_card:", r["per_card"])
+          print("salient_spans:", r["salient_captured"], "/", r["salient_gold_count"])
+          print("typed_spans:", r["salient_type_matched"])
+          print("source-candidate count:", r["candidates_total"])
+          print("proof_section_candidates:", r["proof_section_candidates_total"])
+          print("valid_citations:", r["citations_valid"])
+          print("automatic_horn_rules:", r["automatic_horn_rules"])
+          print("unsafe_promotions:", r["unsafe_promotion_ids"])
+          print("pre_registered_structural_success:", r["pre_registered_structural_success"])
+          assert r["citations_valid"] and r["automatic_horn_rules"] == 0
+          assert not r["unsafe_promotion_ids"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-formal-skeleton09-two-new-math-holdouts
+          path: /tmp/omega-formal-skeleton09-heldout.json
+          retention-days: 14
