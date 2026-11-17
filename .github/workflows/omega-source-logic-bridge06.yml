@@ -1,0 +1,45 @@
+name: Omega source logic bridge 06 (structural coherence)
+on:
+  push:
+    branches:
+      - experiment/omega-source-logic-bridge-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-cross-domain-transfer-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-logic-coherence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source, schema, negative controls and certificate tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/source_logic_bridge06
+        run: python3 -m unittest -v test_bridge.py
+      - name: Produce source-grounded structured report
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/source_logic_bridge06/evaluate.py --output /tmp/omega-source-logic-06.json
+          python3 - /tmp/omega-source-logic-06.json <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding="utf-8") as f:
+              r = json.load(f)
+          print("status:", r["status"])
+          print("cases:", r["cases"], "correct:", r["correct"])
+          print("source_ids:", [d["id"] for d in r["inventory"]])
+          print("fifth_unannotated:", r["fifth_unannotated_and_not_promoted"])
+          print("multi_step_with_citations:", r["multi_step_with_citations"])
+          print("all_certificates_valid:", r["all_certificates_valid"])
+          print("false_confident:", r["confident_errors"])
+          print("protocol_success:", r["protocol_success"])
+          assert r["protocol_success"] and r["all_certificates_valid"]
+          PY
+      - name: Archive inspectable evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-source-logic-bridge06-raw
+          path: /tmp/omega-source-logic-06.json
+          retention-days: 14
