@@ -1,0 +1,41 @@
+name: Omega unseen math syntax extractor 07
+on:
+  push:
+    branches:
+      - experiment/omega-unseen-math-extraction-2026-11-17
+  pull_request:
+    branches:
+      - fix/omega-source-logic-scope-v2-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-and-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unit tests on preselected calibration card only
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/unseen_math_read07
+        run: python3 -m unittest -v test_extract.py
+      - name: Report calibration without reading held-out card
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/unseen_math_read07/extract.py \
+            --source 09_INFRASTRUCTURE_AGENTIQUE/cross_domain_math05/source_snapshot/BR-OBS-CAP-01_DYNAMIC_CAPACITY.md \
+            --source-blob 5cb676c73d385b557aa5282e9514848383c196bc \
+            --output /tmp/omega-read07-calibration.json
+          python3 - <<'PY'
+          import json
+          v = json.load(open("/tmp/omega-read07-calibration.json", encoding="utf-8"))
+          print("calibration_counts", v["counts"])
+          print("calibration_integrity", v["cited_output_integrity"])
+          print("calibration_only", True)
+          assert v["cited_output_integrity"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-read07-calibration
+          path: /tmp/omega-read07-calibration.json
+          retention-days: 14

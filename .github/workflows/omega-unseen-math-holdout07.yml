@@ -1,0 +1,43 @@
+name: Omega unseen math heldout 07 (frozen code)
+on:
+  push:
+    branches:
+      - experiment/omega-unseen-math-extraction-2026-11-17
+  pull_request:
+    branches:
+      - fix/omega-source-logic-scope-v2-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frozen-heldout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Calibration non-regression tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/unseen_math_read07
+        run: python3 -m unittest -v test_extract.py
+      - name: Evaluate previously unseen BR-OBS-CAP-02 without modifying extractor
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/unseen_math_read07/evaluate_holdout.py --output /tmp/omega-read07-heldout.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-read07-heldout.json", encoding="utf-8"))
+          print("heldout_status:", r["scientific_status"])
+          print("heldout_conditionals:", r["conditional_extraction_count"])
+          print("gold_explicit_pairs:", r["expected_marked_pairs"])
+          print("important_spans:", r["source_grounded_important_spans"])
+          print("important_spans_captured:", r["important_spans_captured"])
+          print("source_citations_valid:", r["all_literal_citations_valid"])
+          print("preregistered_success_achieved:", r["preregistered_success_achieved"])
+          assert r["all_literal_citations_valid"]
+          assert r["frozen_engine_blob"] == "10dcd6b9a0ca3fad8291bb178a05177df54e6ff6"
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-read07-heldout-original-raw
+          path: /tmp/omega-read07-heldout.json
+          retention-days: 14
