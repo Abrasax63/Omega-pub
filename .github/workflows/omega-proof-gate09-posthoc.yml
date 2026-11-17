@@ -1,0 +1,43 @@
+name: Omega syntax proof context gate 09 posthoc
+on:
+  push:
+    branches:
+      - fix/omega-proof-context-gate09-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-formal-skeleton09-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  safe-context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Previous calibration and posthoc safety tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08
+        run: python3 -m unittest -v test_translate.py test_skeleton09.py test_proof_gate09.py
+      - name: Preserve posthoc security-score tradeoff
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08/evaluate_proof_gate09.py --output /tmp/omega-proof-gate09-posthoc.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-proof-gate09-posthoc.json", encoding="utf-8"))
+          print("status:", r["status"])
+          print("original_holdout_run:", r["original_holdout_run"])
+          print("critical_spans_captured:", r["salient_captured"], "/", r["salient_total"])
+          print("proof_blocked:", r["proof_blocked"])
+          print("no_proof_candidates:", r["no_proof_candidates"])
+          print("all_citations_valid:", r["all_citations_valid"])
+          print("automatic_horn_rules:", r["automatic_horn_rules"])
+          print("safety_criterion:", r["safety_criterion"])
+          assert r["safety_criterion"] and r["automatic_horn_rules"] == 0
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-proof-gate09-posthoc
+          path: /tmp/omega-proof-gate09-posthoc.json
+          retention-days: 14
