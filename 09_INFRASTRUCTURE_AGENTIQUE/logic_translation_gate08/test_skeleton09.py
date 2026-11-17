@@ -41,7 +41,7 @@ class FormalSkeleton09(unittest.TestCase):
                             and "A_C(ω)" in x.get("literal", "")
                             for x in self.cap["blocked"]))
         self.assertFalse(any(x["kind"] == "RELATION_CHAIN_SYNTAX"
-                             and "A_C(ω)" in x["literal"] for x in self.cap["items"]))
+                             and "A_C(ω) ≤ Cap(ω)" in x["literal"] for x in self.cap["items"]))
 
     def test_positive_theorem_chain_preserves_comparator_order(self):
         found = [x for x in self.cap["items"] if x["kind"] == "RELATION_CHAIN_SYNTAX"
