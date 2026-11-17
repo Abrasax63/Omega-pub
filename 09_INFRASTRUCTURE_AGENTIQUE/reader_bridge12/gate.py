@@ -13,6 +13,7 @@ MAX_CLAIMS = 32
 MAX_EVIDENCE = 8
 ID = re.compile(r"^C[A-Za-z0-9_-]{0,31}$")
 ROLES = {"premise", "conclusion", "limitation"}
+INLINE_UNSAFE = re.compile(r"\b(?:preuve|démonstration|proof|réfuté|réfutation|contre[- ]exemple)\b", re.I)
 CLAIM_KEYS = {"claim_id", "packet_id", "evidence"}
 EVIDENCE_KEYS = {"role", "packet_id", "line", "literal"}
 
@@ -31,6 +32,8 @@ def check_evidence(e: dict, lines: list[str], packets: dict) -> tuple[dict | Non
     source_line = lines[line-1]
     if source_line.count(literal) != 1:
         return None, "UNQUOTED_OR_AMBIGUOUS_LITERAL"
+    if role in ("premise", "conclusion") and INLINE_UNSAFE.search(source_line):
+        return None, "INLINE_PROOF_REFUTATION_OR_COUNTEREXAMPLE"
     if role in ("premise", "conclusion") and packet["context_status"] == "BLOCKED_SOURCE_CONTEXT":
         return None, "CLAIM_FROM_PROOF_REFUTATION_OR_LIMITS"
     return {
