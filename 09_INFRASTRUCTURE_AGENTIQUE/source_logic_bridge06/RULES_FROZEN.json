@@ -1,0 +1,164 @@
+{
+  "version": "0.1-explicit-human-transcription",
+  "label": "Claims manually transcribed from historical research docs; NOT independent proof validation",
+  "rules": [
+    {
+      "source_id": "BR-ACC-01",
+      "source_blob": "006a57586ae1e7f100c48d7bc4f159723c2b3352",
+      "rule_id": "access-factor",
+      "premises": [
+        "finite_system",
+        "total_actions",
+        "deterministic",
+        "fixed_observation"
+      ],
+      "conclusion": "factor_language_equals_access_closure",
+      "anchor": "Fact(L_E) = L_H",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-ACC-01",
+      "source_blob": "006a57586ae1e7f100c48d7bc4f159723c2b3352",
+      "rule_id": "access-split",
+      "premises": [
+        "finite_system",
+        "total_actions",
+        "deterministic",
+        "fixed_observation"
+      ],
+      "conclusion": "access_gluing_split_disjoint",
+      "anchor": "décomposition exacte et disjointe",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-ACC-01",
+      "source_blob": "006a57586ae1e7f100c48d7bc4f159723c2b3352",
+      "rule_id": "access-counterexample",
+      "premises": [
+        "specific_a_to_b_to_b_example"
+      ],
+      "conclusion": "not:access_defect_empty",
+      "anchor": "défaut d'accès contient",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-DESC-01",
+      "source_blob": "fb584f81bdd285da480df1eafacea75d0ab77c19",
+      "rule_id": "desc-predict",
+      "premises": [
+        "prime_cycle",
+        "binary_nonconstant_output"
+      ],
+      "conclusion": "two_categories_predict_one_output",
+      "anchor": "deux catégories peuvent suffire",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-DESC-01",
+      "source_blob": "fb584f81bdd285da480df1eafacea75d0ab77c19",
+      "rule_id": "desc-update",
+      "premises": [
+        "prime_cycle",
+        "binary_nonconstant_output"
+      ],
+      "conclusion": "exact_update_requires_p_categories",
+      "anchor": "doit avoir `p` catégories",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-DESC-01",
+      "source_blob": "fb584f81bdd285da480df1eafacea75d0ab77c19",
+      "rule_id": "desc-derive",
+      "premises": [
+        "exact_update_requires_p_categories",
+        "p_greater_than_two"
+      ],
+      "conclusion": "not:two_categories_suffice_exact_update",
+      "anchor": "doit avoir `p` catégories",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "source_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b",
+      "rule_id": "cap-box",
+      "premises": [
+        "finite_witnesses",
+        "one_pattern_per_witness",
+        "independent_selection"
+      ],
+      "conclusion": "multiplicity_box",
+      "anchor": "C(P,σ) = ∏",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "source_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b",
+      "rule_id": "cap-tu",
+      "premises": [
+        "one_pattern_per_witness"
+      ],
+      "conclusion": "incidence_totally_unimodular",
+      "anchor": "totalement unimodulaire.",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "source_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b",
+      "rule_id": "cap-global-limit",
+      "premises": [
+        "general_family_of_systems"
+      ],
+      "conclusion": "not:union_always_single_box",
+      "anchor": "cette union n'est pas forcément une seule boîte",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "source_blob": "ff8b35f41aca9de2d362f0bf4852f133527a479d",
+      "rule_id": "tree-minimal-inclusion",
+      "premises": [
+        "affine_binary",
+        "running_intersection_tree",
+        "literal_shared_variables",
+        "exact_equation_encoding",
+        "glue_group_contracts",
+        "joint_empty"
+      ],
+      "conclusion": "incompatible_core_minimal_by_inclusion",
+      "anchor": "minimal par inclusion",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "source_blob": "ff8b35f41aca9de2d362f0bf4852f133527a479d",
+      "rule_id": "tree-xor",
+      "premises": [
+        "affine_binary",
+        "running_intersection_tree",
+        "literal_shared_variables",
+        "exact_equation_encoding",
+        "glue_group_contracts",
+        "joint_empty"
+      ],
+      "conclusion": "xor_certificate",
+      "anchor": "certificat XOR",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "source_blob": "ff8b35f41aca9de2d362f0bf4852f133527a479d",
+      "rule_id": "tree-positive",
+      "premises": [
+        "affine_binary",
+        "running_intersection_tree",
+        "literal_shared_variables",
+        "exact_equation_encoding",
+        "glue_group_contracts",
+        "joint_nonempty"
+      ],
+      "conclusion": "positive_joint_prolongation",
+      "anchor": "fournit le comptage/prolongement",
+      "interpretation_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    }
+  ]
+}
