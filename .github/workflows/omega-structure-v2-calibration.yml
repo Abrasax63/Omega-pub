@@ -1,0 +1,40 @@
+name: Omega structure math v2 calibration only
+on:
+  push:
+    branches:
+      - experiment/omega-math-structure-v2-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-unseen-math-extraction-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  structure-calibration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: v1 and v2 tests on known calibration sources only
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/unseen_math_read07
+        run: python3 -m unittest -v test_extract.py test_structure_v2.py
+      - name: Calibration B02 and quote validation
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/unseen_math_read07/structure_v2.py \
+            --source 09_INFRASTRUCTURE_AGENTIQUE/unseen_math_read07/holdout/BR-OBS-CAP-02_SUPPORT_VS_WEIGHT.md \
+            --source-blob 3b5f4a645de2520e7ddd461ef98dd116d3b5fbd7 \
+            --output /tmp/omega-structure-v2-calibration.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-structure-v2-calibration.json", encoding="utf-8"))
+          print("posthoc_calibration_counts:", r["counts"])
+          print("citations_valid:", r["citations_valid"])
+          assert r["citations_valid"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-structure-v2-calibration
+          path: /tmp/omega-structure-v2-calibration.json
+          retention-days: 14

@@ -1,0 +1,175 @@
+{
+  "status": "manual-source-span-adjudication-not-proof",
+  "scope": "two preregistered untouched source files after parser v2 freeze",
+  "parser_commit_before_holdout": "a492911eeacfe62e193da57c8b4f32a14bdb9a9a",
+  "historical_source_commit": "2f71a6b8ed03914c0b5d308520d30e0133d9e9ad",
+  "source_notes": "same experimenter; manually selected salient items, not independent subject expert",
+  "documents": [
+    {
+      "id": "BR-STATE-01",
+      "file": "BR-STATE-01_ETATS_PREDICTIFS_REPARATION.md",
+      "source_blob": "b7f79410a589dd8ba62a997860c924593e85a73c",
+      "items": [
+        {
+          "id": "S01",
+          "line": 7,
+          "section": "Domaine",
+          "role": "DOMAIN",
+          "anchor": "Histoires accessibles",
+          "acceptable_kinds": []
+        },
+        {
+          "id": "S02",
+          "line": 13,
+          "section": "Énoncé A",
+          "role": "DEFINITION",
+          "anchor": "h ~_E h'",
+          "acceptable_kinds": [
+            "THEOREM_STATEMENT_LITERAL"
+          ]
+        },
+        {
+          "id": "S03",
+          "line": 15,
+          "section": "Énoncé A",
+          "role": "CONCLUSION",
+          "anchor": "représentation minimale",
+          "acceptable_kinds": [
+            "THEOREM_STATEMENT_LITERAL"
+          ]
+        },
+        {
+          "id": "S04",
+          "line": 19,
+          "section": "Énoncé B",
+          "role": "CONDITIONAL_RESULT",
+          "anchor": "Si `E` est fermé",
+          "acceptable_kinds": [
+            "THEOREM_STATEMENT_LITERAL"
+          ]
+        },
+        {
+          "id": "S05",
+          "line": 23,
+          "section": "Énoncé C",
+          "role": "CONDITIONAL_RESULT",
+          "anchor": "Si `E ⊆ F`",
+          "acceptable_kinds": [
+            "THEOREM_STATEMENT_LITERAL"
+          ]
+        },
+        {
+          "id": "S06",
+          "line": 29,
+          "section": "Énoncé D",
+          "role": "DEFINITION",
+          "anchor": "x ≈ x'",
+          "acceptable_kinds": [
+            "THEOREM_STATEMENT_LITERAL"
+          ]
+        },
+        {
+          "id": "S07",
+          "line": 31,
+          "section": "Énoncé D",
+          "role": "CONCLUSION",
+          "anchor": "plus grossière équivalence stable",
+          "acceptable_kinds": [
+            "THEOREM_STATEMENT_LITERAL"
+          ]
+        },
+        {
+          "id": "S08",
+          "line": 35,
+          "section": "Limites",
+          "role": "LIMITATION",
+          "anchor": "La minimalité est prédictive",
+          "acceptable_kinds": [
+            "LIMITATION_LITERAL"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BR-OBS-01",
+      "file": "BR-OBS-01_ADAPTATIF_VS_PREDEFINI.md",
+      "source_blob": "aa8425b35c8d9ad2175b9f05d42d4b624f51e75d",
+      "items": [
+        {
+          "id": "O01",
+          "line": 9,
+          "section": "Énoncé principal",
+          "role": "THEOREM_CLAIM",
+          "anchor": "r_IO < ∞",
+          "acceptable_kinds": [
+            "THEOREM_STATEMENT_LITERAL"
+          ]
+        },
+        {
+          "id": "O02",
+          "line": 13,
+          "section": "Énoncé principal",
+          "role": "EXAMPLE",
+          "anchor": "(r_IO, L_A, L_P) = (2, 3, ∞)",
+          "acceptable_kinds": [
+            "THEOREM_STATEMENT_LITERAL"
+          ]
+        },
+        {
+          "id": "O03",
+          "line": 17,
+          "section": "Énoncé principal",
+          "role": "EXAMPLE",
+          "anchor": "(r_IO, L_A, L_P) = (1, 2, ∞)",
+          "acceptable_kinds": [
+            "THEOREM_STATEMENT_LITERAL"
+          ]
+        },
+        {
+          "id": "O04",
+          "line": 19,
+          "section": "Énoncé principal",
+          "role": "NEGATIVE_THEOREM_CLAIM",
+          "anchor": "ne permet pas, en général",
+          "acceptable_kinds": [
+            "THEOREM_STATEMENT_LITERAL"
+          ]
+        },
+        {
+          "id": "O05",
+          "line": 23,
+          "section": "Minimalité",
+          "role": "EXACT_FINITE_CLAIM",
+          "anchor": "machines binaires complètes à 4 états",
+          "acceptable_kinds": []
+        },
+        {
+          "id": "O06",
+          "line": 25,
+          "section": "Minimalité",
+          "role": "EXACT_FINITE_CLAIM",
+          "anchor": "(|X|,|A|,|Y|,r_IO,L_A)",
+          "acceptable_kinds": []
+        },
+        {
+          "id": "O07",
+          "line": 27,
+          "section": "Minimalité",
+          "role": "LIMITATION",
+          "anchor": "reste indéterminée",
+          "acceptable_kinds": [
+            "LIMITATION_LITERAL"
+          ]
+        },
+        {
+          "id": "O08",
+          "line": 31,
+          "section": "Algorithme",
+          "role": "METHOD",
+          "anchor": "couples stricts de croyances",
+          "acceptable_kinds": []
+        }
+      ]
+    }
+  ]
+}
