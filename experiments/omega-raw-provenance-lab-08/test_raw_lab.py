@@ -104,8 +104,10 @@ class RawProvenanceControls(unittest.TestCase):
         t,raw=self.fresh_copy()
         try:
             packet=self.root_packets()[0]
-            with (raw/"cases"/packet/"result.json").open("ab") as f:
-                f.write(b"TAMPER")
+            output=raw/"cases"/packet/"result.json"
+            doc=json.loads(output.read_text())
+            doc["sum"]+=1  # still valid JSON; contents no longer match receipt hash
+            generate.write_json(output,doc)
             with self.assertRaisesRegex(infer.ProvenanceConflict,
                                          "HASH_CONTRADICTION"):
                 infer.resolve(raw)
