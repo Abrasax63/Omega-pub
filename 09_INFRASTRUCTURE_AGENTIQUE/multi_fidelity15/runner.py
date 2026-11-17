@@ -300,11 +300,13 @@ def inspect(row,output,case_id):
     return result
 
 def evaluate(rows,call=model_request,ledger_path=None):
-    if ledger_path is None or not Path(ledger_path).exists():
+    if ledger_path is None:
         raise CandidateError("RESTORED_CHAINED_LEDGER_REQUIRED")
     path=Path(ledger_path).resolve()
     if path.is_relative_to(ROOT):
         raise CandidateError("JOURNAL_MUST_BE_OUTSIDE_REPO")
+    if not path.exists():
+        raise CandidateError("RESTORED_CHAINED_LEDGER_REQUIRED")
     prior,_=ledger.replay(path.read_text(encoding="utf-8"))
     if len(prior)<12 or prior[11]["event_hash"]!=(
         "6cd253c378c38bf9be62b25c549cebbb85ebb552502b0dc5da3b3cb5a4225686"):
