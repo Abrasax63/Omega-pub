@@ -37,6 +37,8 @@ HORN_FORMS = [
         r"^Sachant (?P<facts>.+?), peut-on déduire (?P<goal>" + QUOTED + r") \?$")),
     ("HORN_AVEC_ETABLIR", re.compile(
         r"^Avec (?P<facts>.+?), peut-on établir (?P<goal>" + QUOTED + r") \?$")),
+    ("HORN_AVEC_DEDUIRE", re.compile(
+        r"^Avec (?P<facts>.+?), peut-on déduire (?P<goal>" + QUOTED + r") \?$")),
     ("HORN_AVEC_EVALUER", re.compile(
         r"^Avec (?P<facts>.+?), est-ce que (?P<goal>" + QUOTED + r") est démontrable \?$")),
     ("HORN_SACHANT_VRAIS", re.compile(
@@ -276,7 +278,9 @@ def run_frozen(cases, documents=None):
         output["matched_source"] = output["source_id"] == gold["source_id"]
     return {
         "experiment": "OMEGA-NATURAL-QUERY-08",
-        "status": "SAME_AUTHOR_BOUNDED_LANGUAGE_NOT_GENERAL_SEMANTICS",
+        "status": "POSTHOC_H06_GRAMMAR_REPAIR_NOT_BLIND",
+        "original_unchanged_run": "https://github.com/Abrasax63/Omega-pub/actions/runs/44138024001",
+        "posthoc_only": True,
         "cases": len(cases),
         "decisions_sha256_before_gold": prediction_sha,
         "inputs_sha256": json_sha(inputs),
