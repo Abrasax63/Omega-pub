@@ -1,0 +1,51 @@
+name: Omega source to proof 07 - finite grounded reasoning
+
+on:
+  pull_request:
+    branches:
+      - fix/omega-source-logic-scope-v2-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-to-proof-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile, run unit tests and falsification controls
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/source_to_proof07
+        run: |
+          set -euo pipefail
+          python -m py_compile pipeline.py test_pipeline.py
+          python -m unittest -v test_pipeline.py
+      - name: Produce inspectable raw report (never scientific promotion)
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/source_to_proof07/pipeline.py --output /tmp/omega-source-to-proof07.json
+          python - <<'PY'
+          import json
+          data=json.load(open('/tmp/omega-source-to-proof07.json',encoding='utf8'))
+          assert data['experiment']=='OMEGA-SOURCE-TO-PROOF-07'
+          assert data['cases']==12
+          assert data['correct']==12 and data['false_confident']==0
+          assert data['answered']==7 and data['always_abstain_baseline_correct']==5
+          assert data['invalid_certificates']==0
+          assert all(x['certificate_valid'] for x in data['results'])
+          assert not data['auto_promotion'] and not data['model_weights_changed']
+          print({k:data[k] for k in ('cases','correct','answered','false_confident','invalid_certificates','always_abstain_baseline_correct','choices_sha256_before_scoring')})
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: omega-source-to-proof07-same-author-evidence
+          path: /tmp/omega-source-to-proof07.json
+          if-no-files-found: warn
+          retention-days: 14

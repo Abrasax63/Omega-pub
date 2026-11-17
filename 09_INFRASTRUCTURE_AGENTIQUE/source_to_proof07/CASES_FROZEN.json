@@ -1,0 +1,186 @@
+{
+  "cohort": "source-to-proof07-same-author-not-blind",
+  "locked_before_implementation": true,
+  "limitations": "fixture Horn contrôlée et un théorème de source historique; pas de compréhension générale ni de holdout externe",
+  "cases": [
+    {
+      "source_id": "BR-LAB-RULES-07",
+      "expected_source_blob": "d2622bd1089e33c2057d012dca07be2c9f1934db",
+      "kind": "horn",
+      "id": "H01",
+      "facts": [
+        "evidence",
+        "assumptions"
+      ],
+      "goal": "claim",
+      "expected": "SUPPORTED"
+    },
+    {
+      "source_id": "BR-LAB-RULES-07",
+      "expected_source_blob": "d2622bd1089e33c2057d012dca07be2c9f1934db",
+      "kind": "horn",
+      "id": "H02",
+      "facts": [
+        "evidence"
+      ],
+      "goal": "claim",
+      "expected": "ABSTAIN"
+    },
+    {
+      "source_id": "BR-LAB-RULES-07",
+      "expected_source_blob": "d2622bd1089e33c2057d012dca07be2c9f1934db",
+      "kind": "horn",
+      "id": "H03",
+      "facts": [
+        "evidence",
+        "assumptions",
+        "reviewed"
+      ],
+      "goal": "ready",
+      "expected": "SUPPORTED"
+    },
+    {
+      "source_id": "BR-LAB-RULES-07",
+      "expected_source_blob": "d2622bd1089e33c2057d012dca07be2c9f1934db",
+      "kind": "horn",
+      "id": "H04",
+      "facts": [
+        "alarm"
+      ],
+      "goal": "safe",
+      "expected": "CONTRADICTED"
+    },
+    {
+      "source_id": "BR-LAB-RULES-07",
+      "expected_source_blob": "d2622bd1089e33c2057d012dca07be2c9f1934db",
+      "kind": "horn",
+      "id": "H05",
+      "facts": [
+        "alarm"
+      ],
+      "goal": "claim",
+      "expected": "ABSTAIN"
+    },
+    {
+      "source_id": "BR-LAB-RULES-07",
+      "expected_source_blob": "d2622bd1089e33c2057d012dca07be2c9f1934db",
+      "kind": "horn",
+      "id": "H06",
+      "facts": [
+        "evidence",
+        "assumptions"
+      ],
+      "goal": "ready",
+      "expected": "ABSTAIN"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "expected_source_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b",
+      "kind": "capacity",
+      "independent_selection": true,
+      "id": "C01",
+      "witness_motifs": [
+        "A",
+        "A",
+        "A",
+        "B",
+        "B"
+      ],
+      "requested": {
+        "A": 2,
+        "B": 1
+      },
+      "expected": "SUPPORTED"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "expected_source_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b",
+      "kind": "capacity",
+      "independent_selection": true,
+      "id": "C02",
+      "witness_motifs": [
+        "A",
+        "A",
+        "A",
+        "B",
+        "B"
+      ],
+      "requested": {
+        "A": 2,
+        "B": 3
+      },
+      "expected": "CONTRADICTED"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "expected_source_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b",
+      "kind": "capacity",
+      "independent_selection": true,
+      "id": "C03",
+      "witness_motifs": [
+        "A",
+        "B"
+      ],
+      "requested": {
+        "A": 1,
+        "C": 1
+      },
+      "expected": "CONTRADICTED"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "expected_source_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b",
+      "kind": "capacity",
+      "independent_selection": true,
+      "id": "C04",
+      "witness_motifs": [
+        "A",
+        "A",
+        "B",
+        "B"
+      ],
+      "requested": {
+        "A": 0,
+        "B": 0
+      },
+      "expected": "SUPPORTED"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "expected_source_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b",
+      "kind": "capacity",
+      "independent_selection": false,
+      "id": "C05",
+      "witness_motifs": [
+        "A",
+        "A",
+        "B"
+      ],
+      "requested": {
+        "A": 1,
+        "B": 1
+      },
+      "expected": "ABSTAIN"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "expected_source_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b",
+      "kind": "capacity",
+      "independent_selection": true,
+      "id": "C06",
+      "additional_constraints": [
+        "cannot mix motifs"
+      ],
+      "witness_motifs": [
+        "A",
+        "A",
+        "B"
+      ],
+      "requested": {
+        "A": 1,
+        "B": 1
+      },
+      "expected": "ABSTAIN"
+    }
+  ]
+}
