@@ -1,0 +1,191 @@
+name: Omega contextual bandit 02 - observed feedback holdout
+
+on:
+  push:
+    branches:
+      - experiment/omega-contextual-bandit-2026-11-17
+    paths:
+      - 'experiments/omega-contextual-bandit-02/**'
+      - '.github/workflows/omega-contextual-bandit-02.yml'
+  pull_request:
+    branches:
+      - experiment/omega-three-policy-bandit-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run fourteen fixed scientific controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-contextual-bandit-02/*.py
+          (cd experiments/omega-contextual-bandit-02 && python - <<'PY'
+          import unittest
+          suite = unittest.defaultTestLoader.discover('.', pattern='test_contextual.py')
+          assert suite.countTestCases() == 14, suite.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+          )
+
+  frozen-holdout:
+    if: github.event_name == 'pull_request'
+    needs: controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Perform one preregistered paired holdout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-contextual-bandit-02/contextual_lab.py --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Audit raw traces, frozen weights, costs and all primary scores
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-CONTEXTUAL-BANDIT-02'
+          assert d['preregistered_commit']=='10f94b228d1806f9576dda9078be226d8bba07a6'
+          assert d['seeds']==[55117,55118,55119]
+          assert d['policies']==['ACTIVE','COST_AWARE','GLOBAL','CONTEXTUAL']
+          assert d['training_n']==48 and d['holdout_n']==24
+          assert d['max_queries']==8 and d['tariffs']==[[1,4],[4,1]]
+          assert d['no_paid_api'] and not d['main_modified'] and not d['generalization_proven']
+          train,test=d['train_runs'],d['holdout_runs']
+          assert len(train)==48 and len(test)==24
+          models=[x['model'] for x in train+test]
+          def freeze(model):
+              return tuple(tuple(tuple(z) for z in row) for row in model)
+          assert len({freeze(x) for x in models})==72
+          def digest(rows):
+              return hashlib.sha256(json.dumps(rows,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+          assert digest([x['model'] for x in train])==d['train_sha256']
+          assert digest([x['model'] for x in test])==d['holdout_sha256']
+
+          def trace(model,word):
+              transitions, outputs=model
+              state=0
+              emitted=[]
+              for bit in word:
+                  emitted.append(outputs[state][bit])
+                  state=transitions[state][bit]
+              return emitted
+          counts={'GLOBAL':{'ACTIVE':0,'COST_AWARE':0},
+                  'CONTEXTUAL':{'ACTIVE':0,'COST_AWARE':0}}
+          totals={'GLOBAL':{'ACTIVE':0.0,'COST_AWARE':0.0},
+                  'CONTEXTUAL':{'ACTIVE':0.0,'COST_AWARE':0.0}}
+          cells={}
+          cell_totals={}
+          for phase,rows in [('train',train),('test',test)]:
+              for row in rows:
+                  tariff=[1,4] if row['index']%2==0 else [4,1]
+                  assert row['tariff']==tariff
+                  arms=('GLOBAL','CONTEXTUAL') if phase=='train' else d['policies']
+                  assert set(row['arms'])==set(arms)
+                  for arm in arms:
+                      ep=row['arms'][arm]
+                      assert ep['arm']==arm and ep['tariff']==tariff
+                      assert ep['queries_paid']==len(ep['log'])<=8
+                      assert ep['cost_paid']==sum(x['paid'] for x in ep['log'])<=320
+                      seen=set()
+                      for line in ep['log']:
+                          word=line['word']
+                          assert len(word)==10 and all(bit in (0,1) for bit in word)
+                          assert tuple(word) not in seen
+                          seen.add(tuple(word))
+                          assert line['paid']==sum(tariff[bit] for bit in word)
+                          assert line['outputs']==trace(row['model'],word)
+                          assert line['detected']==any(line['outputs'])
+                          assert line['before']>=line['after']>=1
+                          assert line['context'].startswith('ZERO_CHEAP' if tariff==[1,4] else 'ONE_CHEAP')
+                          assert line['context'].endswith('_LARGE' if line['before']>=64 else '_SMALL')
+                          expected=4*int(line['detected']) + 2*(line['before']-line['after'])/line['before'] - line['paid']/10
+                          if phase=='train':
+                              assert line['reward_training'] is not None
+                              assert abs(line['reward_training']-expected)<1e-10
+                              if line['updated_model']:
+                                  assert not line['same_candidate']
+                                  counts[arm][line['choice']]+=1
+                                  totals[arm][line['choice']]+=expected
+                                  if arm=='CONTEXTUAL':
+                                      key=line['context']
+                                      cells.setdefault(key,{'ACTIVE':0,'COST_AWARE':0})
+                                      cell_totals.setdefault(key,{'ACTIVE':0.0,'COST_AWARE':0.0})
+                                      cells[key][line['choice']]+=1
+                                      cell_totals[key][line['choice']]+=expected
+                          else:
+                              assert line['reward_training'] is None and not line['updated_model']
+                      assert ep['detected']==(ep['status']=='DETECTED_VERIFIED_DIVERGENCE')
+                      assert ep['detected']==any(x['detected'] for x in ep['log'])
+                      assert not ep['false_certificate']
+          for arm,snapshot in [('GLOBAL',d['frozen_global']),('CONTEXTUAL',d['frozen_contextual'])]:
+              assert snapshot['global_counts']==counts[arm]
+              for action in counts[arm]:
+                  assert abs(snapshot['global_totals'][action]-totals[arm][action])<1e-8
+          assert d['frozen_global']['cell_counts']=={}
+          assert d['frozen_contextual']['cell_counts']==cells
+          for key in cells:
+              for action in cells[key]:
+                  assert abs(d['frozen_contextual']['cell_totals'][key][action]-cell_totals[key][action])<1e-8
+
+          for arm in d['policies']:
+              episodes=[x['arms'][arm] for x in test]
+              score=d['summary'][arm]
+              assert score['detected']==sum(x['detected'] for x in episodes)
+              assert score['false_certificates']==sum(x['false_certificate'] for x in episodes)
+              assert score['total_cost']==sum(x['cost_paid'] for x in episodes)
+              assert abs(score['mean_cost']-score['total_cost']/24)<1e-10
+              assert abs(score['mean_queries']-sum(x['queries_paid'] for x in episodes)/24)<1e-10
+          candidate=d['summary']['CONTEXTUAL']
+          passed=(candidate['detected']==24 and candidate['false_certificates']==0 and
+                  all(candidate['mean_cost']<d['summary'][r]['mean_cost']
+                      for r in ['ACTIVE','COST_AWARE','GLOBAL']) and
+                  candidate['mean_queries']<=min(d['summary'][r]['mean_queries']
+                      for r in ['ACTIVE','COST_AWARE','GLOBAL']))
+          assert d['status']==('DESCRIPTIVE_CONTEXTUAL_GAIN' if passed else
+                              'NO_CONTEXTUAL_ADVANTAGE_DEMONSTRATED')
+          for ref in ['ACTIVE','COST_AWARE','GLOBAL']:
+              diffs=[row['arms']['CONTEXTUAL']['cost_paid']-
+                     row['arms'][ref]['cost_paid'] for row in test]
+              p=d['paired'][ref]
+              assert p['wins']==sum(x<0 for x in diffs)
+              assert p['losses']==sum(x>0 for x in diffs)
+              assert p['ties']==sum(x==0 for x in diffs)
+              assert p['total_difference']==sum(diffs)
+          print('FROZEN_STATUS',d['status'])
+          print('PAIRED_SUMMARY',d['summary'])
+          print('TRAINED_ACTION_COUNTS',counts)
+          print('TRAINED_CONTEXT_COUNTS',cells)
+          PY
+      - name: Archive result, raw trials, negative cases and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-contextual-bandit-02-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
