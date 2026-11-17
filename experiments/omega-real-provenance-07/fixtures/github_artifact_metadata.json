@@ -1,0 +1,170 @@
+{
+  "snapshot_date": "2026-11-17",
+  "source_type": "selected_fields_from_public_GitHub_REST_APIs_not_full_raw_responses",
+  "repository": "Abrasax63/Omega-pub",
+  "source_documents": [
+    {
+      "run_api_url": "https://api.github.com/repos/Abrasax63/Omega-pub/actions/runs/44162518044",
+      "artifacts_api_url": "https://api.github.com/repos/Abrasax63/Omega-pub/actions/runs/44162518044/artifacts",
+      "run": {
+        "id": 44162518044,
+        "run_attempt": 1,
+        "head_sha": "7dfc33071bf4b472b7f3444400d88565076489d2",
+        "head_branch": "experiment/omega-provenance-oracle-06-2026-11-17",
+        "event": "pull_request",
+        "repository": "Abrasax63/Omega-pub",
+        "created_at": "2026-11-17T19:48:19Z",
+        "conclusion": "success"
+      },
+      "artifact_count": 2,
+      "artifacts": [
+        {
+          "id": 14363373146,
+          "name": "omega-provenance-oracle-06-calibration",
+          "size_in_bytes": 40965,
+          "created_at": "2026-11-17T19:48:27Z",
+          "workflow_run": {
+            "id": 44162518044,
+            "head_sha": "7dfc33071bf4b472b7f3444400d88565076489d2",
+            "head_branch": "experiment/omega-provenance-oracle-06-2026-11-17"
+          }
+        },
+        {
+          "id": 14362909206,
+          "name": "omega-provenance-oracle-06-heldout-tariffs",
+          "size_in_bytes": 79368,
+          "created_at": "2026-11-17T19:48:43Z",
+          "workflow_run": {
+            "id": 44162518044,
+            "head_sha": "7dfc33071bf4b472b7f3444400d88565076489d2",
+            "head_branch": "experiment/omega-provenance-oracle-06-2026-11-17"
+          }
+        }
+      ]
+    },
+    {
+      "run_api_url": "https://api.github.com/repos/Abrasax63/Omega-pub/actions/runs/44159373482",
+      "artifacts_api_url": "https://api.github.com/repos/Abrasax63/Omega-pub/actions/runs/44159373482/artifacts",
+      "run": {
+        "id": 44159373482,
+        "run_attempt": 1,
+        "head_sha": "53c485c6e4e11cbf20c3fe3f54d6695f90743d71",
+        "head_branch": "experiment/omega-exact-oracle-05-2026-11-17",
+        "event": "pull_request",
+        "repository": "Abrasax63/Omega-pub",
+        "created_at": "2026-11-17T19:30:51Z",
+        "conclusion": "success"
+      },
+      "artifact_count": 1,
+      "artifacts": [
+        {
+          "id": 14363146153,
+          "name": "omega-exact-oracle-05-retrospective-evidence",
+          "size_in_bytes": 59247,
+          "created_at": "2026-11-17T19:31:34Z",
+          "workflow_run": {
+            "id": 44159373482,
+            "head_sha": "53c485c6e4e11cbf20c3fe3f54d6695f90743d71",
+            "head_branch": "experiment/omega-exact-oracle-05-2026-11-17"
+          }
+        }
+      ]
+    },
+    {
+      "run_api_url": "https://api.github.com/repos/Abrasax63/Omega-pub/actions/runs/44151231771",
+      "artifacts_api_url": "https://api.github.com/repos/Abrasax63/Omega-pub/actions/runs/44151231771/artifacts",
+      "run": {
+        "id": 44151231771,
+        "run_attempt": 1,
+        "head_sha": "24ca7bcb112e7d5dd7b72759d8ea5166bdc04f6e",
+        "head_branch": "experiment/omega-cost-to-go-04-2026-11-17",
+        "event": "pull_request",
+        "repository": "Abrasax63/Omega-pub",
+        "created_at": "2026-11-17T18:45:16Z",
+        "conclusion": "success"
+      },
+      "artifact_count": 1,
+      "artifacts": [
+        {
+          "id": 14358313578,
+          "name": "omega-cost-to-go-04-evidence",
+          "size_in_bytes": 50767,
+          "created_at": "2026-11-17T18:45:35Z",
+          "workflow_run": {
+            "id": 44151231771,
+            "head_sha": "24ca7bcb112e7d5dd7b72759d8ea5166bdc04f6e",
+            "head_branch": "experiment/omega-cost-to-go-04-2026-11-17"
+          }
+        }
+      ]
+    },
+    {
+      "run_api_url": "https://api.github.com/repos/Abrasax63/Omega-pub/actions/runs/44149347157",
+      "artifacts_api_url": "https://api.github.com/repos/Abrasax63/Omega-pub/actions/runs/44149347157/artifacts",
+      "run": {
+        "id": 44149347157,
+        "run_attempt": 1,
+        "head_sha": "49d9cb31901549088b7baf699f0dd40d84fce8e6",
+        "head_branch": "experiment/omega-context-contrast-03-2026-11-17",
+        "event": "push",
+        "repository": "Abrasax63/Omega-pub",
+        "created_at": "2026-11-17T18:34:40Z",
+        "conclusion": "success"
+      },
+      "artifact_count": 1,
+      "artifacts": [
+        {
+          "id": 14359120046,
+          "name": "omega-context-contrast-03-calibration",
+          "size_in_bytes": 13463,
+          "created_at": "2026-11-17T18:35:00Z",
+          "workflow_run": {
+            "id": 44149347157,
+            "head_sha": "49d9cb31901549088b7baf699f0dd40d84fce8e6",
+            "head_branch": "experiment/omega-context-contrast-03-2026-11-17"
+          }
+        }
+      ]
+    },
+    {
+      "run_api_url": "https://api.github.com/repos/Abrasax63/Omega-pub/actions/runs/44149424240",
+      "artifacts_api_url": "https://api.github.com/repos/Abrasax63/Omega-pub/actions/runs/44149424240/artifacts",
+      "run": {
+        "id": 44149424240,
+        "run_attempt": 1,
+        "head_sha": "49d9cb31901549088b7baf699f0dd40d84fce8e6",
+        "head_branch": "experiment/omega-context-contrast-03-2026-11-17",
+        "event": "pull_request",
+        "repository": "Abrasax63/Omega-pub",
+        "created_at": "2026-11-17T18:35:05Z",
+        "conclusion": "success"
+      },
+      "artifact_count": 2,
+      "artifacts": [
+        {
+          "id": 14358575909,
+          "name": "omega-context-contrast-03-calibration",
+          "size_in_bytes": 13463,
+          "created_at": "2026-11-17T18:35:14Z",
+          "workflow_run": {
+            "id": 44149424240,
+            "head_sha": "49d9cb31901549088b7baf699f0dd40d84fce8e6",
+            "head_branch": "experiment/omega-context-contrast-03-2026-11-17"
+          }
+        },
+        {
+          "id": 14356939391,
+          "name": "omega-context-contrast-03-holdout",
+          "size_in_bytes": 50357,
+          "created_at": "2026-11-17T18:35:33Z",
+          "workflow_run": {
+            "id": 44149424240,
+            "head_sha": "49d9cb31901549088b7baf699f0dd40d84fce8e6",
+            "head_branch": "experiment/omega-context-contrast-03-2026-11-17"
+          }
+        }
+      ]
+    }
+  ],
+  "mirror_references_added": false
+}
