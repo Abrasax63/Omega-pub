@@ -1,0 +1,44 @@
+name: Omega real math scope 03 (no API)
+on:
+  push:
+    branches:
+      - experiment/omega-real-math-scope-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-controlled-entailment-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  finite-source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact finite checks and provenance tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/real_math_scope03
+        run: python3 -m unittest -v test_real_math.py
+      - name: Evaluate 24 frozen real document claims
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/real_math_scope03/evaluate.py --output /tmp/omega-real-math-scope03.json
+          python3 - /tmp/omega-real-math-scope03.json <<'PY'
+          import json, sys
+          r = json.load(open(sys.argv[1], encoding="utf-8"))
+          print("status", r["status"])
+          print("candidate", r["engine_metrics"])
+          print("baseline", r["lexical_baseline_metrics"])
+          print("finite_oracle_count", r["finite_independent_checks"])
+          print("finite_checks_passed", r["finite_checks_passed"])
+          print("source_citations_valid", r["all_source_citations_valid"])
+          print("false_confident_decisions", r["false_confident_decisions"])
+          print("preregistered_local_criterion_met", r["preregistered_local_criterion_met"])
+          assert r["finite_checks_passed"] and r["all_source_citations_valid"]
+          PY
+      - name: Archive raw evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-real-math-scope03-raw
+          path: /tmp/omega-real-math-scope03.json
+          retention-days: 14
