@@ -1,0 +1,53 @@
+name: Omega math numeric fail-closed safety patch (posthoc)
+on:
+  push:
+    branches:
+      - fix/omega-real-math-numeric-gate-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-real-math-scope-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  posthoc-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check changed engine identity and original fixed data
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          path = Path("09_INFRASTRUCTURE_AGENTIQUE/real_math_scope03/engine.py")
+          buf = path.read_bytes()
+          blob = hashlib.sha1(b"blob " + str(len(buf)).encode() + b"\0" + buf).hexdigest()
+          assert blob == "4e4bf62de81bea0eebe1a7a80562e002698d0cd2", blob
+          print("posthoc_engine_blob", blob)
+          PY
+      - name: Unit and regression tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/real_math_scope03
+        run: python3 -m unittest -v test_real_math.py test_number_gate.py
+      - name: Archive posthoc comparison separately
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/real_math_scope03/evaluate.py --output /tmp/omega-math-original-after-patch.json
+          python3 09_INFRASTRUCTURE_AGENTIQUE/real_math_scope03/evaluate_adversarial.py --output /tmp/omega-math-posthoc-after-patch.json
+          python3 - <<'PY'
+          import json
+          a = json.load(open("/tmp/omega-math-original-after-patch.json"))
+          b = json.load(open("/tmp/omega-math-posthoc-after-patch.json"))
+          print("original_24_correct_after_patch", a["engine_metrics"]["correct"])
+          print("posthoc_12_correct_after_patch", b["correct"])
+          print("posthoc_confident_errors_after_patch", b["confident_errors"])
+          print("posthoc_scientific_failure_preserved", not b["preregistered_transfer_criterion_met"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-numeric-gate-posthoc-results
+          path: |
+            /tmp/omega-math-original-after-patch.json
+            /tmp/omega-math-posthoc-after-patch.json
+          retention-days: 14
