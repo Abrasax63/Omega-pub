@@ -11,6 +11,7 @@ from itertools import product
 from pathlib import Path
 import json
 
+PREREG_COMMIT = "01521caa4cc19971b1322ca77a3da67b4295ca4f"
 ALPHABET = (0, 1)
 OUTPUTS = (0, 1)
 MAX_STATES = 3
@@ -177,6 +178,7 @@ def run_experiment():
                 and all(x["detected"] for x in evaluation))
     return {
         "experiment": "OMEGA-STATE-SPLIT-01",
+        "preregistered_commit": PREREG_COMMIT,
         "mechanism_status": ("STATE_SPLIT_LOCAL_MECHANISM_VERIFIED"
                              if verified else "NOT_VERIFIED"),
         "search_scope": {"max_states": MAX_STATES, "input_alphabet": list(ALPHABET),
