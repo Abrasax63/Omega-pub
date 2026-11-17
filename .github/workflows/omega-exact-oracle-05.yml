@@ -1,0 +1,71 @@
+name: Omega exact oracle 05 - certified decision-tree headroom
+
+on:
+  push:
+    branches:
+      - experiment/omega-exact-oracle-05-2026-11-17
+    paths:
+      - 'experiments/omega-exact-oracle-05/**'
+      - '.github/workflows/omega-exact-oracle-05.yml'
+  pull_request:
+    branches:
+      - experiment/omega-cost-to-go-04-2026-11-17
+
+permissions:
+  contents: read
+
+jobs:
+  independent-small-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run exactly 14 guards without reading new holdout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-exact-oracle-05/*.py
+          (cd experiments/omega-exact-oracle-05 && python - <<'PY'
+          import unittest
+          tests=unittest.defaultTestLoader.discover('.',pattern='test_exact_oracle.py')
+          assert tests.countTestCases()==14,tests.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(tests).wasSuccessful()
+          PY
+          )
+  posthoc-exact-oracle-evaluation:
+    if: github.event_name == 'pull_request'
+    needs: independent-small-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run retrospective oracle on 24 exposed PR160 instances only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python -u experiments/omega-exact-oracle-05/exact_oracle.py --mode retrospective --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Independently audit all 1152 model-policy paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/omega-exact-oracle-05/audit_report.py evidence/report.json | tee evidence/audit.txt
+      - name: Archive retrospective witness, failed fresh-cohort status and negative results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-exact-oracle-05-retrospective-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
