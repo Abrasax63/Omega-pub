@@ -18,8 +18,12 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 SOURCES_DIR = ROOT / "09_INFRASTRUCTURE_AGENTIQUE/cross_domain_math05/source_snapshot"
-RULES_PATH = HERE / "RULES_FROZEN.json"
-RULES_BLOB = "34e32f63beb90e5dd0528148141b650ba8d9d848"
+# Runtime default is the corrected, narrower contract.
+RULES_PATH = HERE / "RULES_SCOPE_V2.json"
+RULES_BLOB = "7d1070f0f03d092d6e9678f2e2c2981e748f64d4"
+# Historical frozen v1 is still reproducible, but never the runtime default.
+LEGACY_RULES_PATH = HERE / "RULES_FROZEN.json"
+LEGACY_RULES_BLOB = "34e32f63beb90e5dd0528148141b650ba8d9d848"
 ID = re.compile(r"^(?:BR|OBS)-[A-Z0-9]+(?:-[A-Z0-9]+)+$")
 ATOM = re.compile(r"^(?:not:)?[a-z][a-z0-9_]*$")
 RULE = re.compile(r"^[a-z][a-z0-9_-]{2,80}$")
