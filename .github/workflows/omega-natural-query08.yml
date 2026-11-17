@@ -1,0 +1,55 @@
+name: Omega natural query 08 - French to bounded source proof
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-source-to-proof-07-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  natural-to-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and falsification tests (no model, no API)
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/natural_query08
+        run: |
+          set -euo pipefail
+          python -m py_compile translator.py test_translator.py
+          python -m unittest -v test_translator.py
+      - name: Evaluate frozen 20 French questions after choice barrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/natural_query08/translator.py \
+            --frozen --output /tmp/omega-natural-query08.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/omega-natural-query08.json',encoding='utf-8'))
+          assert r['experiment']=='OMEGA-NATURAL-QUERY-08'
+          assert r['cases']==20
+          assert r['correct']==20 and r['source_selection_correct']==20
+          assert r['answered']==11 and r['abstained']==9
+          assert r['false_confident']==0 and r['invalid_certificates']==0
+          assert r['all_abstain_baseline_correct']==9
+          assert r['decisions_sha256_before_gold'] and r['inputs_sha256']
+          assert not r['auto_promotion'] and not r['model_weights_changed']
+          print({k:r[k] for k in ('correct','answered','abstained','translated','false_confident','source_selection_correct','invalid_certificates','all_abstain_baseline_correct','decisions_sha256_before_gold')})
+          PY
+      - name: Archive raw evidence even after a failed gate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-natural-query08-frozen-evidence
+          path: /tmp/omega-natural-query08.json
+          retention-days: 14
+          if-no-files-found: warn
