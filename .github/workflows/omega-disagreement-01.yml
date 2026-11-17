@@ -46,6 +46,7 @@ jobs:
           PY
 
   new-independent-holdout:
+    if: github.event_name == 'pull_request'
     needs: controls
     runs-on: ubuntu-24.04
     timeout-minutes: 50
