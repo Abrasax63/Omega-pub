@@ -1,0 +1,56 @@
+name: Omega finite scientific verifier 11 — posthoc source claims
+on:
+  push:
+    branches:
+      - experiment/omega-semantic-fidelity10-2026-11-17
+  pull_request:
+    branches:
+      - fix/omega-proof-context-gate09-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-exact-oracles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source identity, original safety and finite mathematical oracles
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/semantic_fidelity10
+        run: python3 -m unittest -v test_fidelity.py test_holdout.py test_finite_oracle11.py
+      - name: Preserve original negative holdout
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/semantic_fidelity10/evaluate_holdout.py --output /tmp/omega-semantic10-original-negative.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-semantic10-original-negative.json", encoding="utf-8"))
+          assert r["status"] == "NOT_EVALUABLE_NO_IN_GRAMMAR_FORMULAS"
+          assert not r["scientific_success"]
+          print("original_holdout_status:", r["status"], "captured:", r["salient_items_captured_as_arithmetic_AST"])
+          PY
+      - name: Run independent exact finite theorem checks and falsification
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/semantic_fidelity10/finite_oracle11.py --output /tmp/omega-manual-v7-exact11.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-manual-v7-exact11.json", encoding="utf-8"))
+          print("status:", r["status"])
+          print("total_maps_checked:", r["number_of_total_maps_checked"])
+          print("pair_horizon_graphs:", r["pair_horizon_graphs_checked"])
+          print("finite_coloring_checks:", r["finite_field_coloring_count_checks"])
+          print("direct_inclusion_exclusion_checks:", r["direct_vs_inclusion_exclusion_checks"])
+          print("mathematical_mismatches:", r["mathematical_mismatch_count"])
+          print("false_claims_refuted:", list(r["deliberately_false_claims_refuted"]))
+          print("manual_semantic_mapping_independently_reviewed:", r["manual_mapping_independently_semantically_adjudicated"])
+          print("finite_test_success:", r["finite_test_success"])
+          assert r["finite_test_success"] and not r["manual_mapping_independently_semantically_adjudicated"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-semantic10-original-negative-and-posthoc-exact11
+          path: |
+            /tmp/omega-semantic10-original-negative.json
+            /tmp/omega-manual-v7-exact11.json
+          retention-days: 14

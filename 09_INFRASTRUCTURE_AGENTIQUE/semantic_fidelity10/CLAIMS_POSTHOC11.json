@@ -1,0 +1,117 @@
+{
+  "version": "V11-POSTHOC-MANUAL-CLAIMS",
+  "status": "HUMAN_TRANSCRIPTION_UNVERIFIED_NOT_AUTOMATIC_NLU",
+  "source": {
+    "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic_fidelity10/holdout/NOTE_RECHERCHE_V7_POLYNOME_TEMPOREL.md",
+    "blob": "6c482f97345abbb7f3d5bcd5e20da96259b276ce",
+    "historical_commit": "0ca3c5f63998cf16cc84478c7735c03445a08669"
+  },
+  "claims": [
+    {
+      "id": "V7-CODIM-EXACT",
+      "type": "FINITE_GRAPH_LINEAR_ALGEBRA",
+      "source_line_anchors": [
+        {
+          "line": 7,
+          "contains": "Soit \\(X\\) fini"
+        },
+        {
+          "line": 21,
+          "contains": "\\{T^t x,T^t y\\}"
+        },
+        {
+          "line": 33,
+          "contains": "c_u=c_v"
+        },
+        {
+          "line": 64,
+          "contains": "\\dim D_{p,L}"
+        },
+        {
+          "line": 66,
+          "contains": "\\kappa("
+        },
+        {
+          "line": 75,
+          "contains": "\\operatorname{codim}"
+        },
+        {
+          "line": 79,
+          "contains": "\\operatorname{rank} B"
+        },
+        {
+          "line": 89,
+          "contains": "\\le \\min(L,N-1)"
+        }
+      ],
+      "assumptions": [
+        "X finite, N=|X| >=1",
+        "T is a total deterministic endomap X->X",
+        "L integer >=1",
+        "p unordered pair of distinct states",
+        "E_{p,L} consists of distinct T^t(x),T^t(y) pairs for 0<=t<L",
+        "D_{p,L}(K) assigns equal colors to endpoints for every edge in E_{p,L}",
+        "K arbitrary field"
+      ],
+      "claim": "dim_K D_{p,L}=components(X,E_{p,L}); codim=N-components=rank_K(incidence); codim<=min(L,N-1)",
+      "tests": "finite direct exact and independent modular linear algebra",
+      "epistemic_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    },
+    {
+      "id": "V7-CHROMATIC-IE",
+      "type": "INCLUSION_EXCLUSION",
+      "source_line_anchors": [
+        {
+          "line": 96,
+          "contains": "Polynôme chromatique temporel"
+        },
+        {
+          "line": 107,
+          "contains": "\\pi:X\\to[q]"
+        },
+        {
+          "line": 113,
+          "contains": "x\\mapsto"
+        },
+        {
+          "line": 119,
+          "contains": "est un polynôme"
+        },
+        {
+          "line": 125,
+          "contains": "\\chi_{T,L}(q)"
+        },
+        {
+          "line": 127,
+          "contains": "\\sum_{J\\subseteq \\binom X2}"
+        },
+        {
+          "line": 128,
+          "contains": "(-1)^{|J|}"
+        },
+        {
+          "line": 130,
+          "contains": "\\bigcup_{p\\in J}E_{p,L}"
+        }
+      ],
+      "assumptions": [
+        "X finite, N>=1",
+        "T is a total deterministic endomap X->X",
+        "L integer >=1",
+        "q positive integer",
+        "observation pi:X->[q]",
+        "length-L orbit observation histories must be injective over X",
+        "p ranges over unordered distinct-state pairs"
+      ],
+      "claim": "number of injective-history observations equals sum over all sets J of unordered pairs of (-1)^|J| times q^components(X, union_{p in J} E_{p,L})",
+      "tests": "bruteforce observations versus independent inclusion-exclusion",
+      "epistemic_status": "HUMAN_TRANSCRIPTION_UNVERIFIED"
+    }
+  ],
+  "non_goals": [
+    "No theorem extracted by Omega 10 parser; source-to-contract prepared manually",
+    "No universal proof over all finite N",
+    "No independent semantic annotation by another reviewer",
+    "No changes to main or automatic Horn import"
+  ]
+}

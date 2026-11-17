@@ -1,0 +1,44 @@
+name: Omega semantic fidelity 10 — calibration only
+on:
+  push:
+    branches:
+      - experiment/omega-semantic-fidelity10-2026-11-17
+  pull_request:
+    branches:
+      - fix/omega-proof-context-gate09-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  restricted-arithmetic-ast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Strict arithmetic AST, countermodels, citation and abstention tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/semantic_fidelity10
+        run: python3 -m unittest -v test_fidelity.py
+      - name: Calibrate only on previously known Mealy math brick
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/semantic_fidelity10/fidelity.py \
+            --source 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08/holdout/BR-MEALY-HELLY-01_BRIQUE.md \
+            --source-blob 389957f14632fb253434202a46727ace8688b512 \
+            --output /tmp/omega-semantic-fidelity10-calibration.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-semantic-fidelity10-calibration.json", encoding="utf-8"))
+          print("source_candidates", len(r["candidates"]))
+          print("abstentions", len(r["abstentions"]))
+          print("bounded_interpretations", r["total_finite_valuations"])
+          print("all_candidates_verified", r["checked_all_candidates"])
+          print("automatic_horn_rules", len(r["horn_rules"]))
+          assert r["checked_all_candidates"] and r["candidates"]
+          assert not r["horn_rules"] and r["automatic_promotions"] == 0
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-semantic-fidelity10-calibration
+          path: /tmp/omega-semantic-fidelity10-calibration.json
+          retention-days: 14

@@ -1,0 +1,137 @@
+{
+  "protocol": "OMEGA10_FIRST_PROSPECTIVE_HOLDOUT",
+  "model_semantics": "literal ASCII scalar relation only; no TeX or French claims",
+  "calibration_engine_commit": "de17638abc860c74eaf9d4b6c86533e61fc4c7e7",
+  "ref": "0ca3c5f63998cf16cc84478c7735c03445a08669",
+  "annotator": "same experimenter; not independent scientific gold",
+  "expected_in_grammar": 0,
+  "expected_primary_status": "NOT_EVALUABLE_NO_IN_GRAMMAR_FORMULAS",
+  "documents": [
+    {
+      "id": "V7",
+      "name": "NOTE_RECHERCHE_V7_POLYNOME_TEMPOREL.md",
+      "source_blob": "6c482f97345abbb7f3d5bcd5e20da96259b276ce",
+      "annotations": [
+        {
+          "id": "V01",
+          "line": 7,
+          "role": "DOMAIN",
+          "anchor": "Soit \\(X\\) fini",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "V02",
+          "line": 47,
+          "role": "IFF_CONDITION",
+          "anchor": "si et seulement si",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "V03",
+          "line": 59,
+          "role": "DEFINITION_SCOPE",
+          "anchor": "impose seulement des égalités",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "V04",
+          "line": 119,
+          "role": "POLYNOMIAL_CONCLUSION",
+          "anchor": "est un polynôme",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "V05",
+          "line": 153,
+          "role": "DEFINITION",
+          "anchor": "Soit \\(g_{T,L}(k)\\)",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "V06",
+          "line": 196,
+          "role": "REFUTED_CLAIM",
+          "anchor": "RÉFUTÉ",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "V07",
+          "line": 375,
+          "role": "COROLLARY_HEADING",
+          "anchor": "COROLLAIRE",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "V08",
+          "line": 415,
+          "role": "THEOREM_STATUS",
+          "anchor": "Stabilisation du polynôme",
+          "expected": "OUT_OF_GRAMMAR"
+        }
+      ]
+    },
+    {
+      "id": "D01",
+      "name": "rapport_spectre_defauts_iteration_1.md",
+      "source_blob": "b75f3d610ba73b6c549d212d0606465d9fe947a3",
+      "annotations": [
+        {
+          "id": "D01",
+          "line": 88,
+          "role": "CONSTRUCTION_LIMITATION",
+          "anchor": "La construction démontrée",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "D02",
+          "line": 116,
+          "role": "THEOREM_HEADING",
+          "anchor": "Théorème de l'automate",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "D03",
+          "line": 171,
+          "role": "PROOF_ARGUMENT",
+          "anchor": "ce qui prouve le point",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "D04",
+          "line": 178,
+          "role": "COUNTEREXAMPLE_OR_SCOPE",
+          "anchor": "(B) seul est insuffisant",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "D05",
+          "line": 228,
+          "role": "EXTERNAL_BOUND_REFERENCE",
+          "anchor": "K_Q\\leq2m^2",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "D06",
+          "line": 290,
+          "role": "EXHAUSTIVE_CLAIM",
+          "anchor": "Tous les (T:X\\to X)",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "D07",
+          "line": 315,
+          "role": "TEST_REPORT",
+          "anchor": "testée sur 4 001",
+          "expected": "OUT_OF_GRAMMAR"
+        },
+        {
+          "id": "D08",
+          "line": 320,
+          "role": "FINITE_EXHAUSTIVE_SCOPE",
+          "anchor": "exhaustif pour (n\\leq5)",
+          "expected": "OUT_OF_GRAMMAR"
+        }
+      ]
+    }
+  ]
+}

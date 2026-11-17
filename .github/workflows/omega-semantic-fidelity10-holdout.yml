@@ -1,0 +1,46 @@
+name: Omega semantic fidelity 10 — original math holdout
+on:
+  push:
+    branches:
+      - experiment/omega-semantic-fidelity10-2026-11-17
+  pull_request:
+    branches:
+      - fix/omega-proof-context-gate09-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fidelity-prospective-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Calibration, adversarial cases, immutable heldout checks
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/semantic_fidelity10
+        run: python3 -m unittest -v test_fidelity.py test_holdout.py
+      - name: Record truthfully non-evaluable original holdout
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/semantic_fidelity10/evaluate_holdout.py --output /tmp/omega-semantic-fidelity10-heldout.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-semantic-fidelity10-heldout.json", encoding="utf-8"))
+          print("status:", r["status"])
+          print("source_count:", r["document_count"])
+          print("eligible_formulas:", r["heldout_eligible_formulas"])
+          print("machine_candidates:", r["total_machine_candidates"])
+          print("important_gold_items:", r["gold_semantically_salient_items"])
+          print("important_items_captured:", r["salient_items_captured_as_arithmetic_AST"])
+          print("latex_heavy_sources:", {k:v["latex_delimiter_lines"] for k,v in r["per_source"].items()})
+          print("structural_safety_checked:", r["all_presented_candidates_structurally_verified"])
+          print("scientific_success:", r["scientific_success"])
+          print("zero_unreviewed_horn_imports:", r["zero_unreviewed_horn_imports"])
+          assert r["zero_unreviewed_horn_imports"] and r["all_presented_candidates_structurally_verified"]
+          assert r["status"] == "NOT_EVALUABLE_NO_IN_GRAMMAR_FORMULAS" and not r["scientific_success"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-semantic-fidelity10-original-holdout-raw
+          path: /tmp/omega-semantic-fidelity10-heldout.json
+          retention-days: 14
