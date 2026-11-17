@@ -94,9 +94,56 @@ class RegistryAndAblationTests(unittest.TestCase):
         self.assertNotIn("access_test", p)
         self.assertNotIn("multiplicities", p)
         self.assertIn("Git blob:", p)
-        self.assertEqual(m.decode("noise\nREPONSE: OUI\n"), "OUI")
-        self.assertEqual(m.decode("noise\nREPONSE: \n"), "ABSTENTION")
-        self.assertEqual(m.decode("noise\nREPONSE: OUI NON\n"), "ABSTENTION")
+        self.assertEqual(m.decode("OUI\n\n[ Prompt: 37 t/s | Generation: 9 t/s ]\n\n>\n\nExiting...\n"), "OUI")
+        self.assertEqual(m.decode("NON\n"), "NON")
+        self.assertEqual(m.parse_generated("ABSTENTION\n")[:2],
+                         ("ABSTENTION", "MODEL_ABSTAIN"))
+        self.assertEqual(m.parse_generated("OUI NON\n")[1], "INVALID_GENERATION_FORMAT")
+
+    def test_fail_closed_on_legacy_full_or_truncated_prompt_echo(self):
+        # Historical raw memory traces included the prompt and only displayed
+        # a truncated preview, so the previous extractor misread them.
+        echoed = ("Options autorisées: OUI, NON, ABSTENTION.\n"
+                  "REPONSE:\nNON\n\n[ Prompt: 37 t/s | Generation: 9 t/s ]\n")
+        self.assertEqual(m.parse_generated(echoed)[1], "PROMPT_ECHO_DETECTED")
+        truncated = ("Document scientifique en lecture seule\n"
+                     "1: titre ... (truncated)\nNON\n")
+        self.assertEqual(m.parse_generated(truncated)[1], "PROMPT_ECHO_DETECTED")
+        self.assertEqual(m.parse_generated("NON\nOUI\n")[1], "INVALID_GENERATION_FORMAT")
+        self.assertEqual(m.parse_generated("ANSWER: OUI\n")[1], "INVALID_GENERATION_FORMAT")
+        self.assertEqual(m.parse_generated("Il me semble que NON\n")[1], "INVALID_GENERATION_FORMAT")
+        self.assertEqual(m.parse_generated("REPONSE:\nOUI\n")[1], "PROMPT_ECHO_DETECTED")
+        self.assertEqual(m.parse_generated("")[1], "INVALID_GENERATION_FORMAT")
+
+    def test_cli_disables_prompt_echo_and_preserves_generation(self):
+        from types import SimpleNamespace
+        prompt = ("Options autorisées: OUI, NON, ABSTENTION. "
+                  "REPONSE:\n" + ("source NON OUI " * 300))
+        def mocked_run(cmd, **kwargs):
+            self.assertIn("--no-display-prompt", cmd)
+            self.assertIn("--simple-io", cmd)
+            self.assertEqual(cmd[cmd.index("-p")+1], prompt)
+            self.assertEqual(cmd[cmd.index("-n")+1], "16")
+            return SimpleNamespace(returncode=0, stderr="",
+                                   stdout="NON\n\n[ Prompt: 35 t/s | Generation: 9 t/s ]\n\n>\nExiting...\n")
+        with patch.object(m.subprocess, "run", side_effect=mocked_run):
+            record = m.llama_choose(Path("/llama-cli"), Path("/model.gguf"),
+                                    prompt, "test/with-memory")
+        self.assertEqual(record["verdict"], "NON")
+        self.assertEqual(record["status"], "PARSED")
+        self.assertEqual(record["generation_text"], "NON")
+        self.assertEqual(record["decoder_contract"], "generation_only_no_echo_v2")
+
+    def test_invalid_output_not_silent_model_abstention(self):
+        from types import SimpleNamespace
+        with patch.object(m.subprocess, "run",
+                          return_value=SimpleNamespace(returncode=0, stderr="",
+                                                       stdout="NON\nOUI\n")):
+            record = m.llama_choose(Path("/llama-cli"), Path("/model.gguf"),
+                                    "question", "invalid")
+        self.assertEqual(record["verdict"], "ABSTENTION")
+        self.assertEqual(record["status"], "INVALID_GENERATION_FORMAT")
+
 
     def test_predictions_frozen_before_any_oracle_call(self):
         invoked = []
