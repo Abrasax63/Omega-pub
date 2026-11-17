@@ -1,0 +1,110 @@
+name: Omega real provenance 07 - GitHub metadata fidelity gate
+
+on:
+  push:
+    branches:
+      - experiment/omega-real-provenance-07-2026-11-17
+    paths:
+      - 'experiments/omega-real-provenance-07/**'
+      - '.github/workflows/omega-real-provenance-07.yml'
+  pull_request:
+    branches:
+      - experiment/omega-provenance-oracle-06-2026-11-17
+
+permissions:
+  contents: read
+
+jobs:
+  github-metadata-fidelity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run exactly fourteen source and adversarial controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-real-provenance-07/*.py
+          (cd experiments/omega-real-provenance-07 && python - <<'PY'
+          import unittest
+          suite=unittest.defaultTestLoader.discover('.',pattern='test_resolve.py')
+          assert suite.countTestCases()==14,suite.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+          )
+      - name: Extract five actual run-attempt groups without supplied labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-real-provenance-07/resolve.py \
+            --fixture experiments/omega-real-provenance-07/fixtures/github_artifact_metadata.json \
+            --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+          sha256sum experiments/omega-real-provenance-07/fixtures/github_artifact_metadata.json > evidence/fixture.sha256
+      - name: Independently audit all seven source artefacts, SHA and abstentions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import json
+          base=Path('experiments/omega-real-provenance-07/fixtures/github_artifact_metadata.json')
+          raw=base.read_bytes()
+          d=json.loads(raw)
+          r=json.loads(Path('evidence/report.json').read_bytes())
+          assert r['experiment']=='OMEGA-REAL-PROVENANCE-07'
+          assert r['preregistered_commit']=='bc667631fca36fb992c4e26f2d700195f6462def'
+          assert r['source_snapshot_sha256']==hashlib.sha256(raw).hexdigest()
+          assert d['mirror_references_added'] is False
+          assert d['source_type']=='selected_fields_from_public_GitHub_REST_APIs_not_full_raw_responses'
+          assert len(d['source_documents'])==5
+          independently={}
+          all_artifacts=set()
+          for item in d['source_documents']:
+              run=item['run']
+              assert run['repository']=='Abrasax63/Omega-pub'
+              assert run['run_attempt']==1
+              assert item['artifact_count']==len(item['artifacts'])
+              key=(run['id'],run['run_attempt'],run['head_sha'])
+              independently[key]=[]
+              for a in item['artifacts']:
+                  assert a['workflow_run']['id']==run['id']
+                  assert a['workflow_run']['head_sha']==run['head_sha']
+                  assert a['id'] not in all_artifacts
+                  all_artifacts.add(a['id'])
+                  independently[key].append(a['id'])
+          actual={(group['run_id'],group['run_attempt'],group['head_sha']):
+                   group['artifact_ids'] for group in r['verified_attempt_groups']}
+          assert actual=={k:sorted(v) for k,v in independently.items()}
+          assert len(actual)==5 and len(all_artifacts)==7
+          assert sorted(len(v) for v in actual.values())==[1,1,1,2,2]
+          sha_index={}
+          for runid,attempt,sha in independently:
+              sha_index.setdefault(sha,[]).append(runid)
+          assert [sorted(runs) for runs in sha_index.values() if len(runs)>1]==[
+              [44149347157,44149424240]]
+          assert r['execution_grouping_status']=='VERIFIED_PROVIDER_METADATA'
+          assert r['unverifiable_artifact_references']==[]
+          assert r['duplicate_manifest_references']==0
+          assert r['verified_distinct_artifact_ids']==7
+          assert r['scientific_independence']=='INDETERMINATE'
+          assert not r['scientific_replication_certified']
+          assert not r['provenance_sources_are_live']
+          assert r['no_paid_api'] and not r['main_modified']
+          print('INDEPENDENT_METADATA_AUDIT_SUCCESS groups=5 artifacts=7 scientific_independence=INDETERMINATE')
+          PY
+      - name: Preserve metadata fixture, run grouping and audit logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-real-provenance-07-source-metadata-audit
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
