@@ -20,9 +20,9 @@ La recherche utilise des ensembles en masques binaires, mémorisation, groupemen
 
 ## Banc réservé
 
-Le nouveau pool de 32 modèles exclut explicitement tous ceux des pools #143/#145/#157/#158/#159/#160. Le banc comporte 24 ensembles de 16 candidats. Dans chaque ensemble et sous chaque tarif public, OPTIMUM, PRICE_AWARE et BALANCED sont évalués **sur les 16 mondes**, pas seulement sur un seul monde échantillonné. Le coût moyen uniforme, les écarts et les profondeurs des arbres sont publiés.
+**Le nouveau pool prévu de 32 modèles n'a pas pu être constitué.** Le run de précontrôles [#44158601275](https://github.com/Abrasax63/Omega-pub/actions/runs/44158601275) a rendu `INSUFFICIENT_NEW_MODELS` avec les exclusions préenregistrées. Le holdout inédit est donc **bloqué, sans score**. L'[avenant rétrospectif](POSTHOC_SCOPE_AFTER_EXHAUSTION_2026-11-17.md) `10b302ab` a été signé après constat du blocage. Il autorise seulement le **recalcul sur les 24 ensembles déjà exposés de la PR #160**. Cette étude rétrospective n'est ni un nouveau test aveugle ni une validation indépendante de gain. Dans chaque ensemble et sous chaque tarif public, OPTIMUM, PRICE_AWARE et BALANCED sont évalués **sur les 16 mondes**, pas seulement sur un seul monde échantillonné. Le coût moyen uniforme, les écarts et les profondeurs des arbres sont publiés.
 
-Le seuil `HEADROOM_FOR_IMPROVEMENT` exige ≥6 instances avec surcoût de PRICE_AWARE ≥10% contre OPTIMUM. Cela démontre seulement une **marge de coût potentielle sur un banc fini**, pas la supériorité d'un apprentissage. Le plafond précédent de 12 sondes est séparé : si un arbre exige plus, le calcul illimité n'est pas qualifié comme optimum à horizon 12.
+Le seuil prospectif `HEADROOM_FOR_IMPROVEMENT` reste gelé mais **n'est pas applicable aux cas historiques déjà exposés**. La version rétrospective publie des moyennes et écarts descriptifs tout en conservant le statut `RETROSPECTIVE_ONLY_NO_FRESH_HOLDOUT`, quel que soit le score. Cela ne démontre pas la supériorité d'un apprentissage. Le plafond précédent de 12 sondes est séparé : si un arbre exige plus, le calcul illimité n'est pas qualifié comme optimum à horizon 12.
 
 ## Reproduction
 
@@ -30,10 +30,10 @@ Bibliothèque standard Python 3.11, sans API payante :
 
 ```bash
 python -m unittest discover -s experiments/omega-exact-oracle-05 -p 'test_exact_oracle.py' -v
-python experiments/omega-exact-oracle-05/exact_oracle.py --output evidence/report.json
+python experiments/omega-exact-oracle-05/exact_oracle.py --mode retrospective --output evidence/report.json
 sha256sum evidence/report.json
 ```
 
-Le workflow `push` exécute uniquement les tests et **ne révèle pas le banc de 24 instances**. Le workflow `pull_request` lance une fois l'évaluation exhaustive et un audit indépendant des sorties de sondes, des chemins, prix, certificats et agrégats. En cas de limite de ressources, refuser un énoncé d'optimalité.
+Le workflow `push` exécute uniquement les tests de cohérence, sans évaluer les scores. Le workflow `pull_request` lance une fois l'évaluation exhaustive **post hoc sur le jeu #160 déjà exposé** et un audit indépendant des sorties de sondes, des chemins, prix, certificats et agrégats. Aucun résultat ne sera qualifié de prospectif. En cas de limite de ressources, refuser un énoncé d'optimalité.
 
 **Limites :** distribution uniforme hypothétique, 64 questions disponibles, prix synthétiques, groupes finis, CPU non pris en compte, une seule cohorte. Aucune auto-amélioration de LLM démontrée, aucune preuve mathématique nouvelle produite. Conserver PR DRAFT, pas de fusion, `main` et CORE inchangés.
