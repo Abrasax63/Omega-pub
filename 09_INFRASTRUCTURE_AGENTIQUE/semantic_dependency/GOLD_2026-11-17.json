@@ -1,0 +1,102 @@
+{
+  "title": "OMEGA-SEM-DEPEND-01 — frozen human annotation from secondary reconciliation reports; nonblind",
+  "source_commit": "639dc01ca3ea58c61b075adb9a6d860bf41db7bc",
+  "version": "1.0",
+  "cases": [
+    {
+      "id": "OBS-V19-COEX-SMALLMODEL",
+      "formal": [
+        "OBS-V19-LOCAL-L2",
+        "OBS-V19-FORCED-P4"
+      ],
+      "conceptual": []
+    },
+    {
+      "id": "OBS-V19-C5-CAPACITY",
+      "formal": [
+        "BR-OBS-CAP-01",
+        "OBS-V19-C5-ORIENTED14",
+        "OBS-V19-FORCED-P4"
+      ],
+      "conceptual": []
+    },
+    {
+      "id": "BR-OBS-CAP-03",
+      "formal": [
+        "BR-OBS-CAP-01"
+      ],
+      "conceptual": []
+    },
+    {
+      "id": "BR-AFFINE-GAUGE-CORE",
+      "formal": [
+        "BR-AFFINE-GAUGE-GLUE",
+        "BR-AFFINE-GROUP-CORE"
+      ],
+      "conceptual": []
+    },
+    {
+      "id": "BR-MEALY-HELLY-01",
+      "formal": [
+        "OBS-M27-FERTILE",
+        "OBS-M27-SPECTRUM"
+      ],
+      "conceptual": []
+    },
+    {
+      "id": "BR-ACC-STATE-COMMUTE-01",
+      "formal": [
+        "BR-ACC-01",
+        "BR-STATE-01"
+      ],
+      "conceptual": []
+    },
+    {
+      "id": "BR-AFFINE-TREE-CORE",
+      "formal": [
+        "BR-AFFINE-TREE-GLUE",
+        "BR-AFFINE-GROUP-CORE"
+      ],
+      "conceptual": []
+    },
+    {
+      "id": "BR-AFFINE-TREE-GLUE",
+      "formal": [],
+      "conceptual": []
+    },
+    {
+      "id": "BR-DESC-01",
+      "formal": [],
+      "conceptual": [
+        "BR-STATE-01"
+      ]
+    },
+    {
+      "id": "BR-DESC-02",
+      "formal": [],
+      "conceptual": [
+        "BR-DESC-01"
+      ]
+    },
+    {
+      "id": "BR-R90-01",
+      "formal": [],
+      "conceptual": []
+    },
+    {
+      "id": "BR-AFFINE-GAUGE-GLUE",
+      "formal": [],
+      "conceptual": []
+    },
+    {
+      "id": "BR-ACC-01",
+      "formal": [],
+      "conceptual": []
+    },
+    {
+      "id": "BR-AFFINE-GROUP-CORE",
+      "formal": [],
+      "conceptual": []
+    }
+  ]
+}
