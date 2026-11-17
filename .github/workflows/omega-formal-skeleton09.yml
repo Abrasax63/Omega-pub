@@ -1,0 +1,43 @@
+name: Omega formal skeleton 09 calibration
+on:
+  push:
+    branches:
+      - experiment/omega-formal-skeleton09-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-logic-translation-gate08-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  calibration-and-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Frozen logical syntax and provenance tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08
+        run: python3 -m unittest -v test_translate.py test_skeleton09.py
+      - name: Calibrate iff without semantic promotion
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08/skeleton09.py \
+            --source 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08/holdout/BR-CTRL-01_CERTIFICAT_MEMOIRE_INFINIE.md \
+            --source-blob 3d52e5372f2eaecc6c66d960b0601e727325e2b2 \
+            --output /tmp/omega-skeleton09-calibration.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-skeleton09-calibration.json", encoding="utf-8"))
+          print("known_biconditional", r["summary"]["biconditional_count"])
+          print("known_relations", r["summary"]["relation_chain_count"])
+          print("all_citations_valid", r["citations_valid"])
+          print("auto_horn_rules", len(r["horn_rules"]))
+          assert r["citations_valid"] and r["summary"]["biconditional_count"] >= 1
+          assert not r["horn_rules"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-skeleton09-calibration
+          path: /tmp/omega-skeleton09-calibration.json
+          retention-days: 14
