@@ -1,0 +1,67 @@
+{
+  "version": "v1-unseen-before-first-evaluation",
+  "historical_ref": "2f71a6b8ed03914c0b5d308520d30e0133d9e9ad",
+  "holdout_blob": "3b5f4a645de2520e7ddd461ef98dd116d3b5fbd7",
+  "engine_commit_frozen_before_holdout": "2cfc536eba43a6aced701c62bd4501206b177ab5",
+  "gold_author": "same developer of extractor; not independent science reviewer",
+  "expected_marked_pairs": 0,
+  "expected_reason": "No sentence beginning with 'Si' or 'Supposons' and followed by explicit 'alors' in heldout source; this is a scope failure for proposed syntax-only method",
+  "notable_spans": [
+    {
+      "id": "G01",
+      "role": "ASSUMPTION",
+      "line": 12,
+      "anchor": "Un circuit positif est écrit",
+      "meaning": "Domain context: distinct bad objects"
+    },
+    {
+      "id": "G02",
+      "role": "DEFINITION",
+      "line": 22,
+      "anchor": "r_C(ω) = |{B∈supp(C) : sh(B)=ω}|",
+      "meaning": "Support multiplicity"
+    },
+    {
+      "id": "G03",
+      "role": "DEFINITION",
+      "line": 26,
+      "anchor": "A_C(ω) = Σ_{B∈supp(C), sh(B)=ω} a_B",
+      "meaning": "Projected weight"
+    },
+    {
+      "id": "G04",
+      "role": "CONCLUSION",
+      "line": 38,
+      "anchor": "r_C(ω) ≤ μ_T(ω) ≤ ν_T(ω) ≤ Cap(ω)",
+      "meaning": "Explicit support bound"
+    },
+    {
+      "id": "G05",
+      "role": "LIMITATION",
+      "line": 46,
+      "anchor": "ne peut pas conclure",
+      "meaning": "No projected coefficient bound follows"
+    },
+    {
+      "id": "G06",
+      "role": "NON_THEOREM",
+      "line": 48,
+      "anchor": "A_C(ω) ≤ Cap(ω)",
+      "meaning": "This expression is explicitly not an established theorem"
+    },
+    {
+      "id": "G07",
+      "role": "EXTRA_ASSUMPTION",
+      "line": 50,
+      "anchor": "hypothèse supplémentaire",
+      "meaning": "Additional unit-weight or per-unit witness hypothesis required"
+    },
+    {
+      "id": "G08",
+      "role": "APPLICATION_LIMITATION",
+      "line": 66,
+      "anchor": "n’est pas certifiée sans information supplémentaire",
+      "meaning": "V19/V16/V17 bridge limited"
+    }
+  ]
+}
