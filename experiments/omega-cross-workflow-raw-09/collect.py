@@ -15,6 +15,7 @@ import random
 import re
 from urllib.parse import urlsplit
 from urllib.request import Request, HTTPRedirectHandler, build_opener
+from urllib.error import HTTPError
 import zipfile
 
 REPO = "Abrasax63/Omega-pub"
@@ -134,16 +135,71 @@ def collect(token,raw_root,gold_path):
             artifact_blobs.append({"blob":buf,"artifact_id":aid,
                                    "name":art["name"],"run":run,
                                    "size":len(buf)})
+        per_run_logs=[]
+        missing_blob_for=None
         for job in scan["jobs"]:
             jid=job["id"]
-            b=http_api(f"/actions/jobs/{jid}/logs",token,LOG_LIMIT)
-            if b"\x00" in b[:400] or b[:4]==b"PK\x03\x04":
+            try:
+                b=http_api(f"/actions/jobs/{jid}/logs",token,LOG_LIMIT)
+            except HTTPError as exc:
+                # The selected job exists in GitHub REST metadata, but the
+                # separate blob can be missing on the temporary storage host.
+                # Try the official whole-run ZIP endpoint for SAME run ID.
+                if exc.code!=404:
+                    raise
+                missing_blob_for=jid
+                break
+            if b"\\x00" in b[:400] or b[:4]==b"PK\\x03\\x04":
                 raise CollectionBlocked("EXPECTED_PLAINTEXT_JOB_LOG")
             try:
                 b.decode("utf-8")
             except UnicodeError as exc:
                 raise CollectionBlocked("JOB_LOG_NOT_UTF8") from exc
-            log_blobs.append({"blob":b,"job":job,"run":run})
+            per_run_logs.append({"blob":b,"job":job,"run":run,
+                                 "collection_mode":"individual_job_log"})
+        if missing_blob_for is None:
+            log_blobs.extend(per_run_logs)
+        else:
+            try:
+                bulk=http_api(f"/actions/runs/{run['id']}/logs",token,ZIP_LIMIT)
+            except HTTPError as exc:
+                raise CollectionBlocked(
+                    f"COLLECTION_BLOCKED_RUN_ZIP run={run['id']} "
+                    f"failed_job={missing_blob_for} HTTP={exc.code}"
+                ) from exc
+            if not zipfile.is_zipfile(BytesIO(bulk)):
+                raise CollectionBlocked("FALLBACK_RUN_LOG_NOT_ZIP")
+            try:
+                with zipfile.ZipFile(BytesIO(bulk)) as z:
+                    parts=[]
+                    for info in z.infolist():
+                        if info.is_dir():
+                            continue
+                        if (info.file_size>LOG_LIMIT or
+                            len(parts)>=100):
+                            raise CollectionBlocked("RUN_LOG_SIZE_OR_COUNT_LIMIT")
+                        blob=z.read(info.filename)
+                        try:
+                            blob.decode("utf-8")
+                        except UnicodeError as exc:
+                            raise CollectionBlocked("RUN_LOG_NOT_UTF8") from exc
+                        if not blob:
+                            raise CollectionBlocked("RUN_LOG_EMPTY_FILE")
+                        parts.append((info.filename,blob))
+            except zipfile.BadZipFile as exc:
+                raise CollectionBlocked("RUN_LOG_BAD_ZIP") from exc
+            if len(parts)<len(scan["jobs"]):
+                raise CollectionBlocked(
+                    f"INCOMPLETE_WHOLE_RUN_LOGS run={run['id']} "
+                    f"files={len(parts)} jobs={len(scan['jobs'])}"
+                )
+            for original_filename,blob in sorted(parts):
+                # Whole-run ZIP files may have human-readable job names,
+                # not stable GitHub job IDs. Never invent such a mapping.
+                log_blobs.append({"blob":blob,"job":None,"run":run,
+                                  "collection_mode":"whole_run_zip_fallback",
+                                  "original_filename":original_filename})
+
 
     # All downloaded origins are known to the independent scorer alone.
     origins=random.Random(SAMPLE_SEED)
@@ -185,7 +241,8 @@ def collect(token,raw_root,gold_path):
         (raw_root/"logs"/alias).write_bytes(trace["blob"])
         raw_index["log_files"].append(alias)
         gold["logs"][alias]={"run_id":trace["run"]["id"],
-                              "job_id":trace["job"]["id"],
+                              "job_id":trace["job"]["id"] if trace["job"] else None,
+                              "collection_mode":trace["collection_mode"],
                               "size":len(trace["blob"]),
                               "sha256":hash_bytes(trace["blob"])}
     # Synthetic transport modifications (do not call them newly retrieved
@@ -217,6 +274,9 @@ def collect(token,raw_root,gold_path):
     assert len(raw_index["archive_packets"])==9
     assert len(raw_index["log_files"])>=5
     print(json.dumps({"source_runs":len(scans),"real_zip_archives":len(artifact_blobs),
+                      "whole_run_zip_log_fallback_files":sum(
+                          entry["collection_mode"]=="whole_run_zip_fallback"
+                          for entry in log_blobs),
                       "actual_job_logs":len(log_blobs),"raw_zip_packets":9,
                       "transport_mirrors":1,"transport_orphans":1,
                       "gold_isolated":True,"no_paid_api":True},sort_keys=True))
