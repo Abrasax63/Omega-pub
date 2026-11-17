@@ -1,0 +1,61 @@
+name: Omega external FOLIO holdout 09 - untouched source and blind scorer
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-natural-query-gate-08-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-external-30:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Confirm frozen upstream slice and exact prior parser
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/external_folio09
+        run: |
+          set -euo pipefail
+          python3 -m py_compile evaluate_external.py test_external.py
+          python3 -m unittest -v test_external.py
+      - name: Evaluate all 30 untouched English questions, preserve negative outcome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 09_INFRASTRUCTURE_AGENTIQUE/external_folio09/evaluate_external.py \
+            --output /tmp/omega-folio-external09.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/omega-folio-external09.json',encoding='utf-8'))
+          assert r['cases']==30 and r['distinct_theory_groups']==10
+          assert r['source_documents_loaded']==30
+          assert r['source']['sample_blob']=='7aedc646fb2c3588ebd04335fbf74cb56fb32688'
+          assert r['source']['upstream_blob']=='06244bd10b37eac73cba7aca6c336e96011ace58'
+          assert r['model']['translator_blob']=='385aca9258d69c4545df891a31f1c4ae719a82b8'
+          assert r['input_gold_hidden_until_prediction_hash']
+          assert r['baseline_always_abstain_correct']==13
+          assert r['answered']+r['abstained']==30
+          assert r['false_confident']>=0
+          assert r['predictions_sha256_before_gold']
+          assert not r['auto_promotion'] and r['model']['model_api_calls']==0
+          print({k:r[k] for k in ('cases','distinct_theory_groups','correct',
+            'baseline_always_abstain_correct','answered','abstained','translated',
+            'reasoned','false_confident','invalid_certificates','status',
+            'predictions_sha256_before_gold')})
+          PY
+      - name: Archive external raw evidence including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-folio-external09-precommitted-evidence
+          path: /tmp/omega-folio-external09.json
+          retention-days: 14
+          if-no-files-found: warn
