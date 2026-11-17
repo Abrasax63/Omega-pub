@@ -149,7 +149,7 @@ def collect(token,raw_root,gold_path):
                     raise
                 missing_blob_for=jid
                 break
-            if b"\\x00" in b[:400] or b[:4]==b"PK\\x03\\x04":
+            if b"\x00" in b[:400] or b[:4]==b"PK\x03\x04":
                 raise CollectionBlocked("EXPECTED_PLAINTEXT_JOB_LOG")
             try:
                 b.decode("utf-8")
