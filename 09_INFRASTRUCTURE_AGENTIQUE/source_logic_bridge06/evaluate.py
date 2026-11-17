@@ -49,6 +49,9 @@ def evaluate() -> dict:
         rows.append({
             "id": answer["query_id"], "source_id": answer["source_id"],
             "goal": answer["goal"], "verdict": answer["verdict"],
+            "exact_oracle": oracle[answer["query_id"]]["verdict"],
+            "exact_oracle_reason": oracle[answer["query_id"]]["reason"],
+            "exact_oracle_models": oracle[answer["query_id"]]["models"],
             "gold": label, "correct": answer["verdict"] == label,
             "certificate_valid": answer["certificate_valid"],
             "reason": answer["reason"],
