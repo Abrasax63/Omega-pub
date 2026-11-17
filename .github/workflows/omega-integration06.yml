@@ -1,0 +1,101 @@
+name: Omega integration 06 - dynamic source memory plus bounded verifier
+
+on:
+  push:
+    branches:
+      - experiment/omega-dynamic-memory-gate-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check source registry and strict prediction barrier, no model or API
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/integration_gate06
+        run: |
+          python -m py_compile integration.py test_integration.py
+          python -m unittest -v test_integration.py
+
+  paired-qwen-cpu:
+    needs: offline-safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Restore pinned llama.cpp cache
+        uses: actions/cache@v4
+        id: llama-cache
+        with:
+          path: ${{ runner.temp }}/llama.cpp
+          key: omega-llama-cpu-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6-v1
+      - name: Build pinned llama.cpp CPU if absent
+        if: steps.llama-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$RUNNER_TEMP/llama.cpp"
+          git -C "$RUNNER_TEMP/llama.cpp" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          git -C "$RUNNER_TEMP/llama.cpp" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          cmake -S "$RUNNER_TEMP/llama.cpp" -B "$RUNNER_TEMP/llama.cpp/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/llama.cpp/build" --target llama-cli -j 4
+      - name: Restore fixed Qwen model cache
+        uses: actions/cache@v4
+        id: model-cache
+        with:
+          path: ${{ runner.temp }}/model.gguf
+          key: omega-qwen2p5-coder-3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7-v1
+      - name: Verify fixed public Qwen model
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f "$RUNNER_TEMP/model.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf" \
+              -o "$RUNNER_TEMP/model.gguf"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $RUNNER_TEMP/model.gguf" | sha256sum -c -
+      - name: Evaluate frozen 12 questions with two model calls and postfilter
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 09_INFRASTRUCTURE_AGENTIQUE/integration_gate06/integration.py \
+            --llama-cli "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" \
+            --model-file "$RUNNER_TEMP/model.gguf" \
+            --output /tmp/omega-integration06.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/omega-integration06.json',encoding='utf-8'))
+          assert r['experiment']=='OMEGA-INTEGRATION-06'
+          assert r['source_count']==4
+          assert len(r['rows'])==12
+          assert r['calls_attempted']==24
+          assert r['oracle_checked_after_choices']
+          assert r['choices_sha256_before_scoring']
+          assert r['metrics']['memory_checked']['false_confident']==0
+          assert not r['auto_promotion']
+          print("Scientific scores (not promoted):",r['metrics'])
+          PY
+      - name: Archive report even on negative scientific score
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-integration06-raw-evidence
+          path: /tmp/omega-integration06.json
+          retention-days: 14
+          if-no-files-found: warn
