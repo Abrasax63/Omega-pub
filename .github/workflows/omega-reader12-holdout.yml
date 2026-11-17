@@ -1,0 +1,45 @@
+name: Omega reader bridge 12 — untouched Markdown holdout and redteam
+on:
+  push:
+    branches:
+      - experiment/omega-reader-verifier-bridge12-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-semantic-fidelity10-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  first-heldout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Frozen reader, model stub, source hashes and adversarial checks
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12
+        run: python3 -m unittest -v test_bridge.py test_holdout.py
+      - name: Record untouched two-document outcome, including discovered failures
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/evaluate_holdout.py --output /tmp/omega-reader12-first-heldout.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open("/tmp/omega-reader12-first-heldout.json", encoding="utf-8"))
+          print("sources:",r["source_count"])
+          print("per_source:",r["per_source"])
+          print("display_math_in_each:",r["pre_registered_display_math_in_each_source"])
+          print("citations_valid:",r["all_source_spans_valid"])
+          print("LLM_calls:",r["actual_language_model_calls"])
+          print("injected_Horn_rules:",int(not r["no_horn_rule_injection"]))
+          print("inline_proof_context_gate:",r["context_protection_gate"])
+          print("inline_proof_accepted_in_quarantine:",r["proof_statement_allowed_as_quarantined_conclusion_evidence"])
+          print("semantic_verification:",r["scientific_verdict"])
+          assert r["all_source_spans_valid"] and r["no_horn_rule_injection"]
+          assert not r["automatic_semantic_reading_demonstrated"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-reader12-original-heldout-readonly-adversarial-raw
+          path: /tmp/omega-reader12-first-heldout.json
+          retention-days: 14
