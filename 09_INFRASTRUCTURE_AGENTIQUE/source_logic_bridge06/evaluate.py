@@ -10,7 +10,8 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from bridge import HERE, ROOT, RULES_BLOB, RULES_PATH, run
+from bridge import HERE, ROOT, RULES_BLOB, RULES_PATH, load_bridge, run
+from oracle import exact_boolean_verdict
 
 INPUT = HERE / "QUERIES_FROZEN.json"
 GOLD = HERE / "GOLD_FROZEN.json"
@@ -33,6 +34,11 @@ def evaluate() -> dict:
         raise ValueError("query set size or ID uniqueness changed")
     # The solver is called BEFORE loading the gold.
     report = run(questions)
+    # Second, logically independent method: enumerate all Boolean models.
+    # Gold is still not loaded at this point.
+    _, rules = load_bridge()
+    oracle = {q["id"]: exact_boolean_verdict(q, rules.get(q["source_id"], []))
+              for q in questions}
     raw = load_frozen(GOLD, GOLD_BLOB)
     labels = {x["id"]: x["verdict"] for x in raw["targets"]}
     if len(labels) != 14 or set(labels) != {q["id"] for q in questions}:
@@ -50,6 +56,10 @@ def evaluate() -> dict:
             "missing_assumptions": answer["missing_assumptions"],
         })
     correct = sum(row["correct"] for row in rows)
+    independent_agreement = all(row["verdict"] == row["exact_oracle"]
+                                for row in rows)
+    witness_pairs = sum(row["exact_oracle_reason"] == "both_goal_values_possible"
+                        for row in rows)
     assert report["source_count"] >= 5
     assert report["annotated_sources"] == 4
     return {
@@ -59,6 +69,8 @@ def evaluate() -> dict:
         "frozen_gold_blob": GOLD_BLOB,
         "cases": len(rows),
         "correct": correct,
+        "independent_boolean_oracle_agrees": independent_agreement,
+        "ambiguous_cases_with_both_truth_values": witness_pairs,
         "confident_errors": [
             x["id"] for x in rows if x["verdict"] != "ABSTAIN" and not x["correct"]
         ],
@@ -73,7 +85,7 @@ def evaluate() -> dict:
         "multi_step_with_citations": any(x["id"] == "Q05" and
                                          x["verdict"] == "CONTRADICTED" and
                                          len(x["proof_rule_ids"]) >= 2 for x in rows),
-        "protocol_success": correct == 14 and
+        "protocol_success": correct == 14 and independent_agreement and
             all(x["certificate_valid"] for x in rows)
             and not any(x["verdict"] != "ABSTAIN" and not x["correct"] for x in rows)
             and report["source_count"] == 5
