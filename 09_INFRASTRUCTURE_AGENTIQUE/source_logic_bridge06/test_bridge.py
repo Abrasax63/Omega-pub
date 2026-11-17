@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from bridge import (
-    BridgeError, RULES_PATH, RULES_BLOB, SOURCES_DIR,
+    BridgeError, LEGACY_RULES_PATH as RULES_PATH, LEGACY_RULES_BLOB as RULES_BLOB, SOURCES_DIR,
     assess, check_proof, discover, git_blob, load_bridge, run,
     safe_read, validate_rules,
 )
@@ -16,7 +16,8 @@ from oracle import exact_boolean_verdict
 class SourceLogicBridgeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.docs, cls.by_source = load_bridge()
+        cls.docs, cls.by_source = load_bridge(rule_path=RULES_PATH,
+                                              expected_rule_blob=RULES_BLOB)
         cls.query_list = load_frozen(INPUT, INPUT_BLOB)["queries"]
         cls.queries = {q["id"]: q for q in cls.query_list}
         cls.rule_manifest = json.loads(RULES_PATH.read_text(encoding="utf-8"))
