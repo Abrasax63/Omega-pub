@@ -24,8 +24,8 @@ jobs:
         working-directory: 09_INFRASTRUCTURE_AGENTIQUE/llm_proposals11
         run: |
           set -euo pipefail
-          python3 -m py_compile proposer.py ledger.py test_proposer.py
-          python3 -m unittest -v test_proposer.py
+          python3 -m py_compile proposer.py ledger.py countermodel_review.py test_proposer.py test_countermodel_review.py
+          python3 -m unittest -v test_proposer.py test_countermodel_review.py
 
   local-model-proposals:
     needs: offline-integrity
