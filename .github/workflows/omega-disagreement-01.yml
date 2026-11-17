@@ -1,0 +1,136 @@
+name: Omega disagreement 01 - evidence-consistent hypothesis tests
+
+on:
+  push:
+    branches:
+      - experiment/omega-disagreement-01-2026-11-17
+    paths:
+      - 'experiments/omega-disagreement-01/**'
+      - '.github/workflows/omega-disagreement-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-cover-replication-05-2026-11-16
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-disagreement-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install unchanged AALpy library
+        run: python -m pip install --disable-pip-version-check aalpy==1.6.2
+      - name: Byte-compile and run eight pre-registered scientific controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-disagreement-01/*.py
+          python - <<'PY'
+          import unittest
+          suite = unittest.TestLoader().discover('experiments/omega-disagreement-01', pattern='test_disagreement.py')
+          assert suite.countTestCases() == 8, f"wrong test count {suite.countTestCases()}"
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          assert result.wasSuccessful(), "SCIENTIFIC_CONTROLS_FAILED"
+          PY
+
+  new-independent-holdout:
+    if: github.event_name == 'pull_request'
+    needs: controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install unchanged AALpy
+        run: python -m pip install --disable-pip-version-check aalpy==1.6.2
+      - name: Execute ONE new 48x5x2 holdout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-disagreement-01/disagreement_lab.py --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Independently verify no budget overrun, counts, exact statuses, and paired results
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from math import comb
+          from pathlib import Path
+          d = json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment'] == 'OMEGA-DISAGREE-01'
+          assert d['preregistered_commit'] == '0019fbb181032944491bcc56a240159da43bb95c'
+          assert d['primary_budget'] == 500 and d['budgets'] == [300,500]
+          assert len(d['methods']) == 5 and len(d['cases']) == 48
+          assert d['eq_word_length'] == 10 and d['max_eq_per_round'] == 32
+          assert d['no_paid_api'] and not d['main_modified'] and d['heldout_evaluator_only']
+          assert not d['generalization_certified']
+          assert [x['size'] for x in d['cases']] == [4]*16+[5]*16+[6]*16
+          assert len({x['canonical_signature'] for x in d['cases']}) == 48
+          for case in d['cases']:
+            for cap in (300,500):
+              for arm in d['methods']:
+                trial = case['budgets'][str(cap)][arm]
+                training = trial['training']
+                ledger = training['ledger']
+                assert 0 < ledger['spent_symbols'] <= cap
+                assert ledger['spent_symbols'] == sum(x['charge'] for x in ledger['query_log'])
+                assert ledger['spent_symbols'] == sum(ledger['by_phase_spent'].values())
+                assert all(len(x['inputs']) == x['charge'] == len(x['outputs']) for x in ledger['query_log'])
+                eq = [x for x in ledger['query_log'] if x['phase']=='EQ' and not x.get('incomplete_due_to_budget')]
+                assert all(len(x['inputs']) == 10 for x in eq)
+                assert len(eq) == training['eq_words_tested']
+                assert training['eq_counterexamples'] <= training['eq_words_tested']
+                assert trial['exact_equivalence']['status'] in ('EXACT_EQUIVALENT','NOT_EQUIVALENT','NO_HYPOTHESIS')
+                if trial['exact_equivalence']['status'] == 'EXACT_EQUIVALENT':
+                  assert trial['reserved']['whole_word_accuracy'] == 1.0
+                if arm == 'DISAGREE_EVIDENCE_LEN10':
+                  assert len(training['admissible_variants_per_round']) == len(training['proposed_variants_per_round'])
+                  assert all(0 <= v <= 64 for v in training['admissible_variants_per_round'])
+                  assert training['ranked_eq_words'] + training['fallback_eq_words'] >= training['eq_words_tested']
+          for cap, key in ((300,'secondary'),(500,'primary')):
+            s = d[key]
+            assert s['budget'] == cap
+            for arm in d['methods']:
+              exact = sum(c['budgets'][str(cap)][arm]['exact_equivalence']['status'] == 'EXACT_EQUIVALENT'
+                          for c in d['cases'])
+              assert exact == s['scores'][arm]['exact']
+            for ref in ('RANDOM_LEN10','COVER_DISTINGUISH_LEN10'):
+              rows=[(x['budgets'][str(cap)]['DISAGREE_EVIDENCE_LEN10']['exact_equivalence']['status']=='EXACT_EQUIVALENT',
+                     x['budgets'][str(cap)][ref]['exact_equivalence']['status']=='EXACT_EQUIVALENT') for x in d['cases']]
+              w=sum(a and not b for a,b in rows)
+              l=sum(b and not a for a,b in rows)
+              p=sum(comb(w+l,k) for k in range(w,w+l+1))/2**(w+l)
+              z=s['paired'][ref]
+              assert (w,l)==(z['wins'],z['losses'])
+              assert abs(z['p_one_sided']-p)<1e-14
+              assert len(z['bootstrap95'])==2 and z['bootstrap95'][0]<=z['bootstrap95'][1]
+            assert s['strong'] == all(x['strong'] for x in s['paired'].values())
+          assert (d['status']=='ROBUST_DISAGREEMENT_GAIN') == d['primary']['strong']
+          print('INDEPENDENT_DIFFERENCE_AUDIT', d['status'])
+          PY
+      - name: Preserve positive and negative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-disagreement-01-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
