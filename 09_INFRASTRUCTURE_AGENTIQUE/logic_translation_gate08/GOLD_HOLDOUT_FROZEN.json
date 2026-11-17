@@ -1,0 +1,72 @@
+{
+  "version": "08-original-holdout-before-first-run",
+  "code_frozen_commit": "c27204c99e4e52614eff61c971813ba3abd75c24",
+  "source_historical_commit": "2f71a6b8ed03914c0b5d308520d30e0133d9e9ad",
+  "gold_author": "same experimenter, not independent referee",
+  "expected_same_line_si_alors_pairs": 0,
+  "expected_reason": "Both reserved cards lack leading Si ... alors syntax in a single unambiguous line. Their important claims use domain phrases, bounds, or si et seulement si; parser must abstain and report no coverage.",
+  "documents": [
+    {
+      "id": "BR-MEALY-HELLY-01",
+      "file": "BR-MEALY-HELLY-01_BRIQUE.md",
+      "source_blob": "389957f14632fb253434202a46727ace8688b512",
+      "critical_spans": [
+        {
+          "id": "M01",
+          "line": 10,
+          "kind": "DOMAIN_PRECONDITION",
+          "anchor": "r_IO=1"
+        },
+        {
+          "id": "M02",
+          "line": 12,
+          "kind": "THEOREM_BOUND",
+          "anchor": "Toute non-face minimale a taille"
+        },
+        {
+          "id": "M03",
+          "line": 14,
+          "kind": "SPECIAL_CASE",
+          "anchor": "Pour `q=2`"
+        },
+        {
+          "id": "M04",
+          "line": 27,
+          "kind": "LIMITATION",
+          "anchor": "aucune extension sans `r_IO=1`"
+        }
+      ]
+    },
+    {
+      "id": "BR-CTRL-01",
+      "file": "BR-CTRL-01_CERTIFICAT_MEMOIRE_INFINIE.md",
+      "source_blob": "3d52e5372f2eaecc6c66d960b0601e727325e2b2",
+      "critical_spans": [
+        {
+          "id": "C01",
+          "line": 17,
+          "kind": "DEFINITION",
+          "anchor": "F = (L_H Σ)"
+        },
+        {
+          "id": "C02",
+          "line": 31,
+          "kind": "CONDITIONAL_WITHOUT_THEN",
+          "anchor": "Un état est acceptant si"
+        },
+        {
+          "id": "C03",
+          "line": 33,
+          "kind": "BICONDITIONAL_CRITERION",
+          "anchor": "si et seulement si"
+        },
+        {
+          "id": "C04",
+          "line": 41,
+          "kind": "SCOPE_LIMITATION",
+          "anchor": "Il ne doit pas être identifié"
+        }
+      ]
+    }
+  ]
+}

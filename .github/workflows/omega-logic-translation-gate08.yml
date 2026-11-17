@@ -1,0 +1,43 @@
+name: Omega logic translation gate 08 calibration
+on:
+  push:
+    branches:
+      - experiment/omega-logic-translation-gate08-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-math-structure-v2-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conservative-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fourteen calibration and adversarial safety checks
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08
+        run: python3 -m unittest -v test_translate.py
+      - name: Calibration-only raw proposal artifact
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08/translate.py \
+            --source 09_INFRASTRUCTURE_AGENTIQUE/unseen_math_read07/holdout_v2/BR-STATE-01_ETATS_PREDICTIFS_REPARATION.md \
+            --source-blob b7f79410a589dd8ba62a997860c924593e85a73c \
+            --output /tmp/omega-translation08-calibration.json
+          python3 - <<'PY'
+          import json
+          a = json.load(open("/tmp/omega-translation08-calibration.json", encoding="utf-8"))
+          print("calibration_proposals", len(a["proposals"]))
+          print("blocked", len(a["blocked"]))
+          print("valid_source_spans", a["literal_integrity_passed"])
+          print("unreviewed_horn_rules", len(a["horn_rules"]))
+          assert a["literal_integrity_passed"]
+          assert not a["horn_rules"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-translation08-calibration
+          path: /tmp/omega-translation08-calibration.json
+          retention-days: 14
