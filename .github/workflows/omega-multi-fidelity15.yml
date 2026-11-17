@@ -1,0 +1,140 @@
+name: Omega 15 - multi-candidate JSON schema and per-premise fidelity audit
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-compositional-logic14-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-fidelity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test two candidates, independent oracle, provenance and semantic guards
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/multi_fidelity15
+        run: |
+          set -euo pipefail
+          python -m py_compile runner.py test_runner.py
+          python -m unittest -v test_runner.py
+
+  local-qwen-schema:
+    needs: offline-fidelity
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Cached pinned llama.cpp CPU source
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/llama.cpp
+          key: omega11-llama-server-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - name: Verify and build pinned local llama-server
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega11/llama.cpp"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+            git -C "$BASE" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "5a4afd80779ba51166b59986e61a0bfbb9e1a4c6"
+          if [[ ! -d "$BASE/build" ]]; then
+            cmake -S "$BASE" -B "$BASE/build" -G Ninja \
+              -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF \
+              -DLLAMA_BUILD_UI=OFF -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          fi
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - name: Pinned Qwen GGUF cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/model.gguf
+          key: omega11-qwen2p5-coder3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7
+      - name: Verify model weights, fetch public weights only if needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL="$HOME/.cache/omega11/model.gguf"
+          mkdir -p "$(dirname "$MODEL")"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf" \
+              -o "$MODEL"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $MODEL" | sha256sum -c -
+      - name: Real Qwen multi-candidate structured generation on six fresh problems
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HOME/.cache/omega11/llama.cpp/build/bin/llama-server" \
+            -m "$HOME/.cache/omega11/model.gguf" -c 8192 -t 4 \
+            --host 127.0.0.1 --port 8091 >/tmp/omega15-server.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+          python3 - <<'PY'
+          import json,time,urllib.request
+          for _ in range(130):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8091/health",timeout=2) as res:
+                      health=json.loads(res.read())
+                  if health.get("status")=="ok":
+                      print("LOCAL_QWEN_READY")
+                      break
+              except Exception:
+                  pass
+              time.sleep(2)
+          else:
+              raise SystemExit("local model server unavailable")
+          PY
+          base64 -d 09_INFRASTRUCTURE_AGENTIQUE/llm_proposals11/LEDGER_CHECKPOINT_2026-11-17.jsonl.gz.b64 | gunzip > /tmp/omega15-memory.jsonl
+          echo '38864b20197b7b2c36f9a65fdffd263c85c4e0d48367a1780475c6cd5b3a23ea  /tmp/omega15-memory.jsonl' | sha256sum -c -
+          python3 09_INFRASTRUCTURE_AGENTIQUE/multi_fidelity15/runner.py \
+            --ledger /tmp/omega15-memory.jsonl --output /tmp/omega15-raw-report.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/omega15-raw-report.json',encoding='utf-8'))
+          assert r["experiment"]=="OMEGA-MULTI-FIDELITY-15"
+          assert r["cases"]==6
+          assert r["sample_blob"]=="d5c4e541dbc2552874f41ef361f19a6b9c813407"
+          assert r["local_model_calls_requested"]==6
+          assert r["transport_success"]<=6
+          assert r["json_valid"]<=r["transport_success"]
+          assert r["generated_candidates"]<=12
+          assert r["conditional_finite_witnesses"]<=r["complete_structural_formalizations"]
+          assert r["new_scientific_discoveries_certified"]==0
+          assert r["memory"]["events"]==18
+          assert r["paid_api_calls"]==0 and r["no_auto_promotion"]
+          assert r["predictions_sha256_before_gold"]
+          print({k:r[k] for k in ("cases","distinct_theories","transport_success",
+                  "json_valid","generated_candidates","candidates_with_exact_source_quotes",
+                  "complete_structural_formalizations","conditional_finite_witnesses",
+                  "nonterminal_generations","generated_tokens_reported",
+                  "new_scientific_discoveries_certified","predictions_sha256_before_gold")})
+          PY
+      - name: Archive raw model output and append-only historical hypotheses
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega15-qwen-schema-alternative-ast-and-fidelity
+          path: |
+            /tmp/omega15-raw-report.json
+            /tmp/omega15-memory.jsonl
+            /tmp/omega15-server.log
+          retention-days: 30
+          if-no-files-found: warn
