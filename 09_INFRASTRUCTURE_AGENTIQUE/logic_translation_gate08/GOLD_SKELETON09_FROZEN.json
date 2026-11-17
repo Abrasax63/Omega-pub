@@ -1,0 +1,114 @@
+{
+  "version": "09-prospective-two-card-gold",
+  "historical_commit": "2f71a6b8ed03914c0b5d308520d30e0133d9e9ad",
+  "unchanged_code_git_commit": "8cca29101f38a4525d2b0eb437988a89cb74ce45",
+  "experimental_status": "same-author label and no independent scientific referee",
+  "documents": [
+    {
+      "id": "BR-AFFINE-GROUP-CORE",
+      "file": "BR-AFFINE-GROUP-CORE_BRIQUE.md",
+      "source_blob": "6838a2e95ab64ae53406e4fc75abc267e4366745",
+      "items": [
+        {
+          "id": "A01",
+          "line": 9,
+          "kind": "THEOREM_WITH_DOMAIN",
+          "anchor": "l’élimination incrémentale",
+          "expected_kinds": []
+        },
+        {
+          "id": "A02",
+          "line": 13,
+          "kind": "DOMAIN_ASSUMPTIONS",
+          "anchor": "Systèmes affines binaires finis",
+          "expected_kinds": []
+        },
+        {
+          "id": "A03",
+          "line": 18,
+          "kind": "CARDINALITY_LIMITATION",
+          "anchor": "sans optimalité de cardinalité",
+          "expected_kinds": []
+        },
+        {
+          "id": "A04",
+          "line": 22,
+          "kind": "UNCERTIFIED_EXTERNAL_REVIEW",
+          "anchor": "sans audit humain externe",
+          "expected_kinds": []
+        }
+      ]
+    },
+    {
+      "id": "BR-ACC-STATE-COMMUTE-01",
+      "file": "BR-ACC-STATE-COMMUTE-01_BRIQUE.md",
+      "source_blob": "c4c89930f075983e085da5e38c956f12dc61186e",
+      "items": [
+        {
+          "id": "S01",
+          "line": 7,
+          "kind": "DOMAIN",
+          "anchor": "Système fini déterministe total",
+          "expected_kinds": []
+        },
+        {
+          "id": "S02",
+          "line": 12,
+          "kind": "DEFINITION_BICONDITIONAL_CODE",
+          "anchor": "x≈x'",
+          "expected_kinds": []
+        },
+        {
+          "id": "S03",
+          "line": 14,
+          "kind": "FORMAL_DEFINITION",
+          "anchor": "H=Reach_T(E)",
+          "expected_kinds": [
+            "RELATION_CHAIN_SYNTAX"
+          ]
+        },
+        {
+          "id": "S04",
+          "line": 16,
+          "kind": "FORMAL_EQUALITY",
+          "anchor": "q(H)=Hbar",
+          "expected_kinds": [
+            "RELATION_CHAIN_SYNTAX"
+          ]
+        },
+        {
+          "id": "S05",
+          "line": 18,
+          "kind": "QUOTIENT_ISOMORPHISM",
+          "anchor": "H/(≈|_H)",
+          "expected_kinds": []
+        },
+        {
+          "id": "S06",
+          "line": 23,
+          "kind": "PROOF_EQUALITY_NOT_THEOREM",
+          "anchor": "π(T_u T_a x)=π(T_{au}x)",
+          "expected_kinds": [
+            "RELATION_CHAIN_SYNTAX"
+          ]
+        },
+        {
+          "id": "S07",
+          "line": 25,
+          "kind": "PROOF_BICONDITIONAL_CONTEXT_REQUIRED",
+          "anchor": "si et seulement si",
+          "expected_kinds": [
+            "BICONDITIONAL_SYNTAX"
+          ]
+        },
+        {
+          "id": "S08",
+          "line": 40,
+          "kind": "DOMAIN_LIMITATION",
+          "anchor": "Aucune extension automatique",
+          "expected_kinds": []
+        }
+      ]
+    }
+  ]
+}
