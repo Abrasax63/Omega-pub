@@ -1,0 +1,41 @@
+name: Omega controlled entailment (nonblind)
+on:
+  push:
+    branches:
+      - experiment/omega-controlled-entailment-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-semantic-dependency-pilot-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cpu-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact oracle, proof and abstention checks
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/controlled_entailment
+        run: python3 -m unittest -v test_entailment.py
+      - name: Compare controlled-language inference with one-pass baseline
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/controlled_entailment/evaluate.py --output /tmp/omega-entailment-report.json
+          python3 - /tmp/omega-entailment-report.json <<'PY'
+          import json, sys
+          r = json.load(open(sys.argv[1], encoding="utf-8"))
+          print("status", r["status"], "total", r["total_cases"], "holdout", r["heldout_cases"])
+          print("candidate", r["candidate"])
+          print("one_pass_baseline", r["one_pass_baseline"])
+          print("certificates valid", r["all_engine_certificates_valid"])
+          print("pre_registered_criterion_met", r["pre_registered_criterion_met"])
+          assert r["all_engine_certificates_valid"]
+          PY
+      - name: Upload source-pinned raw results
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-controlled-entailment-02-json
+          path: /tmp/omega-entailment-report.json
+          retention-days: 14

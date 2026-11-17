@@ -1,0 +1,410 @@
+{
+  "project": "OMEGA-ENTAIL-02",
+  "format": "French controlled Horn implication cards; no dependency headings",
+  "cases": [
+    {
+      "id": "C01",
+      "split": "calibration",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "beta",
+      "sources": [
+        {
+          "ref": "C01-F1",
+          "text": "Si alpha, alors beta."
+        }
+      ]
+    },
+    {
+      "id": "C02",
+      "split": "calibration",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "gamma",
+      "sources": [
+        {
+          "ref": "C02-F1",
+          "text": "Si alpha, alors beta."
+        },
+        {
+          "ref": "C02-F2",
+          "text": "Si beta, alors gamma."
+        }
+      ]
+    },
+    {
+      "id": "C03",
+      "split": "calibration",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "gamma",
+      "sources": [
+        {
+          "ref": "C03-F1",
+          "text": "Si alpha et beta, alors gamma."
+        }
+      ]
+    },
+    {
+      "id": "C04",
+      "split": "calibration",
+      "facts": [
+        "alpha",
+        "beta"
+      ],
+      "goal": "gamma",
+      "sources": [
+        {
+          "ref": "C04-F1",
+          "text": "Si alpha et beta, alors gamma."
+        }
+      ]
+    },
+    {
+      "id": "C05",
+      "split": "calibration",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "beta",
+      "sources": [
+        {
+          "ref": "C05-F1",
+          "text": "alpha est nécessaire pour beta."
+        }
+      ]
+    },
+    {
+      "id": "C06",
+      "split": "calibration",
+      "facts": [
+        "beta"
+      ],
+      "goal": "alpha",
+      "sources": [
+        {
+          "ref": "C06-F1",
+          "text": "alpha est nécessaire pour beta."
+        }
+      ]
+    },
+    {
+      "id": "C07",
+      "split": "calibration",
+      "facts": [
+        "alpha",
+        "beta"
+      ],
+      "goal": "gamma",
+      "sources": [
+        {
+          "ref": "C07-F1",
+          "text": "gamma découle de alpha et beta."
+        }
+      ]
+    },
+    {
+      "id": "C08",
+      "split": "calibration",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "beta",
+      "sources": [
+        {
+          "ref": "C08-F1",
+          "text": "alpha est corrélé à beta."
+        }
+      ]
+    },
+    {
+      "id": "C09",
+      "split": "calibration",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "beta",
+      "sources": [
+        {
+          "ref": "C09-F1",
+          "text": "delta suffit pour beta."
+        }
+      ]
+    },
+    {
+      "id": "C10",
+      "split": "calibration",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "alpha",
+      "sources": [
+        {
+          "ref": "C10-F1",
+          "text": "Lorsque beta est vrai, delta est vrai."
+        }
+      ]
+    },
+    {
+      "id": "H01",
+      "split": "holdout",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "delta",
+      "sources": [
+        {
+          "ref": "H01-F1",
+          "text": "Si alpha, alors beta."
+        },
+        {
+          "ref": "H01-F2",
+          "text": "Si beta, alors gamma."
+        },
+        {
+          "ref": "H01-F3",
+          "text": "Si gamma, alors delta."
+        }
+      ]
+    },
+    {
+      "id": "H02",
+      "split": "holdout",
+      "facts": [
+        "alpha",
+        "gamma"
+      ],
+      "goal": "delta",
+      "sources": [
+        {
+          "ref": "H02-F1",
+          "text": "alpha suffit pour beta."
+        },
+        {
+          "ref": "H02-F2",
+          "text": "beta et gamma garantissent delta."
+        }
+      ]
+    },
+    {
+      "id": "H03",
+      "split": "holdout",
+      "facts": [
+        "gamma"
+      ],
+      "goal": "delta",
+      "sources": [
+        {
+          "ref": "H03-F1",
+          "text": "beta est nécessaire pour gamma."
+        },
+        {
+          "ref": "H03-F2",
+          "text": "beta entraîne delta."
+        }
+      ]
+    },
+    {
+      "id": "H04",
+      "split": "holdout",
+      "facts": [
+        "beta"
+      ],
+      "goal": "gamma",
+      "sources": [
+        {
+          "ref": "H04-F1",
+          "text": "beta est nécessaire pour gamma."
+        }
+      ]
+    },
+    {
+      "id": "H05",
+      "split": "holdout",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "beta",
+      "sources": [
+        {
+          "ref": "H05-F1",
+          "text": "Si alpha, alors beta ou gamma."
+        }
+      ]
+    },
+    {
+      "id": "H06",
+      "split": "holdout",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "gamma",
+      "sources": [
+        {
+          "ref": "H06-F1",
+          "text": "gamma découle de alpha et beta."
+        }
+      ]
+    },
+    {
+      "id": "H07",
+      "split": "holdout",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "gamma",
+      "sources": [
+        {
+          "ref": "H07-F1",
+          "text": "Lorsque alpha est vrai, beta est vrai."
+        },
+        {
+          "ref": "H07-F2",
+          "text": "gamma résulte de beta."
+        }
+      ]
+    },
+    {
+      "id": "H08",
+      "split": "holdout",
+      "facts": [
+        "alpha",
+        "beta"
+      ],
+      "goal": "gamma",
+      "sources": [
+        {
+          "ref": "H08-F1",
+          "text": "alpha et beta sont étudiés conjointement."
+        }
+      ]
+    },
+    {
+      "id": "H09",
+      "split": "holdout",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "gamma",
+      "sources": [
+        {
+          "ref": "H09-F1",
+          "text": "Si alpha et non beta, alors gamma."
+        }
+      ]
+    },
+    {
+      "id": "H10",
+      "split": "holdout",
+      "facts": [],
+      "goal": "beta",
+      "sources": [
+        {
+          "ref": "H10-F1",
+          "text": "alpha entraîne beta."
+        }
+      ]
+    },
+    {
+      "id": "H11",
+      "split": "holdout",
+      "facts": [
+        "alpha",
+        "beta"
+      ],
+      "goal": "epsilon",
+      "sources": [
+        {
+          "ref": "H11-F1",
+          "text": "alpha et beta garantissent gamma."
+        },
+        {
+          "ref": "H11-F2",
+          "text": "gamma est suffisant pour epsilon."
+        }
+      ]
+    },
+    {
+      "id": "H12",
+      "split": "holdout",
+      "facts": [
+        "beta"
+      ],
+      "goal": "theta",
+      "sources": [
+        {
+          "ref": "H12-F1",
+          "text": "alpha est nécessaire pour beta."
+        },
+        {
+          "ref": "H12-F2",
+          "text": "alpha suffit pour theta."
+        }
+      ]
+    },
+    {
+      "id": "H13",
+      "split": "holdout",
+      "facts": [
+        "alpha",
+        "non alpha"
+      ],
+      "goal": "beta",
+      "sources": [
+        {
+          "ref": "H13-F1",
+          "text": "alpha entraîne beta."
+        }
+      ]
+    },
+    {
+      "id": "H14",
+      "split": "holdout",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "delta",
+      "sources": [
+        {
+          "ref": "H14-F1",
+          "text": "alpha entraîne beta."
+        },
+        {
+          "ref": "H14-F2",
+          "text": "gamma entraîne delta."
+        }
+      ]
+    },
+    {
+      "id": "H15",
+      "split": "holdout",
+      "facts": [
+        "alpha"
+      ],
+      "goal": "zeta",
+      "sources": [
+        {
+          "ref": "H15-F1",
+          "text": "alpha suffit pour zeta."
+        }
+      ]
+    },
+    {
+      "id": "H16",
+      "split": "holdout",
+      "facts": [
+        "eta"
+      ],
+      "goal": "theta",
+      "sources": [
+        {
+          "ref": "H16-F1",
+          "text": "alpha entraîne theta."
+        }
+      ]
+    }
+  ]
+}

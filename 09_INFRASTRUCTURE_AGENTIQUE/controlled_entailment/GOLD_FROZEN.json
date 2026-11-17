@@ -1,0 +1,407 @@
+{
+  "project": "OMEGA-ENTAIL-02",
+  "annotation_basis": "manual formalization frozen before engine; independent truth-table checker verifies outcomes",
+  "cases": [
+    {
+      "id": "C01",
+      "split": "calibration",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "C01-F1",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "beta"
+        }
+      ]
+    },
+    {
+      "id": "C02",
+      "split": "calibration",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "C02-F1",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "beta"
+        },
+        {
+          "ref": "C02-F2",
+          "premises": [
+            "beta"
+          ],
+          "conclusion": "gamma"
+        }
+      ]
+    },
+    {
+      "id": "C03",
+      "split": "calibration",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "C03-F1",
+          "premises": [
+            "alpha",
+            "beta"
+          ],
+          "conclusion": "gamma"
+        }
+      ]
+    },
+    {
+      "id": "C04",
+      "split": "calibration",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "C04-F1",
+          "premises": [
+            "alpha",
+            "beta"
+          ],
+          "conclusion": "gamma"
+        }
+      ]
+    },
+    {
+      "id": "C05",
+      "split": "calibration",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "C05-F1",
+          "premises": [
+            "beta"
+          ],
+          "conclusion": "alpha"
+        }
+      ]
+    },
+    {
+      "id": "C06",
+      "split": "calibration",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "C06-F1",
+          "premises": [
+            "beta"
+          ],
+          "conclusion": "alpha"
+        }
+      ]
+    },
+    {
+      "id": "C07",
+      "split": "calibration",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "C07-F1",
+          "premises": [
+            "alpha",
+            "beta"
+          ],
+          "conclusion": "gamma"
+        }
+      ]
+    },
+    {
+      "id": "C08",
+      "split": "calibration",
+      "expect_abstain": true,
+      "rules": []
+    },
+    {
+      "id": "C09",
+      "split": "calibration",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "C09-F1",
+          "premises": [
+            "delta"
+          ],
+          "conclusion": "beta"
+        }
+      ]
+    },
+    {
+      "id": "C10",
+      "split": "calibration",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "C10-F1",
+          "premises": [
+            "beta"
+          ],
+          "conclusion": "delta"
+        }
+      ]
+    },
+    {
+      "id": "H01",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H01-F1",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "beta"
+        },
+        {
+          "ref": "H01-F2",
+          "premises": [
+            "beta"
+          ],
+          "conclusion": "gamma"
+        },
+        {
+          "ref": "H01-F3",
+          "premises": [
+            "gamma"
+          ],
+          "conclusion": "delta"
+        }
+      ]
+    },
+    {
+      "id": "H02",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H02-F1",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "beta"
+        },
+        {
+          "ref": "H02-F2",
+          "premises": [
+            "beta",
+            "gamma"
+          ],
+          "conclusion": "delta"
+        }
+      ]
+    },
+    {
+      "id": "H03",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H03-F1",
+          "premises": [
+            "gamma"
+          ],
+          "conclusion": "beta"
+        },
+        {
+          "ref": "H03-F2",
+          "premises": [
+            "beta"
+          ],
+          "conclusion": "delta"
+        }
+      ]
+    },
+    {
+      "id": "H04",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H04-F1",
+          "premises": [
+            "gamma"
+          ],
+          "conclusion": "beta"
+        }
+      ]
+    },
+    {
+      "id": "H05",
+      "split": "holdout",
+      "expect_abstain": true,
+      "rules": []
+    },
+    {
+      "id": "H06",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H06-F1",
+          "premises": [
+            "alpha",
+            "beta"
+          ],
+          "conclusion": "gamma"
+        }
+      ]
+    },
+    {
+      "id": "H07",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H07-F1",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "beta"
+        },
+        {
+          "ref": "H07-F2",
+          "premises": [
+            "beta"
+          ],
+          "conclusion": "gamma"
+        }
+      ]
+    },
+    {
+      "id": "H08",
+      "split": "holdout",
+      "expect_abstain": true,
+      "rules": []
+    },
+    {
+      "id": "H09",
+      "split": "holdout",
+      "expect_abstain": true,
+      "rules": []
+    },
+    {
+      "id": "H10",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H10-F1",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "beta"
+        }
+      ]
+    },
+    {
+      "id": "H11",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H11-F1",
+          "premises": [
+            "alpha",
+            "beta"
+          ],
+          "conclusion": "gamma"
+        },
+        {
+          "ref": "H11-F2",
+          "premises": [
+            "gamma"
+          ],
+          "conclusion": "epsilon"
+        }
+      ]
+    },
+    {
+      "id": "H12",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H12-F1",
+          "premises": [
+            "beta"
+          ],
+          "conclusion": "alpha"
+        },
+        {
+          "ref": "H12-F2",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "theta"
+        }
+      ]
+    },
+    {
+      "id": "H13",
+      "split": "holdout",
+      "expect_abstain": true,
+      "rules": [
+        {
+          "ref": "H13-F1",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "beta"
+        }
+      ]
+    },
+    {
+      "id": "H14",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H14-F1",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "beta"
+        },
+        {
+          "ref": "H14-F2",
+          "premises": [
+            "gamma"
+          ],
+          "conclusion": "delta"
+        }
+      ]
+    },
+    {
+      "id": "H15",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H15-F1",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "zeta"
+        }
+      ]
+    },
+    {
+      "id": "H16",
+      "split": "holdout",
+      "expect_abstain": false,
+      "rules": [
+        {
+          "ref": "H16-F1",
+          "premises": [
+            "alpha"
+          ],
+          "conclusion": "theta"
+        }
+      ]
+    }
+  ]
+}
