@@ -1,0 +1,25 @@
+{
+  "version": "omega-source-registry-v1",
+  "sources": [
+    {
+      "source_id": "BR-ACC-01",
+      "relative_path": "cross_domain_math05/source_snapshot/BR-ACC-01_CLOTURE_ACCESSIBLE.md",
+      "git_blob": "006a57586ae1e7f100c48d7bc4f159723c2b3352"
+    },
+    {
+      "source_id": "BR-DESC-01",
+      "relative_path": "cross_domain_math05/source_snapshot/BR-DESC-01_SUFFISANCE_VS_AUTONOMIE.md",
+      "git_blob": "fb584f81bdd285da480df1eafacea75d0ab77c19"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "relative_path": "cross_domain_math05/source_snapshot/BR-OBS-CAP-03_FIBER_BOX_TU.md",
+      "git_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b"
+    },
+    {
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "relative_path": "cross_domain_math05/source_snapshot/BR-AFFINE-TREE-CORE_BRIQUE.md",
+      "git_blob": "ff8b35f41aca9de2d362f0bf4852f133527a479d"
+    }
+  ]
+}
