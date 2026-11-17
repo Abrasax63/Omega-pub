@@ -1,0 +1,44 @@
+name: Omega math structure v2 prospectively heldout
+on:
+  push:
+    branches:
+      - experiment/omega-math-structure-v2-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-unseen-math-extraction-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  two-new-math-cards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: All calibration and new holdout integrity tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/unseen_math_read07
+        run: python3 -m unittest -v test_extract.py test_structure_v2.py test_structure_v2_holdout.py
+      - name: Evaluate structure extractor unchanged since holdout selection
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/unseen_math_read07/evaluate_structure_v2.py --output /tmp/omega-structure-v2-heldouts.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-structure-v2-heldouts.json", encoding="utf-8"))
+          print("status:", r["status"])
+          print("per_card:", r["two_sources"])
+          print("source_spans_covered:", r["salient_captured"], "/", r["salient_total"])
+          print("typed_spans:", r["salient_correctly_typed"])
+          print("theorem_heading_candidates:", r["theorem_heading_candidates"])
+          print("false_warning_promotions:", r["false_warning_promotions"])
+          print("all_citations_valid:", r["all_citations_valid"])
+          print("pre_registered_local_success:", r["pre_registered_local_success"])
+          assert r["all_citations_valid"]
+          assert not r["false_warning_promotions"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-structure-v2-new-math-holdouts-raw
+          path: /tmp/omega-structure-v2-heldouts.json
+          retention-days: 14
