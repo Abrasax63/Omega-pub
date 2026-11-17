@@ -11,7 +11,8 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[2]  # adjusted below if needed
+ROOT = Path(__file__).resolve().parent.parent.parent
 IF = re.compile(r"^\s*(?:-\s*)?(?:si\b|supposons\b)", re.IGNORECASE)
 THEN = re.compile(r"\balors\b", re.IGNORECASE)
 SECTION = re.compile(r"^##\s+(.*)$")
