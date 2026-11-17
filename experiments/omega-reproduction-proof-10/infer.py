@@ -113,8 +113,10 @@ def classify(reference,candidate):
     checks=(
         ("worker_sha256","NOT_SC_REPLAY_WORKER_DRIFT"),
         ("dependency_sha256","NOT_SC_REPLAY_DEPENDENCY_DRIFT"),
-        ("input_sha256","NOT_SC_REPLAY_INPUT_DRIFT"),
+        # The seed is part of inputs.json; classify it specifically BEFORE
+        # the derived input byte hash, or seed drift will be mislabeled.
         ("seed","NOT_SC_REPLAY_SEED_DRIFT"),
+        ("input_sha256","NOT_SC_REPLAY_INPUT_DRIFT"),
         ("environment","NOT_SC_REPLAY_ENVIRONMENT_DRIFT"),
         ("result_sha256","NOT_SC_REPLAY_OUTPUT_MISMATCH"),
     )
