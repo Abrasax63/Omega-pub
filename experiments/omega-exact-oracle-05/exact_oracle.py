@@ -60,7 +60,7 @@ def fresh_evaluation_pool(space, menu):
         unique.setdefault(signature, m)
     eligible = sorted(unique.values())
     if len(eligible) < POOL_N:
-        raise RuntimeError("INSUFFICIENT_NEW_MODELS")
+        raise RuntimeError(f"INSUFFICIENT_NEW_MODELS eligible={len(eligible)} required={POOL_N}")
     random.Random(POOL_SEED).shuffle(eligible)
     pool = eligible[:POOL_N]
     assert len(set(pool)) == POOL_N
@@ -308,12 +308,22 @@ def baseline_paths(candidates, menu, tariff, name):
     return paths
 
 
-def conduct():
+def conduct(mode="retrospective"):
+    if mode not in ("prospective", "retrospective"):
+        raise ValueError("UNKNOWN_EVALUATION_MODE")
     menu = contrast.menu_words()
     world_space, _ = s.enumerate_consistent_models(
         s.validate_observations(s.six_zero_observations()))
-    pool, eligible, exclusions = fresh_evaluation_pool(world_space, menu)
-    instances = build_instances(pool)
+    if mode == "prospective":
+        pool, eligible, exclusions = fresh_evaluation_pool(world_space, menu)
+        instances = build_instances(pool)
+    else:
+        # The 24 PR#160 test instances are PUBLIC and previously scored.
+        # Reuse their candidate sets exactly; never label the result blind.
+        old_pools, _, exclusions, _ = previous.fresh_pools(world_space, menu)
+        pool = old_pools["test"]
+        instances = previous.build_instances(pool, TEST_N, 2000)
+        eligible = None
     trials = []
     for item in instances:
         models = item["candidates"]
@@ -363,7 +373,8 @@ def conduct():
     primary = (sum(headroom) >= 6 and all_budget_ok and
                all(len(r["paths"]["OPTIMUM"]) == N_CANDIDATES for r in trials))
     near = all(not x for x in strictly_over_10) and all_budget_ok
-    status = ("HEADROOM_FOR_IMPROVEMENT" if primary else
+    status = ("RETROSPECTIVE_ONLY_NO_FRESH_HOLDOUT" if mode == "retrospective" else
+              "HEADROOM_FOR_IMPROVEMENT" if primary else
               "NEAR_OPTIMUM_IN_THIS_BENCHMARK" if near else
               "MIXED_OR_INDETERMINATE")
     score = {
@@ -389,6 +400,9 @@ def conduct():
     }
     return {
         "experiment": EXPERIMENT, "preregistered_commit": PREREG_COMMIT,
+        "posthoc_scope_commit": ("10b302ab49b8d6e46bda01f8b89c5ea4006b845c"
+                                 if mode == "retrospective" else None),
+        "mode": mode,
         "status": status, "source_models": len(world_space),
         "eligible_new_models": eligible, "excluded_previous_models": exclusions,
         "pool_sha256": digest(pool),
@@ -396,7 +410,11 @@ def conduct():
         "menu_sha256": digest(menu), "menu_size": len(menu),
         "seeds": [POOL_SEED, INSTANCE_SEED],
         "tariffs": [list(x) for x in TARIFFS],
-        "pool_size": len(pool), "new_instances": len(instances),
+        "pool_size": len(pool),
+        "new_instances": len(instances) if mode == "prospective" else 0,
+        "evaluated_instances": len(instances),
+        "prior_exposure": ("PR #160 HOLDOUT, exposed before this experiment"
+                           if mode == "retrospective" else None),
         "policies": list(POLICIES),
         "prior": "uniform among 16 candidates, not actual unknown-world distribution",
         "horizon": "unbounded exact identification; depth<=12 reported separately",
@@ -408,15 +426,17 @@ def conduct():
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--mode", choices=("prospective","retrospective"), required=True)
     ap.add_argument("--output", type=Path, required=True)
     args = ap.parse_args()
-    r = conduct()
+    r = conduct(mode=args.mode)
     raw = (json.dumps(r, sort_keys=True, indent=2) + "\n").encode()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(raw)
     print(json.dumps({
-        "experiment": EXPERIMENT, "status": r["status"],
-        "summary": r["primary"], "report_sha256": sha256(raw).hexdigest(),
+        "experiment": EXPERIMENT, "mode": r["mode"],
+        "status": r["status"], "summary": r["primary"],
+        "report_sha256": sha256(raw).hexdigest(),
     }, sort_keys=True))
 
 
