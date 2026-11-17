@@ -127,6 +127,31 @@ class SourceToProof07Tests(unittest.TestCase):
            "facts":["a"],"goal":"b"}
         self.assertEqual(p.answer(q,self.documents)["verdict"],"ABSTAIN")
 
+    def test_direct_cli_answers_real_source_without_gold(self):
+        import subprocess
+        import sys
+        source=dict(self.cases[6])
+        source.pop("expected")
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/"query.json"
+            path.write_text(json.dumps(source),encoding="utf-8")
+            proc=subprocess.run([sys.executable,str(p.HERE/"pipeline.py"),
+                                 "--query",str(path)],
+                                capture_output=True,text=True,timeout=20)
+            self.assertEqual(proc.returncode,0,proc.stderr)
+            result=json.loads(proc.stdout)
+            self.assertEqual(result["verdict"],"SUPPORTED")
+            self.assertTrue(result["certificate_valid"])
+            self.assertEqual(result["source_id"],REAL_ID)
+            self.assertNotIn("expected",result)
+            source["expected"]="SUPPORTED"
+            path.write_text(json.dumps(source),encoding="utf-8")
+            refused=subprocess.run([sys.executable,str(p.HERE/"pipeline.py"),
+                                    "--query",str(path)],
+                                   capture_output=True,text=True,timeout=20)
+            self.assertNotEqual(refused.returncode,0)
+            self.assertIn("without expected",refused.stderr)
+
     def test_frozen_cohort_and_no_gold_leak(self):
         self.assertEqual(len(self.cases),12)
         self.assertEqual([q["expected"] for q in self.cases].count("SUPPORTED"),4)
