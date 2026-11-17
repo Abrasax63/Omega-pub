@@ -1,0 +1,105 @@
+name: Omega memory transfer controlled pilot
+
+on:
+  pull_request:
+    paths:
+      - "09_INFRASTRUCTURE_AGENTIQUE/memory_transfer/**"
+      - ".github/workflows/omega-memory-transfer.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-nonregression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify syntax and no-network controls
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/memory_transfer
+        run: |
+          python -m py_compile transfer.py test_transfer.py
+          python -m unittest -v test_transfer.py
+
+  qwen-transfer:
+    needs: offline-nonregression
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Restore pinned llama.cpp build cache
+        uses: actions/cache@v4
+        id: llama-cache
+        with:
+          path: ${{ runner.temp }}/llama.cpp
+          key: omega-llama-cpu-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6-v1
+      - name: Build pinned llama.cpp CPU engine
+        if: steps.llama-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$RUNNER_TEMP/llama.cpp"
+          git -C "$RUNNER_TEMP/llama.cpp" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          git -C "$RUNNER_TEMP/llama.cpp" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          cmake -S "$RUNNER_TEMP/llama.cpp" -B "$RUNNER_TEMP/llama.cpp/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/llama.cpp/build" --target llama-cli -j 4
+      - name: Restore pinned model cache
+        uses: actions/cache@v4
+        id: model-cache
+        with:
+          path: ${{ runner.temp }}/model.gguf
+          key: omega-qwen2p5-coder-3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7-v1
+      - name: Obtain fixed SHA256 Qwen2.5-Coder-3B Q4_K_M
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f "$RUNNER_TEMP/model.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf" \
+              -o "$RUNNER_TEMP/model.gguf"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $RUNNER_TEMP/model.gguf" | sha256sum -c -
+      - name: Run paired model calls and delayed independent exact oracle
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/memory_transfer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python transfer.py \
+            --llama-cli "$RUNNER_TEMP/llama.cpp/build/bin/llama-cli" \
+            --model-file "$RUNNER_TEMP/model.gguf" \
+            --output transfer-result.json
+          python - <<'PY'
+          import json
+          report=json.load(open('transfer-result.json',encoding='utf-8'))
+          assert report['experiment']=='OMEGA-TRANSFER-01'
+          assert report['reserve_input_sha256']
+          assert report['choices_sha256_before_oracle']
+          assert len(report['evaluations'])==5
+          assert report['model_calls_attempted']==10
+          assert all(x['same_prompt_character_count'] > 0 for x in report['evaluations'])
+          assert not report['automatic_core_promotion']
+          assert not report['comparison']['novel_general_intelligence_demonstrated']
+          assert not report['comparison']['total_budget_parity_confirmed']
+          print('Controlled experimental report created, no scientific promotion')
+          print(report['summary'])
+          PY
+      - name: Archive model decisions and exact-oracle evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-memory-transfer-audit
+          path: 09_INFRASTRUCTURE_AGENTIQUE/memory_transfer/transfer-result.json
+          if-no-files-found: warn
+          retention-days: 14
