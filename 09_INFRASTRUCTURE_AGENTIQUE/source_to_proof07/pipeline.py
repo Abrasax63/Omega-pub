@@ -105,6 +105,31 @@ def audit_truth_table(facts,rules,goal):
     return {"status":"EXHAUSTIVE_TRUTH_TABLE","models":surviving,
             "positive_models":positive,"verdict":verdict}
 
+def missing_base_assumptions(goal,facts,rules):
+    """Expand a missing intermediate fact into the underlying missing premises.
+
+    Diagnostic only: never turns an abstention into a positive/negative proof.
+    Cycles and undefined relations are not silently assumed true.
+    """
+    by_head={}
+    for r in rules:
+        by_head.setdefault(r["conclusion"],[]).append(r["premises"])
+    def missing(atom,seen):
+        if atom in facts:
+            return frozenset()
+        if atom in seen or atom not in by_head:
+            return frozenset((atom,))
+        candidates=[]
+        for premises in by_head[atom]:
+            leaves=frozenset().union(*(missing(p,seen|{atom}) for p in premises))
+            candidates.append(leaves)
+        return min(candidates,key=lambda x:(len(x),tuple(sorted(x))))
+    options=[missing(head,frozenset()) for head in (goal,"not:"+goal)
+             if head in by_head]
+    if not options:
+        return []
+    return sorted(min(options,key=lambda x:(len(x),tuple(sorted(x)))))
+
 def horn(question,doc,docs):
     facts=question.get("facts")
     goal=question.get("goal")
@@ -118,6 +143,8 @@ def horn(question,doc,docs):
     derived=bridge.assess(q,docs,by_source)
     proof_valid=bridge.check_proof(q,derived,docs,by_source)
     audit=audit_truth_table(facts,rules,goal)
+    if derived["verdict"]=="ABSTAIN" and rules:
+        derived["missing_assumptions"]=missing_base_assumptions(goal,set(facts),rules)
     if audit["status"]!="EXHAUSTIVE_TRUTH_TABLE" or derived["verdict"]!=audit["verdict"]:
         derived["verdict"]="ABSTAIN"
         derived["proof"]=[]
