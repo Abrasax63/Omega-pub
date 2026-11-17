@@ -1,0 +1,88 @@
+name: Omega provenance oracle 06 - exact decision certificates
+
+on:
+  push:
+    branches:
+      - experiment/omega-provenance-oracle-06-2026-11-17
+    paths:
+      - 'experiments/omega-provenance-oracle-06/**'
+      - '.github/workflows/omega-provenance-oracle-06.yml'
+  pull_request:
+    branches:
+      - experiment/omega-exact-oracle-05-2026-11-17
+
+permissions:
+  contents: read
+
+jobs:
+  preregistered-controls-and-calibration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exactly 14 tests, no held-out tariff index
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-provenance-oracle-06/*.py
+          (cd experiments/omega-provenance-oracle-06 && python - <<'PY'
+          import unittest
+          suite=unittest.defaultTestLoader.discover('.',pattern='test_provenance_oracle.py')
+          assert suite.countTestCases()==14,suite.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+          )
+      - name: Calibration only, scenarios 0-11
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/calibration
+          python experiments/omega-provenance-oracle-06/provenance_oracle.py --mode calibration --output evidence/calibration/report.json | tee evidence/calibration/summary.jsonl
+          sha256sum evidence/calibration/report.json > evidence/calibration/report.sha256
+          python experiments/omega-provenance-oracle-06/audit_report.py evidence/calibration/report.json | tee evidence/calibration/audit.txt
+      - name: Archive calibration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-provenance-oracle-06-calibration
+          path: evidence/calibration/*
+          if-no-files-found: warn
+          retention-days: 30
+
+  frozen-heldout-tariffs:
+    if: github.event_name == 'pull_request'
+    needs: preregistered-controls-and-calibration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: One prospective held-out-tariff evaluation, indices 100-123
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/holdout
+          python experiments/omega-provenance-oracle-06/provenance_oracle.py --mode holdout --output evidence/holdout/report.json | tee evidence/holdout/summary.jsonl
+          sha256sum evidence/holdout/report.json > evidence/holdout/report.sha256
+      - name: Independent brute force and paid-path audit of all 1440 trajectories
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/omega-provenance-oracle-06/audit_report.py evidence/holdout/report.json | tee evidence/holdout/audit.txt
+      - name: Preserve all path certificates and negative findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-provenance-oracle-06-heldout-tariffs
+          path: evidence/holdout/*
+          if-no-files-found: warn
+          retention-days: 30
