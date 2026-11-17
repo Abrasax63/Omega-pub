@@ -1,0 +1,59 @@
+name: Omega 12 - automatic source formalization and finite countermodels
+
+on:
+  pull_request:
+    branches:
+      - experiment/omega-llm-proposals-ledger11-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  auto-countermodel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and falsification controls
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/auto_countermodel12
+        run: |
+          set -euo pipefail
+          python -m py_compile engine.py test_engine.py
+          python -m unittest -v test_engine.py
+      - name: Evaluate new frozen FOLIO 67-78 without tuning
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/auto_countermodel12/engine.py \
+            --output /tmp/omega12-raw-report.json
+          python - <<'PY'
+          import json
+          data=json.load(open('/tmp/omega12-raw-report.json',encoding='utf8'))
+          assert data['experiment']=='OMEGA-AUTO-COUNTERMODEL-12'
+          assert data['cases']==12 and data['distinct_theories']==5
+          assert data['sample_blob']=='fdb0d5ef7752577d09d84acd58328e91b409aa0a'
+          assert data['source_blob']=='06244bd10b37eac73cba7aca6c336e96011ace58'
+          assert data['automatic_parsed_premises']<=data['premises_total']
+          assert data['finite_countermodels_found']<=data['complete_formalizations']
+          assert data['new_scientific_theorems_certified']==0
+          assert data['unvalidated_translations'] and not data['auto_promotion']
+          assert data['paid_api_calls']==0
+          assert data['predictions_hash_before_gold']
+          assert all(not row['scientific_claim_certified'] for row in data['rows'])
+          print({k:data[k] for k in ('cases','premises_total','automatic_parsed_premises',
+                'complete_formalizations','finite_countermodels_found',
+                'independent_witness_tests','status','predictions_hash_before_gold')})
+          PY
+      - name: Archive raw extraction, refusals and replayed witnesses
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega12-new-folio-auto-formalization-raw
+          path: /tmp/omega12-raw-report.json
+          retention-days: 30
+          if-no-files-found: warn
