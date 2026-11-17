@@ -33,8 +33,17 @@ def audit(d):
     assert d["preregistered_commit"] == "dc02ab735e314b106868faa49b284fb4e77e4b9b"
     assert d["seeds"] == [57222, 57223]
     assert d["menu_size"] == 64
-    assert d["pool_size"] == 32
-    assert d["new_instances"] == 24 and len(d["trials"]) == 24
+    assert d["mode"] in ("prospective", "retrospective")
+    assert d["evaluated_instances"] == 24 and len(d["trials"]) == 24
+    if d["mode"] == "retrospective":
+        assert d["pool_size"] == 24 and d["new_instances"] == 0
+        assert d["eligible_new_models"] is None
+        assert d["prior_exposure"] == "PR #160 HOLDOUT, exposed before this experiment"
+        assert d["posthoc_scope_commit"] == "10b302ab49b8d6e46bda01f8b89c5ea4006b845c"
+    else:
+        assert d["pool_size"] == 32 and d["new_instances"] == 24
+            assert d["prior_exposure"] is None
+        assert d["posthoc_scope_commit"] is None
     assert d["policies"] == ["OPTIMUM","PRICE_AWARE","BALANCED"]
     assert d["tariffs"] == [[1,5],[5,1]]
     assert d["no_training"] and d["no_paid_api"] and not d["main_modified"]
@@ -149,6 +158,10 @@ def audit(d):
         expected = "NEAR_OPTIMUM_IN_THIS_BENCHMARK"
     else:
         expected = "MIXED_OR_INDETERMINATE"
+    if d["mode"] == "retrospective":
+        # Previously exposed PR160 worlds can measure a historical gap,
+        # but NEVER inherit a positive/negative prospective science label.
+        expected = "RETROSPECTIVE_ONLY_NO_FRESH_HOLDOUT"
     assert d["status"] == expected
     return {"status": expected, "uniform_optimum": avg("OPTIMUM"),
             "uniform_price_aware": avg("PRICE_AWARE"),
