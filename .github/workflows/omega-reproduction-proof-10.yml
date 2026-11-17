@@ -1,0 +1,197 @@
+name: Omega reproduction proof 10 - five job-level finite replay tests
+
+on:
+  push:
+    branches:
+      - experiment/omega-reproduction-proof-10-2026-11-17
+    paths:
+      - 'experiments/omega-reproduction-proof-10/**'
+      - '.github/workflows/omega-reproduction-proof-10.yml'
+  pull_request:
+    branches:
+      - experiment/omega-cross-workflow-raw-09-2026-11-17
+
+permissions:
+  contents: read
+
+jobs:
+  preflight-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exactly fourteen ephemeral non-scoring controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-reproduction-proof-10/*.py
+          (cd experiments/omega-reproduction-proof-10 && python - <<'PY'
+          import unittest
+          tests=unittest.defaultTestLoader.discover('.',pattern='test_replay.py')
+          assert tests.countTestCases()==14,tests.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(tests).wasSuccessful()
+          PY
+          )
+
+  compute-evidence:
+    if: github.event_name == 'pull_request'
+    needs: preflight-controls
+    strategy:
+      fail-fast: false
+      matrix:
+        case: [A, B, C, D, E]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compute case in a separate job and capture real receipt+logs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/omega-reproduction-proof-10/produce.py \
+            --case ${{ matrix.case }} --out evidence/packet
+          test "$(find evidence/packet -maxdepth 1 -type f | wc -l)" -eq 6
+          sha256sum evidence/packet/receipt.json
+      - name: Archive the full actual compute bundle from this job
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-repro-10-compute-${{ matrix.case }}
+          path: evidence/packet/
+          if-no-files-found: error
+          retention-days: 30
+
+  prepare-blind-dossier:
+    if: github.event_name == 'pull_request'
+    needs: compute-evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download all five genuine job output artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: omega-repro-10-compute-*
+          path: evidence/stage
+          merge-multiple: false
+      - name: Shuffle into opaque five-packet raw dataset and isolate gold
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/omega-reproduction-proof-10/assemble.py \
+            --stage-dir evidence/stage \
+            --raw-dir evidence/raw \
+            --gold-file evidence/private-gold/gold.json
+          test ! -e evidence/raw/gold.json
+          test "$(find evidence/raw/packets -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 5
+      - name: Publish ONLY raw input for the independent engine
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-repro-10-raw-dossier
+          path: evidence/raw/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish gold as a separate artifact for scorer only
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-repro-10-separated-answer-key
+          path: evidence/private-gold/gold.json
+          if-no-files-found: error
+          retention-days: 30
+
+  blind-inference:
+    if: github.event_name == 'pull_request'
+    needs: prepare-blind-dossier
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download raw packet bytes only, never answer key
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-repro-10-raw-dossier
+          path: evidence/raw
+      - name: Verify byte-level computation receipts and independent results
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e evidence/private-gold
+          test ! -e evidence/raw/gold.json
+          python experiments/omega-reproduction-proof-10/infer.py \
+            --raw-dir evidence/raw \
+            --output evidence/predictions/predictions.json
+          sha256sum evidence/predictions/predictions.json
+      - name: Publish frozen decisions before judge sees gold
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-repro-10-frozen-predictions
+          path: evidence/predictions/predictions.json
+          if-no-files-found: error
+          retention-days: 30
+
+  independent-scoring:
+    if: github.event_name == 'pull_request'
+    needs: [prepare-blind-dossier, blind-inference]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download raw source data
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-repro-10-raw-dossier
+          path: evidence/raw
+      - name: Download predictions frozen by inference
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-repro-10-frozen-predictions
+          path: evidence/predictions
+      - name: Download GOLD only into independent scorer
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-repro-10-separated-answer-key
+          path: evidence/private-gold
+      - name: Independently prove exact replay and detect all three confounders
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/score
+          python experiments/omega-reproduction-proof-10/score.py \
+            --raw-dir evidence/raw \
+            --predictions evidence/predictions/predictions.json \
+            --gold evidence/private-gold/gold.json \
+            --output evidence/score/report.json | tee evidence/score/summary.jsonl
+          sha256sum evidence/score/report.json > evidence/score/report.sha256
+          sha256sum evidence/predictions/predictions.json > evidence/score/predictions.sha256
+      - name: Archive positive and negative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-repro-10-independent-judge-evidence
+          path: evidence/score/*
+          if-no-files-found: warn
+          retention-days: 30
