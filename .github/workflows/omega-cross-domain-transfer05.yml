@@ -1,0 +1,43 @@
+name: Omega cross-domain transfer 05 (frozen)
+on:
+  push:
+    branches:
+      - experiment/omega-cross-domain-transfer-2026-11-17
+  pull_request:
+    branches:
+      - fix/omega-real-math-numeric-gate-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-cpu-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify immutable engine, real source snapshots and finite oracles
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/cross_domain_math05
+        run: python3 -m unittest -v test_transfer.py
+      - name: Run frozen cross-domain comparison without external API
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/cross_domain_math05/evaluate.py --output /tmp/omega-transfer05.json
+          python3 - <<'PY'
+          import json
+          with open("/tmp/omega-transfer05.json", encoding="utf-8") as f:
+              r = json.load(f)
+          print("status:", r["status"])
+          print("frozen_engine:", r["frozen_engine"])
+          print("abstain_all_baseline:", r["abstain_all_baseline"])
+          print("finite_microchecks_passed:", r["finite_microchecks_passed"])
+          print("unrecognized_source_ids_by_engine:", r["unrecognized_source_ids_by_engine"])
+          print("pre_registered_transfer_criterion_met:", r["pre_registered_transfer_criterion_met"])
+          assert r["finite_microchecks_passed"]
+          PY
+      - name: Archive raw scientific result including failures
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-frozen-cross-domain-transfer-05
+          path: /tmp/omega-transfer05.json
+          retention-days: 14
