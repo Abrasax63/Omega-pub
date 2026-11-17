@@ -1,0 +1,40 @@
+name: Omega source logic model-scope v2 (posthoc)
+on:
+  push:
+    branches:
+      - fix/omega-source-logic-scope-v2-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-source-logic-bridge-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provenance-and-scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Original suite and new scope guard tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/source_logic_bridge06
+        run: python3 -m unittest -v test_bridge.py test_scope_v2.py
+      - name: Structured posthoc safety report and independent oracle
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/source_logic_bridge06/evaluate_scope_v2.py --output /tmp/omega-source-logic-scope-v2.json
+          python3 - <<'PY'
+          import json
+          r = json.load(open("/tmp/omega-source-logic-scope-v2.json", encoding="utf-8"))
+          print("status:", r["status"])
+          print("checked:", r["count"], "agree:", r["matching_gold_and_independent_oracle"])
+          print("reference_model_guard_cases_abstain:", r["reference_model_guard_cases_abstain"])
+          print("certificates_all_valid:", r["certificates_all_valid"])
+          print("posthoc_safety_criterion:", r["posthoc_safety_criterion"])
+          assert r["posthoc_safety_criterion"] and r["certificates_all_valid"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-source-logic-scope-v2-posthoc
+          path: /tmp/omega-source-logic-scope-v2.json
+          retention-days: 14

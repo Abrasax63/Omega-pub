@@ -1,0 +1,165 @@
+{
+  "version": "bridge06-scope-v2-posthoc-16",
+  "queries": [
+    {
+      "id": "Q01",
+      "source_id": "BR-ACC-01",
+      "facts": [
+        "finite_system",
+        "total_actions",
+        "deterministic",
+        "fixed_observation"
+      ],
+      "goal": "factor_language_equals_access_closure"
+    },
+    {
+      "id": "Q02",
+      "source_id": "BR-ACC-01",
+      "facts": [
+        "finite_system",
+        "deterministic",
+        "fixed_observation"
+      ],
+      "goal": "factor_language_equals_access_closure"
+    },
+    {
+      "id": "Q03",
+      "source_id": "BR-ACC-01",
+      "facts": [
+        "specific_a_to_b_to_b_example"
+      ],
+      "goal": "access_defect_empty"
+    },
+    {
+      "id": "Q04",
+      "source_id": "BR-DESC-01",
+      "facts": [
+        "reference_model",
+        "prime_cycle",
+        "binary_nonconstant_output"
+      ],
+      "goal": "two_categories_predict_one_output"
+    },
+    {
+      "id": "Q05",
+      "source_id": "BR-DESC-01",
+      "facts": [
+        "reference_model",
+        "prime_cycle",
+        "binary_nonconstant_output",
+        "p_greater_than_two"
+      ],
+      "goal": "two_categories_suffice_exact_update"
+    },
+    {
+      "id": "Q06",
+      "source_id": "BR-DESC-01",
+      "facts": [
+        "reference_model",
+        "prime_cycle",
+        "binary_nonconstant_output"
+      ],
+      "goal": "two_categories_suffice_exact_update"
+    },
+    {
+      "id": "Q07",
+      "source_id": "BR-OBS-CAP-03",
+      "facts": [
+        "finite_witnesses",
+        "one_pattern_per_witness",
+        "independent_selection"
+      ],
+      "goal": "multiplicity_box"
+    },
+    {
+      "id": "Q08",
+      "source_id": "BR-OBS-CAP-03",
+      "facts": [
+        "one_pattern_per_witness"
+      ],
+      "goal": "incidence_totally_unimodular"
+    },
+    {
+      "id": "Q09",
+      "source_id": "BR-OBS-CAP-03",
+      "facts": [
+        "finite_witnesses",
+        "one_pattern_per_witness"
+      ],
+      "goal": "multiplicity_box"
+    },
+    {
+      "id": "Q10",
+      "source_id": "BR-OBS-CAP-03",
+      "facts": [
+        "general_family_of_systems"
+      ],
+      "goal": "union_always_single_box"
+    },
+    {
+      "id": "Q11",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "facts": [
+        "affine_binary",
+        "running_intersection_tree",
+        "literal_shared_variables",
+        "exact_equation_encoding",
+        "glue_group_contracts",
+        "joint_empty"
+      ],
+      "goal": "incompatible_core_minimal_by_inclusion"
+    },
+    {
+      "id": "Q12",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "facts": [
+        "affine_binary",
+        "literal_shared_variables",
+        "exact_equation_encoding",
+        "glue_group_contracts",
+        "joint_empty"
+      ],
+      "goal": "incompatible_core_minimal_by_inclusion"
+    },
+    {
+      "id": "Q13",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "facts": [
+        "affine_binary",
+        "running_intersection_tree",
+        "literal_shared_variables",
+        "exact_equation_encoding",
+        "glue_group_contracts",
+        "joint_empty"
+      ],
+      "goal": "incompatible_core_minimum_cardinality"
+    },
+    {
+      "id": "Q14",
+      "source_id": "BR-OBS-CAP-01",
+      "facts": [
+        "finite_witnesses",
+        "one_pattern_per_witness"
+      ],
+      "goal": "dynamic_capacity_formula"
+    },
+    {
+      "id": "Q15",
+      "source_id": "BR-DESC-01",
+      "facts": [
+        "prime_cycle",
+        "binary_nonconstant_output"
+      ],
+      "goal": "two_categories_predict_one_output"
+    },
+    {
+      "id": "Q16",
+      "source_id": "BR-DESC-01",
+      "facts": [
+        "exact_update_requires_p_categories",
+        "p_greater_than_two"
+      ],
+      "goal": "two_categories_suffice_exact_update"
+    }
+  ]
+}

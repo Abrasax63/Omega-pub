@@ -1,0 +1,70 @@
+{
+  "version": "bridge06-scope-v2-posthoc-gold",
+  "status": "same-author scope repair checks; NOT fresh independent benchmark",
+  "targets": [
+    {
+      "id": "Q01",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "id": "Q02",
+      "verdict": "ABSTAIN"
+    },
+    {
+      "id": "Q03",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "id": "Q04",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "id": "Q05",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "id": "Q06",
+      "verdict": "ABSTAIN"
+    },
+    {
+      "id": "Q07",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "id": "Q08",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "id": "Q09",
+      "verdict": "ABSTAIN"
+    },
+    {
+      "id": "Q10",
+      "verdict": "CONTRADICTED"
+    },
+    {
+      "id": "Q11",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "id": "Q12",
+      "verdict": "ABSTAIN"
+    },
+    {
+      "id": "Q13",
+      "verdict": "ABSTAIN"
+    },
+    {
+      "id": "Q14",
+      "verdict": "ABSTAIN"
+    },
+    {
+      "id": "Q15",
+      "verdict": "ABSTAIN"
+    },
+    {
+      "id": "Q16",
+      "verdict": "ABSTAIN"
+    }
+  ]
+}
