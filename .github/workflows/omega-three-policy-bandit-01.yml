@@ -1,0 +1,145 @@
+name: Omega three-policy bandit 01 - frozen controlled experiment
+
+on:
+  push:
+    branches:
+      - experiment/omega-three-policy-bandit-2026-11-17
+    paths:
+      - 'experiments/omega-three-policy-bandit-01/**'
+      - '.github/workflows/omega-three-policy-bandit-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-state-split-active-02-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run twelve local scientific guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-three-policy-bandit-01/*.py
+          (cd experiments/omega-three-policy-bandit-01 && python - <<'PY'
+          import unittest
+          suite = unittest.defaultTestLoader.discover('.', pattern='test_pilot.py')
+          assert suite.countTestCases() == 12, suite.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+          )
+
+  frozen-holdout:
+    if: github.event_name == 'pull_request'
+    needs: controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Execute exactly one paired evaluation on a frozen holdout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-three-policy-bandit-01/pilot.py --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Independent audit from raw report fields
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import hashlib
+          from pathlib import Path
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-THREE-POLICY-BANDIT-01'
+          assert d['preregistered_commit']=='8b94886315d463f2e4585ae4576b92f4c2fcfa2e'
+          assert d['seeds']=={'cohort':54117,'policy':54118}
+          assert d['arms']==['FIXED','ACTIVE','BANDIT']
+          assert d['max_symbols_per_episode']==80
+          assert d['cohorts']['train_n']==48 and d['cohorts']['holdout_n']==24
+          assert d['cohorts']['pairwise_disjoint']
+          assert d['cohorts']['prior_pr145_excluded']==24
+          assert not d['generalization_proven'] and d['no_paid_api']
+          train=d['training_runs']
+          test=d['holdout_runs']
+          assert len(train)==48 and len(test)==24
+          pairs=[tuple(tuple(tuple(item) for item in part) for part in x['model']) for x in train+test]
+          assert len(set(pairs))==72
+          assert hashlib.sha256(json.dumps([x['model'] for x in train],sort_keys=True,
+                                 separators=(',',':')).encode()).hexdigest()==d['cohorts']['train_sha256']
+          assert hashlib.sha256(json.dumps([x['model'] for x in test],sort_keys=True,
+                                 separators=(',',':')).encode()).hexdigest()==d['cohorts']['holdout_sha256']
+          counts={'FIXED':0,'ACTIVE':0}
+          totals={'FIXED':0.0,'ACTIVE':0.0}
+          for x in train:
+              ep=x['result']
+              assert ep['arm']=='BANDIT'
+              assert ep['symbols_paid']==10*ep['queries_paid']==sum(y['cost'] for y in ep['query_log'])
+              assert ep['symbols_paid']<=80
+              for y in ep['query_log']:
+                  counts[y['action']]+=1
+                  assert y['training_reward'] is not None
+                  expected=3*int(y['detected'])+0.25*(y['before']-y['after'])/y['before']-0.25
+                  assert abs(y['training_reward']-expected)<1e-12
+                  totals[y['action']]+=expected
+          snap=d['bandit_frozen']
+          assert snap['counts']==counts
+          assert all(abs(snap['total_reward'][k]-totals[k])<1e-8 for k in counts)
+          for arm in d['arms']:
+              rows=[trial['arms'][arm] for trial in test]
+              assert sum(z['detected'] for z in rows)==d['summary'][arm]['detected']
+              assert sum(z['symbols_paid'] for z in rows)==d['summary'][arm]['total_paid_symbols']
+              assert abs(sum(z['symbols_paid'] for z in rows)/24-
+                         d['summary'][arm]['mean_paid_symbols'])<1e-12
+              assert sum(z['false_certificate'] for z in rows)==d['summary'][arm]['false_certificates']
+              for z in rows:
+                  assert z['symbols_paid']==z['queries_paid']*10
+                  assert z['symbols_paid']==sum(y['cost'] for y in z['query_log'])
+                  assert z['symbols_paid']<=80
+                  assert all(y['after']>0 and y['after']<=y['before'] for y in z['query_log'])
+                  assert len({tuple(y['word']) for y in z['query_log']})==len(z['query_log'])
+                  assert all(y['training_reward'] is None for y in z['query_log'])
+                  assert z['detected']==(z['status']=='DETECTED_VERIFIED_DIVERGENCE')
+                  assert z['detected']==any(y['detected'] for y in z['query_log'])
+          cand=d['summary']['BANDIT']
+          passed=(cand['detected']==24 and cand['false_certificates']==0 and
+                  all(cand['mean_paid_symbols']<d['summary'][x]['mean_paid_symbols']
+                      for x in ('FIXED','ACTIVE')))
+          assert d['status']==('DESCRIPTIVE_BANDIT_GAIN' if passed
+                              else 'NO_LEARNED_ADVANTAGE_DEMONSTRATED')
+          for ref in ('FIXED','ACTIVE'):
+              diffs=[trial['arms']['BANDIT']['symbols_paid']-
+                     trial['arms'][ref]['symbols_paid'] for trial in test]
+              paired=d['paired_bandit'][ref]
+              assert paired['wins']==sum(x<0 for x in diffs)
+              assert paired['losses']==sum(x>0 for x in diffs)
+              assert paired['ties']==sum(x==0 for x in diffs)
+              assert paired['total_cost_difference']==sum(diffs)
+          print('FROZEN_STATUS', d['status'])
+          print('PAIRED_SUMMARY',d['summary'])
+          print('TRAINED_ACTION_COUNTS',counts)
+          PY
+      - name: Archive raw positive and negative records
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-three-policy-bandit-01-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
