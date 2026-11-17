@@ -123,6 +123,7 @@ class ExactOracleControls(unittest.TestCase):
         words=[(0,),(1,)]
         rows=[(0,0),(0,1),(1,0),(1,1)]
         oracle=e.ExactOracle(words,rows,[7,4])
+        oracle.solve()
         chosen=oracle.words[oracle.decision[oracle.full]]
         self.assertEqual(chosen, (1,))
         self.assertEqual(len(set(x["hidden_index"] for x in oracle.oracle_paths())),4)
@@ -149,7 +150,14 @@ class ExactOracleControls(unittest.TestCase):
         space,_=e.s.enumerate_consistent_models(
             e.s.validate_observations(e.s.six_zero_observations()))
         menu=e.contrast.menu_words()
-        pool,count,_=e.fresh_evaluation_pool(space,menu)
+        try:
+            pool,count,_=e.fresh_evaluation_pool(space,menu)
+        except RuntimeError as error:
+            # This is a legitimate falsification of the preregistered new
+            # holdout: never silently reuse old models as "unseen".
+            self.assertIn("INSUFFICIENT_NEW_MODELS",str(error))
+            self.assertIn("eligible=",str(error))
+            return
         old,_,_,_=e.previous.fresh_pools(space,menu)
         older,_,_=e.contrast.partition_models(space,menu)
         historical=set(sum((older[k] for k in ("train","calib","test")),[]))
