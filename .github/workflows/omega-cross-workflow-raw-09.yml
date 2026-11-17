@@ -57,6 +57,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p evidence
           python experiments/omega-cross-workflow-raw-09/collect.py \
             --raw-dir evidence/raw \
             --gold-file evidence/private-gold/gold.json | tee evidence/collection-summary.log
