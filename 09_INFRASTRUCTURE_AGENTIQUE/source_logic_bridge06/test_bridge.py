@@ -10,6 +10,7 @@ from bridge import (
     safe_read, validate_rules,
 )
 from evaluate import evaluate, load_frozen, INPUT, GOLD, INPUT_BLOB, GOLD_BLOB
+from oracle import exact_boolean_verdict
 
 
 class SourceLogicBridgeTests(unittest.TestCase):
@@ -148,6 +149,25 @@ class SourceLogicBridgeTests(unittest.TestCase):
             with self.assertRaises(BridgeError):
                 discover(root)
 
+    def test_independent_truth_table_agrees_with_horn_engine(self):
+        for q in self.query_list:
+            expected = exact_boolean_verdict(q, self.by_source.get(q["source_id"], []))
+            actual = assess(q, self.docs, self.by_source)
+            self.assertEqual(expected["verdict"], actual["verdict"], q["id"])
+            if actual["verdict"] == "ABSTAIN" and q["id"] in ("Q02", "Q06", "Q09", "Q12", "Q13", "Q14"):
+                self.assertGreater(expected["goal_true_models"], 0)
+                self.assertGreater(expected["goal_false_models"], 0)
+
+    def test_independent_truth_table_conflicting_premises(self):
+        rules = copy.deepcopy(self.by_source["BR-ACC-01"])
+        negative = copy.deepcopy(rules[0])
+        negative["rule_id"] = "access-other"
+        negative["conclusion"] = "not:factor_language_equals_access_closure"
+        q = self.queries["Q01"]
+        verdict = exact_boolean_verdict(q, rules + [negative])
+        self.assertEqual(verdict["verdict"], "ABSTAIN")
+        self.assertEqual(verdict["reason"], "no_consistent_model")
+
     def test_structured_outputs_coherent_and_reproducible(self):
         a = evaluate()
         b = evaluate()
@@ -159,6 +179,7 @@ class SourceLogicBridgeTests(unittest.TestCase):
         self.assertTrue(a["all_certificates_valid"])
         self.assertTrue(a["fifth_unannotated_and_not_promoted"])
         self.assertTrue(a["multi_step_with_citations"])
+        self.assertTrue(a["independent_boolean_oracle_agrees"])
 
 
 if __name__ == "__main__":
