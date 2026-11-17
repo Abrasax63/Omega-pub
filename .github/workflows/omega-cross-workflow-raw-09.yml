@@ -1,0 +1,173 @@
+name: Omega cross-workflow raw 09 - actual ZIP and job-log provenance
+
+on:
+  push:
+    branches:
+      - experiment/omega-cross-workflow-raw-09-2026-11-17
+    paths:
+      - 'experiments/omega-cross-workflow-raw-09/**'
+      - '.github/workflows/omega-cross-workflow-raw-09.yml'
+  pull_request:
+    branches:
+      - experiment/omega-raw-provenance-lab-08-2026-11-17
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  synthetic-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exactly fourteen pre-source tests; do not collect real logs on push
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-cross-workflow-raw-09/*.py
+          (cd experiments/omega-cross-workflow-raw-09 && python - <<'PY'
+          import unittest
+          suite=unittest.defaultTestLoader.discover('.',pattern='test_cross_raw.py')
+          assert suite.countTestCases()==14,suite.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+          )
+
+  collect-authentic-sources:
+    if: github.event_name == 'pull_request'
+    needs: synthetic-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Collect five authentic run histories, real job logs and seven ZIPs
+        env:
+          GH_ACTIONS_READ_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-cross-workflow-raw-09/collect.py \
+            --raw-dir evidence/raw \
+            --gold-file evidence/private-gold/gold.json | tee evidence/collection-summary.log
+          test ! -e evidence/raw/gold.json
+          test "$(find evidence/raw/artifacts -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 9
+          sha256sum evidence/raw/inventory.json > evidence/raw-inventory.sha256
+      - name: Archive actual raw ZIP bytes, logs and opaque metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cross-workflow-09-raw-zip-and-job-logs
+          path: evidence/raw/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Archive separately derived provider gold
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cross-workflow-09-provider-gold
+          path: evidence/private-gold/gold.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve acquisition-only status even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cross-workflow-09-collection-status
+          path: |
+            evidence/collection-summary.log
+            evidence/raw-inventory.sha256
+          if-no-files-found: warn
+          retention-days: 30
+
+  blind-provider-log-linker:
+    if: github.event_name == 'pull_request'
+    needs: collect-authentic-sources
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download ONLY raw source evidence, no answer key
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-cross-workflow-09-raw-zip-and-job-logs
+          path: evidence/raw
+      - name: Link provider log URLs with opaque artifact transport IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e evidence/private-gold
+          test ! -e evidence/raw/gold.json
+          python experiments/omega-cross-workflow-raw-09/infer.py \
+            --raw-dir evidence/raw \
+            --output evidence/predictions/predictions.json
+          sha256sum evidence/predictions/predictions.json
+      - name: Archive frozen blind predictions
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cross-workflow-09-frozen-predictions
+          path: evidence/predictions/predictions.json
+          if-no-files-found: error
+          retention-days: 30
+
+  independent-provider-scoring:
+    if: github.event_name == 'pull_request'
+    needs: [collect-authentic-sources, blind-provider-log-linker]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download raw source ZIPs and logs
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-cross-workflow-09-raw-zip-and-job-logs
+          path: evidence/raw
+      - name: Download frozen predictions
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-cross-workflow-09-frozen-predictions
+          path: evidence/predictions
+      - name: Download GOLD only for scorer, NOT inference
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-cross-workflow-09-provider-gold
+          path: evidence/private-gold
+      - name: Independent provider-derived scores, abstentions and false-merge checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/score
+          python experiments/omega-cross-workflow-raw-09/score.py \
+            --raw-dir evidence/raw \
+            --predictions evidence/predictions/predictions.json \
+            --gold evidence/private-gold/gold.json \
+            --output evidence/score/report.json | tee evidence/score/summary.jsonl
+          sha256sum evidence/score/report.json > evidence/score/report.sha256
+          sha256sum evidence/predictions/predictions.json > evidence/score/predictions.sha256
+      - name: Archive exact scores and all negative results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cross-workflow-09-scoring-and-audit
+          path: evidence/score/*
+          if-no-files-found: warn
+          retention-days: 30
