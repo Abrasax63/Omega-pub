@@ -90,6 +90,14 @@ jobs:
           assert r['source_count']==4
           assert len(r['rows'])==12
           assert r['calls_attempted']==24
+          assert r['posthoc_only'] and r['status']=='POSTHOC_PARSER_REPAIR_NOT_BLIND'
+          # CI checks the parser/integration, NOT the experimental success score.
+          # If generation is malformed, the report is archived but the job fails.
+          statuses=[c['status'] for row in r['rows'] for c in row['calls'].values()]
+          assert len(statuses)==24
+          assert all(s in ('MODEL_ABSTAIN','PARSED') for s in statuses), statuses
+          assert all(c['decoder_contract']=='generation_only_no_echo_v2'
+                     for row in r['rows'] for c in row['calls'].values())
           assert r['oracle_checked_after_choices']
           assert r['choices_sha256_before_scoring']
           assert r['metrics']['memory_checked']['false_confident']==0
@@ -100,7 +108,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: omega-integration06-raw-evidence
+          name: omega-integration06-posthoc-parser-audit
           path: /tmp/omega-integration06.json
           retention-days: 14
           if-no-files-found: warn
