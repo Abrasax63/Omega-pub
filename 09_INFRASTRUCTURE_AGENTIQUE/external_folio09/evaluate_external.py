@@ -90,8 +90,12 @@ def run_external() -> dict:
     with tempfile.TemporaryDirectory(prefix="omega-folio09-") as temp:
         root = Path(temp)
         for index, original in enumerate(samples, 1):
-            transport = prepare_document(root, index, original)
-            documents = translator.logic.discover((root,))
+            # Isolate each benchmark theory in its own transport directory;
+            # otherwise discovery would also include earlier benchmark cases.
+            case_root = root / ("case-%03d" % index)
+            case_root.mkdir()
+            transport = prepare_document(case_root, index, original)
+            documents = translator.logic.discover((case_root,))
             if list(documents) != [transport["id"]]:
                 raise AuditError("external document not ingested faithfully")
             mirrored = documents[transport["id"]]["lines"][1:]
