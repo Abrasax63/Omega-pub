@@ -33,9 +33,11 @@ jobs:
           print("fifth_unannotated:", r["fifth_unannotated_and_not_promoted"])
           print("multi_step_with_citations:", r["multi_step_with_citations"])
           print("all_certificates_valid:", r["all_certificates_valid"])
+          print("independent_boolean_oracle_agrees:", r["independent_boolean_oracle_agrees"])
+          print("ambiguous_cases_with_both_truth_values:", r["ambiguous_cases_with_both_truth_values"])
           print("false_confident:", r["confident_errors"])
           print("protocol_success:", r["protocol_success"])
-          assert r["protocol_success"] and r["all_certificates_valid"]
+          assert r["protocol_success"] and r["all_certificates_valid"] and r["independent_boolean_oracle_agrees"]
           PY
       - name: Archive inspectable evidence
         uses: actions/upload-artifact@v4
