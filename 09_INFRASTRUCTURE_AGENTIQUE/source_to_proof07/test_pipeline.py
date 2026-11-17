@@ -14,7 +14,7 @@ class SourceToProof07Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.documents=p.discover()
-        cls.cases=json.loads(p.CASES.read_text(encoding="utf-8"))["cases"]
+        cls.cases=json.loads((p.HERE/"CASES_FROZEN.json").read_text(encoding="utf-8"))["cases"]
 
     def test_real_historical_formula_found_with_all_prerequisites(self):
         doc=self.documents[REAL_ID]
