@@ -1,0 +1,43 @@
+name: Omega logic translation 08 heldout
+on:
+  push:
+    branches:
+      - experiment/omega-logic-translation-gate08-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-math-structure-v2-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  immutable-heldout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Frozen calibration and fail-closed tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08
+        run: python3 -m unittest -v test_translate.py
+      - name: Never-trained control and Mealy holdouts
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/logic_translation_gate08/evaluate_holdout.py --output /tmp/omega-translation08-heldout.json
+          python3 - <<'PY'
+          import json
+          v = json.load(open("/tmp/omega-translation08-heldout.json", encoding="utf-8"))
+          print("status", v["status"])
+          print("source_docs", v["source_docs"])
+          print("explicit_pair_gold", v["explicit_pair_gold"])
+          print("candidate_pairs_extracted", v["candidate_pairs_extracted"])
+          print("critical_math_spans_as_conditionals", v["critical_math_spans_as_conditionals"], "/", v["critical_math_spans"])
+          print("source_quote_integrity", v["source_quote_integrity"])
+          print("automatic_horn_rules", v["automatic_horn_rules"])
+          print("preregistered_extraction_success", v["preregistered_extraction_success"])
+          assert v["source_quote_integrity"] and v["automatic_horn_rules"] == 0
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-logic-translation08-original-holdout
+          path: /tmp/omega-translation08-heldout.json
+          retention-days: 14
