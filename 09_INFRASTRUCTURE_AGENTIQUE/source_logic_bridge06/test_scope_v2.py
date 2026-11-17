@@ -1,6 +1,6 @@
 import unittest
 
-from bridge import assess, load_bridge
+from bridge import assess, load_bridge, RULES_PATH, RULES_BLOB
 from evaluate import evaluate as evaluate_v1
 from evaluate_scope_v2 import (
     GOLD, GOLD_SHA, INPUT, INPUT_SHA, RULE_PATH, RULE_SHA,
@@ -10,6 +10,14 @@ from oracle import exact_boolean_verdict
 
 
 class SourceScopeRepairTests(unittest.TestCase):
+    def test_runtime_default_uses_safer_v2_contract(self):
+        self.assertEqual(RULES_PATH, RULE_PATH)
+        self.assertEqual(RULES_BLOB, RULE_SHA)
+        documents, rules = load_bridge()
+        cases = {q["id"]: q for q in frozen(INPUT, INPUT_SHA)["queries"]}
+        for key in ("Q15", "Q16"):
+            self.assertEqual(assess(cases[key], documents, rules)["verdict"], "ABSTAIN")
+
     def test_scope_v2_guard_and_old_manifest_preserved(self):
         docs, by_source = load_bridge(rule_path=RULE_PATH, expected_rule_blob=RULE_SHA)
         cases = {q["id"]: q for q in frozen(INPUT, INPUT_SHA)["queries"]}
