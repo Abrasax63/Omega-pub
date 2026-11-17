@@ -64,7 +64,11 @@ class NaturalQuery08Tests(unittest.TestCase):
         self.assertEqual(r["verdict"], "SUPPORTED")
         self.assertEqual(self.question("H07")["verdict"], "SUPPORTED")
         self.assertEqual(self.question("H10")["verdict"], "SUPPORTED")
-        self.assertEqual(self.question("H06")["verdict"], "ABSTAIN")
+        missing = self.question("H06")
+        self.assertEqual(missing["verdict"], "ABSTAIN")
+        self.assertEqual(missing["source_id"], "BR-LAB-OVERLAP-08")
+        self.assertEqual(missing["translation_grammar"], "HORN_AVEC_DEDUIRE")
+        self.assertIn("controle", missing["proof_result"]["missing_assumptions"])
 
     def test_extra_conditions_and_multiple_goals_refused(self):
         for ident in ("H08", "H09", "H11"):
