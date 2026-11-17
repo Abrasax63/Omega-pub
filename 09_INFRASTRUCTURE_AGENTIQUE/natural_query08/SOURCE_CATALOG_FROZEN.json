@@ -1,0 +1,20 @@
+{
+  "version": "source_catalog08-v1",
+  "sources": [
+    {
+      "source_id": "BR-LAB-CALIBRATION-08",
+      "source_blob": "5b47dd1962768b61ea526e781f04c92d42474447",
+      "source_path": "natural_query08/BR-LAB-CALIBRATION-08.md"
+    },
+    {
+      "source_id": "BR-LAB-OVERLAP-08",
+      "source_blob": "46abf8358aa335ec130ed06c237a8f91a35008bc",
+      "source_path": "natural_query08/BR-LAB-OVERLAP-08.md"
+    },
+    {
+      "source_id": "BR-OBS-CAP-03",
+      "source_blob": "e2db670f4f9458a848b7d8719f2a656dbfdab46b",
+      "source_path": "cross_domain_math05/source_snapshot/BR-OBS-CAP-03_FIBER_BOX_TU.md"
+    }
+  ]
+}
