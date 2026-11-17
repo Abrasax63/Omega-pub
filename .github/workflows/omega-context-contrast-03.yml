@@ -1,0 +1,263 @@
+name: Omega context contrast 03 - calibration gate before learning
+
+on:
+  push:
+    branches:
+      - experiment/omega-context-contrast-03-2026-11-17
+    paths:
+      - 'experiments/omega-context-contrast-03/**'
+      - '.github/workflows/omega-context-contrast-03.yml'
+  pull_request:
+    branches:
+      - experiment/omega-contextual-bandit-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controls-and-calibration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exactly fifteen controls without holdout scores
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-context-contrast-03/*.py
+          (cd experiments/omega-context-contrast-03 && python - <<'PY'
+          import unittest
+          suite=unittest.defaultTestLoader.discover('.',pattern='test_context_contrast.py')
+          assert suite.countTestCases()==15, suite.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+          )
+      - name: Calibration only - no training, no held-out episodes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/calibration
+          python experiments/omega-context-contrast-03/context_contrast.py --mode calibration --output evidence/calibration/report.json | tee evidence/calibration/summary.jsonl
+          sha256sum evidence/calibration/report.json > evidence/calibration/report.sha256
+      - name: Recalculate the prospective calibration gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          d=json.loads(Path('evidence/calibration/report.json').read_text())
+          assert d['experiment']=='OMEGA-CONTEXT-CONTRAST-03'
+          assert d['preregistered_commit']=='05017609751aeae1a3d181e9ef6eefc000d833e4'
+          assert d['mode']=='calibration' and d['status']=='CALIBRATION_ONLY'
+          assert d['pool_sizes']=={'train':64,'calib':32,'test':32}
+          assert d['menu_size']==64
+          assert len(d['calibration']['runs'])==24
+          assert d['full_train_runs']==[] and d['holdout_runs']==[]
+          assert d['summary'] is None and d['paired'] is None
+          diffs={'ZERO_CHEAP':0,'ONE_CHEAP':0}
+          wins={'BALANCED':0,'PRICE_AWARE':0}
+          resolved=0
+          for row in d['calibration']['runs']:
+              key='ZERO_CHEAP' if row['index']%2==0 else 'ONE_CHEAP'
+              assert row['tariff']==([1,5] if row['index']%2==0 else [5,1])
+              if row['initial_options_different_price']: diffs[key]+=1
+              a=row['arms']['BALANCED'];b=row['arms']['PRICE_AWARE']
+              if a['certified'] and b['certified']:
+                  resolved+=1
+                  if a['cost_paid']<b['cost_paid']:wins['BALANCED']+=1
+                  if b['cost_paid']<a['cost_paid']:wins['PRICE_AWARE']+=1
+              for ep in (a,b):
+                  assert ep['queries_paid']==len(ep['log'])<=12
+                  assert ep['cost_paid']==sum(x['paid'] for x in ep['log'])
+          assert diffs==d['calibration']['initial_price_disagreements']
+          assert wins==d['calibration']['paired_wins_both_certified']
+          assert resolved==d['calibration']['both_certified']
+          passed=(diffs['ZERO_CHEAP']>=6 and diffs['ONE_CHEAP']>=6 and
+                  wins['BALANCED']>=1 and wins['PRICE_AWARE']>=1)
+          assert d['calibration']['gate']==('INFORMATIVE_CALIBRATION' if passed else
+                                            'UNINFORMATIVE_CONTEXTS')
+          print('CALIBRATION_GATE',d['calibration']['gate'])
+          print('CALIBRATION_DISAGREEMENTS',diffs)
+          print('CALIBRATION_WINS',wins)
+          PY
+      - name: Preserve raw calibration results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-context-contrast-03-calibration
+          path: evidence/calibration/*
+          if-no-files-found: warn
+          retention-days: 30
+
+  one-frozen-holdout:
+    if: github.event_name == 'pull_request'
+    needs: controls-and-calibration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run full experiment only after calibration gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/holdout
+          python experiments/omega-context-contrast-03/context_contrast.py --mode full --output evidence/holdout/report.json | tee evidence/holdout/summary.jsonl
+          sha256sum evidence/holdout/report.json > evidence/holdout/report.sha256
+      - name: Independent audit of every paid terminal bit and verdict
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evidence/holdout/report.json').read_text())
+          assert d['experiment']=='OMEGA-CONTEXT-CONTRAST-03'
+          assert d['preregistered_commit']=='05017609751aeae1a3d181e9ef6eefc000d833e4'
+          assert d['mode']=='full' and d['menu_size']==64
+          assert d['seeds']==[55221,55222,55223,55224,55225]
+          assert d['pool_sizes']=={'train':64,'calib':32,'test':32}
+          assert not d['main_modified'] and d['no_paid_api'] and not d['generalization_proven']
+          gates=d['calibration']
+          k=gates['initial_price_disagreements']
+          w=gates['paired_wins_both_certified']
+          passed=(k['ZERO_CHEAP']>=6 and k['ONE_CHEAP']>=6 and
+                  w['BALANCED']>=1 and w['PRICE_AWARE']>=1)
+          assert (gates['gate']=='INFORMATIVE_CALIBRATION')==passed
+          if not passed:
+              assert d['status']=='UNINFORMATIVE_CONTEXTS_NO_HOLDOUT'
+              assert not d['full_train_runs'] and not d['holdout_runs']
+              assert d['summary'] is None and d['paired'] is None
+              print('NO_HOLDOUT_OPENED',d['status'])
+          else:
+              assert len(d['full_train_runs'])==48
+              assert len(d['holdout_runs'])==24
+              assert len(gates['runs'])==24
+              def freeze(model):
+                  return tuple(tuple(tuple(x) for x in block) for block in model)
+              sets=[]
+              for group in [gates['runs'],d['full_train_runs'],d['holdout_runs']]:
+                  models={freeze(x) for row in group for x in row['candidates']}
+                  sets.append(models)
+              assert len(sets[0])<=32 and len(sets[1])<=64 and len(sets[2])<=32
+              assert not (sets[0]&sets[1] or sets[0]&sets[2] or sets[1]&sets[2])
+              def trace(model, word):
+                  state=0
+                  ts,outputs=model
+                  last=None
+                  for bit in word:
+                      last=outputs[state][bit]
+                      state=ts[state][bit]
+                  return last
+              def check_episode(ep,row,phase):
+                  assert ep['queries_paid']==len(ep['log'])<=12
+                  assert ep['cost_paid']==sum(x['paid'] for x in ep['log'])<=600
+                  assert not ep['false_certificates']
+                  assert ep['certified']==(ep['status']=='VERIFIED_IDENTIFICATION')
+                  candidates=list(row['candidates'])
+                  assert freeze(row['hidden']) in {freeze(x) for x in candidates}
+                  seen=set()
+                  for event in ep['log']:
+                      word=event['word']
+                      assert len(word)==10 and all(b in (0,1) for b in word)
+                      assert tuple(word) not in seen
+                      seen.add(tuple(word))
+                      assert event['paid']==sum(row['tariff'][bit] for bit in word)
+                      assert event['observed']==trace(row['hidden'],word)
+                      assert event['before']==len(candidates)
+                      survivors=[x for x in candidates if trace(x,word)==event['observed']]
+                      assert event['after']==len(survivors)
+                      assert 1<=len(survivors)<len(candidates)
+                      assert freeze(row['hidden']) in {freeze(x) for x in survivors}
+                      assert event['context']==('ZERO_CHEAP' if row['tariff']==[1,5] else 'ONE_CHEAP')+('_LARGE' if event['before']>=8 else '_SMALL')
+                      assert event['choice'] in ('BALANCED','PRICE_AWARE')
+                      assert event['word']==event['candidate_words'][event['choice']]
+                      expected=(4*int(event['after']==1)+
+                                2*(event['before']-event['after'])/event['before']-
+                                event['paid']/20)
+                      if phase=='train':
+                          assert event['reward_training'] is not None
+                          assert abs(event['reward_training']-expected)<1e-10
+                          assert event['updated']==event['proposals_differ']
+                      else:
+                          assert event['reward_training'] is None and not event['updated']
+                      candidates=survivors
+                  assert ep['remaining']==len(candidates)
+                  assert ep['certified']==(len(candidates)==1)
+              for row in gates['runs']:
+                  for name in ('BALANCED','PRICE_AWARE'):
+                      check_episode(row['arms'][name],row,'calibration')
+              counts={k:{'BALANCED':0,'PRICE_AWARE':0} for k in ('GLOBAL','CONTEXTUAL')}
+              totals={k:{'BALANCED':0.,'PRICE_AWARE':0.} for k in ('GLOBAL','CONTEXTUAL')}
+              cell_counts={}
+              cell_totals={}
+              for row in d['full_train_runs']:
+                  for name in ('GLOBAL','CONTEXTUAL'):
+                      ep=row['arms'][name]
+                      check_episode(ep,row,'train')
+                      for event in ep['log']:
+                          if not event['updated']: continue
+                          action=event['choice'];ctx=event['context'];v=event['reward_training']
+                          counts[name][action]+=1;totals[name][action]+=v
+                          if name=='CONTEXTUAL':
+                              cell_counts.setdefault(ctx,{'BALANCED':0,'PRICE_AWARE':0})
+                              cell_totals.setdefault(ctx,{'BALANCED':0.,'PRICE_AWARE':0.})
+                              cell_counts[ctx][action]+=1
+                              cell_totals[ctx][action]+=v
+              for name,snapshot in [('GLOBAL',d['frozen_global']),
+                                    ('CONTEXTUAL',d['frozen_contextual'])]:
+                  assert snapshot['counts']==counts[name]
+                  assert all(abs(snapshot['totals'][a]-totals[name][a])<1e-8 for a in counts[name])
+              assert d['frozen_global']['cell_counts']=={}
+              assert d['frozen_contextual']['cell_counts']==cell_counts
+              for ctx in cell_totals:
+                  for action in cell_totals[ctx]:
+                      assert abs(d['frozen_contextual']['cell_totals'][ctx][action]-cell_totals[ctx][action])<1e-8
+              for row in d['holdout_runs']:
+                  for name in ('BALANCED','PRICE_AWARE','GLOBAL','CONTEXTUAL'):
+                      check_episode(row['arms'][name],row,'holdout')
+              assert set(d['summary'])=={'BALANCED','PRICE_AWARE','GLOBAL','CONTEXTUAL'}
+              for name in d['summary']:
+                  episodes=[x['arms'][name] for x in d['holdout_runs']]
+                  score=d['summary'][name]
+                  assert score['certified']==sum(x['certified'] for x in episodes)
+                  assert score['false_certificates']==sum(x['false_certificates'] for x in episodes)
+                  assert score['total_cost']==sum(x['cost_paid'] for x in episodes)
+                  assert abs(score['mean_cost']-score['total_cost']/24)<1e-10
+                  assert abs(score['mean_queries']-sum(x['queries_paid'] for x in episodes)/24)<1e-10
+              s=d['summary'];v=s['CONTEXTUAL']
+              primary=(v['certified']==24 and v['false_certificates']==0 and
+                       all(v['mean_cost']<s[x]['mean_cost'] for x in ('BALANCED','PRICE_AWARE','GLOBAL')) and
+                       v['mean_queries']<=min(s[x]['mean_queries'] for x in ('BALANCED','PRICE_AWARE','GLOBAL')))
+              assert d['status']==('DESCRIPTIVE_CONTEXTUAL_GAIN' if primary else
+                                  'NO_CONTEXTUAL_GAIN_DEMONSTRATED')
+              for ref in ('BALANCED','PRICE_AWARE','GLOBAL'):
+                  diffs=[row['arms']['CONTEXTUAL']['cost_paid']-row['arms'][ref]['cost_paid'] for row in d['holdout_runs']]
+                  p=d['paired'][ref]
+                  assert p['wins']==sum(x<0 for x in diffs)
+                  assert p['losses']==sum(x>0 for x in diffs)
+                  assert p['ties']==sum(x==0 for x in diffs)
+                  assert p['cost_difference']==sum(diffs)
+              print('HOLDOUT_VERDICT',d['status'])
+              print('PAIRED_RESULTS',d['summary'])
+              print('CONTEXT_COUNTS',cell_counts)
+          PY
+      - name: Preserve all raw positive and negative traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-context-contrast-03-holdout
+          path: evidence/holdout/*
+          if-no-files-found: warn
+          retention-days: 30
