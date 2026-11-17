@@ -1,0 +1,237 @@
+name: Omega cost to go 04 - frozen Monte Carlo return comparison
+
+on:
+  push:
+    branches:
+      - experiment/omega-cost-to-go-04-2026-11-17
+    paths:
+      - 'experiments/omega-cost-to-go-04/**'
+      - '.github/workflows/omega-cost-to-go-04.yml'
+  pull_request:
+    branches:
+      - experiment/omega-context-contrast-03-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controls-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run fifteen preregistered controls; no holdout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-cost-to-go-04/*.py
+          (cd experiments/omega-cost-to-go-04 && python - <<'PY'
+          import unittest
+          suite=unittest.defaultTestLoader.discover('.',pattern='test_cost_to_go.py')
+          assert suite.countTestCases()==15,suite.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+          )
+
+  frozen-train-and-holdout:
+    if: github.event_name == 'pull_request'
+    needs: controls-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: One frozen train and 24-case paired holdout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-cost-to-go-04/cost_to_go.py --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Independently check observations, MC returns, costs and verdict
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import hashlib
+          from pathlib import Path
+
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-COST-TO-GO-04'
+          assert d['preregistered_commit']=='df94bba543d5e661005efcb892935dab1ecf6d89'
+          assert d['seeds']==[56222,56223,56224,56225,56226]
+          assert d['menu_size']==64 and d['max_queries']==12
+          assert d['train_n']==48 and d['test_n']==24
+          assert d['unresolved_penalty_training']==150
+          assert d['tariffs']==[[1,5],[5,1]]
+          assert d['policies']==['BALANCED','PRICE_AWARE','IMMEDIATE_CONTEXTUAL',
+                                 'RETURN_GLOBAL','RETURN_CONTEXTUAL']
+          assert d['eligible_new_models']>=72
+          assert not d['main_modified'] and d['no_paid_api'] and not d['generalization_proven']
+          training=d['train_runs'];test=d['holdout_runs']
+          assert len(training)==48 and len(test)==24
+
+          def freeze(x):
+              return tuple(tuple(tuple(v) for v in block) for block in x)
+          def terminal_bit(model,word):
+              state=0;last=None
+              trans,out=model
+              for bit in word:
+                  last=out[state][bit]
+                  state=trans[state][bit]
+              return last
+          def digest(x):
+              return hashlib.sha256(json.dumps(x,sort_keys=True,
+                  separators=(',',':')).encode()).hexdigest()
+          tmodels=[freeze(row['model']) for row in training]
+          hmodels=[freeze(row['model']) for row in test]
+          assert len(set(tmodels))==48 and len(set(hmodels))==24
+          assert not (set(tmodels)&set(hmodels))
+          alltrain={freeze(m) for row in training for m in row['candidates']}
+          alltest={freeze(m) for row in test for m in row['candidates']}
+          assert not (alltrain & alltest)
+          assert len(alltrain)<=48 and len(alltest)<=24
+          assert digest([row['model'] for row in training])==d['pool_sha256']['train']
+          assert digest([row['model'] for row in test])==d['pool_sha256']['test']
+
+          learned=['IMMEDIATE_CONTEXTUAL','RETURN_GLOBAL','RETURN_CONTEXTUAL']
+          counts={k:{'BALANCED':0,'PRICE_AWARE':0} for k in learned}
+          totals={k:{'BALANCED':0.,'PRICE_AWARE':0.} for k in learned}
+          cells={k:{} for k in learned}
+          celltotals={k:{} for k in learned}
+
+          def verify_episode(ep,row,arm,train):
+              assert ep['policy']==arm
+              assert ep['queries_paid']==len(ep['log'])<=12
+              assert ep['cost_paid']==sum(q['paid'] for q in ep['log'])<=600
+              assert ep['false_certificates']==0
+              seen=set()
+              belief=list(row['candidates'])
+              assert len(belief)==16 and len({freeze(x) for x in belief})==16
+              assert freeze(row['model']) in {freeze(x) for x in belief}
+              tariff=([1,5] if row['index']%2==0 else [5,1])
+              assert row['tariff']==tariff
+              for q in ep['log']:
+                  word=q['word']
+                  assert len(word)==10 and all(x in (0,1) for x in word)
+                  assert tuple(word) not in seen
+                  seen.add(tuple(word))
+                  assert q['paid']==sum(tariff[bit] for bit in word)
+                  assert q['observed_last_bit']==terminal_bit(row['model'],word)
+                  assert q['before']==len(belief)
+                  after=[x for x in belief if terminal_bit(x,word)==q['observed_last_bit']]
+                  assert 1<=len(after)<len(belief)
+                  assert q['after']==len(after)
+                  assert freeze(row['model']) in {freeze(x) for x in after}
+                  assert q['context']==('ZERO_CHEAP' if tariff==[1,5] else 'ONE_CHEAP')+('_LARGE' if q['before']>=8 else '_SMALL')
+                  assert q['action'] in ('BALANCED','PRICE_AWARE')
+                  assert q['word']==q['candidate_words'][q['action']]
+                  assert q['same_proposal']==(
+                      q['candidate_words']['BALANCED']==q['candidate_words']['PRICE_AWARE'])
+                  assert q['updated']==(train and not q['same_proposal'])
+                  instant=4*int(len(after)==1)+2*(len(belief)-len(after))/len(belief)-q['paid']/20
+                  if train and arm=='IMMEDIATE_CONTEXTUAL':
+                      assert q['immediate_reward'] is not None
+                      assert abs(q['immediate_reward']-instant)<1e-10
+                      assert q['cost_to_go_target'] is None
+                  else:
+                      assert q['immediate_reward'] is None
+                  if not train:
+                      assert q['cost_to_go_target'] is None
+                  belief=after
+              assert ep['remaining_models']==len(belief)
+              assert ep['certified']==(ep['status']=='VERIFIED_IDENTIFICATION')
+              assert ep['certified']==(len(belief)==1)
+              if train:
+                  for i,q in enumerate(ep['log']):
+                      if arm in ('RETURN_GLOBAL','RETURN_CONTEXTUAL'):
+                          expected=sum(v['paid'] for v in ep['log'][i:])+(
+                              0 if ep['certified'] else 150)
+                          if q['updated']:
+                              assert q['cost_to_go_target']==expected
+                          else:
+                              assert q['cost_to_go_target'] is None
+                      if q['updated']:
+                          v=q['immediate_reward'] if arm=='IMMEDIATE_CONTEXTUAL' else q['cost_to_go_target']
+                          action=q['action'];cell=q['context']
+                          counts[arm][action]+=1;totals[arm][action]+=v
+                          if arm!='RETURN_GLOBAL':
+                              cells[arm].setdefault(cell,{'BALANCED':0,'PRICE_AWARE':0})
+                              celltotals[arm].setdefault(cell,{'BALANCED':0.,'PRICE_AWARE':0.})
+                              cells[arm][cell][action]+=1
+                              celltotals[arm][cell][action]+=v
+
+          for row in training:
+              assert set(row['arms'])==set(learned)
+              for arm in learned:
+                  verify_episode(row['arms'][arm],row,arm,True)
+          for arm in learned:
+              snapshot=d['frozen_models'][arm]
+              assert snapshot['counts']==counts[arm]
+              for action in counts[arm]:
+                  assert abs(snapshot['totals'][action]-totals[arm][action])<1e-8
+              assert snapshot['cell_counts']==cells[arm]
+              for cell in cells[arm]:
+                  for action in cells[arm][cell]:
+                      assert abs(snapshot['cell_totals'][cell][action]-celltotals[arm][cell][action])<1e-8
+
+          for row in test:
+              assert set(row['arms'])==set(d['policies'])
+              for arm in d['policies']:
+                  verify_episode(row['arms'][arm],row,arm,False)
+          for name in d['policies']:
+              episodes=[row['arms'][name] for row in test]
+              score=d['summary'][name]
+              assert score['certified']==sum(e['certified'] for e in episodes)
+              assert score['false_certificates']==sum(e['false_certificates'] for e in episodes)
+              assert score['total_cost']==sum(e['cost_paid'] for e in episodes)
+              assert abs(score['mean_cost']-score['total_cost']/24)<1e-10
+              assert score['total_queries']==sum(e['queries_paid'] for e in episodes)
+              assert abs(score['mean_queries']-score['total_queries']/24)<1e-10
+          for name in learned:
+              episodes=[row['arms'][name] for row in training]
+              score=d['train_stats'][name]
+              assert score['total_cost']==sum(e['cost_paid'] for e in episodes)
+              assert score['total_queries']==sum(e['queries_paid'] for e in episodes)
+
+          cand=d['summary']['RETURN_CONTEXTUAL']
+          checks=['PRICE_AWARE','IMMEDIATE_CONTEXTUAL','RETURN_GLOBAL']
+          passed=(cand['certified']==24 and cand['false_certificates']==0 and
+                  all(cand['mean_cost']<d['summary'][ref]['mean_cost'] for ref in checks) and
+                  cand['mean_queries']<=min(d['summary'][ref]['mean_queries'] for ref in checks))
+          assert d['status']==('DESCRIPTIVE_RETURN_GAIN' if passed else
+                              'NO_RETURN_GAIN_DEMONSTRATED')
+          for ref in d['policies']:
+              if ref=='RETURN_CONTEXTUAL':
+                  continue
+              differences=[row['arms']['RETURN_CONTEXTUAL']['cost_paid']-
+                           row['arms'][ref]['cost_paid'] for row in test]
+              result=d['paired'][ref]
+              assert result['wins']==sum(x<0 for x in differences)
+              assert result['losses']==sum(x>0 for x in differences)
+              assert result['ties']==sum(x==0 for x in differences)
+              assert result['total_cost_difference']==sum(differences)
+          print('SCIENTIFIC_STATUS',d['status'])
+          print('HOLDOUT_SUMMARY',d['summary'])
+          print('TRAIN_COSTS',d['train_stats'])
+          print('TRAINED_CONTEXT_COUNTS',{k:v['cell_counts'] for k,v in d['frozen_models'].items()})
+          PY
+      - name: Keep full raw positive and negative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cost-to-go-04-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
