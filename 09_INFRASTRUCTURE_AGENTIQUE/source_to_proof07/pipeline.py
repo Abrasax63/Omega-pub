@@ -265,9 +265,16 @@ def run(cases,documents=None):
 def main():
     cli=argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--cases",type=Path,default=HERE/"CASES_FROZEN.json")
+    cli.add_argument("--query",type=Path,help="single structured query JSON; no gold scoring")
     cli.add_argument("--output",type=Path)
     opts=cli.parse_args()
-    report=run(json.loads(opts.cases.read_text(encoding="utf-8"))["cases"])
+    if opts.query:
+        question=json.loads(opts.query.read_text(encoding="utf-8"))
+        if not isinstance(question,dict) or "expected" in question:
+            cli.error("query must be one JSON object without expected/gold label")
+        report=answer(question,discover())
+    else:
+        report=run(json.loads(opts.cases.read_text(encoding="utf-8"))["cases"])
     payload=json.dumps(report,ensure_ascii=False,indent=2)+"\n"
     if opts.output:
         dest=opts.output.resolve()
