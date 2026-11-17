@@ -62,9 +62,9 @@ class DisagreementTests(unittest.TestCase):
         b = d.DisagreementOracle(fake_sul, 31415)
         a.eq_rounds = b.eq_rounds = 1
         with patch.object(d.b, "exact_equivalence",
-                          side_effect=AssertionError("BFS_LEAK")), \\
+                          side_effect=AssertionError("BFS_LEAK")), \
              patch.object(d.b, "truth_trace",
-                          side_effect=AssertionError("TRUTH_LEAK")), \\
+                          side_effect=AssertionError("TRUTH_LEAK")), \
              patch.object(d.b, "heldout_score",
                           side_effect=AssertionError("TEST_LEAK")):
             aa = [a.next_word(h) for _ in range(32)]
