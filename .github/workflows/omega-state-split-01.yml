@@ -1,0 +1,100 @@
+name: Omega state split 01 - bounded hypotheses and local falsification
+
+on:
+  push:
+    branches:
+      - experiment/omega-state-split-01-2026-11-17
+    paths:
+      - 'experiments/omega-state-split-01/**'
+      - '.github/workflows/omega-state-split-01.yml'
+  pull_request:
+    branches:
+      - experiment/omega-disagreement-01-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run eight scientific controls without model APIs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-state-split-01/*.py
+          (cd experiments/omega-state-split-01 &&
+           python - <<'PY'
+          import unittest
+          suite=unittest.defaultTestLoader.discover('.',pattern='test_state_split.py')
+          assert suite.countTestCases()==8,suite.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+          )
+
+  local-falsification:
+    needs: exact-controls
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Execute one bounded synthesis and record failures
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-state-split-01/state_split.py --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Independently check verdict, sizes and cost
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("evidence/report.json").read_text())
+          assert d['experiment']=='OMEGA-STATE-SPLIT-01'
+          assert d['preregistered_commit']=='01521caa4cc19971b1322ca77a3da67b4295ca4f'
+          assert d['search_scope']['max_states']==3
+          assert d['search_scope']['exhaustive_within_bound']
+          assert d['search_scope']['input_alphabet']==[0,1]
+          assert d['search_scope']['output_alphabet']==[0,1]
+          assert len(d['observations'])==6
+          assert len(d['eight_test_only_delayed_markers'])==8
+          assert d['consistent_canonical_models']==sum(d['model_count_by_reachable_states'].values())
+          assert d['representative_count']<=128
+          assert d['behavioral_seed_signature_classes']>=d['representative_count']
+          assert d['ten_symbol_disagreement_exists']
+          assert len(d['selected_eq_words'])<=32
+          assert all(len(row['word'])==10 for row in d['selected_eq_words'])
+          assert d['proposed_eq_symbol_cost']==10*len(d['selected_eq_words'])<=320
+          hits=sum(row['detected'] for row in d['eight_test_only_delayed_markers'])
+          assert d['all_eight_detected']==(hits==8)
+          assert d['mechanism_status']==('STATE_SPLIT_LOCAL_MECHANISM_VERIFIED' if hits==8 else 'NOT_VERIFIED')
+          assert d['no_paid_api'] and not d['main_modified'] and not d['generalization_proven']
+          print('EXACT_HYPOTHESIS_MODELS',d['consistent_canonical_models'])
+          print('TEST_ONLY_DELAYED_DETECTIONS',hits,'/8')
+          print('SCIENTIFIC_VERDICT',d['mechanism_status'])
+          PY
+      - name: Preserve full positive and negative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-state-split-01-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
