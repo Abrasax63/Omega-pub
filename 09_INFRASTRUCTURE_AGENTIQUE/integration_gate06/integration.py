@@ -118,23 +118,50 @@ def prompts(question: str, source: dict | None) -> str:
             + "\nOptions autorisées: OUI, NON, ABSTENTION.\nREPONSE:")
 
 
+def parse_generated(output: str) -> tuple[str, str, str]:
+    """Decode GENERATION-ONLY stdout, not the prompt echoed by llama-cli.
+
+    The pinned llama-cli supports --no-display-prompt. Any transcript that still
+    includes recognizable prompt material fails closed; never turn a parsing
+    error into a model abstention without recording the difference.
+    """
+    clean = re.sub(r"\x1b\[[0-9;]*m", "", output).replace("\r", "\n")
+    if re.search(r"(?im)^(?:.*Options autorisées:|.*QUESTION:|.*REPONSE:|.*Document scientifique en lecture seule)", clean):
+        return "ABSTENTION", "PROMPT_ECHO_DETECTED", ""
+    content = []
+    for line in clean.splitlines():
+        value = line.strip()
+        if not value:
+            continue
+        if value in (">", "Exiting..."):
+            continue
+        if re.fullmatch(r"\[\s*Prompt:[^\]\n]*\]", value):
+            continue
+        content.append(value)
+    if len(content) != 1:
+        return "ABSTENTION", "INVALID_GENERATION_FORMAT", "\n".join(content)[:350]
+    answer = content[0].upper()
+    if answer not in KINDS:
+        return "ABSTENTION", "INVALID_GENERATION_FORMAT", content[0][:350]
+    return answer, ("MODEL_ABSTAIN" if answer == "ABSTENTION" else "PARSED"), content[0]
+
+
 def decode(output: str) -> str:
-    # llama-cli can echo the prompt, so only inspect AFTER its final response marker.
-    clean = re.sub(r"\x1b\[[0-9;]*m", "", output)
-    last = clean.rsplit("REPONSE:", 1)[-1].strip()
-    if not last:
-        return "ABSTENTION"
-    words = re.findall(r"(?<!\w)(OUI|NON|ABSTENTION)(?!\w)", last.upper())
-    return words[0] if len(words) == 1 else "ABSTENTION"
+    """Legacy wrapper: strict, generation-only parsing."""
+    return parse_generated(output)[0]
 
 
 def llama_choose(cli: Path, model: Path, prompt: str, label: str) -> dict:
+    # Without --no-display-prompt, long echoed/truncated source text can carry
+    # the words OUI/NON/ABSTENTION and corrupt an otherwise valid response.
     command = [str(cli), "-m", str(model), "-p", prompt,
-               "-n", "16", "-c", "3072", "-t", "4", "--temp", "0"]
+               "-n", "16", "-c", "3072", "-t", "4", "--temp", "0",
+               "--no-display-prompt", "--simple-io"]
     start = time.perf_counter()
     rec = {"called": True, "label": label, "prompt_sha256":
            hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
-           "prompt_chars": len(prompt)}
+           "prompt_chars": len(prompt),
+           "decoder_contract": "generation_only_no_echo_v2"}
     try:
         proc = subprocess.run(command, text=True, capture_output=True, timeout=240)
     except (OSError, subprocess.TimeoutExpired) as exc:
@@ -148,9 +175,10 @@ def llama_choose(cli: Path, model: Path, prompt: str, label: str) -> dict:
     if proc.returncode:
         return {**rec, "verdict": "ABSTENTION", "status": "CALL_FAILED",
                 "stderr_tail": proc.stderr[-350:]}
-    answer = decode(proc.stdout)
-    return {**rec, "verdict": answer,
-            "status": "PARSED" if answer != "ABSTENTION" else "ABSTAIN_OR_INVALID"}
+    answer, status, raw_generated = parse_generated(proc.stdout)
+    return {**rec, "verdict": answer, "status": status,
+            "generation_sha256": hashlib.sha256(raw_generated.encode("utf-8")).hexdigest(),
+            "generation_text": raw_generated}
 
 
 def oracle(case: dict) -> str:
@@ -248,7 +276,11 @@ def run(chooser, *, registry=None, cases=None):
                ("solo", "memory", "solo_checked", "memory_checked")}
     return {
         "experiment": "OMEGA-INTEGRATION-06",
-        "status": "EXPLORATORY_TWO_FINITE_MICRODOMAINS",
+        "status": "POSTHOC_PARSER_REPAIR_NOT_BLIND",
+        "historical_run": "https://github.com/Abrasax63/Omega-pub/actions/runs/44121112900",
+        "historical_choices_sha256": "b4ee70197054c21b7075014f8f4c4f51a827150c9cffacd1a4e35bdd7da23fe9",
+        "posthoc_only": True,
+        "decoder_fix": "llama-cli --no-display-prompt plus strict generation-only parsing",
         "input_blobs": {"registry": SOURCES_BLOB, "questions": QUESTIONS_BLOB},
         "old_engine_blob_unchanged": OLD_ENGINE_BLOB,
         "loaded_source_ids": sorted(registry),
