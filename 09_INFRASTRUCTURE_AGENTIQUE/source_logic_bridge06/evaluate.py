@@ -10,7 +10,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from bridge import HERE, ROOT, RULES_BLOB, RULES_PATH, load_bridge, run
+from bridge import HERE, ROOT, LEGACY_RULES_BLOB as RULES_BLOB, LEGACY_RULES_PATH as RULES_PATH, load_bridge, run
 from oracle import exact_boolean_verdict
 
 INPUT = HERE / "QUERIES_FROZEN.json"
@@ -33,10 +33,10 @@ def evaluate() -> dict:
     if len(questions) != 14 or len({q["id"] for q in questions}) != 14:
         raise ValueError("query set size or ID uniqueness changed")
     # The solver is called BEFORE loading the gold.
-    report = run(questions)
+    report = run(questions, rule_path=RULES_PATH, expected_blob=RULES_BLOB)
     # Second, logically independent method: enumerate all Boolean models.
     # Gold is still not loaded at this point.
-    _, rules = load_bridge()
+    _, rules = load_bridge(rule_path=RULES_PATH, expected_rule_blob=RULES_BLOB)
     oracle = {q["id"]: exact_boolean_verdict(q, rules.get(q["source_id"], []))
               for q in questions}
     raw = load_frozen(GOLD, GOLD_BLOB)
