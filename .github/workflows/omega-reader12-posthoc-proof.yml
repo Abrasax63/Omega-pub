@@ -1,0 +1,44 @@
+name: Omega reader 12 — posthoc inline proof guard regression
+on:
+  push:
+    branches:
+      - fix/omega-reader12-inline-proof-quarantine-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-reader-verifier-bridge12-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  protect-proof-prose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Existing calibration and new posthoc guard tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12
+        run: python3 -m unittest -v test_bridge.py test_inline_proof_patch.py
+      - name: Revisit old heldout set WITHOUT calling it unseen
+        run: |
+          python3 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/evaluate_holdout.py --output /tmp/omega-reader12-posthoc-proof-gate.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open("/tmp/omega-reader12-posthoc-proof-gate.json", encoding="utf-8"))
+          print("posthoc_status:",r["context_protection_gate"])
+          print("inline_proof_accepted:",r["proof_statement_allowed_as_quarantined_conclusion_evidence"])
+          print("source_count:",r["source_count"])
+          print("display_math_in_both:",r["pre_registered_display_math_in_each_source"])
+          print("all_citations_valid:",r["all_source_spans_valid"])
+          print("language_model_calls:",r["actual_language_model_calls"])
+          print("automatic_Horn_rule_injection:",not r["no_horn_rule_injection"])
+          assert r["context_protection_gate"]=="BLOCKED"
+          assert r["all_source_spans_valid"] and r["no_horn_rule_injection"]
+          assert r["actual_language_model_calls"]==0
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-reader12-posthoc-inline-proof-quarantine
+          path: /tmp/omega-reader12-posthoc-proof-gate.json
+          retention-days: 14
