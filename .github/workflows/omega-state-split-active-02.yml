@@ -1,0 +1,108 @@
+name: Omega state split active 02 - frozen paired evaluation
+
+on:
+  push:
+    branches:
+      - experiment/omega-state-split-active-02-2026-11-17
+    paths:
+      - 'experiments/omega-state-split-active-02/**'
+      - '.github/workflows/omega-state-split-active-02.yml'
+  pull_request:
+    branches:
+      - experiment/omega-state-split-01-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run eight independent controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/omega-state-split-active-02/*.py
+          (cd experiments/omega-state-split-active-02 &&
+           python - <<'PY'
+          import unittest
+          suite=unittest.defaultTestLoader.discover('.',pattern='test_active.py')
+          assert suite.countTestCases()==8,suite.countTestCases()
+          assert unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+          PY
+          )
+
+  frozen-24-case-holdout:
+    if: github.event_name == 'pull_request'
+    needs: controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run one frozen paired comparison
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python experiments/omega-state-split-active-02/active_lab.py --output evidence/report.json | tee evidence/summary.jsonl
+          sha256sum evidence/report.json > evidence/report.sha256
+      - name: Independently verify split, costs and status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evidence/report.json').read_text())
+          assert d['experiment']=='OMEGA-STATE-SPLIT-ACTIVE-02'
+          assert d['preregistered_commit']=='a70c231753a2112dc0bc0501dd742b5aff4072ce'
+          assert d['sample_seed']==53117 and d['world_count']==24
+          assert d['all_from_binary_3_state_finite_models']
+          assert d['fixed_cost_cap']==80 and d['adaptive_and_static_cost_cap']==320
+          assert d['policies']==['STATIC_DIVERSITY','FIXED_PREFIX','ACTIVE_DISAGREEMENT']
+          assert len(d['runs'])==24
+          assert len({str(r['canonical_machine']) for r in d['runs']})==24
+          assert not d['main_modified'] and d['no_paid_api'] and not d['generalization_proven']
+          for arm in d['policies']:
+            trials=[x['arms'][arm] for x in d['runs']]
+            score=d['summary'][arm]
+            assert score['detected']==sum(x['detected'] for x in trials)
+            assert score['total_paid_symbols']==sum(x['symbols_paid'] for x in trials)
+            assert abs(score['mean_paid_symbols']-score['total_paid_symbols']/24)<1e-12
+            for x in trials:
+              assert x['symbols_paid']==10*x['queries_paid']==sum(z['cost'] for z in x['query_log'])
+              assert x['symbols_paid']<=(80 if arm=='FIXED_PREFIX' else 320)
+              assert all(len(z['word'])==10 for z in x['query_log'])
+              assert all(z['consistent_after']>0 and z['consistent_after']<=z['consistent_before']
+                         for z in x['query_log'])
+              if x['detected']: assert x['status']=='DETECTED_DIVERGENCE'
+              else: assert x['status'] in ('NO_IDENTIFIABLE_DISAGREEMENT','BUDGET_EXHAUSTED_WITHOUT_DISCRIMINATION')
+          a=d['summary']['ACTIVE_DISAGREEMENT']
+          gate=(a['detected']==24 and
+                all(a['mean_paid_symbols']<d['summary'][ref]['mean_paid_symbols']
+                    for ref in ('FIXED_PREFIX','STATIC_DIVERSITY')))
+          assert (d['status']=='DESCRIPTIVE_ACTIVE_BENEFIT')==gate
+          print('SCIENTIFIC_VERDICT',d['status'])
+          print('PAIRED_SCORES',d['summary'])
+          PY
+      - name: Preserve full paired logs and negative cases
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-state-split-active-02-evidence
+          path: evidence/*
+          if-no-files-found: warn
+          retention-days: 30
