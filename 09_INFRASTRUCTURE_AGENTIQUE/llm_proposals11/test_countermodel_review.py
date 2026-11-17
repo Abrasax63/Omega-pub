@@ -53,6 +53,22 @@ class PosthocCountermodelTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"unsupported explicit audit"):
             c.satisfies({"Ted":{}},{"kind":"magic"})
 
+    def test_versioned_memory_checkpoint_restores_exact_12_model_events(self):
+        import base64
+        import gzip
+        import hashlib
+        import ledger
+        checkpoint=p.HERE/"LEDGER_CHECKPOINT_2026-11-17.jsonl.gz.b64"
+        raw=gzip.decompress(base64.b64decode(checkpoint.read_text(encoding="utf-8")))
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         "38864b20197b7b2c36f9a65fdffd263c85c4e0d48367a1780475c6cd5b3a23ea")
+        events,latest=ledger.replay(raw.decode("utf-8"))
+        self.assertEqual(len(events),12)
+        self.assertEqual(len(latest),12)
+        self.assertEqual(events[-1]["event_hash"],
+                         "6cd253c378c38bf9be62b25c549cebbb85ebb552502b0dc5da3b3cb5a4225686")
+        self.assertTrue(all(x["status"]=="PROPOSED" for x in events))
+
     def test_posthoc_cli_json(self):
         result=subprocess.run([sys.executable,str(p.HERE/"countermodel_review.py")],
                               text=True,capture_output=True,timeout=20)
