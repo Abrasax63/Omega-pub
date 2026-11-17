@@ -61,14 +61,15 @@ def run() -> dict:
     confident = [r["id"] for r in rows if r["confident_error"]]
     success = count >= 9 and not confident
     return {
-        "status": "POST_ENGINE_ADVERSARIAL_NONBLIND",
+        "status": "POSTHOC_SAFETY_PATCH_REPLAY_NOT_HOLDOUT",
         "frozen_engine_version": inp["engine_sha"],
-        "engine_source_changed": False,  # workflow must separately pin engine blob
+        "engine_source_changed": True,
+        "actual_engine_blob": "4e4bf62de81bea0eebe1a7a80562e002698d0cd2",
         "input_blob": IN_BLOB, "gold_blob": GOLD_BLOB,
         "cases": len(rows), "correct": count,
         "incorrect": len(rows)-count, "confident_errors": confident,
         "preregistered_transfer_criterion_met": success,
-        "limitations": "Adversarial same-author paraphrases selected after inspecting code. Not random, external or blind. A correct classification can mask incorrect extraction of numerical claims.",
+        "limitations": "Historical adversarial results used to design this patch. Replaying them is POST-HOC regression evidence only, NOT an unseen score. Safety abstentions may decrease raw accuracy.",
         "rows": rows,
     }
 
