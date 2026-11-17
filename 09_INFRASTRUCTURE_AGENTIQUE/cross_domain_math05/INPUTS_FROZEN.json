@@ -1,0 +1,86 @@
+{
+  "version": "transfer-05-frozen-16",
+  "origin": "migration PR #2, four newly used source IDs",
+  "cases": [
+    {
+      "id": "ACC01",
+      "source_id": "BR-ACC-01",
+      "question": "Pour des actions totales et déterministes, le langage des facteurs de L_E coïncide avec L_H."
+    },
+    {
+      "id": "ACC02",
+      "source_id": "BR-ACC-01",
+      "question": "Sur la clôture accessible, les défauts se décomposent en une partie recollement et une partie accès disjointes."
+    },
+    {
+      "id": "ACC03",
+      "source_id": "BR-ACC-01",
+      "question": "Dans le témoin a vers b vers b avec départ en a, le défaut d'accès est vide."
+    },
+    {
+      "id": "ACC04",
+      "source_id": "BR-ACC-01",
+      "question": "Le même théorème reste nécessairement valide si les actions sont partielles."
+    },
+    {
+      "id": "DESC01",
+      "source_id": "BR-DESC-01",
+      "question": "Dans le modèle de cycle de longueur première et sortie binaire non constante, deux catégories peuvent prédire une sortie alors que la mise à jour exacte exige p catégories."
+    },
+    {
+      "id": "DESC02",
+      "source_id": "BR-DESC-01",
+      "question": "Sur tout cycle premier p supérieur à deux, une description à deux catégories suffit à une mise à jour autonome exacte non constante."
+    },
+    {
+      "id": "DESC03",
+      "source_id": "BR-DESC-01",
+      "question": "Dans le modèle de référence, l'écart entre prédiction ponctuelle et autonomie reste borné indépendamment de p."
+    },
+    {
+      "id": "DESC04",
+      "source_id": "BR-DESC-01",
+      "question": "Cette construction prouve la même séparation en mécanique quantique pour tous les systèmes physiques."
+    },
+    {
+      "id": "CAP01",
+      "source_id": "BR-OBS-CAP-03",
+      "question": "Pour des témoins choisis indépendamment, les multiplicités réalisables forment le produit des intervalles entiers de zéro à nu de chaque motif."
+    },
+    {
+      "id": "CAP02",
+      "source_id": "BR-OBS-CAP-03",
+      "question": "Si chaque témoin porte un unique motif, la matrice d'incidence possède une seule unité par colonne et est totalement unimodulaire."
+    },
+    {
+      "id": "CAP03",
+      "source_id": "BR-OBS-CAP-03",
+      "question": "Pour toute classe de systèmes admissibles, l'union des boîtes de multiplicité est toujours une boîte unique."
+    },
+    {
+      "id": "CAP04",
+      "source_id": "BR-OBS-CAP-03",
+      "question": "Si plusieurs témoins partagent un même état sous-jacent, on peut nécessairement consommer cet état au plus une fois."
+    },
+    {
+      "id": "TREE01",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "question": "Sur un arbre de relations affines binaires à intersection courante, un joint vide permet d'obtenir un noyau incompatible minimal par inclusion avec certificat XOR."
+    },
+    {
+      "id": "TREE02",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "question": "La fiche affirme que ce noyau incompatible est toujours de cardinalité minimale."
+    },
+    {
+      "id": "TREE03",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "question": "Le résultat est présenté comme valable sans changement pour tous les hypergraphes cycliques non affines."
+    },
+    {
+      "id": "TREE04",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "question": "Dans un réseau non affine particulier à cycles, le joint global est nécessairement vide."
+    }
+  ]
+}

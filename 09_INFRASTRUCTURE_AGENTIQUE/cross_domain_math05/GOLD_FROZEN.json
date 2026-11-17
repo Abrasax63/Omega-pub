@@ -1,0 +1,102 @@
+{
+  "version": "transfer-05-gold",
+  "annotation": "same-author documentary scope labels; not independent proof referee",
+  "cases": [
+    {
+      "id": "ACC01",
+      "source_id": "BR-ACC-01",
+      "verdict": "SUPPORTED",
+      "reason": "Théorème Fact(L_E)=L_H sous hypothèses de la fiche."
+    },
+    {
+      "id": "ACC02",
+      "source_id": "BR-ACC-01",
+      "verdict": "SUPPORTED",
+      "reason": "Identité exacte de différence en deux parties disjointes."
+    },
+    {
+      "id": "ACC03",
+      "source_id": "BR-ACC-01",
+      "verdict": "CONTRADICTED",
+      "reason": "Contre-exemple explicite : accès contient 1, 11, 111..."
+    },
+    {
+      "id": "ACC04",
+      "source_id": "BR-ACC-01",
+      "verdict": "ABSTAIN",
+      "reason": "La fiche suppose des actions totales ; extension non établie."
+    },
+    {
+      "id": "DESC01",
+      "source_id": "BR-DESC-01",
+      "verdict": "SUPPORTED",
+      "reason": "Résultat quantitatif 2 versus p sous conditions du modèle."
+    },
+    {
+      "id": "DESC02",
+      "source_id": "BR-DESC-01",
+      "verdict": "CONTRADICTED",
+      "reason": "Sur modèle de référence, mise à jour exacte non constante impose p catégories."
+    },
+    {
+      "id": "DESC03",
+      "source_id": "BR-DESC-01",
+      "verdict": "CONTRADICTED",
+      "reason": "La fiche affirme qu'il peut croître sans borne avec p."
+    },
+    {
+      "id": "DESC04",
+      "source_id": "BR-DESC-01",
+      "verdict": "ABSTAIN",
+      "reason": "La fiche dit explicitement ne pas conclure à une réalisation quantique ou physique."
+    },
+    {
+      "id": "CAP01",
+      "source_id": "BR-OBS-CAP-03",
+      "verdict": "SUPPORTED",
+      "reason": "Théorème 1 sur la région exacte d'un système fixé."
+    },
+    {
+      "id": "CAP02",
+      "source_id": "BR-OBS-CAP-03",
+      "verdict": "SUPPORTED",
+      "reason": "Théorème 2 de la fiche."
+    },
+    {
+      "id": "CAP03",
+      "source_id": "BR-OBS-CAP-03",
+      "verdict": "CONTRADICTED",
+      "reason": "La fiche explique que l'union n'est généralement pas forcément une seule boîte."
+    },
+    {
+      "id": "CAP04",
+      "source_id": "BR-OBS-CAP-03",
+      "verdict": "ABSTAIN",
+      "reason": "La fiche met en garde contre cette interprétation automatique."
+    },
+    {
+      "id": "TREE01",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "verdict": "SUPPORTED",
+      "reason": "Énoncé de diagnostic avec préconditions d'arbres affines."
+    },
+    {
+      "id": "TREE02",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "verdict": "CONTRADICTED",
+      "reason": "Le texte exclut explicitement cette conclusion."
+    },
+    {
+      "id": "TREE03",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "verdict": "CONTRADICTED",
+      "reason": "La fiche n'étend pas le résultat aux cas non affines ni aux hypergraphes cycliques."
+    },
+    {
+      "id": "TREE04",
+      "source_id": "BR-AFFINE-TREE-CORE",
+      "verdict": "ABSTAIN",
+      "reason": "Aucun tel cas particulier n'est décidé par cette brique."
+    }
+  ]
+}
