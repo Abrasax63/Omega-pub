@@ -1,0 +1,189 @@
+{
+  "cohort": "NATURAL-QUERY-08-preregistered-same-author-not-blind",
+  "version": 1,
+  "locked_before_implementation": true,
+  "annotations_not_for_parser": true,
+  "negative_cases_included": true,
+  "cases": [
+    {
+      "id": "H01",
+      "text": "Sachant `capteur` et `etalonnage`, peut-on déduire `mesure` ?",
+      "gold": {
+        "verdict": "SUPPORTED",
+        "source_id": "BR-LAB-CALIBRATION-08",
+        "kind": "horn"
+      }
+    },
+    {
+      "id": "H02",
+      "text": "Avec `capteur` seulement, est-ce que `mesure` est démontrable ?",
+      "gold": {
+        "verdict": "ABSTAIN",
+        "source_id": "BR-LAB-CALIBRATION-08",
+        "kind": "horn"
+      }
+    },
+    {
+      "id": "H03",
+      "text": "Sachant `alarme`, peut-on déduire `fiable` ?",
+      "gold": {
+        "verdict": "CONTRADICTED",
+        "source_id": "BR-LAB-CALIBRATION-08",
+        "kind": "horn"
+      }
+    },
+    {
+      "id": "H04",
+      "text": "Avec `capteur`, `etalonnage` et `revue`, peut-on établir `rapport` ?",
+      "gold": {
+        "verdict": "ABSTAIN",
+        "source_id": null,
+        "kind": null
+      }
+    },
+    {
+      "id": "H05",
+      "text": "Avec `capteur` et `controle`, peut-on établir `alerte` ?",
+      "gold": {
+        "verdict": "SUPPORTED",
+        "source_id": "BR-LAB-OVERLAP-08",
+        "kind": "horn"
+      }
+    },
+    {
+      "id": "H06",
+      "text": "Avec `capteur` et `etalonnage`, peut-on déduire `alerte` ?",
+      "gold": {
+        "verdict": "ABSTAIN",
+        "source_id": "BR-LAB-OVERLAP-08",
+        "kind": "horn"
+      }
+    },
+    {
+      "id": "H07",
+      "text": "Sachant que `capteur` et `etalonnage` sont vrais, peut-on en déduire `mesure` ?",
+      "gold": {
+        "verdict": "SUPPORTED",
+        "source_id": "BR-LAB-CALIBRATION-08",
+        "kind": "horn"
+      }
+    },
+    {
+      "id": "H08",
+      "text": "Avec `capteur` et `etalonnage`, peut-on établir `mesure`, sauf si `alarme` ?",
+      "gold": {
+        "verdict": "ABSTAIN",
+        "source_id": null,
+        "kind": null
+      }
+    },
+    {
+      "id": "H09",
+      "text": "Avec `capteur` et `etalonnage`, peut-on établir `mesure` et `fiable` ?",
+      "gold": {
+        "verdict": "ABSTAIN",
+        "source_id": null,
+        "kind": null
+      }
+    },
+    {
+      "id": "H10",
+      "text": "Si `capteur` et `etalonnage` sont acquis, est-ce que `mesure` suit ?",
+      "gold": {
+        "verdict": "SUPPORTED",
+        "source_id": "BR-LAB-CALIBRATION-08",
+        "kind": "horn"
+      }
+    },
+    {
+      "id": "H11",
+      "text": "Avec `capteur` et `etalonnage`, peut-on établir une mesure ?",
+      "gold": {
+        "verdict": "ABSTAIN",
+        "source_id": null,
+        "kind": null
+      }
+    },
+    {
+      "id": "C01",
+      "text": "Nous avons 3 témoins A et 2 témoins B ; chacun est sélectionnable indépendamment. Peut-on choisir 2 A et 1 B ?",
+      "gold": {
+        "verdict": "SUPPORTED",
+        "source_id": "BR-OBS-CAP-03",
+        "kind": "capacity"
+      }
+    },
+    {
+      "id": "C02",
+      "text": "Nous avons 3 témoins A et 2 témoins B ; chacun est sélectionnable indépendamment. Peut-on choisir 2 A et 3 B ?",
+      "gold": {
+        "verdict": "CONTRADICTED",
+        "source_id": "BR-OBS-CAP-03",
+        "kind": "capacity"
+      }
+    },
+    {
+      "id": "C03",
+      "text": "Nous avons 1 témoin A et 1 témoin B ; chacun est sélectionnable indépendamment. Peut-on choisir 1 A et 1 C ?",
+      "gold": {
+        "verdict": "CONTRADICTED",
+        "source_id": "BR-OBS-CAP-03",
+        "kind": "capacity"
+      }
+    },
+    {
+      "id": "C04",
+      "text": "Nous avons 4 témoins X et 1 témoin Y ; chacun est sélectionnable indépendamment. Peut-on choisir 0 X et 1 Y ?",
+      "gold": {
+        "verdict": "SUPPORTED",
+        "source_id": "BR-OBS-CAP-03",
+        "kind": "capacity"
+      }
+    },
+    {
+      "id": "C05",
+      "text": "Nous avons 3 témoins A et 2 témoins B. Peut-on choisir 2 A et 1 B ?",
+      "gold": {
+        "verdict": "ABSTAIN",
+        "source_id": null,
+        "kind": null
+      }
+    },
+    {
+      "id": "C06",
+      "text": "Nous avons 3 témoins A et 2 témoins B ; chacun est sélectionnable indépendamment. Peut-on choisir 2 A et 1 B, sans mélanger les motifs ?",
+      "gold": {
+        "verdict": "ABSTAIN",
+        "source_id": null,
+        "kind": null
+      }
+    },
+    {
+      "id": "C07",
+      "text": "Nous avons 2 témoins A et 2 témoins B ; chacun est sélectionnable indépendamment. Peut-on choisir deux A et un B ?",
+      "gold": {
+        "verdict": "ABSTAIN",
+        "source_id": null,
+        "kind": null
+      }
+    },
+    {
+      "id": "C08",
+      "text": "On dispose de 2 témoins A et 2 témoins B ; chaque témoin est sélectionnable indépendamment. Est-il possible de choisir 2 A et 1 B ?",
+      "gold": {
+        "verdict": "SUPPORTED",
+        "source_id": "BR-OBS-CAP-03",
+        "kind": "capacity"
+      }
+    },
+    {
+      "id": "C09",
+      "text": "On dispose de 1 témoin A et 2 témoins B ; chaque témoin est sélectionnable indépendamment. Est-il possible de choisir 1 A et 3 B ?",
+      "gold": {
+        "verdict": "CONTRADICTED",
+        "source_id": "BR-OBS-CAP-03",
+        "kind": "capacity"
+      }
+    }
+  ]
+}
