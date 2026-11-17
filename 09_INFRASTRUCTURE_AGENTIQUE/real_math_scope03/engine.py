@@ -58,6 +58,18 @@ def find_int(patterns: tuple[str, ...], question: str) -> int | None:
 
 
 def last_number(q: str) -> int | None:
+    # Safety gate, added AFTER adversarial run 44102044521.
+    # Original extractor silently reused the last N/t/h number when a
+    # requested value was spelled out (e.g. « rang est huit »).
+    # Until a proper scoped quantity parser exists, decline rather than
+    # manufacture a confident contradiction.
+    spelled = (
+        "deux", "trois", "quatre", "cinq", "six", "sept", "huit",
+        "neuf", "dix", "onze", "douze", "treize", "quatorze",
+        "quinze", "seize", "vingt", "trente", "quarante",
+    )
+    if any(re.search(r"\b" + word + r"\b", q) for word in spelled):
+        return None
     values = re.findall(r"\d+", q)
     return int(values[-1]) if values else None
 
