@@ -46,3 +46,29 @@ Pour reprendre un journal ultérieurement, fournir au paramètre `--ledger` son 
 - Aucune API payante, aucun entraînement de poids, aucune écriture dans `main` ou les PR parentes, aucun déploiement du site ni raccord au cycle horaire.
 
 Source externe [Yale-LILY/FOLIO](https://github.com/Yale-LILY/FOLIO), licence CC BY-SA 4.0, échantillon issu du commit `5d7bb84c7edab3fb358e057d2807f19cf5cf5e2d`.
+
+## Checkpoint de mémoire Git — conservation au-delà des artefacts Actions
+
+Après [le premier run Qwen réel #44157203400](https://github.com/Abrasax63/Omega-pub/actions/runs/44157203400), ses **12 événements** ont été conservés dans le fichier versionné `LEDGER_CHECKPOINT_2026-11-17.jsonl.gz.b64` de cette branche. La compression base64+gzip évite de faire grossir Git avec les logs bruts du serveur.
+
+Reconstituer le journal original, sans frais d'API ni modification du dépôt :
+
+```bash
+base64 -d 09_INFRASTRUCTURE_AGENTIQUE/llm_proposals11/LEDGER_CHECKPOINT_2026-11-17.jsonl.gz.b64 | gunzip > /tmp/omega11-proposal-events.jsonl
+echo '38864b20197b7b2c36f9a65fdffd263c85c4e0d48367a1780475c6cd5b3a23ea  /tmp/omega11-proposal-events.jsonl' | sha256sum -c -
+```
+
+Le dernier `event_hash` attendu est `6cd253c378c38bf9be62b25c549cebbb85ebb552502b0dc5da3b3cb5a4225686`. Les tests `test_countermodel_review.py` valident la restauration et l'intégrité de la chaîne.
+
+Ce checkpoint est **persistant tant que cette branche existe**. L'intégration automatique à un cycle horaire reste absente ; le fichier doit être explicitement restauré avant un autre calcul, et une nouvelle version doit être commise pour conserver les événements suivants. La chaîne d'empreintes protège contre les changements non détectés relativement à cette version Git épinglée ; elle ne constitue pas une signature externe d'identité ou de vérité.
+
+## Deux contre-modèles réels — audit POST-HOC
+
+Le premier run a généré plusieurs idées logiquement douteuses. `countermodel_review.py` fait **deux vérifications sémantiques exécutables** : un contre-modèle à la déduction « Mike a nécessairement un visa F1 » et un autre à « Ted ne peut pas être un animal de compagnie ». Chaque contre-modèle satisfait les clauses formalisées des prémisses et falsifie la conclusion que Qwen avançait.
+
+**Limite fondamentale :** les clauses logiques ont été traduites **manuellement à partir des textes FOLIO après lecture des réponses**. L'audit ne démontre donc ni une traduction autonome de l'anglais vers la logique, ni une victoire sur un holdout indépendant ; il démontre une capacité de réfutation sous une formalisation explicite. Il ne faut pas promouvoir d'hypothèses en théorèmes sur cette seule base.
+
+```bash
+python3 09_INFRASTRUCTURE_AGENTIQUE/llm_proposals11/countermodel_review.py
+python3 -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/llm_proposals11 -p 'test_countermodel_review.py' -v
+```
