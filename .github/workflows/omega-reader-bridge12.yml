@@ -1,0 +1,56 @@
+name: Omega reader bridge 12 — calibration and safe end-to-end replay
+on:
+  push:
+    branches:
+      - experiment/omega-reader-verifier-bridge12-2026-11-17
+  pull_request:
+    branches:
+      - experiment/omega-semantic-fidelity10-2026-11-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-reader-and-quarantine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reader, source provenance, local model mock and full integration tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12
+        run: python3 -m unittest -v test_bridge.py
+      - name: Real pipeline with manually prepared fixture, no actual LLM
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          sys.path.insert(0, "09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12")
+          from test_bridge import sample_v7_model_answer
+          with open("/tmp/omega-reader12-known-fixture.json","w",encoding="utf-8") as f:
+            json.dump(sample_v7_model_answer(), f, ensure_ascii=False)
+          PY
+          python3 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/pipeline.py \
+            --source 09_INFRASTRUCTURE_AGENTIQUE/semantic_fidelity10/holdout/NOTE_RECHERCHE_V7_POLYNOME_TEMPOREL.md \
+            --source-blob 6c482f97345abbb7f3d5bcd5e20da96259b276ce \
+            --mode fixture --model-json /tmp/omega-reader12-known-fixture.json \
+            --run-known-v11 --output /tmp/omega-reader12-known-fixture-and-exact.json
+          python3 - <<'PY'
+          import json
+          v = json.load(open("/tmp/omega-reader12-known-fixture-and-exact.json", encoding="utf-8"))
+          print("source_packets", v["inventory"]["packet_count"])
+          print("latex_packets", v["inventory"]["packets_with_display_math"])
+          print("staged_candidates", v["quarantine"]["accepted_count"])
+          print("model_semantic_fidelity", v["quarantine"]["semantic_verification"])
+          print("manual_known_exact", v["manual_known_oracle"]["finite_test_success"])
+          print("verifier_mapped_to_model", v["manual_known_oracle"]["relation_to_model_proposals"])
+          print("automatic_certifications", v["auto_certifications"])
+          assert v["inventory"]["packets_with_display_math"] >= 4
+          assert v["quarantine"]["accepted_count"] == 1
+          assert v["auto_certifications"] == 0
+          assert v["manual_known_oracle"]["relation_to_model_proposals"] == "NONE_AUTOMATIC_MAPPING"
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-reader12-known-fixture-no-real-model
+          path: /tmp/omega-reader12-known-fixture-and-exact.json
+          retention-days: 14
