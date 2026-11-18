@@ -1,0 +1,23 @@
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+index 3513019..71b8a46 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+@@ -22,7 +22,8 @@ def check_evidence(e: dict, lines: list[str], packets: dict) -> tuple[dict | Non
+     if not isinstance(e, dict) or set(e) != EVIDENCE_KEYS:
+         return None, "INVALID_EVIDENCE_SCHEMA"
+     role, packet_id, line, literal = (e.get(k) for k in ("role", "packet_id", "line", "literal"))
+-    if role not in ROLES or not isinstance(packet_id, str) or packet_id not in packets:
++    if (not isinstance(role, str) or role not in ROLES
++            or not isinstance(packet_id, str) or packet_id not in packets):
+         return None, "UNKNOWN_ROLE_OR_PACKET"
+     packet = packets[packet_id]
+     if type(line) is not int or not packet["start_line"] <= line <= packet["end_line"]:
+@@ -66,7 +67,7 @@ def gate(raw: bytes, path: str, model_data: dict, *, provider: str = "offline-fi
+             why = "INVALID_CLAIM_ID"
+         elif claim["claim_id"] in seen_ids:
+             why = "DUPLICATE_CLAIM_ID"
+-        elif claim.get("packet_id") not in packets:
++        elif not isinstance(claim["packet_id"], str) or claim["packet_id"] not in packets:
+             why = "NONEXISTENT_CLAIM_PACKET"
+         elif not isinstance(claim.get("evidence"), list) or not 1 <= len(claim["evidence"]) <= MAX_EVIDENCE:
+             why = "MISSING_OR_OVERSIZED_EVIDENCE"
