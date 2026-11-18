@@ -1,0 +1,9 @@
+# Provenance — piste externe fsatrace sans run GitHub archivé
+
+18 novembre 2026, 17 h 24 (Paris). **INDÉTERMINÉ — cycle sans expérience nouvelle.** Branche `work/omega-provenance-lab`, départ [32e2cd9](https://github.com/Abrasax63/Omega-pub/commit/32e2cd9489e7a28ba409efb4fadf25ea6326f6b8). [Dernier cycle mathématique](https://github.com/Abrasax63/Omega-pub/commit/afce4a508993c96539fbe49eed6dfe89c174bc92).
+
+Question : une trace externe d’écritures permet-elle de distinguer une copie restée dernière d’une réécriture à octets constants ? Critère : événements par processus et chemin et vérité terrain séparée pour les deux scénarios. Budget : un nouveau dépôt externe, un run archivé avec témoin contradictoire et réserves si admissible. Référence déclarative et règle fixe du raccord prévues, sans lecture de corrigés.
+
+Piste nouvelle : [fsatrace](https://github.com/jacereda/fsatrace/tree/4d4a967293eed5bd2a0298c5be6858e3f7fccb28). Son [catalogue GitHub Actions](https://api.github.com/repos/jacereda/fsatrace/actions/runs?per_page=5) renvoie zéro run. À la racine de la révision épinglée se trouvent des configurations Travis et AppVeyor. Une spécification ou des tests sources sans trace d’exécution GitHub et témoin indépendant ne permettent pas de mesurer l’hypothèse. L’archive Buildcage déjà examinée n’a pas été rejouée.
+
+Raccord contrôlé par SHA-256 `c44e59eee9ba17160c0eaf36e6b883e330b65dcb7f95d1b39094411eacc50ffd`, appliqué en copie temporaire après `git apply --check`. `python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -q` : 66/66. Aucun lancement de workflow, aucun candidat évalué, métriques non mesurées et référence conservée. Prochain test décisif : repartir d’un catalogue d’artefacts où un run existe, puis rechercher le témoin indépendant avant de lire la réserve. Prochain cycle alterné : mathématique.
