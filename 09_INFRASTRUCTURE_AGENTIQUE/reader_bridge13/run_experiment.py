@@ -22,7 +22,7 @@ from read import packetize, safe_read, verify_packets
 from gate import gate
 
 MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
-MODEL_REVISION = "367ae90eaf97b8d64787d6ee9101a04460b55392"
+MODEL_REVISION = "main"  # resolve once to an immutable HF commit before loading either file
 MAX_PACKETS = 10
 MAX_NEW_TOKENS = 600
 GOLD = HERE / "GOLD_PROVISIONAL.json"
@@ -247,11 +247,15 @@ def main() -> None:
             import torch
             import transformers
             from transformers import AutoTokenizer, AutoModelForCausalLM
+            from huggingface_hub import model_info
             torch.set_num_threads(2)
             report["versions"] = {"torch": torch.__version__, "transformers": transformers.__version__}
-            tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, revision=MODEL_REVISION, trust_remote_code=False)
+            pinned_sha = model_info(MODEL_ID, revision=MODEL_REVISION).sha
+            assert isinstance(pinned_sha, str) and len(pinned_sha) == 40
+            report["resolved_model_revision"] = pinned_sha
+            tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, revision=pinned_sha, trust_remote_code=False)
             model = AutoModelForCausalLM.from_pretrained(
-                MODEL_ID, revision=MODEL_REVISION, torch_dtype=torch.float32,
+                MODEL_ID, revision=pinned_sha, torch_dtype=torch.float32,
                 trust_remote_code=False, attn_implementation="eager",
             )
             model.eval()
