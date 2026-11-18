@@ -1,0 +1,20 @@
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+index 71b8a46..05d4094 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+@@ -74,7 +74,6 @@ def gate(raw: bytes, path: str, model_data: dict, *, provider: str = "offline-fi
+         if why:
+             rejected.append({"index": i, "reason": why})
+             continue
+-        seen_ids.add(claim["claim_id"])
+         items = []
+         for e in claim["evidence"]:
+             checked, failure = check_evidence(e, lines, packets)
+@@ -93,6 +92,7 @@ def gate(raw: bytes, path: str, model_data: dict, *, provider: str = "offline-fi
+         if why:
+             rejected.append({"index": i, "claim_id": claim["claim_id"], "reason": why})
+             continue
++        seen_ids.add(claim["claim_id"])
+         accepted.append({
+             "claim_id": claim["claim_id"],
+             "packet_id": claim["packet_id"],
