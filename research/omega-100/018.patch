@@ -1,0 +1,22 @@
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/pipeline.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/pipeline.py
+index a39e9e9..124b56e 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/pipeline.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/pipeline.py
+@@ -9,7 +9,7 @@ from __future__ import annotations
+ import argparse
+ import json
+ from pathlib import Path
+-from read import run as read_document
++from read import run as read_document, safe_read
+ from gate import gate
+ 
+ ROOT = Path(__file__).resolve().parent.parent.parent
+@@ -20,7 +20,7 @@ V7_BLOB = "6c482f97345abbb7f3d5bcd5e20da96259b276ce"
+ def pipeline(source: Path, sha: str, *, model_json: dict | None = None,
+              provider: str = "none", approved_manual_v11: bool = False) -> dict:
+     doc = read_document(source, sha)
+-    raw = source.read_bytes()
++    raw = safe_read(source, sha)
+     if model_json is None:
+         model_json = {"source_blob": sha, "claims": []}
+     staged = gate(raw, source.as_posix(), model_json, provider=provider)
