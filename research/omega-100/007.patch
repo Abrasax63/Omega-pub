@@ -1,0 +1,68 @@
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
+index 941694b..0e78d6d 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
+@@ -69,7 +69,7 @@ def packetize(raw: bytes, source_path: str) -> dict:
+     sha = blob(raw)
+     packets = []
+     heading_levels = []
+-    buffer: list[tuple[int, str, str]] = []
++    buffer: list[tuple[int, str, bool]] = []
+     fence = None
+     math_delimiter = None
+ 
+@@ -82,7 +82,6 @@ def packetize(raw: bytes, source_path: str) -> dict:
+         excerpt = "\n".join(line for _, line, _ in buffer)
+         # packet ID determined by verified source position and content
+         digest = hashlib.sha256(excerpt.encode("utf-8")).hexdigest()
+-        visible = "\n".join(visible for _, _, visible in buffer)
+         path = [h["title"] for h in heading_levels]
+         context = "BLOCKED_SOURCE_CONTEXT" if any(DANGER.search(s) for s in path) else "SOURCE_CONTEXT_UNREVIEWED"
+         packets.append({
+@@ -91,7 +90,7 @@ def packetize(raw: bytes, source_path: str) -> dict:
+             "start_line": start, "end_line": end,
+             "section_path": path,
+             "source_quote": excerpt, "quote_sha256": digest,
+-            "contains_display_math": r"\[" in visible or "$$" in visible,
++            "contains_display_math": any(is_math for _, _, is_math in buffer),
+             "context_status": context,
+             "scientific_status": "UNREVIEWED_SOURCE_PACKET",
+         })
+@@ -99,15 +98,15 @@ def packetize(raw: bytes, source_path: str) -> dict:
+         if len(packets) > MAX_PACKETS:
+             raise ValueError("too many source packets")
+ 
+-    def push(i: int, text: str, visible: str):
+-        buffer.append((i, text, visible))
++    def push(i: int, text: str, is_math: bool):
++        buffer.append((i, text, is_math))
+         if len(buffer) >= MAX_LINES_PER_PACKET:
+             flush()
+ 
+     for i, line in enumerate(lines, 1):
+         marker = FENCE.match(line)
+         if fence is not None:
+-            push(i, line, "")
++            push(i, line, False)
+             if (marker and marker[1][0] == fence[0] and len(marker[1]) >= len(fence)
+                     and not marker[2].strip()):
+                 fence = None
+@@ -118,7 +117,7 @@ def packetize(raw: bytes, source_path: str) -> dict:
+         ):
+             flush()
+             fence = marker[1]
+-            push(i, line, "")
++            push(i, line, False)
+             continue
+         h = HEADING.match(line)
+         if h and math_delimiter is None:
+@@ -131,8 +130,8 @@ def packetize(raw: bytes, source_path: str) -> dict:
+             flush()
+             continue
+         visible = without_inline_code(line)
+-        push(i, line, visible)
+         dollar_count = visible.count("$$")
++        push(i, line, math_delimiter is not None or r"\[" in visible or bool(dollar_count))
+         if math_delimiter is None:
+             if r"\[" in visible:
+                 math_delimiter = r"\]"
