@@ -1,0 +1,82 @@
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
+@@ -14,6 +14,7 @@
+     r"(?:\bpreuve\b|\bdémonstration\b|\bréfut[ée]\b|"
+     r"non[-‑\s]?théorème|contre[- ]exemple|"
+     r"\blimites?\b|\bbarrière\b|\bincertitude\b)", re.I)
++CODE_TICKS = re.compile(r"`+")
+ MAX_BYTES = 150000
+ MAX_PACKETS = 500
+ MAX_LINES_PER_PACKET = 30
+@@ -34,6 +35,32 @@
+     return raw
+ 
+ 
++def without_inline_code(line: str) -> str:
++    """Hide closed, same-line code spans from delimiter detection."""
++    runs = list(CODE_TICKS.finditer(line))
++    next_by_length = {}
++    closing_indices = [None] * len(runs)
++    for index in range(len(runs) - 1, -1, -1):
++        length = len(runs[index][0])
++        closing_indices[index] = next_by_length.get(length)
++        next_by_length[length] = index
++
++    parts = []
++    offset = 0
++    index = 0
++    while index < len(runs):
++        closing = closing_indices[index]
++        if closing is None:
++            index += 1
++            continue
++        parts.append(line[offset:runs[index].start()])
++        parts.append(" ")
++        offset = runs[closing].end()
++        index = closing + 1
++    parts.append(line[offset:])
++    return "".join(parts)
++
++
+ def packetize(raw: bytes, source_path: str) -> dict:
+     if len(raw) > MAX_BYTES:
+         raise ValueError("oversized Markdown")
+@@ -53,6 +80,7 @@
+         excerpt = "\n".join(line for _, line in buffer)
+         # packet ID determined by verified source position and content
+         digest = hashlib.sha256(excerpt.encode("utf-8")).hexdigest()
++        visible = "\n".join(without_inline_code(line) for _, line in buffer)
+         path = [h["title"] for h in heading_levels]
+         context = "BLOCKED_SOURCE_CONTEXT" if any(DANGER.search(s) for s in path) else "SOURCE_CONTEXT_UNREVIEWED"
+         packets.append({
+@@ -61,7 +89,7 @@
+             "start_line": start, "end_line": end,
+             "section_path": path,
+             "source_quote": excerpt, "quote_sha256": digest,
+-            "contains_display_math": r"\[" in excerpt or "$$" in excerpt,
++            "contains_display_math": r"\[" in visible or "$$" in visible,
+             "context_status": context,
+             "scientific_status": "UNREVIEWED_SOURCE_PACKET",
+         })
+@@ -86,9 +114,10 @@
+             flush()
+             continue
+         push(i, line)
+-        dollar_count = line.count("$$")
++        visible = without_inline_code(line)
++        dollar_count = visible.count("$$")
+         if math_delimiter is None:
+-            if r"\[" in line:
++            if r"\[" in visible:
+                 math_delimiter = r"\]"
+             elif dollar_count:
+                 math_delimiter = "$$"
+@@ -99,7 +128,7 @@
+         elif math_delimiter == "$$" and dollar_count % 2:
+             math_delimiter = None
+             flush()
+-        if math_delimiter == r"\]" and r"\]" in line:
++        if math_delimiter == r"\]" and r"\]" in visible:
+             math_delimiter = None
+             flush()
+     flush()
