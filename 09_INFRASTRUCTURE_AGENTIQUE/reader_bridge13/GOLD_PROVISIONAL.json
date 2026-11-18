@@ -1,0 +1,43 @@
+{
+  "annotation_date": "2026-11-18",
+  "created_before_model_run": true,
+  "annotation_status": "AUTHOR_LABELS_UNREVIEWED_NOT_INDEPENDENT",
+  "meaning": "Lignes exprimant hypotheses ou conclusions dans la source; aucune validation mathématique de ces énoncés",
+  "source_commit": "0ca3c5f63998cf16cc84478c7735c03445a08669",
+  "documents": [
+    {
+      "id": "BR-R90-01",
+      "path": "02_MATHEMATIQUES/temps_regle90/BR-R90-01_NOYAUX_PERIODES.md",
+      "blob": "478ca7c518ed1368a0bf35deb5f9be160bba581d",
+      "conclusion_lines": [
+        21,
+        27,
+        30,
+        35,
+        43
+      ],
+      "premise_or_definition_lines": [
+        14,
+        18,
+        32,
+        40
+      ],
+      "publication_status": "EXPERIMENTAL_NO_PUBLIC_FULL_PROOF"
+    },
+    {
+      "id": "BR-R90-02",
+      "path": "02_MATHEMATIQUES/temps_regle90/BR-R90-02_MAJORITY_WALSH.md",
+      "blob": "0a9f6bab0b91a93f8fcc831c39a988171c169eb5",
+      "conclusion_lines": [
+        23,
+        26
+      ],
+      "premise_or_definition_lines": [
+        13,
+        20
+      ],
+      "publication_status": "EXPERIMENTAL_NO_PUBLIC_FULL_PROOF"
+    }
+  ],
+  "scorer_note": "Calculer précision/rappel uniquement sur les lignes de conclusion présentes dans les paquets envoyés au modèle et au témoin. La fidélité de relations logiques entre lignes et la validité des théorèmes nécessitent un audit indépendant."
+}
