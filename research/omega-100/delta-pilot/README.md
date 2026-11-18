@@ -61,3 +61,39 @@ python "$pilot/paired_eval.py" score \
 ```
 
 Définir `OMEGA_OLLAMA_MODEL` sur le nom exact du modèle installé. La génération ne reçoit pas le chemin du corrigé. Le calcul du score se fait après la collecte.
+
+## Antériorité et réduction du problème Δ_h
+
+Le protocole « modèle ouvert, réponse directe et calcul exact » avait déjà été proposé dans [#74](https://github.com/Abrasax63/Omega-pub/pull/74) et [#75](https://github.com/Abrasax63/Omega-pub/pull/75). [#174, run 44172032656](https://github.com/Abrasax63/Omega-pub/actions/runs/44172032656) a réellement exécuté Qwen sur six questions FOLIO : six réponses du moteur local, cinq JSON valides, aucune formalisation complète. [#178, run 44176803218](https://github.com/Abrasax63/Omega-pub/actions/runs/44176803218) a produit dix candidatures, dont huit avec citations littérales exactes et aucune formalisation structurelle complète. La couche d’inférence existante est donc à réutiliser pour tout transfert ultérieur. Le banc apparié ci-dessus reste une préparation sur Δ_h sans inférence réelle.
+
+Le contrat actuel porte sur l’énoncé universel « Δ_h est vide pour toutes les dynamiques totales déterministes d’au plus N états », avec observation injective ou arbitraire et h ≥ 1. Dans ce périmètre, la décision exacte se réduit aux cas suivants :
+
+- Si h = 1, Q et R₁ coïncident par définition.
+- Si π est injective, chaque observation identifie son état. Chaque chemin observé se relève alors en trajectoire réelle.
+- Si N ≤ 2, toute observation est injective ou constante. Dans le cas constant, le graphe observé est constitué d'une boucle, réalisée à tout horizon.
+- Si N ≥ 3, h ≥ 2 et π est arbitraire, le même témoin T=(0,0,1), π=(0,1,0) suffit. Le graphe observé contient la boucle 0→0 et l’arête 0→1. Une succession de h−1 boucles suivies de cette arête atteint 1 en h pas observés. Or Tʰ envoie les trois états sur 0 dès h=2.
+
+**Contrôle exécuté** : la règle concorde avec les 40 contrats admis par le pilote, 32 confirmations et 8 réfutations. Le vérificateur historique a examiné 5 944 systèmes au total. Pour chacune des huit réfutations, le témoin fixe a été validé par l’oracle indépendant. La règle donne ici la décision par trois conditions et, si nécessaire, un témoin constructif. Il s’agit d’une réduction du problème borné du pilote, sans revendication de nouveauté bibliographique. Le vérificateur courant conserve ses budgets et son comportement.
+
+```sh
+PYTHONPATH=research/omega-100/delta-pilot python - <<'PY'
+from itertools import product
+from delta_bridge import Contract, MAX_SYSTEMS, verify
+from test_delta_bridge import valid_witness
+
+checks = counterexamples = 0
+for n, h, mode in product(range(1, 5), range(1, 6), ("injective", "arbitraire")):
+    contract = Contract(n, h, mode)
+    reference = verify(contract, MAX_SYSTEMS)
+    refuted = mode == "arbitraire" and n >= 3 and h >= 2
+    assert reference["status"] == ("REFUTED" if refuted else "CONFIRMED_WITHIN_BOUND")
+    if refuted:
+        assert valid_witness({"contract": vars(contract), "witness": {
+            "T": [0, 0, 1], "pi": [0, 1, 0], "endpoints": [0, 1],
+            "observed_path": [0] * h + [1],
+        }})
+        counterexamples += 1
+    checks += reference["systems_checked"]
+assert (checks, counterexamples) == (5944, 8)
+PY
+```
