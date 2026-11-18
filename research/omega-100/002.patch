@@ -1,0 +1,50 @@
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
+@@ -42,7 +42,7 @@
+     packets = []
+     heading_levels = []
+     buffer: list[tuple[int, str]] = []
+-    math_open = False
++    math_delimiter = None
+ 
+     def flush():
+         nonlocal buffer
+@@ -76,21 +76,31 @@
+ 
+     for i, line in enumerate(lines, 1):
+         h = HEADING.match(line)
+-        if h and not math_open:
++        if h and math_delimiter is None:
+             flush()
+             level = len(h.group(1))
+             heading_levels = [h0 for h0 in heading_levels if h0["level"] < level]
+             heading_levels.append({"level": level, "title": h.group(2)})
+             continue
+-        if not line.strip() and not math_open:
++        if not line.strip() and math_delimiter is None:
+             flush()
+             continue
+         push(i, line)
+-        # Separate \[ and \] display lines are common; a single-line pair
+-        # must not incorrectly leave the parser inside math mode.
+-        math_open = (math_open or r"\[" in line or "$$" in line)
+-        if r"\]" in line or (line.count("$$") == 2):
+-            math_open = False
++        dollar_count = line.count("$$")
++        if math_delimiter is None:
++            if r"\[" in line:
++                math_delimiter = r"\]"
++            elif dollar_count:
++                math_delimiter = "$$"
++                # A complete pair on the opening line closes immediately.
++                if dollar_count % 2 == 0:
++                    math_delimiter = None
++                    flush()
++        elif math_delimiter == "$$" and dollar_count % 2:
++            math_delimiter = None
++            flush()
++        if math_delimiter == r"\]" and r"\]" in line:
++            math_delimiter = None
+             flush()
+     flush()
+     return {
