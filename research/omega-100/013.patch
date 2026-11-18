@@ -1,0 +1,53 @@
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+index 05d4094..9bdc84c 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+@@ -58,15 +58,13 @@ def gate(raw: bytes, path: str, model_data: dict, *, provider: str = "offline-fi
+     if not isinstance(claims, list) or len(claims) > MAX_CLAIMS:
+         raise ValueError("too many or invalid model claims")
+     accepted, rejected = [], []
+-    seen_ids = set()
++    validated = {}
+     for i, claim in enumerate(claims):
+         why = None
+         if not isinstance(claim, dict) or set(claim) != CLAIM_KEYS:
+             why = "UNSUPPORTED_CLAIM_FIELDS_OR_STATUS_PROMOTION"
+         elif not isinstance(claim.get("claim_id"), str) or not ID.fullmatch(claim["claim_id"]):
+             why = "INVALID_CLAIM_ID"
+-        elif claim["claim_id"] in seen_ids:
+-            why = "DUPLICATE_CLAIM_ID"
+         elif not isinstance(claim["packet_id"], str) or claim["packet_id"] not in packets:
+             why = "NONEXISTENT_CLAIM_PACKET"
+         elif not isinstance(claim.get("evidence"), list) or not 1 <= len(claim["evidence"]) <= MAX_EVIDENCE:
+@@ -92,8 +90,7 @@ def gate(raw: bytes, path: str, model_data: dict, *, provider: str = "offline-fi
+         if why:
+             rejected.append({"index": i, "claim_id": claim["claim_id"], "reason": why})
+             continue
+-        seen_ids.add(claim["claim_id"])
+-        accepted.append({
++        validated.setdefault(claim["claim_id"], []).append((i, {
+             "claim_id": claim["claim_id"],
+             "packet_id": claim["packet_id"],
+             "source_path": path, "source_blob": blob(raw),
+@@ -103,7 +100,20 @@ def gate(raw: bytes, path: str, model_data: dict, *, provider: str = "offline-fi
+             "hypothesis_scope": "NOT_ESTABLISHED",
+             "verdict": "INDETERMINATE",
+             "promotable": False,
+-        })
++        }))
++    for claim_id, group in validated.items():
++        conclusions = {
++            (e["line"], e["literal"])
++            for _, item in group for e in item["evidence"] if e["role"] == "conclusion"
++        }
++        if len(conclusions) == 1:
++            accepted.append(group[0][1])
++            duplicates, reason = group[1:], "DUPLICATE_CLAIM_ID"
++        else:
++            duplicates, reason = group, "CONFLICTING_CLAIM_ID"
++        for index, _ in duplicates:
++            rejected.append({"index": index, "claim_id": claim_id, "reason": reason})
++    rejected.sort(key=lambda item: item["index"])
+     return {
+         "engine": "OMEGA_READ_TO_QUARANTINE_12",
+         "source_path": path, "source_blob": blob(raw),
