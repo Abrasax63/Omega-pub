@@ -1,0 +1,12 @@
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
+index 0e78d6d..551f747 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
+@@ -153,6 +153,7 @@ def packetize(raw: bytes, source_path: str) -> dict:
+         "source_blob": sha, "source_path": source_path,
+         "source_lines": len(lines), "packets": packets,
+         "stats": {
++            **({"unclosed_display_math": True} if math_delimiter is not None else {}),
+             "packet_count": len(packets),
+             "packets_with_display_math": sum(p["contains_display_math"] for p in packets),
+             "blocked_context_packets": sum(p["context_status"] == "BLOCKED_SOURCE_CONTEXT" for p in packets),
