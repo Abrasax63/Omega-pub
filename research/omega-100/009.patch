@@ -1,0 +1,57 @@
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
+index 551f747..0be45c3 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
+@@ -72,6 +72,7 @@ def packetize(raw: bytes, source_path: str) -> dict:
+     buffer: list[tuple[int, str, bool]] = []
+     fence = None
+     math_delimiter = None
++    math_start_line = None
+ 
+     def flush():
+         nonlocal buffer
+@@ -135,8 +136,10 @@ def packetize(raw: bytes, source_path: str) -> dict:
+         if math_delimiter is None:
+             if r"\[" in visible:
+                 math_delimiter = r"\]"
++                math_start_line = i
+             elif dollar_count:
+                 math_delimiter = "$$"
++                math_start_line = i
+                 # A complete pair on the opening line closes immediately.
+                 if dollar_count % 2 == 0:
+                     math_delimiter = None
+@@ -153,7 +156,10 @@ def packetize(raw: bytes, source_path: str) -> dict:
+         "source_blob": sha, "source_path": source_path,
+         "source_lines": len(lines), "packets": packets,
+         "stats": {
+-            **({"unclosed_display_math": True} if math_delimiter is not None else {}),
++            **({
++                "unclosed_display_math": True,
++                "unclosed_display_math_start_line": math_start_line,
++            } if math_delimiter is not None else {}),
+             "packet_count": len(packets),
+             "packets_with_display_math": sum(p["contains_display_math"] for p in packets),
+             "blocked_context_packets": sum(p["context_status"] == "BLOCKED_SOURCE_CONTEXT" for p in packets),
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+index c25e366..3513019 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+@@ -46,6 +46,7 @@ def check_evidence(e: dict, lines: list[str], packets: dict) -> tuple[dict | Non
+ 
+ def gate(raw: bytes, path: str, model_data: dict, *, provider: str = "offline-fixture") -> dict:
+     inventory = packetize(raw, path)
++    unclosed_start = inventory["stats"].get("unclosed_display_math_start_line")
+     packets = {p["packet_id"]: p for p in inventory["packets"]}
+     lines = raw.decode("utf-8").splitlines()
+     if not isinstance(model_data, dict) or set(model_data) != {"source_blob", "claims"}:
+@@ -79,6 +80,9 @@ def gate(raw: bytes, path: str, model_data: dict, *, provider: str = "offline-fi
+             if failure:
+                 why = failure
+                 break
++            if unclosed_start is not None and checked["line"] >= unclosed_start:
++                why = "UNCLOSED_DISPLAY_MATH_CONTEXT"
++                break
+             items.append(checked)
+         if not why and sum(x["role"] == "conclusion" for x in items) != 1:
+             why = "EXACTLY_ONE_CONCLUSION_REQUIRED"
