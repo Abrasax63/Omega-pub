@@ -40,3 +40,24 @@ python -m unittest discover -s "$pilot" -v
 Ce cas rend T=(0,0,1) et π=(0,1,0) sur les états 0, 1 et 2. Le graphe observé contient le chemin 0→0→1, tandis que T² envoie chacun des trois états sur l'état 0, dont l'observation vaut 0.
 
 Le point d'entrée `--proposal` accepte un JSON externe au format qu'illustre `--emit-proposal`. Pour cette version, le contrat et ses citations doivent coïncider avec la lecture reconnue par la grammaire. Une mise à l'épreuve du proposant réel devra enregistrer aussi les échecs de schéma, les extractions correctes et les abstentions, avant de mesurer les verdicts du vérificateur.
+
+## Essai apparié avec un modèle local
+
+Le [protocole épinglé](https://github.com/Abrasax63/Omega-pub/commit/cd6b0780d793ba5eed1b28d57e0885743bfe3cc8) fixe la comparaison entre une décision directe et une proposition que le vérificateur examine. [paired_eval.py](paired_eval.py) utilise le même modèle local et le même plafond de 700 tokens de sortie, alterne l’ordre des bras et associe le résultat à l’empreinte du modèle. Le coût total est mesuré séparément : compteurs de tokens, durée déclarée par Ollama et nombre de systèmes évalués par Omega. Le rapport conserve les contre-exemples produits, les réponses incorrectes et les abstentions excessives ou justifiées. [API Ollama](https://docs.ollama.com/api/generate)
+
+Cohorte synthétique réservée : 24 documents distincts des fichiers du premier pilote, huit par verdict de référence. Les confirmations comprennent quatre cas où l’observation est arbitraire et où la borne de deux états suffit. Les cas partagent la grammaire du pilote. Empreinte normalisée des sources : `ca2316d07dd1da9d9a848c5e82702b562dae45a0bade28efb0f74163a7fdabf5`. Empreinte normalisée du corrigé : `4ee955ddc441ceb033257741ca078bba552757e4dc35c3ee907640eccd0d5fad`. Les fichiers sources et corrigé restent hors du dépôt public.
+
+Vérifications : 12 tests locaux passent et un essai de bout en bout traite 24 paires, soit 48 réponses simulées. L’essai de connexion réelle à Ollama a renvoyé `Connection refused`. Zéro génération réelle, aucun résultat comparatif sur un modèle.
+
+Avec Ollama local et un modèle déjà installé, depuis la racine du dépôt :
+
+```sh
+pilot=research/omega-100/delta-pilot
+python "$pilot/paired_eval.py" collect \
+  --sources /chemin/sources.json --model "$OMEGA_OLLAMA_MODEL" --output /tmp/omega-replies.json
+python "$pilot/paired_eval.py" score \
+  --sources /chemin/sources.json --run /tmp/omega-replies.json \
+  --gold /chemin/gold.json --output /tmp/omega-score.json
+```
+
+Définir `OMEGA_OLLAMA_MODEL` sur le nom exact du modèle installé. La génération ne reçoit pas le chemin du corrigé. Le calcul du score se fait après la collecte.
