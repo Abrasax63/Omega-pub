@@ -1,0 +1,21 @@
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+index 9bdc84c..34cc7cb 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+@@ -102,11 +102,12 @@ def gate(raw: bytes, path: str, model_data: dict, *, provider: str = "offline-fi
+             "promotable": False,
+         }))
+     for claim_id, group in validated.items():
+-        conclusions = {
+-            (e["line"], e["literal"])
+-            for _, item in group for e in item["evidence"] if e["role"] == "conclusion"
++        evidence_sets = {
++            frozenset((e["role"], e["packet_id"], e["line"], e["literal"])
++                      for e in item["evidence"])
++            for _, item in group
+         }
+-        if len(conclusions) == 1:
++        if len(evidence_sets) == 1:
+             accepted.append(group[0][1])
+             duplicates, reason = group[1:], "DUPLICATE_CLAIM_ID"
+         else:
