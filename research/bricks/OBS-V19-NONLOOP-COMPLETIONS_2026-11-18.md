@@ -1,0 +1,11 @@
+# V19 — premières lectures sans boucle
+
+18 novembre 2026, 05 h 18 (Paris). Branche `work/omega-math-brick-pilot-2026-11-14`, SHA initial `17fc29db54a29a40db2a781132697d16de8e6b8e`. [Cycle précédent](OBS-V19-BOUNDED-COMPLETIONS_2026-11-18.md), [définition globale et sources épinglées](OBS-V19-LPLUS1-AUDIT_2026-11-14.md), [cycle de provenance](https://github.com/Abrasax63/Omega-pub/commit/69bbcef13463b8e5a1fc055052d618a79572e15d).
+
+Question : existe-t-il une première lecture sans boucle qui détermine l’ombre avec un état non observé ? Protocole fixé avant test : support étiqueté de dix états, C3=(0,1,2), L=2, préfixes (7,5,3) et (8,6,4). Balayer les dix images pour chacun des deux terminaux. Les deux lectures en boucle servent de témoins négatifs. Pour chaque lecture fixer l’image observée, énumérer toutes les images restantes sur le support et filtrer par cohérence du graphe forcé. Référence fixe : demander les deux images terminales. Critère d’arrêt anticipé dans cette expérience bornée : au moins une complétion admissible et une seule ombre distincte, calculée par projection exhaustive. Budget maximal commun : deux transitions.
+
+**VÉRIFIÉ par calcul exact fini.** Sur 18 premières lectures sans boucle, 16 déterminent l’ombre pleine (huit colorations), 2 laissent le choix entre ombre vide et pleine. Les deux cas ambigus sont T(3)=4 et T(4)=3 selon le côté lu. Les deux contrôles avec boucle restent ambigus. Sur les lectures sans boucle, 1 800 complétions brutes et 1 452 cohérentes, comptées séparément par observation. Ce résultat mesure un potentiel de 16 secondes lectures évitables face à la demande groupée sur 18 observations équipondérées. Il dépend du support et des préfixes fixés et ne mesure aucun gain d’une politique déployée. Le vérificateur actif est conservé, sans modification. Originalité bibliographique non évaluée.
+
+Depuis research/code : `python3 audit_v19_nonloop_completions.py`, `python3 audit_v19_bounded_completions.py`, `python3 audit_v19_shadow_guard.py`. Les trois commandes passent localement. Durée de l’audit : 0,854 s. SHA-256 du harnais `3d080d4d3e99f58dd6254db5db79236ee645fda57e4e13192843cc7fbdac4ebd`.
+
+Prochain test mathématique : chercher un contre-exemple au critère « image lue hors des deux terminaux » sur des préfixes différents, avant d’envisager une règle de production. Prochain cycle : provenance.
