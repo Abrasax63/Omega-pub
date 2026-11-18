@@ -1,0 +1,14 @@
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+index 34cc7cb..0c3c7ac 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/gate.py
+@@ -81,7 +81,8 @@ def gate(raw: bytes, path: str, model_data: dict, *, provider: str = "offline-fi
+             if unclosed_start is not None and checked["line"] >= unclosed_start:
+                 why = "UNCLOSED_DISPLAY_MATH_CONTEXT"
+                 break
+-            items.append(checked)
++            if checked not in items:
++                items.append(checked)
+         if not why and sum(x["role"] == "conclusion" for x in items) != 1:
+             why = "EXACTLY_ONE_CONCLUSION_REQUIRED"
+         if not why and not any(x["packet_id"] == claim["packet_id"] and
