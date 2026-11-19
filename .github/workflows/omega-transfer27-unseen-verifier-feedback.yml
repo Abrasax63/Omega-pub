@@ -1,0 +1,193 @@
+name: Omega TRANSFER27 - unseen representation transfer with 3 equal-call arms
+
+on:
+  push:
+    branches:
+      - experiment/omega-transfer27-verifier-feedback-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: omega-transfer27-three-arms-unseen-domain
+  cancel-in-progress: false
+
+jobs:
+  offline-independent-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Frozen data, unseen training markers, independent oracles, AST safety and scorer regression
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/transfer27
+          python data_guard.py
+          python -m unittest -v test_transfer27.py
+
+  real-pretrained-versus-lora-versus-feedback:
+    needs: offline-independent-controls
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Load frozen unchanged TRAIN26 adapter from historical verified run
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-train26-real-cpu-adapter-and-640-step-losses
+          run-id: 44512647677
+          repository: Abrasax63/Omega-pub
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: /tmp/omega-transfer27/trained
+      - name: Check exact archived LoRA weights before invoking model
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('/tmp/omega-transfer27/trained')
+          m=json.loads((root/'train_manifest.json').read_text(encoding='utf-8'))
+          assert m['status']=='TRAINED_ACTUAL_WEIGHTS_CHANGED'
+          assert m['steps']==640 and m['unique_examples_seen']==320
+          assert m['training_data_git_blob']=='f6086d9acd70dccd604c60c987df58649fe33f7e'
+          assert m['model']=='HuggingFaceTB/SmolLM2-135M-Instruct'
+          assert m['model_revision']=='ee72e5415c002e8fc0566a191a07c0b2b708875a'
+          a=root/'adapter'/'adapter_model.safetensors'
+          sha=hashlib.sha256(a.read_bytes()).hexdigest()
+          assert sha=='4d378c42f491550251d8973fc1344351865d1d41bc6e24fd2d94d6a0d6a3b446'
+          assert m['saved_adapter_sha256']['adapter_model.safetensors']==sha
+          print('TRAIN26_UNALTERED_ADAPTER_VERIFIED',sha,flush=True)
+          PY
+      - name: Install exactly the previously executed free CPU inference libraries
+        run: |
+          python -m pip install --disable-pip-version-check --quiet "torch==2.5.1" \
+            --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --quiet \
+            "transformers==4.49.0" "peft==0.15.2" "accelerate==1.5.2" \
+            "safetensors==0.5.3" "huggingface_hub==0.30.2"
+      - name: Restore original public SmolLM2 source weights for ALL three arms
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: First 48 real raw ideas without reading calibration or holdout
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/transfer27/infer.py \
+            --stage first \
+            --trained /tmp/omega-transfer27/trained \
+            --output /tmp/omega-transfer27/ideas/01-first-raw-frozen.json
+      - name: Seal original first ideas in independent immutable artifact BEFORE feedback
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-transfer27-original-48-first-ideas-before-any-feedback
+          path: /tmp/omega-transfer27/ideas/01-first-raw-frozen.json
+          retention-days: 30
+          if-no-files-found: error
+      - name: Second 48 real generations, C receives calibration feedback, A/B remain blind
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/transfer27/infer.py \
+            --stage second \
+            --trained /tmp/omega-transfer27/trained \
+            --first /tmp/omega-transfer27/ideas/01-first-raw-frozen.json \
+            --output /tmp/omega-transfer27/ideas/02-final-no-holdout.json
+      - name: Confirm exactly 96 calls, same per-arm caps and no hidden holdout exposure
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('/tmp/omega-transfer27/ideas')
+          a=json.loads((root/'01-first-raw-frozen.json').read_text(encoding='utf8'))
+          b=json.loads((root/'02-final-no-holdout.json').read_text(encoding='utf8'))
+          assert a['status']=='FROZEN_FIRST_IDEAS_ALL_ARMS' and b['status']=='FROZEN_SECOND_IDEAS_NO_HOLDOUT_SEEN'
+          assert a['generation_calls']==48 and b['generation_calls']==48
+          assert a['output_cap_per_call']==96 and b['output_cap_per_call']==96
+          assert a['stable_first_ideas_sha256']==b['first_stage_sha256']
+          assert not a['calibration_loaded'] and not a['holdout_loaded'] and not b['holdout_loaded']
+          assert len({(x['id'],x['arm']) for x in a['ideas']})==48
+          assert len({(x['id'],x['arm']) for x in b['finals']})==48
+          assert all(x['trained_adapter_enabled']==(x['arm']!='A_BASE_NEUTRAL')
+                     for x in a['ideas']+b['finals'])
+          assert a['paid_api_calls']==b['paid_api_calls']==0
+          print('TRANSFER27_96_REAL_INFERENCES',a['stable_first_ideas_sha256'],flush=True)
+          PY
+      - name: Archive unedited raw generations and calibration-only feedback
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-transfer27-96-real-generations-and-calibration-feedback
+          path: /tmp/omega-transfer27/ideas/
+          retention-days: 30
+          if-no-files-found: warn
+
+  post-freeze-exact-unseen-holdout:
+    needs: real-pretrained-versus-lora-versus-feedback
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Import frozen 96 model calls, never use any model in evaluator
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-transfer27-96-real-generations-and-calibration-feedback
+          path: /tmp/omega-transfer27/ideas/
+      - name: Read 192 unseen finite heldout cases ONLY AFTER both generating stages
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/transfer27/grade.py \
+            --first /tmp/omega-transfer27/ideas/01-first-raw-frozen.json \
+            --second /tmp/omega-transfer27/ideas/02-final-no-holdout.json \
+            --output /tmp/omega-transfer27/score/03-scored-three-arm-frozen-holdout.json
+      - name: Require honest status even if the observed transfer gain is zero
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f=Path('/tmp/omega-transfer27/score/03-scored-three-arm-frozen-holdout.json')
+          x=json.loads(f.read_text(encoding='utf8'))
+          assert x['status']=='SCORED_FROZEN_ALL_THREE_ARMS'
+          assert x['actual_model_call_count']==96 and x['calls_per_arm']==32
+          assert x['heldout_cases']==192
+          assert x['strong_reference']['strong_D_correct_cases']==192
+          assert x['budget_call_count_and_output_caps_equal']
+          assert not x['budget_total_compute_equal']
+          assert x['train26_adapter_sha256']=='4d378c42f491550251d8973fc1344351865d1d41bc6e24fd2d94d6a0d6a3b446'
+          assert x['model_weight_updates_during_transfer_experiment']==0
+          assert x['model_auto_certifications']==0 and x['paid_api_calls']==0
+          assert x['no_new_theorem_or_creativity_claim']
+          for arm,s in x['arms'].items():
+              assert s['total_prompts']==16
+              assert 0<=s['final']['verified_math_representations_of_12']<=12
+              assert 0<=s['final']['ood_correct_abstentions_of_4']<=4
+              print(arm, 'FIRST',s['first']['verified_math_representations_of_12'],
+                    'FINAL',s['final']['verified_math_representations_of_12'],
+                    'OOD',s['final']['ood_correct_abstentions_of_4'],
+                    'FALSE',s['final']['heldout_wrong_boolean_verdicts'],
+                    'PROMPT_TOKENS',s['final']['input_tokens_actual'],flush=True)
+          print('TRANSFER27_VERDICTS',x['status_verdicts'],flush=True)
+          PY
+      - name: Preserve full raw-evidence scoring and minimal counterexamples
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-transfer27-final-independent-192-case-evaluation
+          path: /tmp/omega-transfer27/score/
+          retention-days: 30
+          if-no-files-found: warn
