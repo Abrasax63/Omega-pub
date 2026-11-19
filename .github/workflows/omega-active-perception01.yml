@@ -1,0 +1,37 @@
+name: Omega APERCEPT01 - active perception symbolic experiment
+
+on:
+  pull_request:
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/active_perception01/**'
+      - '.github/workflows/omega-active-perception01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  active-perception01:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate the preregistered frozen worlds
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/active_perception01
+        run: python3 make_worlds.py
+      - name: Run contract and safety tests
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/active_perception01
+        run: python3 -m unittest discover -s . -p 'test_experiment.py' -v
+      - name: Run 96 paired symbolic experiments
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/active_perception01
+        run: python3 run_experiment.py
+      - name: Upload raw results and frozen inputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: active-perception01-raw
+          path: |
+            09_INFRASTRUCTURE_AGENTIQUE/active_perception01/FROZEN_WORLDS.json
+            09_INFRASTRUCTURE_AGENTIQUE/active_perception01/RUN_RESULTS.json
+          if-no-files-found: warn
+          retention-days: 14
