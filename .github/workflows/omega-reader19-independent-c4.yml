@@ -1,0 +1,60 @@
+name: Omega Reader19 - independent finite C4 replication
+
+on:
+  push:
+    branches:
+      - experiment/omega-reader19-finite-c4-independent-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-reader19-independent-c4
+  cancel-in-progress: false
+
+jobs:
+  exact-finite-independent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run independent partition and negative-control tests
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge19
+          python -m unittest -v test_exact_c4.py
+      - name: Replay 9-state C4 quotients and all eight shadow classes
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge19/exact_c4.py \
+            --output /tmp/reader19/independent-c4.json
+      - name: Enforce bounded computational meaning of the certificate
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/reader19/independent-c4.json',encoding='utf8'))
+          assert r['status']=='REPLICATION_EXACT_FINITE',r
+          assert r['known_claims_tested_posthoc'] and not r['source_mathematical_truth_generalized']
+          assert not r['lean_certification'] and not r['external_mathematical_review']
+          assert r['paid_api_calls']==0 and not r['scientific_autopromotion']
+          assert r['negative_controls']['both_discriminating']
+          assert r['exact']['partitions_enumerated']==21147
+          assert r['exact']['congruences']==49
+          assert r['exact']['eligible']==9
+          assert r['exact']['preserve_all_eight_target_classes']==1
+          assert r['renamings']['renamings_tested']==120
+          assert r['renamings']['all_classes_invariant']
+          print('FINITE_C4_INDEPENDENT_REPLAY',r['status'])
+          PY
+      - name: Archive source-bound exact counts and disagreement evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-reader19-independent-c4-certificate
+          path: /tmp/reader19/
+          if-no-files-found: warn
+          retention-days: 30
