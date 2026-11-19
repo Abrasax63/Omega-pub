@@ -1,0 +1,153 @@
+{
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "prereg_commit": "af2d05a47929a1c16e9b19c4e765851f85a81f13",
+  "cases_commit": "e5ad86ba045c5ad77a345d0ac81f6a64f70c18c5",
+  "sources_commit": "5ec4afe1884d2cf2957f283c615be0ca61d79608",
+  "source_type": "AUTHOR_DESIGNED_CONTRACT_TESTS_NOT_HUMAN_HOLDOUT",
+  "docs": [
+    {
+      "id": "TA01",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA01.md",
+      "git_blob": "90e26f4ed7412917fa6a7f8096334489de04d7ca",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA02",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA02.md",
+      "git_blob": "1614e2ab6b14d105b3020fc041cc4715af9ee2e0",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA03",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA03.md",
+      "git_blob": "c4280965e61176798d0087623b51769fde35220b",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA04",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA04.md",
+      "git_blob": "31c4ff9069153ff17369f9a5e0cdd57676e66065",
+      "expected_status": "AMBIGUOUS"
+    },
+    {
+      "id": "TA05",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA05.md",
+      "git_blob": "6b7267ad6f366caca8615dc5c3ebdaec18415505",
+      "expected_status": "AMBIGUOUS"
+    },
+    {
+      "id": "TA06",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA06.md",
+      "git_blob": "7e2ca6cb4ad9baa8dec527c3f0fc2bd8a6eabe3f",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA07",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA07.md",
+      "git_blob": "e72a7304ec8621c51a7e9e5a055c813c3f3b2385",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA08",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA08.md",
+      "git_blob": "5d2dadc2a04fe1dc4868ded348c09d9ef6d7e886",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA09",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA09.md",
+      "git_blob": "268b11fb419587078283f203ffd7799cf6eddd01",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA10",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA10.md",
+      "git_blob": "bdd566cafc90ad357b03719b2b87d9de8f6834df",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA11",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA11.md",
+      "git_blob": "b66555a467b64ebab0532d23eccc8681f23193f3",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA12",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA12.md",
+      "git_blob": "b7dcfc9f554c916bba4277c988f7f87226a6dc8d",
+      "expected_status": "AMBIGUOUS"
+    },
+    {
+      "id": "TA13",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA13.md",
+      "git_blob": "f5e96469426ed5329a4b9ad3667aa313b197f6a5",
+      "expected_status": "AMBIGUOUS"
+    },
+    {
+      "id": "TA14",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA14.md",
+      "git_blob": "776ce8b0abd9b5ebb0161aebc7becf8cd2a8afc6",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA15",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA15.md",
+      "git_blob": "02043e9683aa5b7327e9ec9971282915a081bc99",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA16",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA16.md",
+      "git_blob": "4eca1c467c6fab27cd0149a91a7bf5ba9b902f34",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA17",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA17.md",
+      "git_blob": "dfa86d15eeb4d7484db96edbf3020bb5a51a7ec6",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA18",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA18.md",
+      "git_blob": "79ce88406d33d68375fdd26951de70e29b0edc96",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA19",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA19.md",
+      "git_blob": "67d65fef3b8360fd6e23351fec638858c7f20e00",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA20",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA20.md",
+      "git_blob": "91de4435e6cd1340a0fbdbb8152345bedf4762ca",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA21",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA21.md",
+      "git_blob": "a6b22f523bdfb94553eb5cb6a1eff8137da1ecee",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA22",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA22.md",
+      "git_blob": "0d78b8f9c18f782a4170da1292e465ce49c6d7d9",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA23",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA23.md",
+      "git_blob": "806ce63569806eab1c1215b666507aae64f657eb",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA24",
+      "source_path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA24.md",
+      "git_blob": "011747704330fa42291c2e3a83a47308ce3e9435",
+      "expected_status": "VERIFIED_TRUE"
+    }
+  ]
+}
