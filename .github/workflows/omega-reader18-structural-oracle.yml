@@ -1,0 +1,161 @@
+name: Omega Reader18 - balanced source retrieval and restricted exact oracle
+
+on:
+  push:
+    branches:
+      - experiment/omega-reader18-structural-oracle-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-reader18-structural-oracle
+  cancel-in-progress: false
+
+jobs:
+  offline-source-oracle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Regression against fabricated citations, source drift and false arithmetic
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18
+          python -m unittest -v test_pilot.py
+      - name: Compare D, E-first12 and E-balanced12 without a model
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18/pilot.py \
+            --mode offline --output /tmp/reader18/source-and-oracle.json
+      - name: Validate nonpromotion and explicit negative outcomes
+        run: |
+          python - <<'PY'
+          import json
+          with open('/tmp/reader18/source-and-oracle.json', encoding='utf-8') as f:
+              r=json.load(f)
+          assert r['run_status']=='FINISHED_OFFLINE', r.get('error')
+          assert len(r['items'])==3
+          assert r['mode']=='OFFLINE' and r['model_calls_made']==0
+          assert r['scientific_claims_certified']==0 and r['horn_rules']==0
+          assert r['arithmetic_oracle']['correct']==8
+          assert r['arithmetic_oracle']['false_equalities_detected']==4
+          print('H1',r['H1_status'],'H2',r['H2_status'])
+          for item in r['items']:
+              print(item['doc_id'],item['balanced_section_coverage_delta'],
+                    [(k,v['total_candidates_after_gate'],v['submitted_sections'])
+                     for k,v in item['policies'].items()])
+          PY
+      - name: Archive source-policy and exact toy oracle reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-reader18-offline-structural-and-oracle
+          path: /tmp/reader18/
+          if-no-files-found: warn
+          retention-days: 14
+
+  pinned-real-qwen3b:
+    needs: offline-source-oracle
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Restore pinned CPU llama.cpp source and build
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/llama.cpp
+          key: omega11-llama-server-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - name: Verify source SHA and build CPU llama-server
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega11/llama.cpp"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+            git -C "$BASE" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "5a4afd80779ba51166b59986e61a0bfbb9e1a4c6"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_UI=OFF -DLLAMA_USE_PREBUILT_UI=OFF \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - name: Restore pinned Qwen Coder GGUF
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/model.gguf
+          key: omega11-qwen2p5-coder3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7
+      - name: Download if absent and cryptographically verify weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL="$HOME/.cache/omega11/model.gguf"
+          mkdir -p "$(dirname "$MODEL")"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf" -o "$MODEL"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $MODEL" | sha256sum -c -
+      - name: Run D versus E-balanced source-anchored classification with identical decoding budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HOME/.cache/omega11/llama.cpp/build/bin/llama-server" \
+            -m "$HOME/.cache/omega11/model.gguf" -c 8192 -t 4 \
+            --host 127.0.0.1 --port 8091 > /tmp/omega-reader18-llama.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+          python - <<'PY'
+          import json,time,urllib.request
+          for _ in range(120):
+              try:
+                  with urllib.request.urlopen('http://127.0.0.1:8091/health',timeout=2) as x:
+                      if json.loads(x.read()).get('status')=='ok':
+                          print('PINNED_QWEN_CPU_READY',flush=True)
+                          break
+              except Exception:
+                  pass
+              time.sleep(2)
+          else:
+              raise SystemExit('LOCAL_MODEL_UNAVAILABLE_INFRA')
+          PY
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18/pilot.py \
+            --mode model --output /tmp/reader18/model-and-source.json
+          python - <<'PY'
+          import json
+          with open('/tmp/reader18/model-and-source.json',encoding='utf8') as f:
+              r=json.load(f)
+          assert r['run_status']=='FINISHED_REAL_INFERENCE',r.get('error')
+          assert r['scientific_claims_certified']==0
+          assert r['horn_rules']==0 and r['paid_api_calls']==0
+          assert r['arithmetic_oracle']['correct']==8
+          assert len(r['items'])==3
+          for item in r['items']:
+              for key in ('D_title_bound_first12','E_headings_agnostic_balanced12'):
+                  model=item['policies'][key]['model']
+                  assert model['status'] in ('VALID_REPLY','INVALID_REPLY','NO_CANDIDATES')
+                  print(item['doc_id'],key,model['status'],
+                        'raw',repr(model.get('raw_reply')),'tokens',model.get('tokens'),flush=True)
+          PY
+      - name: Preserve all raw responses and failure logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-reader18-real-qwen3b-and-oracle
+          path: |
+            /tmp/reader18/
+            /tmp/omega-reader18-llama.log
+          retention-days: 14
+          if-no-files-found: warn
