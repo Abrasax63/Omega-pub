@@ -1,0 +1,4 @@
+{"candidate": false, "observed": [{"FN": 0, "FP": 2, "TP": 1, "abstentions": 0}, {"incomplete": 4, "unconditional": -12}], "seconds_1000": 0.1392414289999806, "split": "train"}
+{"candidate": true, "observed": [{"FN": 0, "FP": 1, "TP": 1, "abstentions": 1}, {"incomplete": 4, "unconditional": -12}], "seconds_1000": 0.15119921100006195, "split": "train"}
+{"candidate": false, "observed": [{"FN": 0, "FP": 2, "TP": 1, "abstentions": 0}, {"incomplete": 0, "unconditional": -3}], "seconds_1000": 0.12795006600003944, "split": "reserve"}
+{"candidate": true, "observed": [{"FN": 0, "FP": 1, "TP": 1, "abstentions": 1}, {"incomplete": 0, "unconditional": -3}], "seconds_1000": 0.13985377200003768, "split": "reserve"}
