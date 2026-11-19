@@ -76,8 +76,8 @@ def train(output:Path):
         ids=tokenizer(prefix,add_special_tokens=False)["input_ids"]
         target_ids=tokenizer(sample["target"]+tokenizer.eos_token,
                              add_special_tokens=False)["input_ids"]
-        if len(ids)+len(target_ids)>128:
-            raise ValueError("TRAIN_SAMPLE_TOKEN_LENGTH_EXCEEDS_PREREG_128")
+        if len(ids)+len(target_ids)>256:
+            raise ValueError("TRAIN_SAMPLE_TOKEN_LENGTH_EXCEEDS_ERRATUM_256")
         tokens=torch.tensor([ids+target_ids],dtype=torch.long)
         labels=torch.tensor([[-100]*len(ids)+target_ids],dtype=torch.long)
         optimizer.zero_grad(set_to_none=True)
