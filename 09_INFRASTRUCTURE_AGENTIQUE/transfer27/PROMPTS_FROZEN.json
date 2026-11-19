@@ -1,0 +1,88 @@
+{
+  "seed": 20261119,
+  "n": 16,
+  "stated_domains_absent_from_train26": true,
+  "math_tasks_unseen_in_finetuning_not_pretraining": true,
+  "items": [
+    {
+      "id": "M1",
+      "domain": "modular_orbit",
+      "prompt": "Dans l'ensemble des résidus modulo modulus, on part de start et chaque mouvement ajoute step puis prend le reste modulo modulus. Peut-on atteindre target après un nombre entier d'étapes, y compris zéro ? Donne un critère formel exact."
+    },
+    {
+      "id": "M2",
+      "domain": "modular_orbit",
+      "prompt": "A finite counter goes from start to target by repeatedly adding the fixed step modulo modulus, with no restriction on the number of repetitions. Replace path enumeration with an exact Boolean formula."
+    },
+    {
+      "id": "M3",
+      "domain": "modular_orbit",
+      "prompt": "Une horloge abstraite comporte modulus positions. À chaque impulsion, on avance de step positions, et l'on peut faire autant d'impulsions que nécessaire. Établis la condition qui décide si la position target peut être obtenue depuis start."
+    },
+    {
+      "id": "M4",
+      "domain": "modular_orbit",
+      "prompt": "A repeated discrete rotation on residues uses parameters start, step and modulus. Give a single general reachability invariant rather than tracing each step."
+    },
+    {
+      "id": "M5",
+      "domain": "modular_orbit",
+      "prompt": "Une application répétée f(x)=(x+step)%modulus agit sur des états entiers entre 0 et modulus−1. Le point target appartient-il à l'orbite de start ? Écris une formule sans itérer."
+    },
+    {
+      "id": "M6",
+      "domain": "modular_orbit",
+      "prompt": "With state updated as (state + step) % modulus any finite number of times, express exactly when target is among the attainable states of start."
+    },
+    {
+      "id": "I1",
+      "domain": "closed_interval_overlap",
+      "prompt": "Deux segments entiers fermés ont les bornes a,b et c,d avec a<=b et c<=d. Leurs ensembles de points communs sont-ils non vides ? Établis une formule booléenne exacte."
+    },
+    {
+      "id": "I2",
+      "domain": "closed_interval_overlap",
+      "prompt": "Given closed integer intervals [a,b] and [c,d], with ordered endpoints, give an exact condition for a common point without enumerating their elements."
+    },
+    {
+      "id": "I3",
+      "domain": "closed_interval_overlap",
+      "prompt": "Deux périodes de disponibilité fermées sont représentées par les bornes a,b,c,d, ordonnées par paires. Leur intersection contient-elle au moins un entier ?"
+    },
+    {
+      "id": "I4",
+      "domain": "closed_interval_overlap",
+      "prompt": "In a line of integer positions, two closed ranges are [a,b] and [c,d]. Provide a necessary and sufficient expression for nonempty intersection."
+    },
+    {
+      "id": "I5",
+      "domain": "closed_interval_overlap",
+      "prompt": "Pour des tronçons fermés sur la droite discrète, le premier va de a à b et le second de c à d. Quel invariant de bornes détermine l'existence d'un point partagé ?"
+    },
+    {
+      "id": "I6",
+      "domain": "closed_interval_overlap",
+      "prompt": "Find an exact single-line Boolean criterion deciding whether integer intervals with endpoints a≤b and c≤d share at least one element."
+    },
+    {
+      "id": "O1",
+      "domain": "unsupported",
+      "prompt": "Pour un processus aléatoire inconnu dont les transitions ne sont pas fournies, donne la loi exacte des événements futurs."
+    },
+    {
+      "id": "O2",
+      "domain": "unsupported",
+      "prompt": "Établis un théorème inédit sur toutes les fonctions calculables sans préciser les hypothèses."
+    },
+    {
+      "id": "O3",
+      "domain": "unsupported",
+      "prompt": "Find the exact global solution of an unspecified nonlinear PDE with unknown boundary conditions."
+    },
+    {
+      "id": "O4",
+      "domain": "unsupported",
+      "prompt": "Une expérience biologique sans données doit-elle valider une hypothèse causale précise ? Donne une preuve universelle."
+    }
+  ]
+}

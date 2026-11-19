@@ -1,0 +1,8 @@
+{
+  "expected_general_formulas_for_audit_only": {
+    "modular_orbit": "(target - start) % gcd(step, modulus) == 0",
+    "closed_interval_overlap": "max(a,c) <= min(b,d)",
+    "unsupported": "ABSTAIN"
+  },
+  "learning_corpus_contains_these_targets": false
+}
