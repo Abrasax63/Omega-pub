@@ -1,0 +1,210 @@
+{
+  "reviewed_at": "2026-11-19",
+  "source_commit": "6a2a37edfd12371de076281b018b030115e42b48",
+  "scope": "Documentary review of 001-029; not a fresh independent replay",
+  "entries": [
+    {
+      "number": "001",
+      "document": "001.md",
+      "git_blob_sha": "87d54a980de95be4b33f7edcbf9682d0e5804904",
+      "title": "# 001 — Fermeture des blocs dollar multilignes",
+      "execution_record": "- Statut : EXÉCUTÉ. Hypothèse réfutée sur le jeu synthétique annoncé. Aucun gain revendiqué."
+    },
+    {
+      "number": "002",
+      "document": "002.md",
+      "git_blob_sha": "d67f8e93433b3a6baa32e4527f69463bb9f42754",
+      "title": "# 002 — Correctif expérimental de fermeture du lecteur",
+      "execution_record": "- Statut : VÉRIFIÉ sur les critères fixés au commit `9e8d95de2e65b37228fb2ccbefea951af11b069e`."
+    },
+    {
+      "number": "003",
+      "document": "003.md",
+      "git_blob_sha": "5297a56b865f8332ed56c6042479d4dfdf27a4c5",
+      "title": "# 003 — Un dollar littéral peut encore ouvrir un bloc",
+      "execution_record": "18 novembre 2026, 07 h 45 (Paris). **EXÉCUTÉ — hypothèse RÉFUTÉE** sur le fragment synthétique. Branche `experiment/omega-100-2026-11-18`, départ [f3e826a](https://github.com/Abrasax63/Omega-pub/commit/f3e826a0baf38b49a8afadeed18e5e4a8312bdbd). Dernier journal numéroté [002](002.md). Référence lecteur [def8bac](https://github.com/Abrasax63/Omega-pub/commit/def8bac9fdafd81422d40c4c45ac3652a6d47e35). Candidat repris [002.patch](002.patch), SHA-256 `252acd693461fc151c4d60445c7cec9301a5c4940f04879420dc2f1c4de606ac`."
+    },
+    {
+      "number": "004",
+      "document": "004.md",
+      "git_blob_sha": "1cf219b6befa55f427a8ed7d9cda70c7efa2fde0",
+      "title": "# 004 — Distinguer le code Markdown en ligne des blocs mathématiques",
+      "execution_record": "| Mesure | Départ (patch 002) | Candidat (002 + 004) |"
+    },
+    {
+      "number": "005",
+      "document": "005.md",
+      "git_blob_sha": "272c95c51995e1dc5f5d3850ce27bd33caf68615",
+      "title": "# 005 — Isoler les blocs de code Markdown multilignes",
+      "execution_record": "| Mesure | Référence 002 + 004 | Candidat 005 |"
+    },
+    {
+      "number": "006",
+      "document": "006.md",
+      "git_blob_sha": "f3441d497d0158a4ca66b8a661f407ed1843ac0f",
+      "title": "# 006 — Blocs de code au seuil de découpage",
+      "execution_record": "| Mesure | Référence 002 + 004 | Candidat 005 |"
+    },
+    {
+      "number": "007",
+      "document": "007.md",
+      "git_blob_sha": "92ac663164a1b77390bb1f22109ebdd938031d3f",
+      "title": "# 007 — Préserver le statut des fragments d’une formule longue",
+      "execution_record": "# 007 — Préserver le statut des fragments d’une formule longue"
+    },
+    {
+      "number": "008",
+      "document": "008.md",
+      "git_blob_sha": "a070268405a76af827a939495779a055ee7b3d82",
+      "title": "# 008 — Signaler une formule non refermée à la fin du document",
+      "execution_record": "| Mesure | Référence | Candidat 008 |"
+    },
+    {
+      "number": "009",
+      "document": "009.md",
+      "git_blob_sha": "d124fa58b3ca425666ef30d48f6675829e6e33f8",
+      "title": "# 009 — Abstention ciblée sur une formule non refermée",
+      "execution_record": "| Mesure | Référence | Candidat |"
+    },
+    {
+      "number": "010",
+      "document": "010.md",
+      "git_blob_sha": "dc523c08b79eb9671e43d7f9c1a541615be1be67",
+      "title": "# 010 — Abstention sur une revendication à plusieurs citations",
+      "execution_record": "| Mesure | Référence jusqu’à 008 | Patch 009 |"
+    },
+    {
+      "number": "011",
+      "document": "011.md",
+      "git_blob_sha": "8b25856a44282bf76a646de0bb15231e8db24446",
+      "title": "# 011 — Isoler une revendication mal typée dans un lot",
+      "execution_record": "| Mesure | Référence 009 | Candidat 011 |"
+    },
+    {
+      "number": "012",
+      "document": "012.md",
+      "git_blob_sha": "ca12f57f6d70c8ef16285fe3524078526d81ebfc",
+      "title": "# 012 — Une revendication invalide ne réserve plus son identifiant",
+      "execution_record": "| Mesure | Référence 011 | Candidat 012 |"
+    },
+    {
+      "number": "013",
+      "document": "013.md",
+      "git_blob_sha": "42c19ca70d42e146aa00663be8f4142364310b20",
+      "title": "# 013 — S’abstenir sur des conclusions concurrentes au même identifiant",
+      "execution_record": "| Mesure | Référence 012 | Candidat 013 |"
+    },
+    {
+      "number": "014",
+      "document": "014.md",
+      "git_blob_sha": "a13699d16454573ee81d1b70346ec1b8e9bab07c",
+      "title": "# 014 — Même conclusion et pièces de portée différentes",
+      "execution_record": "| Mesure | Référence 013 | Candidat 014 |"
+    },
+    {
+      "number": "015",
+      "document": "015.md",
+      "git_blob_sha": "4e21e7856a566a81ba556f3348259c0133827f34",
+      "title": "# 015 — Répétitions identiques d’une pièce dans une revendication",
+      "execution_record": "| Mesure | Référence 014 | Candidat 015 |"
+    },
+    {
+      "number": "016",
+      "document": "016.md",
+      "git_blob_sha": "d5e056583e9acfca261962c8d2b1e0eb9b530b06",
+      "title": "# 016 — La borne de huit pièces précède le dédoublonnage",
+      "execution_record": "18 novembre 2026, 22 h 00 (Paris). **EXÉCUTÉ — contrôles conformes, aucun nouveau gain.** Branche `experiment/omega-100-2026-11-18`, départ [c46bf2d](https://github.com/Abrasax63/Omega-pub/commit/c46bf2de692d11ee9f0349878ae6dd761494d4d1), [cycle 015](015.md). Comparaison de la passerelle 014, blob `34cc7cb84a1372a3721eb4cbdabd8a68f2695562`, et de 015, blob `0c3c7acc7e7e22c8963a4ab6c4f9a63956ed7865`."
+    },
+    {
+      "number": "017",
+      "document": "017.md",
+      "git_blob_sha": "c60c9062f11866ca0fa6d35bf1b63bdd547041fa",
+      "title": "# 017 — Les numéros de ligne JSON exigent un entier exact",
+      "execution_record": "18 novembre 2026, 23 h 25 (Paris). **EXÉCUTÉ — conforme, sans nouveau gain.** Branche `experiment/omega-100-2026-11-18`, départ [3227f9b](https://github.com/Abrasax63/Omega-pub/commit/3227f9bb52cadc0c84cd54c9324e3e67f30161dc), [cycle 016](016.md). Comparaison de 014, blob passerelle `34cc7cb84a1372a3721eb4cbdabd8a68f2695562`, et 015, blob `0c3c7acc7e7e22c8963a4ab6c4f9a63956ed7865`."
+    },
+    {
+      "number": "018",
+      "document": "018.md",
+      "git_blob_sha": "e00d0b9d93bd2f40d03f2025ffd8f2874d8a0fb2",
+      "title": "# 018 — Empêcher le mélange de deux versions d’un fichier",
+      "execution_record": "Question fixée avant test : une modification de fichier après inventaire peut-elle faire cohabiter des paquets de A et une quarantaine épinglée sur B dans un même résultat ? L’oracle exige des empreintes internes égales à l’empreinte initiale ou un rejet. Deux remplacements distincts, un contrôle sans changement et un contrôle de changement avec ancienne empreinte modèle. L’ordonnancement est injecté en enveloppant la vraie lecture d’inventaire, puis en remplaçant réellement le fichier temporaire avant la seconde lecture. Ce test reproduit un entrelacement déterministe ; aucun thread concurrent ni modèle réel n’a été lancé."
+    },
+    {
+      "number": "019",
+      "document": "019.md",
+      "git_blob_sha": "186935e71b236e1bad64a498ff0d9c36ce869d83",
+      "title": "# 019 — Substitutions du chemin entre deux lectures",
+      "execution_record": "| Mesure | Avant 018 | Avec 018 |"
+    },
+    {
+      "number": "020",
+      "document": "020.md",
+      "git_blob_sha": "5b637e8acd4132e51374e5452e4f8e90e21d3af9",
+      "title": "# 020 — Vérifier le fichier au moment de l’ouverture",
+      "execution_record": "| Mesure | Référence | Candidat 020 |"
+    },
+    {
+      "number": "021",
+      "document": "021.md",
+      "git_blob_sha": "06587cdccdb9a4ecc280bdb5c1094d49377226c0",
+      "title": "# 021 — Une citation exacte peut omettre une condition essentielle",
+      "execution_record": "19 novembre 2026, 02 h 36 (Paris). **EXÉCUTÉ — limite de fidélité constatée, aucun gain revendiqué.** Branche `experiment/omega-100-2026-11-18`, départ [8037d52](https://github.com/Abrasax63/Omega-pub/commit/8037d5235cac373ffdffd9f14fc9cb3c6492ddf5), [jalon 020](020.md). Copie expérimentale de #179 avec les patchs retenus jusqu’à 020."
+    },
+    {
+      "number": "022",
+      "document": "022.md",
+      "git_blob_sha": "2f07bedd1d44396b0062c520cf83bb106173e11d",
+      "title": "# 022 — Filtrage des prémisses par un contrat manuel externe",
+      "execution_record": "19 novembre 2026, 03 h 49 (Paris). **IMPLÉMENTÉ / EXÉCUTÉ / VÉRIFIÉ dans le périmètre synthétique.** Branche `experiment/omega-100-2026-11-18`, départ [f8cb6e576334e332a2c3063e6e2e27876fe0a125](https://github.com/Abrasax63/Omega-pub/commit/f8cb6e576334e332a2c3063e6e2e27876fe0a125), dernier journal [021](021.md). Premier numéro manquant vérifié : 022. Référence : copie #179 portant les patchs retenus jusqu'à 020, sans nouvelle modification du lecteur ou de la passerelle."
+    },
+    {
+      "number": "023",
+      "document": "023.md",
+      "git_blob_sha": "2c4f5c198cac33552907e3de8462981cd01607e5",
+      "title": "# 023 — Un contrat incomplet n'établit pas la validité mathématique",
+      "execution_record": "19 novembre 2026, 04 h 41 (Paris). **EXÉCUTÉ / suffisance sémantique RÉFUTÉE par contre-exemple.** Branche `experiment/omega-100-2026-11-18`, SHA initial [6d75fb112c27dc17fe7d420560d5bc8d0600cc8c](https://github.com/Abrasax63/Omega-pub/commit/6d75fb112c27dc17fe7d420560d5bc8d0600cc8c). Programme et [022](022.md) relus, premier numéro manquant 023. Le filtre 022 est inchangé : SHA-256 `87d4c8cb66ecf808e4fce0d64ec18988300a09baa22bba67a32024f23216e4c7`. Passerelle de référence : #179 portant les patchs retenus jusqu'à 020."
+    },
+    {
+      "number": "024",
+      "document": "024.md",
+      "git_blob_sha": "82def90f165fdd6088ddfeb66da80cef9744babf",
+      "title": "# 024 — Contre-exemples arithmétiques par AST manuel sur domaine fini",
+      "execution_record": "19 novembre2026,06h27 (Paris). **IMPLÉMENTÉ / EXÉCUTÉ / VÉRIFIÉ sur fixtures réservées.** Branche `experiment/omega-100-2026-11-18`, départ [0ed07ff5b9ea549d56c40e72eca98cf93751449f](https://github.com/Abrasax63/Omega-pub/commit/0ed07ff5b9ea549d56c40e72eca98cf93751449f). Programme et [023](023.md) relus ; fichiers001–023 présents, premier manquant024. Référence : passerelle #179 avec patchs jusqu'à020 et filtre manuel022 inchangé."
+    },
+    {
+      "number": "025",
+      "document": "025.md",
+      "git_blob_sha": "3077159f4cbb917fa1fb5e81545a129f2e563438",
+      "title": "# 025 — Invariances et limite du domaine de l'oracle024",
+      "execution_record": "19 novembre2026,06h55 (Paris). **EXÉCUTÉ / VÉRIFIÉ sur domaine fini, aucun gain nouveau.** Branche `experiment/omega-100-2026-11-18`, départ [30478720b02b0890966b0aa3fb0f311632709ca9](https://github.com/Abrasax63/Omega-pub/commit/30478720b02b0890966b0aa3fb0f311632709ca9), dernier journal [024](024.md). Programme relu,001–024 présents, premier manquant025. Aucun code de l'oracle changé : SHA-256 `23ff22d1aaea51718a19fecc93ae38db509057ae59731ec6dc63c3372d00b4a7`."
+    },
+    {
+      "number": "026",
+      "document": "026.md",
+      "git_blob_sha": "d11fff41f2416a88eda9f701c7abf1bfa384c281",
+      "title": "# 026 — Distinguer une hypothèse vide d'un test non vide",
+      "execution_record": "19 novembre 2026, vers 08 h 07 (Paris). **IMPLÉMENTÉ / EXÉCUTÉ / VÉRIFIÉ dans le pilote fini.** Branche `experiment/omega-100-2026-11-18`, départ [665263e3e6752f9129b3961cf06b25c990b42cf1](https://github.com/Abrasax63/Omega-pub/commit/665263e3e6752f9129b3961cf06b25c990b42cf1). Programme et [025](025.md) relus ;001–025 présents, premier manquant026."
+    },
+    {
+      "number": "027",
+      "document": "027.md",
+      "git_blob_sha": "b361f46bcf1715bcb0ed5df1de33c63352ad12dc",
+      "title": "# 027 — Une généralisation vraie peut perdre une prémisse de la source",
+      "execution_record": "19 novembre2026,vers09h12 (Paris). **EXÉCUTÉ / suffisance de l'oracle pour la fidélité RÉFUTÉE dans le pilote.** Branche `experiment/omega-100-2026-11-18`, départ [4662e03c3d708d37bd5372e86b65a8eaf5765afc](https://github.com/Abrasax63/Omega-pub/commit/4662e03c3d708d37bd5372e86b65a8eaf5765afc). Programme et [026](026.md) relus ;001–026 présents, premier manquant027. Référence026 inchangée, SHA-256 `df5f8664d93e611eab13b0af6956b361cbdcd8474016ad01ab5647fa1c6f6a64`."
+    },
+    {
+      "number": "028",
+      "document": "028.md",
+      "git_blob_sha": "08caaa47619b4e0d862123fece7d7b2d65520b63",
+      "title": "# 028 — Associer les citations aux AST d'un contrat manuel",
+      "execution_record": "19 novembre 2026, vers 10 h 24 (Paris). **IMPLÉMENTÉ / EXÉCUTÉ / VÉRIFIÉ dans le périmètre déclaré.** Branche `experiment/omega-100-2026-11-18`, départ [2699479271e83f60d792fb8d99ddcd9d14e6d5a1](https://github.com/Abrasax63/Omega-pub/commit/2699479271e83f60d792fb8d99ddcd9d14e6d5a1). Programme et [027](027.md) relus ;001–027 présents, premier manquant028."
+    },
+    {
+      "number": "029",
+      "document": "029.md",
+      "git_blob_sha": "0cbb5c2aeba4c7c54935f25b44b369ba4fe9402e",
+      "title": "# 029 — Faux rejets d'une égalité commutée dans le raccord strict",
+      "execution_record": "19 novembre 2026, vers 11 h 22 (Paris). **EXÉCUTÉ — invariance sémantique du raccord strict RÉFUTÉE sur les fixtures.** Branche `experiment/omega-100-2026-11-18`, départ [18c0ee1eabdd86c5802a466c30f840be15bbc47d](https://github.com/Abrasax63/Omega-pub/commit/18c0ee1eabdd86c5802a466c30f840be15bbc47d). Programme et [028](028.md) relus ;001–028 présents, premier manquant029. Référence028 inchangée, SHA-256 `081111de2b25a729ef91dfea2086faafbd5953e9dc3c6ada339b8e342ac33920`."
+    }
+  ]
+}
