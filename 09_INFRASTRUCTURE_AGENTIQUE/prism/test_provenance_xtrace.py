@@ -4,6 +4,41 @@ from provenance_xtrace import extract, fixed_verdict
 
 
 class InstallTraceTests(unittest.TestCase):
+    def test_extracts_github_bash_crlf_npm_pack(self):
+        log = (
+            "2026-11-17T23:46:46.1851793Z + npm pack\r\n"
+            "2026-11-17T23:46:51.1189567Z npm notice filename: "
+            "cricut-fishyjoes-runtime-native-windows-0.0.1-a9d6239.tgz\r\n"
+        )
+        output = "cricut-fishyjoes-runtime-native-windows-0.0.1-a9d6239.tgz"
+        self.assertEqual(fixed_verdict(extract(log, output)), "recalcul")
+
+    def test_npm_publish_is_not_a_pack_writer(self):
+        log = (
+            "+ npm publish package.tgz\r\n"
+            "npm notice filename: package.tgz\r\n"
+        )
+        trace = extract(log, "package.tgz")
+        self.assertFalse(trace["complete"])
+        self.assertEqual(fixed_verdict(trace), "indéterminé")
+
+    def test_publish_notice_does_not_duplicate_prior_pack_notice(self):
+        log = (
+            "+ npm pack\r\n"
+            "npm notice filename: package.tgz\r\n"
+            "+ npm publish package.tgz\r\n"
+            "npm notice filename: package.tgz\r\n"
+        )
+        self.assertEqual(fixed_verdict(extract(log, "package.tgz")), "recalcul")
+
+    def test_bash_and_zsh_pack_conflict_fails_closed(self):
+        log = (
+            "+ npm pack\n"
+            "+step:5> npm pack\n"
+            "npm notice filename: package.tgz\n"
+        )
+        self.assertEqual(fixed_verdict(extract(log, "package.tgz")), "indéterminé")
+
     def test_extracts_github_zsh_npm_pack_with_matching_notice(self):
         log = """2026-11-18T21:07:10.5382452Z +/home/runner/work/_temp/step:5> npm pack
 2026-11-18T21:07:19.7292362Z npm notice filename: package-linux.tgz
@@ -99,3 +134,4 @@ npm notice filename: package.tgz
                 self.assertEqual(fixed_verdict(extract("+ " + command, "target")), "indéterminé")
         for source in ("source", "./--help"):
             self.assertEqual(fixed_verdict(extract(f"+ cp {source} target", "target")), "copie")
+

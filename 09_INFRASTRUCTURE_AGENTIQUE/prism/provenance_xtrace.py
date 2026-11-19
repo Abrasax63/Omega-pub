@@ -23,17 +23,26 @@ def extract(log, output, *, recognize_install=True):
     """Read executed commands from the dedicated successful fixture step."""
     writers = []
     unparsed = False
-    zsh_pack_commands = []
-    zsh_pack_outputs = []
+    pack_commands = []
+    pack_outputs = []
+    pack_active = False
     for line in log.splitlines():
         line = re.sub(r"^\ufeff?\d{4}-\d\d-\d\dT\S+Z ", "", line)
-        zsh_pack = re.fullmatch(r"\+[^>\n]+> npm pack", line)
-        if zsh_pack:
-            zsh_pack_commands.append("npm pack")
+        line = line.rstrip("\r")
+        npm_pack = (
+            re.fullmatch(r"\+ npm pack", line)
+            or re.fullmatch(r"\+[^>\n]+> npm pack", line)
+        )
+        if npm_pack:
+            pack_commands.append("npm pack")
+            pack_active = True
+            continue
+        if re.fullmatch(r"\+ npm publish(?: .*)?", line):
+            pack_active = False
             continue
         npm_filename = re.fullmatch(r"npm notice filename: (\S+\.tgz)", line)
-        if npm_filename:
-            zsh_pack_outputs.append(npm_filename[1])
+        if npm_filename and pack_active:
+            pack_outputs.append(npm_filename[1])
             continue
         if not line.startswith("+ "):
             continue
@@ -58,8 +67,8 @@ def extract(log, output, *, recognize_install=True):
         )
         if writes_output:
             writers.append({"command": command, "exit_code": 0, "output": output})
-    if zsh_pack_commands or output in zsh_pack_outputs:
-        if len(zsh_pack_commands) == 1 and zsh_pack_outputs.count(output) == 1:
+    if pack_commands or output in pack_outputs:
+        if len(pack_commands) == 1 and pack_outputs.count(output) == 1:
             writers.append({"command": "npm pack", "exit_code": 0, "output": output})
         else:
             unparsed = True
@@ -172,3 +181,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(json.dumps(compare(args.build_log.read_text(), args.reserved_log.read_text()),
                      ensure_ascii=False, indent=2))
+
