@@ -1,0 +1,464 @@
+{
+  "status": "FROZEN_BEFORE_ANY_INFERENCE",
+  "n_cases": 24,
+  "n_candidates": 7,
+  "source": "NEW_24_SYNTHETIC_FINITE_MATH_SOURCES",
+  "cases": [
+    {
+      "id": "SV01",
+      "kind": "affine",
+      "modulus": 6,
+      "a": 3,
+      "b": 5,
+      "image_k": 3,
+      "fixed_k": 1,
+      "double_zero_c": 2,
+      "order": [
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ"
+      ]
+    },
+    {
+      "id": "SV02",
+      "kind": "affine",
+      "modulus": 7,
+      "a": 3,
+      "b": 2,
+      "image_k": 7,
+      "fixed_k": 1,
+      "double_zero_c": 2,
+      "order": [
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO"
+      ]
+    },
+    {
+      "id": "SV03",
+      "kind": "affine",
+      "modulus": 8,
+      "a": 1,
+      "b": 3,
+      "image_k": 8,
+      "fixed_k": 0,
+      "double_zero_c": 6,
+      "order": [
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE"
+      ]
+    },
+    {
+      "id": "SV04",
+      "kind": "affine",
+      "modulus": 9,
+      "a": 6,
+      "b": 2,
+      "image_k": 4,
+      "fixed_k": 1,
+      "double_zero_c": 6,
+      "order": [
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS"
+      ]
+    },
+    {
+      "id": "SV05",
+      "kind": "affine",
+      "modulus": 10,
+      "a": 1,
+      "b": 9,
+      "image_k": 10,
+      "fixed_k": 1,
+      "double_zero_c": 8,
+      "order": [
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ"
+      ]
+    },
+    {
+      "id": "SV06",
+      "kind": "affine",
+      "modulus": 11,
+      "a": 5,
+      "b": 5,
+      "image_k": 11,
+      "fixed_k": 1,
+      "double_zero_c": 9,
+      "order": [
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO"
+      ]
+    },
+    {
+      "id": "SV07",
+      "kind": "affine",
+      "modulus": 12,
+      "a": 9,
+      "b": 11,
+      "image_k": 5,
+      "fixed_k": 0,
+      "double_zero_c": 2,
+      "order": [
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE"
+      ]
+    },
+    {
+      "id": "SV08",
+      "kind": "affine",
+      "modulus": 13,
+      "a": 0,
+      "b": 4,
+      "image_k": 1,
+      "fixed_k": 1,
+      "double_zero_c": 5,
+      "order": [
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS"
+      ]
+    },
+    {
+      "id": "SV09",
+      "kind": "affine",
+      "modulus": 14,
+      "a": 3,
+      "b": 9,
+      "image_k": 14,
+      "fixed_k": 1,
+      "double_zero_c": 8,
+      "order": [
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ"
+      ]
+    },
+    {
+      "id": "SV10",
+      "kind": "affine",
+      "modulus": 15,
+      "a": 6,
+      "b": 14,
+      "image_k": 6,
+      "fixed_k": 0,
+      "double_zero_c": 9,
+      "order": [
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO"
+      ]
+    },
+    {
+      "id": "SV11",
+      "kind": "affine",
+      "modulus": 16,
+      "a": 9,
+      "b": 3,
+      "image_k": 16,
+      "fixed_k": 0,
+      "double_zero_c": 14,
+      "order": [
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE"
+      ]
+    },
+    {
+      "id": "SV12",
+      "kind": "affine",
+      "modulus": 17,
+      "a": 12,
+      "b": 7,
+      "image_k": 17,
+      "fixed_k": 1,
+      "double_zero_c": 7,
+      "order": [
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS"
+      ]
+    },
+    {
+      "id": "SV13",
+      "kind": "quadratic",
+      "modulus": 18,
+      "a": 15,
+      "b": 11,
+      "image_k": 5,
+      "fixed_k": 1,
+      "double_zero_c": 8,
+      "order": [
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ"
+      ]
+    },
+    {
+      "id": "SV14",
+      "kind": "quadratic",
+      "modulus": 19,
+      "a": 18,
+      "b": 15,
+      "image_k": 10,
+      "fixed_k": 2,
+      "double_zero_c": 0,
+      "order": [
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO"
+      ]
+    },
+    {
+      "id": "SV15",
+      "kind": "quadratic",
+      "modulus": 20,
+      "a": 1,
+      "b": 19,
+      "image_k": 6,
+      "fixed_k": 0,
+      "double_zero_c": 0,
+      "order": [
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE"
+      ]
+    },
+    {
+      "id": "SV16",
+      "kind": "quadratic",
+      "modulus": 21,
+      "a": 3,
+      "b": 2,
+      "image_k": 5,
+      "fixed_k": 0,
+      "double_zero_c": 15,
+      "order": [
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS"
+      ]
+    },
+    {
+      "id": "SV17",
+      "kind": "quadratic",
+      "modulus": 22,
+      "a": 5,
+      "b": 5,
+      "image_k": 12,
+      "fixed_k": 1,
+      "double_zero_c": 20,
+      "order": [
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ"
+      ]
+    },
+    {
+      "id": "SV18",
+      "kind": "quadratic",
+      "modulus": 23,
+      "a": 7,
+      "b": 8,
+      "image_k": 12,
+      "fixed_k": 0,
+      "double_zero_c": 20,
+      "order": [
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO"
+      ]
+    },
+    {
+      "id": "SV19",
+      "kind": "quadratic",
+      "modulus": 24,
+      "a": 9,
+      "b": 11,
+      "image_k": 4,
+      "fixed_k": 0,
+      "double_zero_c": 20,
+      "order": [
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE"
+      ]
+    },
+    {
+      "id": "SV20",
+      "kind": "quadratic",
+      "modulus": 25,
+      "a": 11,
+      "b": 14,
+      "image_k": 11,
+      "fixed_k": 0,
+      "double_zero_c": 21,
+      "order": [
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS"
+      ]
+    },
+    {
+      "id": "SV21",
+      "kind": "quadratic",
+      "modulus": 26,
+      "a": 13,
+      "b": 17,
+      "image_k": 2,
+      "fixed_k": 1,
+      "double_zero_c": 4,
+      "order": [
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ"
+      ]
+    },
+    {
+      "id": "SV22",
+      "kind": "quadratic",
+      "modulus": 27,
+      "a": 15,
+      "b": 20,
+      "image_k": 5,
+      "fixed_k": 1,
+      "double_zero_c": 0,
+      "order": [
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO"
+      ]
+    },
+    {
+      "id": "SV23",
+      "kind": "quadratic",
+      "modulus": 28,
+      "a": 17,
+      "b": 23,
+      "image_k": 8,
+      "fixed_k": 0,
+      "double_zero_c": 0,
+      "order": [
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS",
+        "INVOL",
+        "IMG_SIZE"
+      ]
+    },
+    {
+      "id": "SV24",
+      "kind": "quadratic",
+      "modulus": 29,
+      "a": 19,
+      "b": 26,
+      "image_k": 15,
+      "fixed_k": 0,
+      "double_zero_c": 24,
+      "order": [
+        "INVOL",
+        "IMG_SIZE",
+        "FIX_COUNT",
+        "DOUBLE_AT_ZERO",
+        "INJ",
+        "SURJ",
+        "FIX_EXISTS"
+      ]
+    }
+  ]
+}
