@@ -23,8 +23,18 @@ def extract(log, output, *, recognize_install=True):
     """Read executed commands from the dedicated successful fixture step."""
     writers = []
     unparsed = False
+    zsh_pack_commands = []
+    zsh_pack_outputs = []
     for line in log.splitlines():
         line = re.sub(r"^\ufeff?\d{4}-\d\d-\d\dT\S+Z ", "", line)
+        zsh_pack = re.fullmatch(r"\+[^>\n]+> npm pack", line)
+        if zsh_pack:
+            zsh_pack_commands.append("npm pack")
+            continue
+        npm_filename = re.fullmatch(r"npm notice filename: (\S+\.tgz)", line)
+        if npm_filename:
+            zsh_pack_outputs.append(npm_filename[1])
+            continue
         if not line.startswith("+ "):
             continue
         command = line[2:]
@@ -48,6 +58,11 @@ def extract(log, output, *, recognize_install=True):
         )
         if writes_output:
             writers.append({"command": command, "exit_code": 0, "output": output})
+    if zsh_pack_commands or output in zsh_pack_outputs:
+        if len(zsh_pack_commands) == 1 and zsh_pack_outputs.count(output) == 1:
+            writers.append({"command": "npm pack", "exit_code": 0, "output": output})
+        else:
+            unparsed = True
     # The controlled step uses errexit. Missing or multiple writes remain ambiguous.
     return {"complete": len(writers) == 1 and not unparsed, "output": output, "writers": writers}
 
@@ -120,7 +135,7 @@ def fixed_verdict(case):
         f'from pathlib import Path; Path("{case["output"]}").write_text('
         'str(sum(i*i for i in range(1,12)))+chr(10))'
     )
-    return "recalcul" if argv == ["python3", "-c", expression] else "indéterminé"
+    return "recalcul" if argv in (["python3", "-c", expression], ["npm", "pack"]) else "indéterminé"
 
 
 def compare(build_log, reserved_log):

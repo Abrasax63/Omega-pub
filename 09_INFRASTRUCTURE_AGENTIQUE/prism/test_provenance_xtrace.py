@@ -4,6 +4,25 @@ from provenance_xtrace import extract, fixed_verdict
 
 
 class InstallTraceTests(unittest.TestCase):
+    def test_extracts_github_zsh_npm_pack_with_matching_notice(self):
+        log = """2026-11-18T21:07:10.5382452Z +/home/runner/work/_temp/step:5> npm pack
+2026-11-18T21:07:19.7292362Z npm notice filename: package-linux.tgz
+2026-11-18T21:07:19.7294947Z package-linux.tgz
+"""
+        self.assertEqual(
+            extract(log, "package-linux.tgz"),
+            {"complete": True, "output": "package-linux.tgz", "writers": [
+                {"command": "npm pack", "exit_code": 0, "output": "package-linux.tgz"}
+            ]},
+        )
+
+    def test_zsh_npm_pack_fails_closed_on_duplicate_notice(self):
+        log = """+step:5> npm pack
+npm notice filename: package.tgz
+npm notice filename: package.tgz
+"""
+        self.assertFalse(extract(log, "package.tgz")["complete"])
+
     def test_copy_and_wrong_output(self):
         log = "+ install -m 0600 input 'target file.json'"
         self.assertEqual(fixed_verdict(extract(log, "target file.json")), "copie")
