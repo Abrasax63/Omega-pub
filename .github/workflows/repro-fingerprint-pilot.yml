@@ -7,11 +7,14 @@ on:
       - 'tools/repro_scientific_pilot.py'
       - 'tools/repro_policy_benchmark.py'
       - 'tools/repro_wallclock_benchmark.py'
+      - 'tools/repro_targeted_gate.py'
+      - 'tools/repro_targeted_benchmark.py'
       - 'tests/test_repro_fingerprint.py'
       - 'tests/test_repro_history_pilot.py'
       - 'tests/test_repro_scientific_pilot.py'
       - 'tests/repro_sympy_version_probe.py'
       - 'tests/test_repro_policy_benchmark.py'
+      - 'tests/test_repro_targeted_gate.py'
       - '.github/workflows/repro-fingerprint-pilot.yml'
   workflow_dispatch:
 jobs:
@@ -33,6 +36,15 @@ jobs:
 
       - name: Compare reuse policies (deterministic simulated costs)
         run: python -m unittest discover -s tests -p 'test_repro_policy_benchmark.py' -v
+      - name: Test targeted metadata gate
+        run: python -m unittest discover -s tests -p 'test_repro_targeted_gate.py' -v
+      - name: Measure targeted metadata gate cost
+        run: python -m tools.repro_targeted_benchmark | tee repro_targeted_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repro-targeted-microbenchmark
+          path: repro_targeted_results.json
+          retention-days: 7
       - name: Measure real wall-clock microbenchmark
         run: python -m tools.repro_wallclock_benchmark | tee repro_wallclock_results.json
       - uses: actions/upload-artifact@v4
