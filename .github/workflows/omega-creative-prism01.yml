@@ -1,0 +1,80 @@
+name: Omega Creative Prism 01 - finite representation changes vs strong baselines
+
+on:
+  push:
+    branches:
+      - experiment/omega-creative-prism01-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-creative-prism01
+  cancel-in-progress: false
+
+jobs:
+  compare-representations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Tests exacts / metamor­phiques, budget et témoins négatifs
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/creative_prism01
+          python -m unittest -v test_experiment.py
+      - name: Execute A direct, B diversification, C change of representation, D strong classical
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/creative_prism01/experiment.py \
+            --output /tmp/creative-prism01/repr-results.json
+      - name: Enforce honest novelty and all safety conditions
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/creative-prism01/repr-results.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          assert d['seed']==20261119 and d['instrumented_budget_per_arm']==500
+          assert d['corpus_count']==52 and d['valid_cases']==48
+          assert d['rejected_out_of_scope']==4
+          assert d['falsified_bad_transformations']==2
+          assert d['silent_errors']==0
+          assert not d['autonomous_creativity_proven']
+          assert not d['operations_interchangeable_as_cpu_cost']
+          assert d['novel_mathematical_theorems']==0 and d['new_knowledge_promoted']==0
+          assert d['metrics']['C_change_representation']['solved']==48
+          assert d['metrics']['D_strong_baseline']['solved']==48
+          assert d['representation_minus_strong_baseline']==0
+          assert all(z['false_verdicts']==0 for z in d['metrics'].values())
+          print('VALIDATED_SCOPE',d['corpus_count'],d['valid_cases'],d['rejected_out_of_scope'])
+          for arm,r in d['metrics'].items():
+              print(arm,r['solved'],r['abstained_budget'],r['operations_total'],
+                    r['elapsed_ms_total'],r['by_domain'])
+          print('SHA256_DECISIONS',d['decisions_sha256_excluding_wall_clock'])
+          PY
+      - name: Repeat same corpus and semantic verdict digest for deterministic replay
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/creative_prism01/experiment.py \
+            --output /tmp/creative-prism01/repr-replay.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          a=json.loads(Path('/tmp/creative-prism01/repr-results.json').read_text())
+          b=json.loads(Path('/tmp/creative-prism01/repr-replay.json').read_text())
+          assert a['decisions_sha256_excluding_wall_clock']==b['decisions_sha256_excluding_wall_clock']
+          assert a['metrics']['C_change_representation']['solved']==b['metrics']['C_change_representation']['solved']
+          print('REPLAY_AGREEMENT',a['decisions_sha256_excluding_wall_clock'])
+          PY
+      - name: Archive all claims, candidate transformations, counterexamples and comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-creative-prism01-A-B-C-D-representations
+          path: /tmp/creative-prism01/
+          if-no-files-found: warn
+          retention-days: 30
