@@ -1,0 +1,11 @@
+# V19 — deux transitions réellement inconnues
+
+17 novembre 2026, 22 h 53 (Paris). Branche `work/omega-math-brick-pilot-2026-11-14`, base `8a29541e1bdf092c4c51f990981393d3578650c6`. Suite du [test à une lecture](OBS-V19-SINGLE-READ_2026-11-17.md). Dernier cycle de provenance : [896bf61](https://github.com/Abrasax63/Omega-pub/commit/896bf61d692653a7fe4e94330867695ce8b9669c).
+
+Question : le certificat actuel permet-il parfois de trancher après une seule lecture lorsque les deux états terminaux sont distincts et leurs images inconnues ? Fixés avant exécution : témoin négatif à dix états, famille C4 plus un 2-cycle ou deux points fixes, deux queues de profondeur 1 à 3, destinations distinctes, toutes les paires et L=2 à 5. Hypothèse de cohérence des contraintes forcées. Budget commun de deux transitions. Comparateur fixe : demander les deux en un aller-retour. Critère de gain : au moins une transition économisée, chaque réponse concordant avec le projecteur exhaustif. La campagne emploie la définition d’extension globale et le garde des cycles antérieurs.
+
+**EXÉCUTÉ, VÉRIFIÉ sur la famille finie.** 90 systèmes générés, 66 cas sélectionnés. Zéro décision avec la gauche seule, zéro avec la droite seule. Les 66 inversions d’ordre le confirment. Avec les deux lectures, zéro écart à l’oracle. Les deux instances témoins restent indéterminées après chacune des lectures isolées. À budget maximal égal, chaque ordre séquentiel utilise 132 lectures et 132 allers-retours, contre 132 lectures et 66 allers-retours pour la demande groupée. Durée locale du harnais : 2,656 s, oracle inclus.
+
+Depuis research/code, exécuter `python3 audit_v19_two_unknown.py`, `python3 audit_v19_single_read.py` et `python3 audit_v19_adaptive_prefix.py`. Les trois passent. SHA-256 du harnais `1a679540f20c14a17c682697cc9638fea636973ca2386b91f1ecffa0549f5657`. Aucun gain mesuré ni changement du vérificateur. Le résultat concerne le certificat actuel. La nécessité informationnelle des deux lectures pour chacun des cas reste à établir. Originalité bibliographique non évaluée.
+
+Prochain test mathématique : comparer les ombres de complétions compatibles après la première lecture pour chercher un certificat plus précis ou une paire qui prouve que la deuxième lecture est indispensable. Prochain cycle de l’alternance : provenance.
