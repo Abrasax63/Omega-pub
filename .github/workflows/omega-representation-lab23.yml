@@ -1,0 +1,64 @@
+name: Omega LAB23 - representation shift generation and finite exact refutation
+
+on:
+  push:
+    branches:
+      - experiment/omega-representation-lab23-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-lab23-representation-shifts
+  cancel-in-progress: false
+
+jobs:
+  finite-creative-representation-lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Falsification and source-pin unit tests
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/representation_lab23
+          python -m unittest -v test_representations.py
+      - name: Exhaustive n 2..4 and held-out n 5..6 representation trials
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/representation_lab23/representations.py \
+            --output /tmp/omega-lab23/results.json
+      - name: Require sound transformations, rejected information-losing views and no scientific promotion
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('/tmp/omega-lab23/results.json').read_text(encoding='utf-8'))
+          assert d['result_status']=='PASS_RESTRICTED_REPRESENTATION_TEST'
+          assert d['calibration']['counts']['systems']==4328
+          assert d['calibration']['counts']['horizon_cases']==21392
+          assert d['reserved_validation']['counts']['systems']==128
+          assert d['reserved_validation']['counts']['horizon_cases']==832
+          assert set(d['recipes_empirically_equivalent'])=={'pair_pullback','partition_refinement'}
+          assert set(d['recipes_falsified'])=={'current_only','future_only','unordered_histogram'}
+          assert d['calibration']['invariant_failure_count']==0
+          assert d['reserved_validation']['invariant_failure_count']==0
+          assert d['calibration']['first_example_tight_n_bound'] is not None
+          assert d['scientific_autopromotions']==0
+          assert not d['novel_theorem_discovered']
+          assert not d['independent_creativity_of_llm_demonstrated']
+          print('LAB23 VERIFIED',d['calibration']['mismatches'],
+                d['reserved_validation']['mismatches'],flush=True)
+          PY
+      - name: Archive entire representation ledger, counters, witnesses and negative tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-lab23-exhaustive-representation-ledger
+          path: /tmp/omega-lab23/
+          retention-days: 30
+          if-no-files-found: warn
