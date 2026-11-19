@@ -1,0 +1,163 @@
+name: Omega BENCH19 - frozen finite-math benchmark Qwen2.5 Instruct 0.5B vs 3B
+on:
+  push:
+    branches:
+      - experiment/omega-benchmark19-math-finite-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-benchmark19-math
+  cancel-in-progress: false
+
+jobs:
+  frozen-oracle-and-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify all 20 source hashes, exhaustive oracle and gate safety
+        run: |
+          set -euo pipefail
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark19 \
+            -p 'test_benchmark.py' -v
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark19/benchmark.py \
+            --mode control --out /tmp/bench19-controls.json
+      - name: Preserve frozen control scores and oracle verification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench19-frozen-oracle-controls
+          path: /tmp/bench19-controls.json
+          retention-days: 14
+          if-no-files-found: warn
+
+  actual-paired-cpu-models:
+    needs: frozen-oracle-and-safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      MODEL_SMALL_SHA: 74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+      MODEL_LARGE_SHA: 626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/llama.cpp
+          key: omega11-llama-server-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - name: Verify and compile same pinned llama.cpp server
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega11/llama.cpp"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+            git -C "$BASE" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "5a4afd80779ba51166b59986e61a0bfbb9e1a4c6"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja -DGGML_NATIVE=OFF \
+            -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega-reader18/qwen0p5b.gguf
+          key: reader18-qwen0p5b-74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega-reader18/qwen3b.gguf
+          key: reader18-qwen3b-626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d
+      - name: Verify both authentic official Q4_K_M weights by SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega-reader18"
+          mkdir -p "$BASE"
+          if [[ ! -f "$BASE/qwen0p5b.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 1500 \
+              https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf \
+              -o "$BASE/qwen0p5b.gguf"
+          fi
+          echo "$MODEL_SMALL_SHA  $BASE/qwen0p5b.gguf" | sha256sum -c -
+          if [[ ! -f "$BASE/qwen3b.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 1500 \
+              https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf \
+              -o "$BASE/qwen3b.gguf"
+          fi
+          echo "$MODEL_LARGE_SHA  $BASE/qwen3b.gguf" | sha256sum -c -
+      - name: Run authentic paired inference on 20 cases per model
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT=/tmp/bench19
+          mkdir -p "$OUT"
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark19/benchmark.py \
+            --mode control --out "$OUT/controls.json"
+          SERVER="$HOME/.cache/omega11/llama.cpp/build/bin/llama-server"
+          for MODEL_NAME in 0p5b 3b; do
+            "$SERVER" -m "$HOME/.cache/omega-reader18/qwen$MODEL_NAME.gguf" \
+              -c 4096 -t 4 --host 127.0.0.1 --port 8091 \
+              > "$OUT/$MODEL_NAME.server.log" 2>&1 &
+            PID=$!
+            trap 'kill "$PID" 2>/dev/null || true' EXIT
+            python - <<'PY'
+          import json, time, urllib.request
+          for attempt in range(120):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8091/health", timeout=2) as resp:
+                      if json.loads(resp.read()).get("status") == "ok":
+                          print("BENCH19_MODEL_READY", flush=True)
+                          break
+              except Exception:
+                  pass
+              time.sleep(2)
+          else:
+              raise SystemExit("LOCAL_MODEL_INFRA_FAILURE")
+          PY
+            python 09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark19/benchmark.py \
+              --mode model --model-label "$MODEL_NAME" \
+              --out "$OUT/model-$MODEL_NAME.json"
+            kill "$PID" 2>/dev/null || true
+            wait "$PID" 2>/dev/null || true
+            trap - EXIT
+          done
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark19/benchmark.py \
+            --mode compare --control "$OUT/controls.json" \
+            --small "$OUT/model-0p5b.json" \
+            --large "$OUT/model-3b.json" \
+            --out "$OUT/benchmark-comparison.json"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path("/tmp/bench19/benchmark-comparison.json").read_text())
+          assert r["status"] == "MATCHED_BENCHMARK_COMPLETE"
+          assert r["n_cases"] == 20
+          print("PRIMARY_SUCCESS",r["primary_success"],flush=True)
+          print("FIRST3",r["baseline_first3"],flush=True)
+          print("0P5B",r["small_model"],flush=True)
+          print("3B",r["large_model"],flush=True)
+          print("BY_FAMILY",r["large_by_family"],flush=True)
+          PY
+      - name: Preserve raw prompts, replies, latency, tokens and result even if inference failed
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench19-matched-qwen-full-raw-results
+          path: /tmp/bench19/
+          retention-days: 14
+          if-no-files-found: warn
