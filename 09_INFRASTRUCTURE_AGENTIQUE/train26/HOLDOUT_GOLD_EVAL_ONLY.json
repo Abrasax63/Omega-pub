@@ -1,0 +1,343 @@
+{
+  "name": "TRAIN26_HOLDOUT_GOLD_FOR_SEPARATE_JOB_ONLY",
+  "n": 48,
+  "not_used_by_training": true,
+  "labels": [
+    {
+      "id": "HXOR-F-1",
+      "domain": "xor",
+      "task": "FORMALIZE",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HXOR-F-2",
+      "domain": "xor",
+      "task": "FORMALIZE",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HXOR-F-3",
+      "domain": "xor",
+      "task": "FORMALIZE",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HXOR-F-4",
+      "domain": "xor",
+      "task": "FORMALIZE",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HXOR-R-1",
+      "domain": "xor",
+      "task": "REPAIR",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HXOR-R-2",
+      "domain": "xor",
+      "task": "REPAIR",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HXOR-R-3",
+      "domain": "xor",
+      "task": "REPAIR",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HXOR-R-4",
+      "domain": "xor",
+      "task": "REPAIR",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HXOR-C-1",
+      "domain": "xor",
+      "task": "CRITIQUE",
+      "target": "ACCEPT",
+      "expected_status": "VALID"
+    },
+    {
+      "id": "HXOR-C-2",
+      "domain": "xor",
+      "task": "CRITIQUE",
+      "target": "ACCEPT",
+      "expected_status": "VALID"
+    },
+    {
+      "id": "HXOR-C-3",
+      "domain": "xor",
+      "task": "CRITIQUE",
+      "target": "REJECT",
+      "expected_status": "INVALID"
+    },
+    {
+      "id": "HXOR-C-4",
+      "domain": "xor",
+      "task": "CRITIQUE",
+      "target": "REJECT",
+      "expected_status": "INVALID"
+    },
+    {
+      "id": "HPAREN-F-1",
+      "domain": "paren",
+      "task": "FORMALIZE",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HPAREN-F-2",
+      "domain": "paren",
+      "task": "FORMALIZE",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HPAREN-F-3",
+      "domain": "paren",
+      "task": "FORMALIZE",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HPAREN-F-4",
+      "domain": "paren",
+      "task": "FORMALIZE",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HPAREN-R-1",
+      "domain": "paren",
+      "task": "REPAIR",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HPAREN-R-2",
+      "domain": "paren",
+      "task": "REPAIR",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HPAREN-R-3",
+      "domain": "paren",
+      "task": "REPAIR",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HPAREN-R-4",
+      "domain": "paren",
+      "task": "REPAIR",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HPAREN-C-1",
+      "domain": "paren",
+      "task": "CRITIQUE",
+      "target": "ACCEPT",
+      "expected_status": "VALID"
+    },
+    {
+      "id": "HPAREN-C-2",
+      "domain": "paren",
+      "task": "CRITIQUE",
+      "target": "ACCEPT",
+      "expected_status": "VALID"
+    },
+    {
+      "id": "HPAREN-C-3",
+      "domain": "paren",
+      "task": "CRITIQUE",
+      "target": "REJECT",
+      "expected_status": "INVALID"
+    },
+    {
+      "id": "HPAREN-C-4",
+      "domain": "paren",
+      "task": "CRITIQUE",
+      "target": "REJECT",
+      "expected_status": "INVALID"
+    },
+    {
+      "id": "HOBS-F-1",
+      "domain": "obs",
+      "task": "FORMALIZE",
+      "target": "EXPR: partition_code(T, pi, h, x) == partition_code(T, pi, h, y)",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HOBS-F-2",
+      "domain": "obs",
+      "task": "FORMALIZE",
+      "target": "EXPR: partition_code(T, pi, h, x) == partition_code(T, pi, h, y)",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HOBS-F-3",
+      "domain": "obs",
+      "task": "FORMALIZE",
+      "target": "EXPR: partition_code(T, pi, h, x) == partition_code(T, pi, h, y)",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HOBS-F-4",
+      "domain": "obs",
+      "task": "FORMALIZE",
+      "target": "EXPR: partition_code(T, pi, h, x) == partition_code(T, pi, h, y)",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HOBS-R-1",
+      "domain": "obs",
+      "task": "REPAIR",
+      "target": "EXPR: partition_code(T, pi, h, x) == partition_code(T, pi, h, y)",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HOBS-R-2",
+      "domain": "obs",
+      "task": "REPAIR",
+      "target": "EXPR: partition_code(T, pi, h, x) == partition_code(T, pi, h, y)",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HOBS-R-3",
+      "domain": "obs",
+      "task": "REPAIR",
+      "target": "EXPR: partition_code(T, pi, h, x) == partition_code(T, pi, h, y)",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HOBS-R-4",
+      "domain": "obs",
+      "task": "REPAIR",
+      "target": "EXPR: partition_code(T, pi, h, x) == partition_code(T, pi, h, y)",
+      "expected_status": "EXACT_FORMULA"
+    },
+    {
+      "id": "HOBS-C-1",
+      "domain": "obs",
+      "task": "CRITIQUE",
+      "target": "ACCEPT",
+      "expected_status": "VALID"
+    },
+    {
+      "id": "HOBS-C-2",
+      "domain": "obs",
+      "task": "CRITIQUE",
+      "target": "ACCEPT",
+      "expected_status": "VALID"
+    },
+    {
+      "id": "HOBS-C-3",
+      "domain": "obs",
+      "task": "CRITIQUE",
+      "target": "REJECT",
+      "expected_status": "INVALID"
+    },
+    {
+      "id": "HOBS-C-4",
+      "domain": "obs",
+      "task": "CRITIQUE",
+      "target": "REJECT",
+      "expected_status": "INVALID"
+    },
+    {
+      "id": "HUNSUP-A-1",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HUNSUP-A-2",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HUNSUP-A-3",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HUNSUP-A-4",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HUNSUP-A-5",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HUNSUP-A-6",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HTRANS-A-1",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HTRANS-A-2",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HTRANS-A-3",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HTRANS-A-4",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HTRANS-A-5",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    },
+    {
+      "id": "HTRANS-A-6",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "target": "ABSTAIN",
+      "expected_status": "UNSUPPORTED"
+    }
+  ]
+}

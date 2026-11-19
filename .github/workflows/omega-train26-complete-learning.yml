@@ -1,0 +1,166 @@
+name: Omega TRAIN26 - complete reasoning correction LoRA vs frozen exact holdout
+
+on:
+  push:
+    branches:
+      - experiment/omega-train26-reasoning-corrections-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-train26-verified-multitask-learning
+  cancel-in-progress: false
+
+jobs:
+  frozen-data-and-safe-oracle-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate pinned 320 examples, 48 holdout questions and 96 finite truths
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/train26
+          python data_guard.py
+          python -m unittest -v test_train26.py
+
+  actual-complete-cpu-lora:
+    needs: frozen-data-and-safe-oracle-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install exactly the previously exercised CPU ML library versions
+        run: |
+          python -m pip install --disable-pip-version-check --quiet "torch==2.5.1" \
+            --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --quiet \
+            "transformers==4.49.0" "peft==0.15.2" "accelerate==1.5.2" \
+            "safetensors==0.5.3" "huggingface_hub==0.30.2"
+          python - <<'PY'
+          import torch, transformers, peft
+          print("TRAIN26_RUNTIME",torch.__version__,transformers.__version__,
+                peft.__version__,"cuda",torch.cuda.is_available(),flush=True)
+          PY
+      - name: Restore pinned public SmolLM2 weights from previous CPU run
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: Update every sample's LoRA weights twice, exactly 640 optimizer steps
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/train26/train_full.py \
+            --output /tmp/omega-train26/training/
+      - name: Require actual nonzero trained weights, all 320 cases and artifact SHA
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("/tmp/omega-train26/training")
+          x=json.loads((root/"train_manifest.json").read_text(encoding="utf8"))
+          assert x["status"]=="TRAINED_ACTUAL_WEIGHTS_CHANGED"
+          assert x["steps"]==640 and x["unique_examples_seen"]==320
+          assert x["examples_seen_exactly_twice"]==320
+          assert x["training_data_git_blob"]=="f6086d9acd70dccd604c60c987df58649fe33f7e"
+          assert x["adapter_delta_L2"]>0
+          assert 0<x["trainable_parameters"]<x["total_parameters"]
+          assert not x["model_creativity_demonstrated"]
+          assert not x["holdout_seen_by_trainer"]
+          assert x["auto_promotion"]==0 and x["paid_api_calls"]==0
+          assert any(f.name.endswith(".safetensors") for f in (root/"adapter").iterdir())
+          print("TRAIN26_COMPLETE",x["steps"],"LORA_L2",x["adapter_delta_L2"],
+                "LOSS_FIRST",x["loss_step1"],"LOSS_LAST",x["loss_step640"],flush=True)
+          PY
+      - name: Preserve adapter and complete immutable loss ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-train26-real-cpu-adapter-and-640-step-losses
+          path: /tmp/omega-train26/training/
+          retention-days: 30
+          if-no-files-found: warn
+
+  after-freeze-before-after-verification:
+    needs: actual-complete-cpu-lora
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Load exact saved adapter from preceding training job
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-train26-real-cpu-adapter-and-640-step-losses
+          path: /tmp/omega-train26/training/
+      - name: Install identical CPU libraries without GPU or paid API
+        run: |
+          python -m pip install --disable-pip-version-check --quiet "torch==2.5.1" \
+            --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --quiet \
+            "transformers==4.49.0" "peft==0.15.2" "accelerate==1.5.2" \
+            "safetensors==0.5.3" "huggingface_hub==0.30.2"
+      - name: Restore same pretrained starting weights
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: Evaluate base and adapted models with 48 new prompts and exact math oracles
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/train26/evaluate.py \
+            --training-artifact /tmp/omega-train26/training/ \
+            --output /tmp/omega-train26/evaluation/base-vs-lora.json
+      - name: Do not confuse a green workflow with real performance gain
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('/tmp/omega-train26/evaluation/base-vs-lora.json').read_text(encoding='utf8'))
+          assert x["status"] in ("TRAINED_GAIN_ON_RESTRICTED_HOLDOUT","TRAINED_NO_EVIDENCE_OF_GAIN")
+          assert x["trained_adapter_loaded"]
+          assert x["training_steps"]==640
+          assert x["unique_training_examples"]==320
+          assert x["holdout_cases"]==48
+          assert x["finite_math_instances"]==96
+          assert x["before"]["total_cases"]==48 and x["after"]["total_cases"]==48
+          assert x["before"]["false_assertions_auto_accepted"]==0
+          assert x["after"]["false_assertions_auto_accepted"]==0
+          assert x["new_scientific_discoveries"]==0
+          assert x["new_representations_not_in_training"]==0
+          assert not x["spontaneous_general_creativity_demonstrated"]
+          assert x["auto_certifications"]==0 and x["paid_api_calls"]==0
+          print("TRAIN26_RESULT",x["status"],"BEFORE",x["before"]["semantic_task_score"],
+                "AFTER",x["after"]["semantic_task_score"],"FALSE",
+                x["before"]["false_mathematical_assertions"],
+                x["after"]["false_mathematical_assertions"],flush=True)
+          PY
+      - name: Preserve all raw model outputs, classifications and exact counterexamples
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-train26-frozen-holdout-before-after-raw-results
+          path: /tmp/omega-train26/evaluation/
+          retention-days: 30
+          if-no-files-found: warn
