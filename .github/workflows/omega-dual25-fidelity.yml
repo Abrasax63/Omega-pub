@@ -30,12 +30,16 @@ jobs:
           mkdir -p /tmp/dual25
           python -m unittest discover \
             -s 09_INFRASTRUCTURE_AGENTIQUE/dual25 \
-            -p 'test_dual.py' -v \
+            -p 'test_*.py' -v \
             2>&1 | tee /tmp/dual25/unit-tests.log
           python 09_INFRASTRUCTURE_AGENTIQUE/dual25/experiment.py \
             --report /tmp/dual25/results.json \
             --review-packet /tmp/dual25/HUMAN_REVIEW_PACKET.json \
             --markdown /tmp/dual25/RESULT.md
+          python 09_INFRASTRUCTURE_AGENTIQUE/dual25/review_intake.py \
+            --packet /tmp/dual25/HUMAN_REVIEW_PACKET.json \
+            --blank-form /tmp/dual25/HUMAN_ANNOTATION_BLANK_FORM.json \
+            --status /tmp/dual25/human-annotation-status.json
           python - <<'PY'
           import json
           from pathlib import Path
@@ -53,6 +57,10 @@ jobs:
           assert data["can_measure_fidelity_to_real_human_intent"] is False
           assert packet["human_annotation_status"] == "PENDING_NOT_PERFORMED"
           assert packet["source_count"] == 42
+          intake=json.loads(Path("/tmp/dual25/human-annotation-status.json").read_text())
+          assert intake["status"] == "PENDING_INDEPENDENT_HUMAN_ANNOTATIONS"
+          assert intake["human_semantic_fidelity_estimate"] is None
+          assert intake["human_annotations_submitted"] == 0
           assert data["automatic_formal_certifications"] == 0
           print("DUAL25_STRUCTURAL_AGREEMENT", data["machine_agreement_count"], "/24", flush=True)
           print("DUAL25_WITHHELD", data["withheld_cases"], "/24", flush=True)
