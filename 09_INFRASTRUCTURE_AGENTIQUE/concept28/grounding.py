@@ -28,11 +28,11 @@ LEX=HERE/"CONCEPT_LEXICON.json"
 NEAR=((31,32),(33,34),(35,36),(37,38),(39,41),(42,43))
 FAR=((44,180),(45,181),(46,182),(47,183),(48,184),(49,185))
 EXPECTED=NEAR+FAR
-BANNED_NAMES={"theorem","type","class","group","prove","show","that","this","with",
+BANNED_NAMES={"theorem","type","class","prove","show","that","this","with",
               "then","from","have","will","every","exists","such","all","the",
               "for","let","there","which","they","when","where","into","only",
               "are","and","you","its","can","not","has","but","may","any",
-              "real","be","set","one","two","given"}
+              "be","one","two","given"}
 SOURCE_COMMIT="b7ca411a2abaa6caf3580192b30d865e5bd10bc4"
 
 
