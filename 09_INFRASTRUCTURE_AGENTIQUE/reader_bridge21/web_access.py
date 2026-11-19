@@ -191,12 +191,18 @@ def entry(url: str, kind: str, body: bytes, typ: str) -> dict:
     return out
 
 
-def run_once(transport=None) -> dict:
+def run_once(transport=None, *, query: str = CROSSREF_TERM,
+             mode: str = "both") -> dict:
+    """Agent-callable read-only search/fetch with fixed provider and request budget."""
+    if mode not in ("both", "search", "source"):
+        raise NetworkPolicyError("UNSUPPORTED_WEB_MODE")
+    targets = []
+    if mode in ("both", "search"):
+        targets.append(("crossref", crossref_url(query)))
+    if mode in ("both", "source"):
+        targets.append(("repo_markdown", repository_url()))
     results = []
-    for kind, url in (
-        ("crossref", crossref_url(CROSSREF_TERM)),
-        ("repo_markdown", repository_url()),
-    ):
+    for kind, url in targets:
         try:
             body, typ = fetch_bounded(url, source_kind=kind, transport=transport)
             results.append(entry(url, kind, body, typ))
@@ -210,7 +216,8 @@ def run_once(transport=None) -> dict:
             })
     return {
         "experiment": "OMEGA_READER21_ALLOWLISTED_WEB_CAPABILITY",
-        "uses_paid_api": False, "http_requests_max": 2,
+        "uses_paid_api": False, "http_requests_max": len(targets),
+        "mode": mode, "bibliographic_query": query if mode != "source" else None,
         "arbitrary_url_fetch_enabled": False, "browser_or_search_engine": False,
         "sources_are_untrusted": True, "automatic_scientific_promotions": 0,
         "results": results,
@@ -221,14 +228,17 @@ def run_once(transport=None) -> dict:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--mode", choices=("both", "search", "source"), default="both")
+    parser.add_argument("--query", default=CROSSREF_TERM,
+                        help="Constrained public Crossref bibliographic query, never a URL")
     a = parser.parse_args()
-    data = run_once()
+    data = run_once(query=a.query, mode=a.mode)
     a.output.parent.mkdir(parents=True, exist_ok=True)
     a.output.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print("WEB_FETCHES", data["real_fetch_success_count"], "of 2")
+    print("WEB_FETCHES", data["real_fetch_success_count"], "of", data["http_requests_max"])
     for v in data["results"]:
         print(v["kind"], v["status"], v.get("bytes"), v.get("error", ""))
-    if data["real_fetch_success_count"] != 2:
+    if data["real_fetch_success_count"] != data["http_requests_max"]:
         raise SystemExit("REMOTE_WEB_NOT_FULLY_CONFIRMED")
 
 
