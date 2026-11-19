@@ -1,0 +1,584 @@
+{
+  "training_samples": 96,
+  "seed": 20261119,
+  "task": "source idea to exact executable expression (NOT new ideas)",
+  "source": "synthetic templates written before training code",
+  "train": [
+    {
+      "id": "TRX001",
+      "prompt": "Dans un système de commutateurs binaires, chaque geste peut être répété et agit par XOR. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX002",
+      "prompt": "Dans un système de commutateurs binaires, des masques changent simultanément plusieurs bits et sont réutilisables. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX003",
+      "prompt": "Dans un système de commutateurs binaires, on doit savoir si target est accessible à partir de start en appliquant moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX004",
+      "prompt": "Dans un système de commutateurs binaires, on peut combiner les bascules dans n'importe quel ordre. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX005",
+      "prompt": "Dans un système de commutateurs binaires, les actions sont des opérations XOR sans limite de répétition. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX006",
+      "prompt": "Dans un système de commutateurs binaires, un déplacement modifie l'état courant avec un masque de la liste moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX007",
+      "prompt": "Dans un système de commutateurs binaires, les séquences de masques doivent permettre d'atteindre une configuration finale. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX008",
+      "prompt": "Dans un système de commutateurs binaires, le problème consiste à décider l'atteignabilité entre deux états binaires. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX009",
+      "prompt": "Pour un mécanisme d'ampoules XOR, chaque geste peut être répété et agit par XOR. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX010",
+      "prompt": "Pour un mécanisme d'ampoules XOR, des masques changent simultanément plusieurs bits et sont réutilisables. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX011",
+      "prompt": "Pour un mécanisme d'ampoules XOR, on doit savoir si target est accessible à partir de start en appliquant moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX012",
+      "prompt": "Pour un mécanisme d'ampoules XOR, on peut combiner les bascules dans n'importe quel ordre. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX013",
+      "prompt": "Pour un mécanisme d'ampoules XOR, les actions sont des opérations XOR sans limite de répétition. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX014",
+      "prompt": "Pour un mécanisme d'ampoules XOR, un déplacement modifie l'état courant avec un masque de la liste moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX015",
+      "prompt": "Pour un mécanisme d'ampoules XOR, les séquences de masques doivent permettre d'atteindre une configuration finale. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX016",
+      "prompt": "Pour un mécanisme d'ampoules XOR, le problème consiste à décider l'atteignabilité entre deux états binaires. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX017",
+      "prompt": "Sur un panneau de bits réversibles, chaque geste peut être répété et agit par XOR. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX018",
+      "prompt": "Sur un panneau de bits réversibles, des masques changent simultanément plusieurs bits et sont réutilisables. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX019",
+      "prompt": "Sur un panneau de bits réversibles, on doit savoir si target est accessible à partir de start en appliquant moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX020",
+      "prompt": "Sur un panneau de bits réversibles, on peut combiner les bascules dans n'importe quel ordre. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX021",
+      "prompt": "Sur un panneau de bits réversibles, les actions sont des opérations XOR sans limite de répétition. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX022",
+      "prompt": "Sur un panneau de bits réversibles, un déplacement modifie l'état courant avec un masque de la liste moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX023",
+      "prompt": "Sur un panneau de bits réversibles, les séquences de masques doivent permettre d'atteindre une configuration finale. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX024",
+      "prompt": "Sur un panneau de bits réversibles, le problème consiste à décider l'atteignabilité entre deux états binaires. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX025",
+      "prompt": "Pour un jeu de bascules, chaque geste peut être répété et agit par XOR. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX026",
+      "prompt": "Pour un jeu de bascules, des masques changent simultanément plusieurs bits et sont réutilisables. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX027",
+      "prompt": "Pour un jeu de bascules, on doit savoir si target est accessible à partir de start en appliquant moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX028",
+      "prompt": "Pour un jeu de bascules, on peut combiner les bascules dans n'importe quel ordre. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX029",
+      "prompt": "Pour un jeu de bascules, les actions sont des opérations XOR sans limite de répétition. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX030",
+      "prompt": "Pour un jeu de bascules, un déplacement modifie l'état courant avec un masque de la liste moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX031",
+      "prompt": "Pour un jeu de bascules, les séquences de masques doivent permettre d'atteindre une configuration finale. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX032",
+      "prompt": "Pour un jeu de bascules, le problème consiste à décider l'atteignabilité entre deux états binaires. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX033",
+      "prompt": "Dans une dynamique de lampes pilotées par masques, chaque geste peut être répété et agit par XOR. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX034",
+      "prompt": "Dans une dynamique de lampes pilotées par masques, des masques changent simultanément plusieurs bits et sont réutilisables. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX035",
+      "prompt": "Dans une dynamique de lampes pilotées par masques, on doit savoir si target est accessible à partir de start en appliquant moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX036",
+      "prompt": "Dans une dynamique de lampes pilotées par masques, on peut combiner les bascules dans n'importe quel ordre. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX037",
+      "prompt": "Dans une dynamique de lampes pilotées par masques, les actions sont des opérations XOR sans limite de répétition. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX038",
+      "prompt": "Dans une dynamique de lampes pilotées par masques, un déplacement modifie l'état courant avec un masque de la liste moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX039",
+      "prompt": "Dans une dynamique de lampes pilotées par masques, les séquences de masques doivent permettre d'atteindre une configuration finale. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX040",
+      "prompt": "Dans une dynamique de lampes pilotées par masques, le problème consiste à décider l'atteignabilité entre deux états binaires. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX041",
+      "prompt": "In a reusable binary-toggle game, chaque geste peut être répété et agit par XOR. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX042",
+      "prompt": "In a reusable binary-toggle game, des masques changent simultanément plusieurs bits et sont réutilisables. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX043",
+      "prompt": "In a reusable binary-toggle game, on doit savoir si target est accessible à partir de start en appliquant moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX044",
+      "prompt": "In a reusable binary-toggle game, on peut combiner les bascules dans n'importe quel ordre. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX045",
+      "prompt": "In a reusable binary-toggle game, les actions sont des opérations XOR sans limite de répétition. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX046",
+      "prompt": "In a reusable binary-toggle game, un déplacement modifie l'état courant avec un masque de la liste moves. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX047",
+      "prompt": "In a reusable binary-toggle game, les séquences de masques doivent permettre d'atteindre une configuration finale. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRX048",
+      "prompt": "In a reusable binary-toggle game, le problème consiste à décider l'atteignabilité entre deux états binaires. Donne uniquement une expression exacte, ou ABSTAIN.",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "TRP001",
+      "prompt": "Sur des mots uniquement composés des caractères '(' et ')', quelle condition numérique décide que la chaîne s est équilibrée ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP002",
+      "prompt": "Sur des mots uniquement composés des caractères '(' et ')', écris un critère exact pour des parenthèses toutes appariées et bien ordonnées. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP003",
+      "prompt": "Sur des mots uniquement composés des caractères '(' et ')', il faut qu'aucune fermeture ne précède son ouverture et qu'il n'en reste aucune ouverte. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP004",
+      "prompt": "Sur des mots uniquement composés des caractères '(' et ')', comment remplacer une pile de parenthèses par deux conditions arithmétiques ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP005",
+      "prompt": "Sur des mots uniquement composés des caractères '(' et ')', convertis l'équilibrage d'une suite de parenthèses en une expression booléenne. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP006",
+      "prompt": "Sur des mots uniquement composés des caractères '(' et ')', formule une condition sur les préfixes et le bilan final. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP007",
+      "prompt": "For strings of opening and closing parentheses, quelle condition numérique décide que la chaîne s est équilibrée ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP008",
+      "prompt": "For strings of opening and closing parentheses, écris un critère exact pour des parenthèses toutes appariées et bien ordonnées. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP009",
+      "prompt": "For strings of opening and closing parentheses, il faut qu'aucune fermeture ne précède son ouverture et qu'il n'en reste aucune ouverte. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP010",
+      "prompt": "For strings of opening and closing parentheses, comment remplacer une pile de parenthèses par deux conditions arithmétiques ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP011",
+      "prompt": "For strings of opening and closing parentheses, convertis l'équilibrage d'une suite de parenthèses en une expression booléenne. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP012",
+      "prompt": "For strings of opening and closing parentheses, formule une condition sur les préfixes et le bilan final. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP013",
+      "prompt": "Dans le contrôle de chaînes de parenthèses, quelle condition numérique décide que la chaîne s est équilibrée ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP014",
+      "prompt": "Dans le contrôle de chaînes de parenthèses, écris un critère exact pour des parenthèses toutes appariées et bien ordonnées. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP015",
+      "prompt": "Dans le contrôle de chaînes de parenthèses, il faut qu'aucune fermeture ne précède son ouverture et qu'il n'en reste aucune ouverte. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP016",
+      "prompt": "Dans le contrôle de chaînes de parenthèses, comment remplacer une pile de parenthèses par deux conditions arithmétiques ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP017",
+      "prompt": "Dans le contrôle de chaînes de parenthèses, convertis l'équilibrage d'une suite de parenthèses en une expression booléenne. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP018",
+      "prompt": "Dans le contrôle de chaînes de parenthèses, formule une condition sur les préfixes et le bilan final. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP019",
+      "prompt": "Pour reconnaître des séquences de parenthèses, quelle condition numérique décide que la chaîne s est équilibrée ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP020",
+      "prompt": "Pour reconnaître des séquences de parenthèses, écris un critère exact pour des parenthèses toutes appariées et bien ordonnées. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP021",
+      "prompt": "Pour reconnaître des séquences de parenthèses, il faut qu'aucune fermeture ne précède son ouverture et qu'il n'en reste aucune ouverte. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP022",
+      "prompt": "Pour reconnaître des séquences de parenthèses, comment remplacer une pile de parenthèses par deux conditions arithmétiques ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP023",
+      "prompt": "Pour reconnaître des séquences de parenthèses, convertis l'équilibrage d'une suite de parenthèses en une expression booléenne. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP024",
+      "prompt": "Pour reconnaître des séquences de parenthèses, formule une condition sur les préfixes et le bilan final. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP025",
+      "prompt": "Lorsqu'une chaîne comporte seulement des parenthèses, quelle condition numérique décide que la chaîne s est équilibrée ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP026",
+      "prompt": "Lorsqu'une chaîne comporte seulement des parenthèses, écris un critère exact pour des parenthèses toutes appariées et bien ordonnées. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP027",
+      "prompt": "Lorsqu'une chaîne comporte seulement des parenthèses, il faut qu'aucune fermeture ne précède son ouverture et qu'il n'en reste aucune ouverte. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP028",
+      "prompt": "Lorsqu'une chaîne comporte seulement des parenthèses, comment remplacer une pile de parenthèses par deux conditions arithmétiques ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP029",
+      "prompt": "Lorsqu'une chaîne comporte seulement des parenthèses, convertis l'équilibrage d'une suite de parenthèses en une expression booléenne. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP030",
+      "prompt": "Lorsqu'une chaîne comporte seulement des parenthèses, formule une condition sur les préfixes et le bilan final. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP031",
+      "prompt": "Pour un langage de parenthèses correctement emboîtées, quelle condition numérique décide que la chaîne s est équilibrée ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP032",
+      "prompt": "Pour un langage de parenthèses correctement emboîtées, écris un critère exact pour des parenthèses toutes appariées et bien ordonnées. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP033",
+      "prompt": "Pour un langage de parenthèses correctement emboîtées, il faut qu'aucune fermeture ne précède son ouverture et qu'il n'en reste aucune ouverte. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP034",
+      "prompt": "Pour un langage de parenthèses correctement emboîtées, comment remplacer une pile de parenthèses par deux conditions arithmétiques ? Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP035",
+      "prompt": "Pour un langage de parenthèses correctement emboîtées, convertis l'équilibrage d'une suite de parenthèses en une expression booléenne. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRP036",
+      "prompt": "Pour un langage de parenthèses correctement emboîtées, formule une condition sur les préfixes et le bilan final. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "TRA001",
+      "prompt": "Pour une équation différentielle non linéaire inconnue : aucune expression exacte n'est spécifiée. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA002",
+      "prompt": "Pour une équation différentielle non linéaire inconnue : on ne dispose pas des hypothèses utiles. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA003",
+      "prompt": "Pour une équation différentielle non linéaire inconnue : le texte ne fournit pas de méthode vérifiée. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA004",
+      "prompt": "Pour une équation différentielle non linéaire inconnue : il faut refuser de fabriquer une formule. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA005",
+      "prompt": "Pour un problème ouvert de topologie algébrique : aucune expression exacte n'est spécifiée. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA006",
+      "prompt": "Pour un problème ouvert de topologie algébrique : on ne dispose pas des hypothèses utiles. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA007",
+      "prompt": "Pour un problème ouvert de topologie algébrique : le texte ne fournit pas de méthode vérifiée. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA008",
+      "prompt": "Pour un problème ouvert de topologie algébrique : il faut refuser de fabriquer une formule. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA009",
+      "prompt": "Pour une recherche de nouvelle réaction biochimique : aucune expression exacte n'est spécifiée. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA010",
+      "prompt": "Pour une recherche de nouvelle réaction biochimique : on ne dispose pas des hypothèses utiles. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA011",
+      "prompt": "Pour une recherche de nouvelle réaction biochimique : le texte ne fournit pas de méthode vérifiée. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "TRA012",
+      "prompt": "Pour une recherche de nouvelle réaction biochimique : il faut refuser de fabriquer une formule. Réponds uniquement par une expression formelle ou ABSTAIN.",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    }
+  ]
+}
