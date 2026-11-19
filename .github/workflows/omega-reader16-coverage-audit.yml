@@ -1,0 +1,48 @@
+name: Omega Reader16 - source-only candidate coverage ceiling
+on:
+  push:
+    branches:
+      - experiment/omega-reader16-coverage-audit-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-offline-ceiling-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit tests of candidate policies and no-promotion
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge16
+          python -m unittest -v test_audit.py
+      - name: Blind candidate sets first, only then score frozen author labels
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge16/audit.py \
+            --output /tmp/reader16/source-coverage-audit.json
+      - name: Verify evidence format, author-only status and source-only execution
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/reader16/source-coverage-audit.json',encoding='utf8'))
+          assert d['no_neural_inference'] and not d['scientific_certification']
+          assert d['label_status']=='AUTHOR_LABELS_UNREVIEWED_NOT_INDEPENDENT'
+          assert d['top_k']==3 and len(d['rows'])==2
+          assert all(len(r['candidate_sets_sha256'])==64 for r in d['rows'])
+          print('SOURCE_ONLY_GOLD_COVERAGE',d['totals'])
+          PY
+      - name: Publish raw source ceiling audit even after failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reader16-posthoc-offline-coverage
+          path: /tmp/reader16/
+          if-no-files-found: warn
+          retention-days: 14
