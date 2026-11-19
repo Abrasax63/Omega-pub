@@ -37,6 +37,10 @@ def rank2(vectors: list[int]) -> int:
 def parse_expression(raw: str) -> ast.Expression:
     if not isinstance(raw,str) or not raw.strip() or len(raw)>MAX_EXPR:
         raise UnsupportedExpression("EMPTY_OR_OVERSIZED")
+    # Python's parser silently discards trailing comments. For a strict
+    # untrusted-model contract, reject all such extraneous source bytes.
+    if any(ch in raw for ch in ("#", "\\n", "\\r", ";", "\\x00")):
+        raise UnsupportedExpression("COMMENT_OR_EXTRA_SYNTAX_FORBIDDEN")
     try:
         tree=ast.parse(raw,mode="eval")
     except (SyntaxError,TypeError,ValueError):
