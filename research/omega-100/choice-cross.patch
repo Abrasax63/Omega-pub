@@ -1,0 +1,34 @@
+--- choice_trial.py
++++ choice_trial.py
+@@ -67,7 +67,13 @@
+ 
+ def direct_sum(case, meter):
+     values = case['values']
++    for i,value in enumerate(values):
++        meter.tick()
++        if value == case['target']:
++            return True,1<<i
+     for mask in range(1 << len(values)):
++        if mask.bit_count()==1:
++            continue
+         meter.tick()
+         total = 0
+         for i,value in enumerate(values):
+@@ -145,7 +151,7 @@
+         'A parcourt les masques de couleurs croissants, coût un par masque et un par relation testée; '
+         'B construit le graphe puis propage, coût un par arête insérée, sommet racine et arête orientée parcourue. '
+         'Somme: choisir un sous-ensemble de valeurs positives. '
+-        'A parcourt les masques croissants, coût un par masque et valeur additionnée; '
++        'A essaie les valeurs seules (une étape par valeur), puis les autres masques croissants, coût un par masque et valeur additionnée; '
+         'B maintient les sommes atteignables sous la cible, coût un par addition à partir de chaque somme atteinte. '
+         'Rends A, B ou aucune. Données: '+json.dumps(case,ensure_ascii=False,separators=(',',':'))
+     )
+@@ -153,7 +159,7 @@
+                   required=['method'],additionalProperties=False)
+     payload = dict(messages=[dict(role='user',content=rules)],max_tokens=8,temperature=0,seed=71,
+                    response_format=dict(type='json_schema',schema=schema))
+-    req = Request('http://127.0.0.1:18725/v1/chat/completions',data=json.dumps(payload).encode(),
++    req = Request('http://127.0.0.1:18726/v1/chat/completions',data=json.dumps(payload).encode(),
+                   headers={'Content-Type':'application/json'})
+     start = time.perf_counter()
+     with urlopen(req,timeout=90) as f:

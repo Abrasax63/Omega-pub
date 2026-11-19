@@ -1,0 +1,140 @@
+{
+  "combined": {
+    "n": 16,
+    "fixed": {
+      "A": {
+        "correct": 7,
+        "error": 0,
+        "abstain": 9,
+        "steps": 740,
+        "solver_seconds": 0.00013306300024851225
+      },
+      "B": {
+        "correct": 14,
+        "error": 0,
+        "abstain": 2,
+        "steps": 452,
+        "solver_seconds": 9.990699982154183e-05
+      }
+    },
+    "chosen": {
+      "correct": 6,
+      "error": 0,
+      "abstain": 10,
+      "steps": 678,
+      "solver_seconds": 0.00030883800081937807,
+      "choices": {
+        "A": 10,
+        "B": 3,
+        "aucune": 3
+      },
+      "selector_seconds": 26.442041452999547,
+      "prompt_tokens": 3998,
+      "completion_tokens": 128
+    },
+    "random_correct": [
+      11,
+      10,
+      12,
+      11,
+      11,
+      10,
+      11,
+      10
+    ],
+    "random_median": 11.0,
+    "oracle_policy_ceiling": 14
+  },
+  "parity": {
+    "n": 8,
+    "fixed": {
+      "A": {
+        "correct": 5,
+        "error": 0,
+        "abstain": 3,
+        "steps": 345,
+        "solver_seconds": 5.655799941450823e-05
+      },
+      "B": {
+        "correct": 8,
+        "error": 0,
+        "abstain": 0,
+        "steps": 205,
+        "solver_seconds": 5.057500038674334e-05
+      }
+    },
+    "chosen": {
+      "correct": 5,
+      "error": 0,
+      "abstain": 3,
+      "steps": 419,
+      "solver_seconds": 0.00019277699993835995,
+      "choices": {
+        "A": 6,
+        "B": 2
+      },
+      "selector_seconds": 16.49075345500023,
+      "prompt_tokens": 2122,
+      "completion_tokens": 64
+    },
+    "random_correct": [
+      7,
+      6,
+      6,
+      7,
+      7,
+      7,
+      7,
+      6
+    ],
+    "random_median": 7.0,
+    "oracle_policy_ceiling": 8
+  },
+  "subset": {
+    "n": 8,
+    "fixed": {
+      "A": {
+        "correct": 2,
+        "error": 0,
+        "abstain": 6,
+        "steps": 395,
+        "solver_seconds": 7.650500083400402e-05
+      },
+      "B": {
+        "correct": 6,
+        "error": 0,
+        "abstain": 2,
+        "steps": 247,
+        "solver_seconds": 4.933199943479849e-05
+      }
+    },
+    "chosen": {
+      "correct": 1,
+      "error": 0,
+      "abstain": 7,
+      "steps": 259,
+      "solver_seconds": 0.00011606100088101812,
+      "choices": {
+        "A": 4,
+        "aucune": 3,
+        "B": 1
+      },
+      "selector_seconds": 9.951287997999316,
+      "prompt_tokens": 1876,
+      "completion_tokens": 64
+    },
+    "random_correct": [
+      4,
+      4,
+      6,
+      4,
+      4,
+      3,
+      4,
+      4
+    ],
+    "random_median": 4.0,
+    "oracle_policy_ceiling": 6
+  },
+  "threshold_passed": false
+}

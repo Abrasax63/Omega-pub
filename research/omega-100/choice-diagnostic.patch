@@ -1,0 +1,35 @@
+--- choice_trial.py
++++ choice_trial.py
+@@ -153,25 +153,22 @@
+         'Somme: choisir un sous-ensemble de valeurs positives. '
+         'A essaie les valeurs seules (une étape par valeur), puis les autres masques croissants, coût un par masque et valeur additionnée; '
+         'B maintient les sommes atteignables sous la cible, coût un par addition à partir de chaque somme atteinte. '
+-        'Rends A, B ou aucune. Données: '+json.dumps(case,ensure_ascii=False,separators=(',',':'))
++        'Rends uniquement une lettre : A, B ou N (aucune). Données: '+json.dumps(case,ensure_ascii=False,separators=(',',':'))
+     )
+-    schema = dict(type='object',properties=dict(method=dict(type='string',enum=['A','B','aucune'])),
+-                  required=['method'],additionalProperties=False)
+-    payload = dict(messages=[dict(role='user',content=rules)],max_tokens=8,temperature=0,seed=71,
+-                   response_format=dict(type='json_schema',schema=schema))
+-    req = Request('http://127.0.0.1:18726/v1/chat/completions',data=json.dumps(payload).encode(),
++    payload = dict(messages=[dict(role='user',content=rules)],max_tokens=1,temperature=0,seed=71,
++                   grammar='root ::= [ABN]')
++    req = Request('http://127.0.0.1:18727/v1/chat/completions',data=json.dumps(payload).encode(),
+                   headers={'Content-Type':'application/json'})
+     start = time.perf_counter()
+     with urlopen(req,timeout=90) as f:
+         response=json.load(f)
+     cost=time.perf_counter()-start
+-    try:
+-        choice=json.loads(response['choices'][0]['message']['content'])['method']
+-    except (KeyError, IndexError, TypeError, ValueError):
+-        choice='aucune'
++    message=response['choices'][0]['message']['content'].strip()
++    choice=message if message in ('A','B','N') else 'invalid'
+     return choice,cost,response['usage']
+ 
+ 
++
+ def main():
+     control=dict(kind='parity',n=3,edges=[(0,1,0),(1,2,1)])
+     assert all(verify(control,solve(control,m),truth(control))=='correct' for m in 'AB')
