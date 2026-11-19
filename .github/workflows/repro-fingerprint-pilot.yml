@@ -6,6 +6,7 @@ on:
       - 'tools/repro_history_pilot.py'
       - 'tools/repro_scientific_pilot.py'
       - 'tools/repro_policy_benchmark.py'
+      - 'tools/repro_wallclock_benchmark.py'
       - 'tests/test_repro_fingerprint.py'
       - 'tests/test_repro_history_pilot.py'
       - 'tests/test_repro_scientific_pilot.py'
@@ -32,6 +33,13 @@ jobs:
 
       - name: Compare reuse policies (deterministic simulated costs)
         run: python -m unittest discover -s tests -p 'test_repro_policy_benchmark.py' -v
+      - name: Measure real wall-clock microbenchmark
+        run: python -m tools.repro_wallclock_benchmark | tee repro_wallclock_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repro-wallclock-microbenchmark
+          path: repro_wallclock_results.json
+          retention-days: 7
       - name: Run existing Omega scientific script pilot
         run: python -m unittest discover -s tests -p 'test_repro_scientific_pilot.py' -v
 
