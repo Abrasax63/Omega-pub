@@ -1,0 +1,256 @@
+{
+  "status": "FROZEN_BEFORE_ANY_REAL_INFERENCE_OR_CODE",
+  "source_repo": "marcusm117/ProofNet-Verified",
+  "source_commit": "b7ca411a2abaa6caf3580192b30d865e5bd10bc4",
+  "source_license": "Apache-2.0",
+  "indices": [
+    4,
+    5,
+    7,
+    8,
+    9,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+  ],
+  "pairs": [
+    [
+      4,
+      5
+    ],
+    [
+      7,
+      8
+    ],
+    [
+      9,
+      11
+    ],
+    [
+      12,
+      13
+    ],
+    [
+      14,
+      15
+    ],
+    [
+      16,
+      17
+    ],
+    [
+      18,
+      19
+    ],
+    [
+      20,
+      21
+    ],
+    [
+      23,
+      24
+    ],
+    [
+      25,
+      26
+    ],
+    [
+      27,
+      28
+    ],
+    [
+      29,
+      30
+    ]
+  ],
+  "source_docs": [
+    {
+      "index": 4,
+      "path": "proofnet-verified-latest/proofnet-4.lean",
+      "git_blob": "6177bf72811b4b3370f15d81271e199cd7689f62",
+      "bytes": 546,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-4.lean"
+    },
+    {
+      "index": 5,
+      "path": "proofnet-verified-latest/proofnet-5.lean",
+      "git_blob": "cce30c02715166b00959cafd46e75d1054a5caa2",
+      "bytes": 373,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-5.lean"
+    },
+    {
+      "index": 7,
+      "path": "proofnet-verified-latest/proofnet-7.lean",
+      "git_blob": "d782db6cce8a87cde3095a1e52baf6eb2b6e993f",
+      "bytes": 370,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-7.lean"
+    },
+    {
+      "index": 8,
+      "path": "proofnet-verified-latest/proofnet-8.lean",
+      "git_blob": "b864e5d87651d2fe268b751e27fd53882aa7442d",
+      "bytes": 332,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-8.lean"
+    },
+    {
+      "index": 9,
+      "path": "proofnet-verified-latest/proofnet-9.lean",
+      "git_blob": "52ac22fec19ee1a99f751cb35bd15d752acc413a",
+      "bytes": 402,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-9.lean"
+    },
+    {
+      "index": 11,
+      "path": "proofnet-verified-latest/proofnet-11.lean",
+      "git_blob": "9f05a55ab77d668057f6418811324a3f51c1463a",
+      "bytes": 293,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-11.lean"
+    },
+    {
+      "index": 12,
+      "path": "proofnet-verified-latest/proofnet-12.lean",
+      "git_blob": "4b2b70172723059b576ed8fb8624c976339a5a6c",
+      "bytes": 327,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-12.lean"
+    },
+    {
+      "index": 13,
+      "path": "proofnet-verified-latest/proofnet-13.lean",
+      "git_blob": "80548c7d2c129db3ffc09337833482e07fb53fc6",
+      "bytes": 388,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-13.lean"
+    },
+    {
+      "index": 14,
+      "path": "proofnet-verified-latest/proofnet-14.lean",
+      "git_blob": "b3d390eedafb928233c3792e41c1086a28ea498c",
+      "bytes": 400,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-14.lean"
+    },
+    {
+      "index": 15,
+      "path": "proofnet-verified-latest/proofnet-15.lean",
+      "git_blob": "ba32c82933f2159fbf3cc82a29c252236a687ee5",
+      "bytes": 309,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-15.lean"
+    },
+    {
+      "index": 16,
+      "path": "proofnet-verified-latest/proofnet-16.lean",
+      "git_blob": "675458cd4e8d42890a0b7d1e4bbc8bbb5c2fa7a8",
+      "bytes": 437,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-16.lean"
+    },
+    {
+      "index": 17,
+      "path": "proofnet-verified-latest/proofnet-17.lean",
+      "git_blob": "3500e0310d9f4f023b354f49a541f2fa81db99c3",
+      "bytes": 622,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-17.lean"
+    },
+    {
+      "index": 18,
+      "path": "proofnet-verified-latest/proofnet-18.lean",
+      "git_blob": "96e6f183a78157ecb4dd6ac8db1865e1abce49bb",
+      "bytes": 553,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-18.lean"
+    },
+    {
+      "index": 19,
+      "path": "proofnet-verified-latest/proofnet-19.lean",
+      "git_blob": "1827fae952178f2e36f283b2d8d1cdfa44f74a6a",
+      "bytes": 559,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-19.lean"
+    },
+    {
+      "index": 20,
+      "path": "proofnet-verified-latest/proofnet-20.lean",
+      "git_blob": "18eccba1c58a67ec6db012ecdf81a869dd2aba0f",
+      "bytes": 502,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-20.lean"
+    },
+    {
+      "index": 21,
+      "path": "proofnet-verified-latest/proofnet-21.lean",
+      "git_blob": "2b525b415b673fce6bb747a4a5189a132e090543",
+      "bytes": 656,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-21.lean"
+    },
+    {
+      "index": 23,
+      "path": "proofnet-verified-latest/proofnet-23.lean",
+      "git_blob": "c5060361caa9122253686903de2c139eb19549fe",
+      "bytes": 537,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-23.lean"
+    },
+    {
+      "index": 24,
+      "path": "proofnet-verified-latest/proofnet-24.lean",
+      "git_blob": "9a87361b9c2f40b0cd02eecf4900e219db6a7754",
+      "bytes": 476,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-24.lean"
+    },
+    {
+      "index": 25,
+      "path": "proofnet-verified-latest/proofnet-25.lean",
+      "git_blob": "55727add1b24718d2400f74ae50b17936bbd85a4",
+      "bytes": 489,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-25.lean"
+    },
+    {
+      "index": 26,
+      "path": "proofnet-verified-latest/proofnet-26.lean",
+      "git_blob": "a8cfcb51d15574e1629c70b34fb72a29c269ddce",
+      "bytes": 547,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-26.lean"
+    },
+    {
+      "index": 27,
+      "path": "proofnet-verified-latest/proofnet-27.lean",
+      "git_blob": "53ca1a13924ddf266b6686a08a4ab6c6997f5b5a",
+      "bytes": 781,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-27.lean"
+    },
+    {
+      "index": 28,
+      "path": "proofnet-verified-latest/proofnet-28.lean",
+      "git_blob": "cea87ca185794d75c3200693e93291cb59cef096",
+      "bytes": 310,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-28.lean"
+    },
+    {
+      "index": 29,
+      "path": "proofnet-verified-latest/proofnet-29.lean",
+      "git_blob": "bd7a9db5825871c7084ef30a46ea3a99a18cd4f0",
+      "bytes": 373,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-29.lean"
+    },
+    {
+      "index": 30,
+      "path": "proofnet-verified-latest/proofnet-30.lean",
+      "git_blob": "d005958562b72c85736f5df148002f6f19e80158",
+      "bytes": 338,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-30.lean"
+    }
+  ],
+  "negative_source": "DECOY_ORIGINAL_LEAN_FROM_NEIGHBOR_PAIR_UNAUDITED_NON_EQUIVALENCE",
+  "source_reference": "EXTERNALLY_HUMAN_PLUS_AI_REVIEWED_PROOFNET_VERIFIED",
+  "gold_label_from": "ORIGINAL_SAME_DOCUMENT_REFERENCE",
+  "pre_registration_commit": "8d39196f887dcbe336642a5535ad3f0166044ca1"
+}
