@@ -1,0 +1,26 @@
+{
+  "experiment": "OMEGA_READER18_SOURCE_MANIFEST",
+  "prereg_committed_before_content_inspection": true,
+  "independent_human_annotations": false,
+  "source_labels": "NOT_AVAILABLE",
+  "documents": [
+    {
+      "id": "OBS-V8-FACT-INF",
+      "path": "02_MATHEMATIQUES/observabilite_temporelle/OBS-V8-FACT-INF.md",
+      "blob": "6d7f6b44c683852871b08a37f814bae5381de11f",
+      "bytes": 3387
+    },
+    {
+      "id": "AUDIT-QUOTIENTS-C4",
+      "path": "02_MATHEMATIQUES/defauts_recollement/AUDIT_QUOTIENTS_TEMOIN9_C4_L2_2026-11-04.md",
+      "blob": "44f08ebe3e99ef97af8b16c98167b5f64383ce45",
+      "bytes": 4282
+    },
+    {
+      "id": "PILOTE-EXTRACTION-C4",
+      "path": "02_MATHEMATIQUES/defauts_recollement/PILOTE_EXTRACTION_C4_L2_2026-11-04.md",
+      "blob": "874e284aedadcffb2d7b18055709ba880002586d",
+      "bytes": 6778
+    }
+  ]
+}
