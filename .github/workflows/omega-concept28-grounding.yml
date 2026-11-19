@@ -1,0 +1,73 @@
+name: Omega CONCEPT28 - frozen domain-grounding vs naive lexical on new external proof pairs
+on:
+  push:
+    branches:
+      - experiment/omega-concept28-grounding-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-concept28-external-proofnet-pairs
+  cancel-in-progress: false
+
+jobs:
+  exact-source-concept-grounding:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check concept rules, fair baseline, blinded theorem labels and anti-permutation safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/concept28
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/concept28 \
+            -p 'test_*.py' -v 2>&1 | tee /tmp/concept28/tests.log
+      - name: Replay source Git blobs and evaluate both matchers on 24 unseen original NL-Lean theorem pairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/concept28/grounding.py \
+            --output /tmp/concept28/results.json \
+            --markdown /tmp/concept28/RESULT.md
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result=json.loads(Path("/tmp/concept28/results.json").read_text())
+          assert result["status"]=="COMPLETED_GROUNDED_CONCEPT_EXTERNAL_HOLDOUT"
+          assert result["n_original_external_human_theorems"]==24
+          assert result["n_pairs"]==12
+          assert result["n_presentations"]==48
+          assert not result["old_proofnet26_or_contrast27_examples_reused"]
+          assert result["model_inference_calls"]==0
+          assert not result["negative_pairwise_non_equivalence_human_validated"]
+          assert result["certifications"]==0
+          for mode in ("typed","naive"):
+              allscore=result["all"][mode]
+              assert allscore["accepted"]+allscore["abstentions"]==48
+              assert allscore["original_reference_correct"]+allscore["wrong_source_selected"]==allscore["accepted"]
+              for group in ("NEAR","FAR"):
+                  sub=result["by_stratum"][group][mode]
+                  assert sub["presentations"]==24
+                  assert sub["accepted"]+sub["abstentions"]==24
+              print("CONCEPT28_SCORE",mode,allscore,flush=True)
+              print("CONCEPT28_NEAR",mode,result["by_stratum"]["NEAR"][mode],flush=True)
+              print("CONCEPT28_FAR",mode,result["by_stratum"]["FAR"][mode],flush=True)
+          print("CONCEPT28_NO_LEAN_CERTIFICATION",True,flush=True)
+          PY
+      - name: Preserve full source labels, concept/term hits, all candidates, test log and negative findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: concept28-external-typed-grounding-naive-comparison
+          path: /tmp/concept28/
+          retention-days: 14
+          if-no-files-found: warn

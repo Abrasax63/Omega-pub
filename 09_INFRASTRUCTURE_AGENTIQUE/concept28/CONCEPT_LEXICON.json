@@ -1,0 +1,492 @@
+{
+  "status": "FROZEN_BEFORE_UNSEEN_CORPUS_READING",
+  "source": "DECLARED_FROM_PREVIOUS_MATH_LITERATURE_AND_OLD_DEVELOPMENT_EXAMPLES",
+  "method": "REGEX_MATH_CONCEPT_LINKS_NL_TO_LEAN_TOKEN_SIGNATURES",
+  "decision_threshold": {
+    "min_best_score": 2,
+    "min_margin": 2
+  },
+  "keywords": [
+    {
+      "id": "GROUP",
+      "weight": 2,
+      "nl_patterns": [
+        "\\bgroup\\b",
+        "\\bgroups\\b"
+      ],
+      "lean_patterns": [
+        "\\bGroup\\b",
+        "\\bCommGroup\\b",
+        "\\bAddGroup\\b",
+        "\\bSubgroup\\b",
+        "\\bIsSimpleGroup\\b"
+      ]
+    },
+    {
+      "id": "SUBGROUP",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bsubgroup\\b",
+        "\\bsubgroups\\b"
+      ],
+      "lean_patterns": [
+        "\\bSubgroup\\b",
+        "\\bSubgroup\\.closure\\b",
+        "\\bclosure\\b"
+      ]
+    },
+    {
+      "id": "ABELIAN",
+      "weight": 3,
+      "nl_patterns": [
+        "\\babelian\\b",
+        "\\bcommutative group\\b"
+      ],
+      "lean_patterns": [
+        "\\bCommGroup\\b",
+        "\\bCommute\\b",
+        "\\bAddCommGroup\\b",
+        "\\bIsCommutative\\b"
+      ]
+    },
+    {
+      "id": "CENTER",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bcenter\\b",
+        "\\bcentre\\b"
+      ],
+      "lean_patterns": [
+        "\\bcenter\\b"
+      ]
+    },
+    {
+      "id": "CYCLIC",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bcyclic\\b"
+      ],
+      "lean_patterns": [
+        "\\bIsCyclic\\b",
+        "\\bCyclic\\b"
+      ]
+    },
+    {
+      "id": "VECTOR_SPACE",
+      "weight": 2,
+      "nl_patterns": [
+        "\\bvector spaces?\\b"
+      ],
+      "lean_patterns": [
+        "\\bModule\\b",
+        "\\bSubmodule\\b",
+        "\\bVectorSpace\\b"
+      ]
+    },
+    {
+      "id": "LINEAR_INDEPENDENCE",
+      "weight": 3,
+      "nl_patterns": [
+        "\\blinearly independent\\b",
+        "\\blinear independence\\b"
+      ],
+      "lean_patterns": [
+        "\\bLinearIndependent\\b"
+      ]
+    },
+    {
+      "id": "SPAN",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bspan\\b",
+        "\\bspanned\\b"
+      ],
+      "lean_patterns": [
+        "\\bspan\\b",
+        "\\bSubmodule\\.span\\b"
+      ]
+    },
+    {
+      "id": "BASIS",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bbasis\\b",
+        "\\bbases\\b"
+      ],
+      "lean_patterns": [
+        "\\bBasis\\b"
+      ]
+    },
+    {
+      "id": "LINEAR_MAP",
+      "weight": 3,
+      "nl_patterns": [
+        "\\blinear (?:map|operator|transformation)\\b"
+      ],
+      "lean_patterns": [
+        "\\bLinearMap\\b",
+        "\\bLinearEquiv\\b"
+      ]
+    },
+    {
+      "id": "MATRIX",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bmatri(?:x|ces)\\b"
+      ],
+      "lean_patterns": [
+        "\\bMatrix\\b"
+      ]
+    },
+    {
+      "id": "COUNTABLE",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bcountable\\b",
+        "\\bcountably\\b"
+      ],
+      "lean_patterns": [
+        "\\bCountable\\b"
+      ]
+    },
+    {
+      "id": "FINITE",
+      "weight": 1,
+      "nl_patterns": [
+        "\\bfinite\\b",
+        "\\bfinitely\\b"
+      ],
+      "lean_patterns": [
+        "\\bFintype\\b",
+        "\\bFinite\\b",
+        "\\bSet\\.Finite\\b"
+      ]
+    },
+    {
+      "id": "RING",
+      "weight": 2,
+      "nl_patterns": [
+        "\\bring\\b",
+        "\\brings\\b"
+      ],
+      "lean_patterns": [
+        "\\bRing\\b",
+        "\\bCommRing\\b"
+      ]
+    },
+    {
+      "id": "IDEAL",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bideal\\b",
+        "\\bideals\\b"
+      ],
+      "lean_patterns": [
+        "\\bIdeal\\b"
+      ]
+    },
+    {
+      "id": "FIELD",
+      "weight": 2,
+      "nl_patterns": [
+        "\\bfield\\b",
+        "\\bfields\\b"
+      ],
+      "lean_patterns": [
+        "\\bField\\b",
+        "\\bRCLike\\b"
+      ]
+    },
+    {
+      "id": "POLYNOMIAL",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bpolynomial\\b",
+        "\\bpolynomials\\b"
+      ],
+      "lean_patterns": [
+        "\\bPolynomial\\b"
+      ]
+    },
+    {
+      "id": "CONNECTED",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bconnected\\b",
+        "\\bconnectedness\\b"
+      ],
+      "lean_patterns": [
+        "\\bIsConnected\\b"
+      ]
+    },
+    {
+      "id": "TOPOLOGY",
+      "weight": 2,
+      "nl_patterns": [
+        "\\btopolog(?:y|ical|ically)\\b"
+      ],
+      "lean_patterns": [
+        "\\bTopologicalSpace\\b"
+      ]
+    },
+    {
+      "id": "OPEN",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bopen set\\b",
+        "\\bopen subset\\b"
+      ],
+      "lean_patterns": [
+        "\\bIsOpen\\b",
+        "\\bIsClopen\\b"
+      ]
+    },
+    {
+      "id": "CLOSED",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bclosed set\\b",
+        "\\bclosed subset\\b",
+        "\\bclopen\\b"
+      ],
+      "lean_patterns": [
+        "\\bIsClosed\\b",
+        "\\bIsClopen\\b"
+      ]
+    },
+    {
+      "id": "COMPACT",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bcompact\\b"
+      ],
+      "lean_patterns": [
+        "\\bIsCompact\\b"
+      ]
+    },
+    {
+      "id": "CONTINUOUS",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bcontinuous\\b",
+        "\\bcontinuity\\b"
+      ],
+      "lean_patterns": [
+        "\\bContinuous\\b",
+        "\\bContinuousOn\\b",
+        "\\bContinuousAt\\b"
+      ]
+    },
+    {
+      "id": "HOMEOMORPHISM",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bhomeomorphism\\b",
+        "\\bhomeomorphic\\b"
+      ],
+      "lean_patterns": [
+        "\\bHomeomorph\\b"
+      ]
+    },
+    {
+      "id": "DERIVATIVE",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bderivative\\b",
+        "\\bdifferentiable\\b"
+      ],
+      "lean_patterns": [
+        "\\bHasDerivAt\\b",
+        "\\bDifferentiable\\b",
+        "\\bderiv\\b"
+      ]
+    },
+    {
+      "id": "LIMIT",
+      "weight": 3,
+      "nl_patterns": [
+        "\\blimit\\b",
+        "\\bconverges?\\b"
+      ],
+      "lean_patterns": [
+        "\\bTendsto\\b",
+        "\\bFilter\\.Tendsto\\b"
+      ]
+    },
+    {
+      "id": "SUMMABLE",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bsummable\\b",
+        "\\bseries converges\\b"
+      ],
+      "lean_patterns": [
+        "\\bSummable\\b"
+      ]
+    },
+    {
+      "id": "PRIME",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bprime\\b"
+      ],
+      "lean_patterns": [
+        "\\bPrime\\b",
+        "\\bNat\\.Prime\\b"
+      ]
+    },
+    {
+      "id": "INTEGER",
+      "weight": 2,
+      "nl_patterns": [
+        "\\bintegers?\\b",
+        "\\\\mathbb\\{Z\\}"
+      ],
+      "lean_patterns": [
+        "ℤ",
+        "\\bInt\\b"
+      ]
+    },
+    {
+      "id": "NATURAL",
+      "weight": 2,
+      "nl_patterns": [
+        "\\bnatural numbers?\\b",
+        "\\\\mathbb\\{N\\}"
+      ],
+      "lean_patterns": [
+        "ℕ",
+        "\\bNat\\b"
+      ]
+    },
+    {
+      "id": "REAL",
+      "weight": 2,
+      "nl_patterns": [
+        "\\breal numbers?\\b",
+        "\\breal valued\\b",
+        "\\\\mathbb\\{R\\}"
+      ],
+      "lean_patterns": [
+        "ℝ",
+        "\\bReal\\b",
+        "\\bRCLike\\b"
+      ]
+    },
+    {
+      "id": "COMPLEX",
+      "weight": 2,
+      "nl_patterns": [
+        "\\bcomplex numbers?\\b",
+        "\\\\mathbb\\{C\\}"
+      ],
+      "lean_patterns": [
+        "ℂ",
+        "\\bComplex\\b"
+      ]
+    },
+    {
+      "id": "INNER_PRODUCT",
+      "weight": 3,
+      "nl_patterns": [
+        "\\binner product\\b",
+        "\\borthogonal\\b"
+      ],
+      "lean_patterns": [
+        "⟪",
+        "\\binner\\b",
+        "\\bIsOrtho\\b"
+      ]
+    },
+    {
+      "id": "NORM",
+      "weight": 2,
+      "nl_patterns": [
+        "\\bnorm\\b",
+        "\\bnormed\\b"
+      ],
+      "lean_patterns": [
+        "‖",
+        "\\bnorm\\b"
+      ]
+    },
+    {
+      "id": "ISOMORPHISM",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bisomorphic\\b",
+        "\\bisomorphism\\b"
+      ],
+      "lean_patterns": [
+        "≃",
+        "\\bEquiv\\b",
+        "\\bMulEquiv\\b"
+      ]
+    },
+    {
+      "id": "INJECTIVE",
+      "weight": 3,
+      "nl_patterns": [
+        "\\binjective\\b",
+        "\\bone.to.one\\b"
+      ],
+      "lean_patterns": [
+        "\\bInjective\\b",
+        "\\bLinearIndependent\\b"
+      ]
+    },
+    {
+      "id": "SURJECTIVE",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bsurjective\\b",
+        "\\bonto\\b"
+      ],
+      "lean_patterns": [
+        "\\bSurjective\\b"
+      ]
+    },
+    {
+      "id": "BIJECTIVE",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bbijective\\b",
+        "\\bbijection\\b"
+      ],
+      "lean_patterns": [
+        "\\bBijective\\b",
+        "\\bEquiv\\b"
+      ]
+    },
+    {
+      "id": "IFF",
+      "weight": 3,
+      "nl_patterns": [
+        "\\bif and only if\\b",
+        "\\\\iff\\b",
+        "\\\\Leftrightarrow"
+      ],
+      "lean_patterns": [
+        "↔",
+        "\\bIff\\b"
+      ]
+    },
+    {
+      "id": "EXISTS",
+      "weight": 1,
+      "nl_patterns": [
+        "\\bthere exists?\\b",
+        "\\bthere is\\b",
+        "\\bthere are\\b",
+        "\\\\exists\\b"
+      ],
+      "lean_patterns": [
+        "∃",
+        "\\bNonempty\\b",
+        "\\bExists\\b"
+      ]
+    }
+  ],
+  "scope": "ONLY_LEXICAL_AND_TYPE_HINT_ALIGNMENT_NOT_MATHEMATICAL_EQUIVALENCE",
+  "no_model": true
+}
