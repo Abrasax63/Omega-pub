@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - experiment/omega-reader13-real-small-model-2026-11-18
+      - fix/omega-reader13-model-config-2026-11-19
   workflow_dispatch:
 
 permissions:

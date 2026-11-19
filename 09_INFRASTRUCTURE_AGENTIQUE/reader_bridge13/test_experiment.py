@@ -8,7 +8,7 @@ import unittest
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from run_experiment import (
-    GOLD, ROOT, baseline, packet_line_map, process_doc, score, select_packets
+    GOLD, ROOT, MODEL_REVISION, validate_model_config, baseline, packet_line_map, process_doc, score, select_packets
 )
 from read import blob, packetize, safe_read
 from gate import gate
@@ -18,6 +18,17 @@ class RealModelExperimentContract(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.gold = json.loads(GOLD.read_text(encoding="utf-8"))
+
+    def test_pinned_model_revision_and_complete_config_required(self):
+        self.assertRegex(MODEL_REVISION, r"^[0-9a-f]{40}$")
+        valid = {"model_type": "qwen2", "architectures": ["Qwen2ForCausalLM"]}
+        self.assertEqual(validate_model_config(valid)["model_type"], "qwen2")
+        for bad in ({}, {"model_type": "qwen2"}, {"model_type": "other",
+                    "architectures": ["Qwen2ForCausalLM"]},
+                    {"model_type": "qwen2", "architectures": []}, None):
+            with self.subTest(config=bad):
+                with self.assertRaisesRegex(ValueError, "MODEL_CONFIG_INCOMPLETE"):
+                    validate_model_config(bad)
 
     def test_reference_immutable_and_two_documents(self):
         self.assertEqual(len(self.gold["documents"]), 2)
