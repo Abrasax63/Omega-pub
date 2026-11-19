@@ -23,7 +23,7 @@ BLOB = "91ddd3a736c0a6cf8019d52bd843263ad5b80139"
 HEADER = re.compile(r"## Cas (\d\d)")
 PRODUCT_A = re.compile(r"Sur les entiers naturels a=(\d+) et b=(\d+), chacun dans \[0,999\], j'affirme que (\d+) fois (\d+) vaut (\d+)\.")
 PRODUCT_B = re.compile(r"Pour les entiers naturels a=(\d+) et b=(\d+), compris dans \[0,999\], le produit de (\d+) par (\d+) vaut (\d+)\.")
-CONGRUENCES = re.compile(r"Pour l'application T=\[([\d,]+)\] sur (\d+) états \{([\d,]+)\}, avec 2<=n<=6, (?:le nombre de congruences est|il existe exactement) (\d+) congruences\.")
+CONGRUENCES = re.compile(r"Pour l'application T=\[([\d,]+)\] sur (\d+) états \{([\d,]+)\}, avec 2<=n<=6, (?:le nombre de congruences est (\d+)|il existe exactement (\d+) congruences)\.")
 BIPARTITE = re.compile(r"Sur un graphe n=(\d+) avec les différences \[([^\]]*)\], n compris entre 2 et 12 et couleurs binaires, ce graphe (est|n'est pas) deux-colorable\.")
 
 
@@ -56,7 +56,8 @@ def translate(s: str) -> list[str]:
                 "Limites: entier naturel borné"]
     m=CONGRUENCES.fullmatch(s)
     if m:
-        t,n,domain,claimed=m.groups()
+        t,n,domain,claim_a,claim_b=m.groups()
+        claimed=claim_a if claim_a is not None else claim_b
         if int(n) not in range(2,7) or domain!=",".join(map(str,range(int(n)))):
             raise UnsupportedContract("FINITE_DOMAIN_INCONSISTENT")
         return [f"Hypothèses: T=[{t}]; domaine={{0,...,{int(n)-1}}}",
