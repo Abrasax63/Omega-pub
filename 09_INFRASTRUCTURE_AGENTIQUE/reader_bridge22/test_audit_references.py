@@ -53,7 +53,7 @@ class MockCrossref:
 class Reader22Tests(unittest.TestCase):
     def test_source_is_exact_and_bibliography_is_anchored(self):
         data=read_manifest()
-        raw=safe_read(Path(__file__).resolve().parents[2].parent/data["source_path"],EXPECTED)
+        raw=safe_read(Path(__file__).resolve().parents[2]/data["source_path"],EXPECTED)
         spans=source_locs(raw,data["references"])
         self.assertEqual(len(spans),3)
         for ref in data["references"]:
