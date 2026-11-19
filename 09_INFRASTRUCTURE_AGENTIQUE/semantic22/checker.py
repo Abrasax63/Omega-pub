@@ -80,6 +80,8 @@ def decode_source(raw: bytes) -> tuple[list[str], FiniteFunction]:
     m, a, square, b, end_m = d.groups()
     if m != end_m:
         raise ValueError("INCONSISTENT_MODULI")
+    if any(x != str(int(x)) for x in (m, a, b)):
+        raise ValueError("NONCANONICAL_NUMERIC_DEFINITION")
     f = FiniteFunction(int(m), int(a), int(b), bool(square))
     if len(lines) > MAX_CANDIDATES + 8:
         raise ValueError("TOO_MANY_CANDIDATE_LINES")
@@ -199,6 +201,10 @@ def verify_source(raw: bytes, *, expected_blob: str, source_path: str) -> dict[s
             "literal_sha256":hashlib.sha256(phrase.encode("utf8")).hexdigest(),
             "verification_scope":"FINITE_FUNCTIONS_SUPPORTED_LANGUAGE_ONLY",
         }
+        if failure is None and kind == "DOUBLE_AT_ZERO" and number >= f.modulus:
+            # Equality in Z/nZ admits noncanonical representatives. We do
+            # not silently misinterpret "f(f(0)) = n+k" as integer equality.
+            failure = "NONCANONICAL_MODULAR_REPRESENTATIVE"
         if failure is not None:
             detail={"verdict":"INDETERMINATE","reason":failure,"formal_theorem_certified":False}
         else:
