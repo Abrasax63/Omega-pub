@@ -89,7 +89,7 @@ def parse_expression(s):
         if isinstance(node,ast.Call):
             if (not isinstance(node.func,ast.Name) or
                 node.func.id not in fn_names or node.keywords or
-                len(node.args)!=(5 if node.func.id=="partition_code" else 1)):
+                len(node.args)!=(4 if node.func.id=="partition_code" else 1)):
                 raise UnsafeView("DISALLOWED_FUNCTION_CALL")
         if isinstance(node,ast.List) and len(node.elts)>10:
             raise UnsafeView("OVERLONG_LITERAL_LIST")
