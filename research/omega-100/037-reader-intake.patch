@@ -1,0 +1,140 @@
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/pipeline.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/pipeline.py
+@@ -11,6 +11,7 @@
+ from pathlib import Path
+ from read import run as read_document
+ from gate import gate
++from json_intake import RejectedJSON, decode
+ 
+ ROOT = Path(__file__).resolve().parent.parent.parent
+ HERE = Path(__file__).resolve().parent
+@@ -70,21 +71,33 @@
+     cli.add_argument("--local-model")
+     cli.add_argument("--run-known-v11", action="store_true")
+     cli.add_argument("--output", type=Path)
++    cli.add_argument("--rejection-dir", type=Path,
++                     help="Opt-in local archive directory for rejected model JSON (outside the repository)")
+     a = cli.parse_args()
+-    if a.mode == "fixture":
+-        if a.model_json is None or a.model_json.stat().st_size > 100000:
+-            cli.error("fixture mode requires a JSON file <= 100kB")
+-        model_data = json.loads(a.model_json.read_text(encoding="utf-8"))
+-    elif a.mode == "ollama":
+-        if not a.local_model:
+-            cli.error("ollama mode requires --local-model")
+-        from model import ollama_generate
+-        doc = read_document(a.source, a.source_blob)
+-        model_data = ollama_generate(doc["packets"][:10], a.source_blob, a.local_model)
+-    else:
+-        if a.model_json or a.local_model:
+-            cli.error("inventory mode has no model input")
+-        model_data = None
++    archive = a.rejection_dir.resolve() if a.rejection_dir else None
++    if archive is not None and (archive.is_relative_to(ROOT) or not archive.is_dir()):
++        cli.error("rejection directory must exist outside the repository")
++    try:
++        if a.mode == "fixture":
++            if a.model_json is None or a.model_json.stat().st_size > 100000:
++                cli.error("fixture mode requires a JSON file <= 100kB")
++            with a.model_json.open("rb") as stream:
++                source_json = stream.read(100001)
++            if len(source_json)>100000:
++                cli.error("fixture mode requires a JSON file <= 100kB")
++            model_data = decode(source_json, "fixture", original=source_json)
++        elif a.mode == "ollama":
++            if not a.local_model:
++                cli.error("ollama mode requires --local-model")
++            from model import ollama_generate
++            doc = read_document(a.source, a.source_blob)
++            model_data = ollama_generate(doc["packets"][:10], a.source_blob, a.local_model)
++        else:
++            if a.model_json or a.local_model:
++                cli.error("inventory mode has no model input")
++            model_data = None
++    except RejectedJSON as error:
++        cli.exit(2, json.dumps(error.report(archive))+"\n")
+     result = pipeline(a.source, a.source_blob, model_json=model_data,
+                       provider=a.mode, approved_manual_v11=a.run_known_v11)
+     serialized = json.dumps(result, ensure_ascii=False, indent=2)+"\n"
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/model.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/model.py
+@@ -8,6 +8,7 @@
+ import json
+ import re
+ import urllib.request
++from json_intake import decode
+ 
+ ENDPOINT = "http://127.0.0.1:11434/api/generate"
+ 
+@@ -55,10 +56,10 @@
+         raw = response.read(65000)
+     if len(raw) >= 65000:
+         raise ValueError("oversize local model response")
+-    answer = json.loads(raw.decode("utf-8"))
++    answer = decode(raw, "ollama_envelope", original=raw)
+     if not isinstance(answer, dict) or not isinstance(answer.get("response"), str):
+         raise ValueError("unexpected Ollama response shape")
+-    output = json.loads(answer["response"])
++    output = decode(answer["response"], "ollama_payload", original=raw)
+     if not isinstance(output, dict):
+         raise ValueError("model did not return a JSON object")
+     return output
+--- /dev/null
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/json_intake.py
+@@ -0,0 +1,56 @@
++"""Validate model JSON and keep rejected inputs available for local review."""
++
++import hashlib
++import json
++from pathlib import Path
++import tempfile
++
++
++class DuplicateKey(ValueError):
++    pass
++
++
++class RejectedJSON(ValueError):
++    def __init__(self, reason, stage, raw):
++        super().__init__(reason)
++        self.reason = reason
++        self.stage = stage
++        self.raw = raw
++
++    def report(self, directory: Path | None = None):
++        digest = hashlib.sha256(self.raw).hexdigest()
++        result = {
++            "status": "MODEL_JSON_REJECTED",
++            "reason": self.reason,
++            "stage": self.stage,
++            "sha256": digest,
++            "next_action": "REQUEST_UNAMBIGUOUS_JSON",
++        }
++        if directory is not None:
++            try:
++                with tempfile.NamedTemporaryFile(mode="wb", dir=directory,
++                        prefix=f"rejected-{digest[:12]}-", suffix=".bin", delete=False) as stream:
++                    stream.write(self.raw)
++                result["review_file"] = stream.name
++            except OSError:
++                result["archive_status"] = "NOT_SAVED"
++        return result
++
++
++def unique_object(pairs):
++    result = {}
++    for key, value in pairs:
++        if key in result:
++            raise DuplicateKey
++        result[key] = value
++    return result
++
++
++def decode(data: bytes | str, stage: str, *, original: bytes):
++    try:
++        text = data.decode("utf-8") if isinstance(data, bytes) else data
++        return json.loads(text, object_pairs_hook=unique_object)
++    except DuplicateKey as error:
++        raise RejectedJSON("DUPLICATE_JSON_KEY", stage, original) from error
++    except (ValueError, RecursionError) as error:
++        raise RejectedJSON("INVALID_JSON", stage, original) from error

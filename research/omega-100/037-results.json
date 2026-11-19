@@ -1,0 +1,36 @@
+{
+  "base": {
+    "valid": 96,
+    "blocked_duplicates": 0,
+    "traced_truncations": 0,
+    "exact_archives": 0,
+    "silent_duplicates": 4,
+    "unstructured_parse_errors": 2,
+    "transport": [
+      "PARSED",
+      "PARSED",
+      "PARSED",
+      "UNSTRUCTURED_PARSE_ERROR"
+    ],
+    "median_valid_batch_ns": 50845841,
+    "runs": 15
+  },
+  "candidate": {
+    "valid": 96,
+    "blocked_duplicates": 4,
+    "traced_truncations": 2,
+    "exact_archives": 6,
+    "silent_duplicates": 0,
+    "unstructured_parse_errors": 0,
+    "transport": [
+      "PARSED",
+      "DUPLICATE_JSON_KEY",
+      "DUPLICATE_JSON_KEY",
+      "INVALID_JSON"
+    ],
+    "median_valid_batch_ns": 53601418,
+    "runs": 15
+  },
+  "overhead_percent": 5.419473738274871,
+  "retained": true
+}
