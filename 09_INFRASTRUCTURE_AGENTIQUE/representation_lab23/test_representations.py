@@ -73,6 +73,20 @@ class RepresentationLabTests(unittest.TestCase):
             self.assertGreater(result["mismatches"][name],0)
             self.assertIsNotNone(result["minimal_counterexamples"][name])
 
+    def test_corrected_n_minus_one_sharp_example(self):
+        # Previously preregistered 'n is sharp' hypothesis was falsified.
+        # A four-state chain needs h=3 to distinguish its last pair.
+        t=(1,2,3,3)
+        pi=(0,0,0,1)
+        e2=direct_oracle(t,pi,2)
+        e3=direct_oracle(t,pi,3)
+        e4=direct_oracle(t,pi,4)
+        self.assertNotEqual(e2,e3)
+        self.assertEqual(e3,e4)
+        self.assertEqual(e3,frozenset())
+        self.assertEqual(partition_refinement(t,pi,3),e3)
+        self.assertEqual(pair_pullback(t,pi,3),e3)
+
     def test_reserved_cases_are_not_in_exhaustive_calibration(self):
         cases=list(reserved_cases())
         self.assertEqual(len(cases),128)
