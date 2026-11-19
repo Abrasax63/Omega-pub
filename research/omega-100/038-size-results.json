@@ -1,0 +1,32 @@
+[
+  {
+    "target_padding": 1024,
+    "bytes": 1117,
+    "valid_reference_us": 3.255,
+    "valid_candidate_us": 4.46,
+    "overhead_pct": 37.0,
+    "valid_equal": true,
+    "duplicate_reference_accept": 100,
+    "duplicate_candidate_reject": 100
+  },
+  {
+    "target_padding": 16384,
+    "bytes": 16477,
+    "valid_reference_us": 22.38,
+    "valid_candidate_us": 23.736,
+    "overhead_pct": 6.06,
+    "valid_equal": true,
+    "duplicate_reference_accept": 100,
+    "duplicate_candidate_reject": 100
+  },
+  {
+    "target_padding": 65536,
+    "bytes": 65629,
+    "valid_reference_us": 83.444,
+    "valid_candidate_us": 93.445,
+    "overhead_pct": 11.99,
+    "valid_equal": true,
+    "duplicate_reference_accept": 100,
+    "duplicate_candidate_reject": 100
+  }
+]
