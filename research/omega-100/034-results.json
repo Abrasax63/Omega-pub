@@ -1,0 +1,1 @@
+{"candidate": {"abstentions": 0, "correct": 12, "false_passes": 0, "false_rejects": 0, "promotions": 0, "seconds": 0.7518788870002027, "total": 12}, "reference": {"abstentions": 0, "correct": 10, "false_passes": 2, "false_rejects": 0, "promotions": 0, "seconds": 0.8579749649998121, "total": 12}}
