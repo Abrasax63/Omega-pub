@@ -1,0 +1,127 @@
+name: Omega Reader15 - pinned local 3B vs 0.5B line selection
+on:
+  push:
+    branches:
+      - experiment/omega-reader15-3b-ablation-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-reader15-3b-ablation
+  cancel-in-progress: false
+
+jobs:
+  prereg-and-unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Source pin, tests and safe model-mock replay
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge14
+          python -m unittest -v test_selector.py
+          cd ../reader_bridge15
+          python -m unittest -v test_compare3b.py
+
+  local-gguf-real-inference:
+    needs: prereg-and-unit-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/llama.cpp
+          key: omega11-llama-server-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - name: Checkout and compile pinned llama.cpp (if not cached)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega11/llama.cpp"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+            git -C "$BASE" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "5a4afd80779ba51166b59986e61a0bfbb9e1a4c6"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja -DGGML_NATIVE=OFF \
+            -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/model.gguf
+          key: omega11-qwen2p5-coder3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7
+      - name: Download exactly pinned open GGUF and verify SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL="$HOME/.cache/omega11/model.gguf"
+          mkdir -p "$(dirname "$MODEL")"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf" -o "$MODEL"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $MODEL" | sha256sum -c -
+      - name: Run authentic CPU Qwen Coder 3B selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HOME/.cache/omega11/llama.cpp/build/bin/llama-server" \
+            -m "$HOME/.cache/omega11/model.gguf" -c 4096 -t 4 \
+            --host 127.0.0.1 --port 8091 > /tmp/omega-reader15-llama.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+          python3 - <<'PY'
+          import json,time,urllib.request
+          for _ in range(120):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8091/health",timeout=2) as r:
+                      response=json.loads(r.read())
+                  if response.get("status")=="ok":
+                      print("LOCAL_3B_READY",flush=True)
+                      break
+              except Exception:
+                  pass
+              time.sleep(2)
+          else:
+              raise SystemExit("LOCAL_3B_UNAVAILABLE_INFRA_FAILURE")
+          PY
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge15/compare3b.py \
+            --output /tmp/reader15-3b-raw.json
+          python - <<'PY'
+          import json
+          with open('/tmp/reader15-3b-raw.json',encoding='utf8') as f:
+              d=json.load(f)
+          assert d['status']=='FINISHED_REAL_LOCAL_INFERENCE'
+          assert len(d['rows'])==2
+          assert d['auto_certifications']==0 and d['auto_horn_rules']==0
+          assert d['paid_api_calls']==0
+          for row in d['rows']:
+              print(row['doc'],row['model_3b']['status'],
+                    repr(row['model_3b'].get('raw_reply')),
+                    'chosen',row['model_3b']['selected'])
+          PY
+      - name: Archive raw responses, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-reader15-3b-raw-ablations
+          path: |
+            /tmp/reader15-3b-raw.json
+            /tmp/omega-reader15-llama.log
+          retention-days: 14
+          if-no-files-found: warn
