@@ -1,0 +1,89 @@
+name: Omega Creative02 - grade immutable prior inference without new model calls
+
+on:
+  push:
+    branches:
+      - experiment/omega-creative02-frozen-grade-replay-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: omega-creative02-immutable-grade-replay
+  cancel-in-progress: false
+
+jobs:
+  grade-original-qwen3b-replies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify same untouched scorer against offline unit regressions
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/creative_model02
+          python -m unittest -v test_creative_model.py
+      - name: Download exact immutable proposals from original run 44498942756
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-creative02-raw-qwen-proposals-before-gold
+          run-id: 44498942756
+          repository: Abrasax63/Omega-pub
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: /tmp/creative02-inference
+      - name: Check actual downloaded archive structure before grader
+        run: |
+          set -euo pipefail
+          test -f /tmp/creative02-inference/creative02-model/frozen-proposals.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f=Path('/tmp/creative02-inference/creative02-model/frozen-proposals.json')
+          d=json.loads(f.read_text(encoding='utf8'))
+          assert d['experiment']=='OMEGA_CREATIVE_MODEL02_RAW_UNGRADED_PROPOSALS'
+          assert len(d['proposals'])==3
+          assert [(x['seed'],x['temperature']) for x in d['proposals']]==[
+              (11,0.0),(17,0.35),(23,0.7)]
+          assert all(x['status']=='MODEL_RAW_FROZEN' for x in d['proposals'])
+          print('ORIGINAL_SHA256',[(x['attempt'],x['raw_sha256']) for x in d['proposals']])
+          PY
+      - name: Run original post-freeze evaluator without changing AST grammar
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/creative_model02/grade.py \
+            --frozen /tmp/creative02-inference/creative02-model/frozen-proposals.json \
+            --output /tmp/creative02-replayed/graded-immutable-model-output.json
+      - name: Enforce negative result and no promotion or prompt repair
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('/tmp/creative02-replayed/graded-immutable-model-output.json').read_text(encoding='utf8'))
+          assert d['run_status']=='EVALUATED_FROZEN_PROPOSALS'
+          assert d['holdout_cases']==80 and d['metamorphic_cases']==16
+          assert d['exhaustive_cases']==8191
+          assert d['strong_baseline_correct']==8287
+          assert d['independent_oracles_agreed']
+          assert len(d['assessment'])==3
+          assert d['raw_proposals_unchanged']
+          assert d['scientific_autopromotions']==0
+          assert d['model_proposals_accepted']==0
+          assert d['model_proposals_bounded_equivalent']==0
+          assert all(r['status']=='ABSTAIN_INVALID_PROPOSAL'
+                     and r['parse_error']=='RESPONSE_NOT_EXACT_JSON'
+                     for r in d['assessment'])
+          print('NEGATIVE_RESULT_CONFIRMED','0/3 accepted; 3/3 strict-format refusals')
+          PY
+      - name: Preserve original frozen grading outputs and incident evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-creative02-immutable-original-replies-graded
+          path: /tmp/creative02-replayed/
+          if-no-files-found: warn
+          retention-days: 30
