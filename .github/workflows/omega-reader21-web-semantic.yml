@@ -27,7 +27,7 @@ jobs:
       - name: All no-network safety, adversarial and French-to-exact tests
         run: |
           cd 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge21
-          python -m unittest -v test_semantic_bridge.py test_web_access.py
+          python -m unittest -v test_semantic_bridge.py test_web_access.py test_agent_tools.py
       - name: Replay 12 source-frozen French sentences and exact verifiers
         run: |
           python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge21/semantic_bridge.py \
