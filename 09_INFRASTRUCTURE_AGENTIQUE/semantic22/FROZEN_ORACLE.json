@@ -1,0 +1,701 @@
+{
+  "status": "FROZEN_BEFORE_ANY_LLM_INFERENCE",
+  "case_spec_commit": "ddb1a914a229b8bbac8efb5072828fa57b6b7d8f",
+  "source_commit": "473cf83006288ad4cb29756a56e13a73cb82de32",
+  "source": "AUTHOR_SYNTHETIC",
+  "annotation": "EXACT_ENUMERATION_JS_FROZEN_BEFORE_NEW_PYTHON_VERIFIER",
+  "independent_human_gold": false,
+  "docs": [
+    {
+      "id": "SV01",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV01.md",
+      "blob": "3f4d27d73a1eb2d41ca36d0fffb320fbffb44713",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": false,
+        "FIX_COUNT": false,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV02",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV02.md",
+      "blob": "6439e0d418b5889b34c6f1617ff6e9a09d36f0b5",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        9,
+        10,
+        11,
+        13,
+        14
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "SURJ": true,
+        "FIX_EXISTS": true,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV03",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV03.md",
+      "blob": "a6be6d76a464b487263709a9fd1b6ea36c737f42",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        9,
+        10,
+        11,
+        12,
+        15
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "SURJ": true,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV04",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV04.md",
+      "blob": "ac17412f980796af5c42ae69f796cd44acd64abc",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        11,
+        15
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": true,
+        "INVOL": false,
+        "IMG_SIZE": false,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV05",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV05.md",
+      "blob": "3f2552a9a1759aabf39dec930fa90fe7b97c0b85",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        11,
+        13,
+        14,
+        15
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "SURJ": true,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": false,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV06",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV06.md",
+      "blob": "c981eacb3677571eb76c3a11927c0e3792866c08",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        9,
+        10,
+        11,
+        13,
+        14
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "SURJ": true,
+        "FIX_EXISTS": true,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV07",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV07.md",
+      "blob": "034daab6628ff9cbd71d3390b19cbbd3e2d07ca7",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        9,
+        10
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": false,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV08",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV08.md",
+      "blob": "12387083064ba3f6ce6d12d6856f970b521ce87d",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        10,
+        11,
+        15
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": true,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV09",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV09.md",
+      "blob": "b8dbb7a56a9c3482510ec196383541ba97b045c5",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        11,
+        13,
+        14,
+        15
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "SURJ": true,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": false,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV10",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV10.md",
+      "blob": "8bbfda4b5581922e8d2e9b17ee89e8f504333168",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        14
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": false,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV11",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV11.md",
+      "blob": "7bdb7109358707b1cc49036ba05dda8e14d51e45",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        9,
+        10,
+        11,
+        12,
+        15
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "SURJ": true,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV12",
+      "kind": "affine",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV12.md",
+      "blob": "b5f101f81682053ec14a2e5416fcff51ecb47df7",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        10,
+        11,
+        13,
+        14,
+        15
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "SURJ": true,
+        "FIX_EXISTS": true,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV13",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV13.md",
+      "blob": "1c6eadb052eec28c2d13f1c79c5095fad1603976",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": false,
+        "FIX_COUNT": false,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV14",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV14.md",
+      "blob": "bf6ed844e4e2d1f94eb1c770ac8f0dad014fab56",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        11,
+        13,
+        14
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": true,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV15",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV15.md",
+      "blob": "3e56c7f2f84f8da08c4e347a1bb52198bb466402",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        9,
+        10,
+        15
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV16",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV16.md",
+      "blob": "40b9ba1c57d944cb443cf98cad360476afea7692",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        11
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": false,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV17",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV17.md",
+      "blob": "184bc59c3d5b04c8fd1f0cee07cb1bb365c37c9f",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        11,
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": false,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV18",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV18.md",
+      "blob": "fb9cac8206871816bcabbb206dde96854e574e43",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        13,
+        14
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV19",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV19.md",
+      "blob": "2468ed7c0aeea21beb37bfc0827bb8dae4523af3",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        9,
+        10
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": false,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV20",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV20.md",
+      "blob": "e4cbd7b15b19dfdb4e0a78386c02e032c9b812dd",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        10,
+        11
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV21",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV21.md",
+      "blob": "46ce138a1eb5bff27082e72248d309a719445a89",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        11,
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": false,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV22",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV22.md",
+      "blob": "30bc981e6c3d09615f527a335e5efa2339859a60",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        11,
+        14
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": true,
+        "INVOL": false,
+        "IMG_SIZE": false,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    },
+    {
+      "id": "SV23",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV23.md",
+      "blob": "671e8a883a5b1da089e6bbe0d54fa22d154e8d8c",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        9,
+        10,
+        15
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": true
+      }
+    },
+    {
+      "id": "SV24",
+      "kind": "quadratic",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/semantic22/cases/SV24.md",
+      "blob": "e3bd406c6e98319efbeca83f071ba4271c0e3b95",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "oracle_true_lines": [
+        10,
+        11
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "SURJ": false,
+        "FIX_EXISTS": false,
+        "INVOL": false,
+        "IMG_SIZE": true,
+        "FIX_COUNT": true,
+        "DOUBLE_AT_ZERO": false
+      }
+    }
+  ]
+}
