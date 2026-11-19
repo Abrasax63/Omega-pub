@@ -68,20 +68,75 @@ def load_holdout()->dict:
     return data
 
 
+def read_original_statement(raw:bytes,ref:dict)->dict:
+    """Use unchanged external theorem signature, not any proof body.
+
+    The earlier PROOFNET26 extractor accepted exactly ':= by sorry'.
+    Some valid upstream ProofNet-V files contain a *complete proof* instead.
+    Permit that format, still hash the ORIGINAL entire Git file and never
+    infer or fabricate a new statement.
+    """
+    try:
+        original=extract_original_pair(raw,ref)
+        formal=original["reference_lean_theorem_exact"]
+        return {
+            "informal":original["informal_statement_exact"],
+            "code":anonymize_reference(formal),
+            "nl_sha256":original["informal_sha256"],
+            "lean_sha256":original["reference_lean_sha256"],
+            "proof_body_kind":"SORRY_PLACEHOLDER",
+        }
+    except ValueError as exc:
+        if str(exc)!="INCOMPLETE_EXTERNAL_NL_LEAN_PAIR":
+            raise
+    text=raw.decode("utf8",errors="strict")
+    nl_matches=list(re.finditer(r"(?m)^/-Informal Statement[ \t]*\n([\s\S]*?)\n-/$",text))
+    declarations=list(re.finditer(r"(?m)^theorem\s+[^\s]+\s",text))
+    if len(nl_matches)!=1 or len(declarations)!=1:
+        raise ValueError("FULL_PROOF_FALLBACK_NEEDS_UNIQUE_NL_AND_THEOREM")
+    start=declarations[0].start()
+    stop=text.find(":= by",start)
+    if stop<=start or stop-start>20000:
+        raise ValueError("NO_PROVEN_THEOREM_HEADER_IN_ORIGINAL_SOURCE")
+    declaration=text[start:stop].rstrip()
+    tail=text[stop:]
+    if len(declaration)<30 or "sorry" in tail or not tail.startswith(":= by"):
+        raise ValueError("FULL_PROOF_FALLBACK_NOT_AN_ACTUAL_PROOF_BODY")
+    if start<=nl_matches[0].start():
+        raise ValueError("SOURCE_THEOREM_PRECEDES_NL")
+    # Prefix and signature are original bytes; remove only the proof body.
+    source_sig=declaration.strip()
+    name=re.match(r"theorem\s+[A-Za-z0-9_']+",source_sig)
+    if name is None:
+        raise ValueError("CANNOT_REMOVE_THEOREM_IDENTIFIER")
+    neutral=("theorem candidate"+source_sig[name.end():]).strip()
+    if len(neutral)<30:
+        raise ValueError("EMPTY_SEMANTIC_LEAN_SIGNATURE")
+    nl=nl_matches[0].group(1)
+    if not nl.strip():
+        raise ValueError("MISSING_EXTERNAL_NATURAL_LANGUAGE_STATEMENT")
+    return {
+        "informal":nl,"code":neutral,
+        "nl_sha256":hashlib.sha256(nl.encode("utf8")).hexdigest(),
+        "lean_sha256":hashlib.sha256(declaration.encode("utf8")).hexdigest(),
+        "proof_body_kind":"COMPLETE_ORIGINAL_PROOF_NOT_IN_CANDIDATE",
+    }
+
+
 def read_tasks(*,offline_dir:Path|None=None)->list[dict]:
     load_lexicon()
     snap=load_holdout()
     entries={}
     for ref in snap["docs"]:
         raw=fetch_pinned(ref,cache_dir=offline_dir)
-        pair=extract_original_pair(raw,ref)
-        code=anonymize_reference(pair["reference_lean_theorem_exact"])
+        item=read_original_statement(raw,ref)
         entries[ref["index"]]={
-            "index":ref["index"],"nl":pair["informal_statement_exact"],
-            "code":code,"source_blob":ref["git_blob"],
+            "index":ref["index"],"nl":item["informal"],
+            "code":item["code"],"source_blob":ref["git_blob"],
             "source_url":ref["source_url"],
-            "nl_sha256":pair["informal_sha256"],
-            "lean_original_sha256":pair["reference_lean_sha256"],
+            "nl_sha256":item["nl_sha256"],
+            "lean_original_sha256":item["lean_sha256"],
+            "proof_body_kind":item["proof_body_kind"],
         }
     return [
         {
