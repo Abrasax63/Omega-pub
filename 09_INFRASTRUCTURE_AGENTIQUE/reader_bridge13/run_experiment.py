@@ -22,10 +22,22 @@ from read import packetize, safe_read, verify_packets
 from gate import gate
 
 MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
-MODEL_REVISION = "main"  # resolve once to an immutable HF commit before loading either file
+MODEL_REVISION = "c89bee90d9f811437d9735454613c35b4a3c4dc8"  # last observed complete upstream snapshot; never use moving main
 MAX_PACKETS = 10
 MAX_NEW_TOKENS = 600
 GOLD = HERE / "GOLD_PROVISIONAL.json"
+
+
+def validate_model_config(config: dict) -> dict:
+    """Reject incomplete/drifted upstream snapshots before loading weights."""
+    if (
+        not isinstance(config, dict)
+        or config.get("model_type") != "qwen2"
+        or not isinstance(config.get("architectures"), list)
+        or "Qwen2ForCausalLM" not in config["architectures"]
+    ):
+        raise ValueError("MODEL_CONFIG_INCOMPLETE: expected qwen2 / Qwen2ForCausalLM")
+    return {"model_type": "qwen2", "architecture": "Qwen2ForCausalLM"}
 
 
 def select_packets(inventory: dict) -> list[dict]:
@@ -247,12 +259,16 @@ def main() -> None:
             import torch
             import transformers
             from transformers import AutoTokenizer, AutoModelForCausalLM
-            from huggingface_hub import model_info
+            from huggingface_hub import model_info, hf_hub_download
             torch.set_num_threads(2)
             report["versions"] = {"torch": torch.__version__, "transformers": transformers.__version__}
             pinned_sha = model_info(MODEL_ID, revision=MODEL_REVISION).sha
-            assert isinstance(pinned_sha, str) and len(pinned_sha) == 40
+            if pinned_sha != MODEL_REVISION:
+                raise ValueError("MODEL_REVISION_DRIFT: resolved SHA differs from pinned snapshot")
             report["resolved_model_revision"] = pinned_sha
+            config_path = hf_hub_download(MODEL_ID, filename="config.json", revision=pinned_sha)
+            config_data = json.loads(Path(config_path).read_text(encoding="utf-8"))
+            report["validated_model_config"] = validate_model_config(config_data)
             tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, revision=pinned_sha, trust_remote_code=False)
             model = AutoModelForCausalLM.from_pretrained(
                 MODEL_ID, revision=pinned_sha, torch_dtype=torch.float32,
