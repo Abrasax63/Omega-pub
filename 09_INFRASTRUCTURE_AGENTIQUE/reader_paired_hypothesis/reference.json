@@ -1,0 +1,28 @@
+{
+  "reference_provenance": "AUTHOR_FROZEN_BEFORE_INFERENCE_NO_EXTERNAL_REVIEW",
+  "roles": [
+    "domain",
+    "hypothesis",
+    "conclusion"
+  ],
+  "cases": {
+    "fiche-a": {
+      "git_blob": "8917a6d491304fb975b66632d644a76661c37346",
+      "lines": [
+        3,
+        14,
+        21
+      ],
+      "true_on_finite_domain": true
+    },
+    "fiche-b": {
+      "git_blob": "f24227688b012a67ed89fa09d7e2b151644c7eab",
+      "lines": [
+        3,
+        9,
+        21
+      ],
+      "true_on_finite_domain": false
+    }
+  }
+}
