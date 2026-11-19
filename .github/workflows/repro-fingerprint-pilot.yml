@@ -8,6 +8,7 @@ on:
       - 'tests/test_repro_fingerprint.py'
       - 'tests/test_repro_history_pilot.py'
       - 'tests/test_repro_scientific_pilot.py'
+      - 'tests/repro_sympy_version_probe.py'
       - '.github/workflows/repro-fingerprint-pilot.yml'
   workflow_dispatch:
 jobs:
@@ -29,3 +30,21 @@ jobs:
 
       - name: Run existing Omega scientific script pilot
         run: python -m unittest discover -s tests -p 'test_repro_scientific_pilot.py' -v
+
+  dependency-version-probe:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        sympy-version: ['1.12', '1.13.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install actual dependency version
+        run: python -m pip install "sympy==${{ matrix.sympy-version }}"
+      - name: Execute Omega scientific calculation and print fingerprint
+        run: python -m tests.repro_sympy_version_probe
