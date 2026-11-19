@@ -1,0 +1,74 @@
+{
+  "A": {
+    "outcomes": {
+      "correct": 8,
+      "error": 0,
+      "abstain": 8
+    },
+    "correct_by_family": {
+      "parity": 4,
+      "subset": 4
+    },
+    "choices": {
+      "A": 16
+    },
+    "selection_seconds": 1.7860020307125524e-06,
+    "solve_seconds": 9.28249992284691e-05,
+    "total_seconds": 0.00010563300111243734,
+    "solver_steps": 662,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "comparison_seconds": 8.97495e-05,
+    "seconds_per_correct": 1.12186875e-05
+  },
+  "B": {
+    "outcomes": {
+      "correct": 8,
+      "error": 0,
+      "abstain": 8
+    },
+    "correct_by_family": {
+      "parity": 4,
+      "subset": 4
+    },
+    "choices": {
+      "B": 16
+    },
+    "selection_seconds": 1.240002347913105e-06,
+    "solve_seconds": 0.00012780099950759904,
+    "total_seconds": 0.00013821799984725658,
+    "solver_steps": 683,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "comparison_seconds": 0.0001119,
+    "seconds_per_correct": 1.39875e-05
+  },
+  "rule": {
+    "outcomes": {
+      "correct": 16,
+      "error": 0,
+      "abstain": 0
+    },
+    "correct_by_family": {
+      "parity": 8,
+      "subset": 8
+    },
+    "choices": {
+      "B": 8,
+      "A": 8
+    },
+    "selection_seconds": 1.4735001059307251e-05,
+    "solve_seconds": 5.4357001317839604e-05,
+    "total_seconds": 7.73149995438871e-05,
+    "solver_steps": 321,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "comparison_seconds": 6.1713e-05,
+    "seconds_per_correct": 3.8570625e-06
+  },
+  "rule_vs_B": {
+    "gained": 8,
+    "lost": 0
+  },
+  "solver_ceiling": 16
+}

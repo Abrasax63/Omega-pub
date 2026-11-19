@@ -1,0 +1,97 @@
+{
+  "A": {
+    "outcomes": {
+      "correct": 13,
+      "error": 0,
+      "abstain": 11
+    },
+    "correct_by_family": {
+      "parity": 7,
+      "subset": 6
+    },
+    "choices": {
+      "A": 24
+    },
+    "selection_seconds": 2.6659990908228792e-06,
+    "solve_seconds": 0.00015221800094877835,
+    "total_seconds": 0.00017045500135282055,
+    "solver_steps": 994,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "comparison_seconds": 0.000153595,
+    "seconds_per_correct": 1.1815e-05
+  },
+  "B": {
+    "outcomes": {
+      "correct": 12,
+      "error": 0,
+      "abstain": 12
+    },
+    "correct_by_family": {
+      "parity": 5,
+      "subset": 7
+    },
+    "choices": {
+      "B": 24
+    },
+    "selection_seconds": 1.9940016500186175e-06,
+    "solve_seconds": 0.0007952970008773264,
+    "total_seconds": 0.000810782000371546,
+    "solver_steps": 1039,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "comparison_seconds": 0.0001817595,
+    "seconds_per_correct": 1.5146624999999998e-05
+  },
+  "rule": {
+    "outcomes": {
+      "correct": 17,
+      "error": 0,
+      "abstain": 7
+    },
+    "correct_by_family": {
+      "parity": 8,
+      "subset": 9
+    },
+    "choices": {
+      "A": 6,
+      "B": 18
+    },
+    "selection_seconds": 2.127099742210703e-05,
+    "solve_seconds": 0.00023948299531184603,
+    "total_seconds": 0.00027372299882699735,
+    "solver_steps": 771,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "comparison_seconds": 0.000156734,
+    "seconds_per_correct": 9.21964705882353e-06
+  },
+  "Qwen": {
+    "outcomes": {
+      "correct": 11,
+      "error": 0,
+      "abstain": 13
+    },
+    "correct_by_family": {
+      "parity": 5,
+      "subset": 6
+    },
+    "choices": {
+      "B": 23,
+      "N": 1
+    },
+    "selection_seconds": 35.65866381899559,
+    "solve_seconds": 0.0005824260024382966,
+    "total_seconds": 35.65935434199855,
+    "solver_steps": 1021,
+    "input_tokens": 7315,
+    "output_tokens": 24,
+    "comparison_seconds": 35.65935434199855,
+    "seconds_per_correct": 3.2417594856362317
+  },
+  "rule_vs_B": {
+    "gained": 5,
+    "lost": 0
+  },
+  "solver_ceiling": 19
+}
