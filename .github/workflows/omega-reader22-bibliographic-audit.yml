@@ -1,0 +1,71 @@
+name: Omega Reader22 - bibliographic metadata added value vs no web
+
+on:
+  push:
+    branches:
+      - experiment/omega-reader22-bibliographic-audit-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-reader22-literature-bibliography
+  cancel-in-progress: false
+
+jobs:
+  offline-reference-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify frozen source citation lines, DOI/year matching, decoys and failures
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge22
+          python -m unittest -v test_audit_references.py
+
+  live-crossref-check:
+    needs: offline-reference-security
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Query Crossref through Reader21 for three V11 citation titles
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge22/audit_references.py \
+            --output /tmp/omega-reader22/bibliographic-evidence.json
+      - name: Check strict scope and all three altered-reference decoys
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('/tmp/omega-reader22/bibliographic-evidence.json').read_text(encoding='utf8'))
+          assert d['result_status']=='PASS_METADATA_AND_NEGATIVE_CONTROLS'
+          assert d['max_http_requests']==3 and d['live_completed']==3
+          assert d['metadata_title_year_matches']>=2
+          assert d['negative_controls_refused']==3
+          assert not d['novelty_or_priority_established']
+          assert not d['source_theorem_mathematically_verified']
+          assert d['automatic_scientific_promotions']==0
+          for item in d['results']:
+              print(item['ref_id'], item['verification']['status'],
+                    item['verification'].get('match'), flush=True)
+          PY
+      - name: Archive bibliographic matches, remote body hashes and negative controls
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-reader22-crossref-bibliographic-audit
+          path: /tmp/omega-reader22/
+          retention-days: 30
+          if-no-files-found: warn
