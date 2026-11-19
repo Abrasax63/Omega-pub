@@ -183,6 +183,7 @@ def evaluate_phase(cases, label: str) -> dict:
     invariant_failures=[]
     stabilization_depths=Counter()
     reached_bound_witness=None
+    corrected_n_minus_one_witness=None
     transition_counts=Counter()
     start=time.perf_counter()
     for case in cases:
@@ -228,11 +229,17 @@ def evaluate_phase(cases, label: str) -> dict:
         else:
             stabilization_depths[str(stable_next)]+=1
             if reached_bound_witness is None and stable_next==n:
+                # Kept to expose the originally preregistered but falsified expectation.
                 reached_bound_witness={
                     "n":n, "T":list(t),"pi":list(pi),
                     "first_stable_horizon":stable_next,
-                    "last_nonstable_relation_size":len(all_expected[n-2]),
-                    "stable_relation_size":len(all_expected[n-1])
+                }
+            if corrected_n_minus_one_witness is None and n>=3 and stable_next==n-1:
+                corrected_n_minus_one_witness={
+                    "n":n, "T":list(t),"pi":list(pi),
+                    "first_stable_horizon":stable_next,
+                    "last_nonstable_relation_size":len(all_expected[n-3]),
+                    "stable_relation_size":len(all_expected[n-2])
                 }
             if any(s!=all_expected[stable_next-1]
                    for s in all_expected[stable_next:]):
@@ -247,6 +254,7 @@ def evaluate_phase(cases, label: str) -> dict:
         "invariant_failures_first_5":invariant_failures[:5],
         "stabilization_depth_histogram":dict(stabilization_depths),
         "first_example_tight_n_bound":reached_bound_witness,
+        "first_example_tight_n_minus_1_bound":corrected_n_minus_one_witness,
         "transitions":dict(transition_counts),
         "wall_clock_seconds_observed_not_benchmark":round(time.perf_counter()-start,3),
     }
@@ -274,7 +282,8 @@ def perform() -> dict:
         and set(falsified)==EXPECTED_ADVERSARIAL
         and calibration["invariant_failure_count"]==0
         and validation["invariant_failure_count"]==0
-        and calibration["first_example_tight_n_bound"] is not None
+        and calibration["first_example_tight_n_bound"] is None
+        and calibration["first_example_tight_n_minus_1_bound"] is not None
     )
     return {
         "experiment":"OMEGA_REPRESENTATION_LAB23_FINITE_OBSERVABILITY",
@@ -296,8 +305,15 @@ def perform() -> dict:
             "E[h+1] subset E[h]",
             "E[h]=E[h+1] implies permanence for later h up to n+1",
             "E[n]=E[n+1] on n states",
-            "n-horizon stabilization is tight for at least one n<=4 witness",
+            "original prereg n-horizon optimum refuted; n-1 bound is tight for witness n<=4",
         ],
+        "falsified_preregistered_claim":{
+            "claim":"the n-step stabilization bound is achieved",
+            "status":"REFUTED_ON_EXHAUSTIVE_N2_N4",
+            "falsification_run":44495078554,
+            "corrected_sharp_bound":"n-1 for n>=2, by partition class counting",
+            "document":"ERRATUM_FALSIFICATION.md",
+        },
         "novel_theorem_discovered":False,
         "general_formal_proof_automated":False,
         "independent_creativity_of_llm_demonstrated":False,
