@@ -5,10 +5,12 @@ on:
       - 'tools/repro_fingerprint.py'
       - 'tools/repro_history_pilot.py'
       - 'tools/repro_scientific_pilot.py'
+      - 'tools/repro_policy_benchmark.py'
       - 'tests/test_repro_fingerprint.py'
       - 'tests/test_repro_history_pilot.py'
       - 'tests/test_repro_scientific_pilot.py'
       - 'tests/repro_sympy_version_probe.py'
+      - 'tests/test_repro_policy_benchmark.py'
       - '.github/workflows/repro-fingerprint-pilot.yml'
   workflow_dispatch:
 jobs:
@@ -28,6 +30,8 @@ jobs:
       - name: Run isolated history regression tests
         run: python -m unittest discover -s tests -p 'test_repro_history_pilot.py' -v
 
+      - name: Compare reuse policies (deterministic simulated costs)
+        run: python -m unittest discover -s tests -p 'test_repro_policy_benchmark.py' -v
       - name: Run existing Omega scientific script pilot
         run: python -m unittest discover -s tests -p 'test_repro_scientific_pilot.py' -v
 
