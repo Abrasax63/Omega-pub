@@ -1,0 +1,326 @@
+{
+  "status": "FROZEN_BEFORE_MODEL_INFERENCE",
+  "source_kind": "NEW_20_SYNTHETIC_MATH_CASES_FOR_GBNF_CAUSAL_ABLATION",
+  "cases": [
+    {
+      "id": "GF01",
+      "kind": "affine",
+      "modulus": 7,
+      "a": 3,
+      "b": 4,
+      "c": 3,
+      "d": 0,
+      "order": [
+        "INV",
+        "INJ",
+        "EVAL1",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "GF02",
+      "kind": "affine",
+      "modulus": 9,
+      "a": 5,
+      "b": 2,
+      "c": 5,
+      "d": 7,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "INV",
+        "INJ",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "GF03",
+      "kind": "affine",
+      "modulus": 10,
+      "a": 8,
+      "b": 6,
+      "c": 4,
+      "d": 6,
+      "order": [
+        "INJ",
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INV"
+      ]
+    },
+    {
+      "id": "GF04",
+      "kind": "affine",
+      "modulus": 11,
+      "a": 10,
+      "b": 9,
+      "c": 0,
+      "d": 9,
+      "order": [
+        "EVAL2",
+        "INV",
+        "INJ",
+        "EVAL1",
+        "FIX"
+      ]
+    },
+    {
+      "id": "GF05",
+      "kind": "affine",
+      "modulus": 13,
+      "a": 11,
+      "b": 3,
+      "c": 11,
+      "d": 3,
+      "order": [
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INV",
+        "INJ"
+      ]
+    },
+    {
+      "id": "GF06",
+      "kind": "affine",
+      "modulus": 14,
+      "a": 9,
+      "b": 11,
+      "c": 0,
+      "d": 6,
+      "order": [
+        "INV",
+        "INJ",
+        "EVAL1",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "GF07",
+      "kind": "affine",
+      "modulus": 16,
+      "a": 13,
+      "b": 5,
+      "c": 6,
+      "d": 2,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "INV",
+        "INJ",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "GF08",
+      "kind": "affine",
+      "modulus": 18,
+      "a": 5,
+      "b": 7,
+      "c": 6,
+      "d": 12,
+      "order": [
+        "INJ",
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INV"
+      ]
+    },
+    {
+      "id": "GF09",
+      "kind": "affine",
+      "modulus": 21,
+      "a": 2,
+      "b": 8,
+      "c": 4,
+      "d": 12,
+      "order": [
+        "EVAL2",
+        "INV",
+        "INJ",
+        "EVAL1",
+        "FIX"
+      ]
+    },
+    {
+      "id": "GF10",
+      "kind": "affine",
+      "modulus": 24,
+      "a": 7,
+      "b": 13,
+      "c": 10,
+      "d": 21,
+      "order": [
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INV",
+        "INJ"
+      ]
+    },
+    {
+      "id": "GF11",
+      "kind": "quadratic",
+      "modulus": 7,
+      "a": 2,
+      "b": 3,
+      "c": 0,
+      "d": 0,
+      "order": [
+        "INV",
+        "INJ",
+        "EVAL1",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "GF12",
+      "kind": "quadratic",
+      "modulus": 9,
+      "a": 4,
+      "b": 7,
+      "c": 5,
+      "d": 2,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "INV",
+        "INJ",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "GF13",
+      "kind": "quadratic",
+      "modulus": 10,
+      "a": 7,
+      "b": 1,
+      "c": 9,
+      "d": 8,
+      "order": [
+        "INJ",
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INV"
+      ]
+    },
+    {
+      "id": "GF14",
+      "kind": "quadratic",
+      "modulus": 11,
+      "a": 3,
+      "b": 5,
+      "c": 5,
+      "d": 8,
+      "order": [
+        "EVAL2",
+        "INV",
+        "INJ",
+        "EVAL1",
+        "FIX"
+      ]
+    },
+    {
+      "id": "GF15",
+      "kind": "quadratic",
+      "modulus": 13,
+      "a": 6,
+      "b": 8,
+      "c": 2,
+      "d": 3,
+      "order": [
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INV",
+        "INJ"
+      ]
+    },
+    {
+      "id": "GF16",
+      "kind": "quadratic",
+      "modulus": 14,
+      "a": 8,
+      "b": 6,
+      "c": 0,
+      "d": 1,
+      "order": [
+        "INV",
+        "INJ",
+        "EVAL1",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "GF17",
+      "kind": "quadratic",
+      "modulus": 16,
+      "a": 5,
+      "b": 10,
+      "c": 15,
+      "d": 1,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "INV",
+        "INJ",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "GF18",
+      "kind": "quadratic",
+      "modulus": 18,
+      "a": 11,
+      "b": 4,
+      "c": 2,
+      "d": 15,
+      "order": [
+        "INJ",
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INV"
+      ]
+    },
+    {
+      "id": "GF19",
+      "kind": "quadratic",
+      "modulus": 21,
+      "a": 9,
+      "b": 12,
+      "c": 6,
+      "d": 0,
+      "order": [
+        "EVAL2",
+        "INV",
+        "INJ",
+        "EVAL1",
+        "FIX"
+      ]
+    },
+    {
+      "id": "GF20",
+      "kind": "quadratic",
+      "modulus": 24,
+      "a": 13,
+      "b": 9,
+      "c": 6,
+      "d": 22,
+      "order": [
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INV",
+        "INJ"
+      ]
+    }
+  ]
+}

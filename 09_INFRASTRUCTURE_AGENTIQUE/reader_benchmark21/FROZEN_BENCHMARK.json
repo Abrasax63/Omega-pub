@@ -1,0 +1,487 @@
+{
+  "status": "FROZEN_BEFORE_MODEL_INFERENCE",
+  "case_spec_commit": "5b11e5adac82de7c7049ccdd33dbc1feab66b83b",
+  "sources_commit": "990ed56c6c4d2299cb9e1d293fc467f026d20137",
+  "annotation_source": "EXACT_EXHAUSTIVE_FINITE_ORACLE_NO_EXTERNAL_HUMAN_LABELS",
+  "docs": [
+    {
+      "id": "GF01",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF01.md",
+      "blob": "f30fd64d4110317ea5a76abfef2628901d1d0d03",
+      "kind": "affine",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        10,
+        11,
+        12
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "FIX": true,
+        "EVAL2": false,
+        "EVAL1": true,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF02",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF02.md",
+      "blob": "58e57588b2d9ef0039fce7d84ad15f8173467cf8",
+      "kind": "affine",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        9,
+        12,
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "FIX": true,
+        "EVAL2": false,
+        "EVAL1": true,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF03",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF03.md",
+      "blob": "6ed6f7017ba820ba007fca1183697f7f42e0faa7",
+      "kind": "affine",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        11,
+        12
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": true,
+        "EVAL2": true,
+        "EVAL1": false,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF04",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF04.md",
+      "blob": "cea3acedc31c3ce9477dc57a8f6af2f6bd00f102",
+      "kind": "affine",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        9,
+        10,
+        11,
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "FIX": true,
+        "EVAL2": true,
+        "EVAL1": false,
+        "INV": true
+      }
+    },
+    {
+      "id": "GF05",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF05.md",
+      "blob": "eca7a803510d45944c4cfe2bb705fdce57d56d24",
+      "kind": "affine",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        10,
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "FIX": true,
+        "EVAL2": false,
+        "EVAL1": false,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF06",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF06.md",
+      "blob": "70bec7cbf8ce3ccb0ac65eb674a8c96b7ef192f8",
+      "kind": "affine",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        10,
+        11
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "FIX": false,
+        "EVAL2": false,
+        "EVAL1": true,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF07",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF07.md",
+      "blob": "e36566df80e6f8015f6e494c476d243e68446574",
+      "kind": "affine",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        10,
+        12,
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "FIX": false,
+        "EVAL2": true,
+        "EVAL1": true,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF08",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF08.md",
+      "blob": "97a21974274d64f9ad5dc32c14fbfc45b63b678f",
+      "kind": "affine",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        9,
+        10,
+        12
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "FIX": false,
+        "EVAL2": true,
+        "EVAL1": true,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF09",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF09.md",
+      "blob": "150554e0ce81ffafdb9e7f1949dc478734db9a80",
+      "kind": "affine",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        11,
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "FIX": true,
+        "EVAL2": false,
+        "EVAL1": false,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF10",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF10.md",
+      "blob": "11f11ea09efbca356ab9aa70c8e462c674338fd7",
+      "kind": "affine",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": true,
+        "FIX": false,
+        "EVAL2": false,
+        "EVAL1": false,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF11",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF11.md",
+      "blob": "837d00537fa5efa6066879e574136eb4733a8c44",
+      "kind": "quadratic",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": false,
+        "EVAL2": true,
+        "EVAL1": false,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF12",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF12.md",
+      "blob": "9d154c3f085766cb3f90f3e9445bcd4f30b2eb23",
+      "kind": "quadratic",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        10,
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": false,
+        "EVAL2": true,
+        "EVAL1": true,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF13",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF13.md",
+      "blob": "d01d5d75d8420257e011f9a8edbb8365e9d42337",
+      "kind": "quadratic",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        10
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": false,
+        "EVAL2": false,
+        "EVAL1": true,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF14",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF14.md",
+      "blob": "77ba1c68a5fbedde80dbb3760480d809d0d46792",
+      "kind": "quadratic",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        12
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": false,
+        "EVAL2": false,
+        "EVAL1": true,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF15",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF15.md",
+      "blob": "c34e12d3fbca9c6862d6cf1bbb48207932e6ccc8",
+      "kind": "quadratic",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        10,
+        11
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": true,
+        "EVAL2": true,
+        "EVAL1": false,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF16",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF16.md",
+      "blob": "c54148bb1ea18a516589bee06397a07cb1742a59",
+      "kind": "quadratic",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        13
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": false,
+        "EVAL2": true,
+        "EVAL1": false,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF17",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF17.md",
+      "blob": "bbc831b6b3309620803496a817c9c9e9e589eb33",
+      "kind": "quadratic",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        9
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": true,
+        "EVAL2": false,
+        "EVAL1": false,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF18",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF18.md",
+      "blob": "77cd158f4c88a5f194d0be284dd32adef09cb223",
+      "kind": "quadratic",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        10
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": false,
+        "EVAL2": false,
+        "EVAL1": true,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF19",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF19.md",
+      "blob": "d32f57713d354aa448b55b5efe7589a2d1bfc051",
+      "kind": "quadratic",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        9,
+        12
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": false,
+        "EVAL2": true,
+        "EVAL1": true,
+        "INV": false
+      }
+    },
+    {
+      "id": "GF20",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_benchmark21/cases/GF20.md",
+      "blob": "b21a8d308b8b94f82ddc9403cdd9654550e6301c",
+      "kind": "quadratic",
+      "candidate_lines": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "oracle_true_lines": [
+        9,
+        11
+      ],
+      "truth_by_predicate": {
+        "INJ": false,
+        "FIX": false,
+        "EVAL2": true,
+        "EVAL1": true,
+        "INV": false
+      }
+    }
+  ]
+}
