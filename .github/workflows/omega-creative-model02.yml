@@ -1,0 +1,170 @@
+name: Omega Creative02 - zero-shot Qwen representation proposal and independent exact grading
+
+on:
+  push:
+    branches:
+      - experiment/omega-creative-model02-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-creative02-pinned-model
+  cancel-in-progress: false
+
+jobs:
+  offline-safety-and-frozen-corpus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Independent brute-reference exhaustive tests, AST sandbox and mock proposals
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/creative_model02
+          python -m unittest -v test_creative_model.py
+
+  pinned-cpu-proposals:
+    needs: offline-safety-and-frozen-corpus
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Cache pinned llama.cpp code and CPU compilation
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/llama.cpp
+          key: omega11-llama-server-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - name: Verify and build pinned open-source llama.cpp
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega11/llama.cpp"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+            git -C "$BASE" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "5a4afd80779ba51166b59986e61a0bfbb9e1a4c6"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_UI=OFF -DLLAMA_USE_PREBUILT_UI=OFF \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - name: Cache pinned Qwen2.5-Coder-3B quantized weights
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/model.gguf
+          key: omega11-qwen2p5-coder3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7
+      - name: Download weights only if missing and cryptographically verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL="$HOME/.cache/omega11/model.gguf"
+          mkdir -p "$(dirname "$MODEL")"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf" -o "$MODEL"
+          fi
+          echo "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7  $MODEL" | sha256sum -c -
+      - name: Propose exactly three raw transformations BEFORE any holdout grading
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HOME/.cache/omega11/llama.cpp/build/bin/llama-server" \
+            -m "$HOME/.cache/omega11/model.gguf" -c 8192 -t 4 \
+            --host 127.0.0.1 --port 8091 > /tmp/omega-creative02-llama.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+          python - <<'PY'
+          import json,time,urllib.request
+          for _ in range(120):
+              try:
+                  with urllib.request.urlopen('http://127.0.0.1:8091/health',timeout=2) as r:
+                      if json.loads(r.read()).get('status')=='ok':
+                          print('PINNED_CPU_MODEL_READY',flush=True)
+                          break
+              except Exception:
+                  pass
+              time.sleep(2)
+          else:
+              raise SystemExit('LOCAL_MODEL_NOT_AVAILABLE')
+          PY
+          python 09_INFRASTRUCTURE_AGENTIQUE/creative_model02/propose.py \
+            --output /tmp/creative02-model/frozen-proposals.json
+      - name: Preserve unedited model replies before any grading can execute
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-creative02-raw-qwen-proposals-before-gold
+          path: |
+            /tmp/creative02-model/
+            /tmp/omega-creative02-llama.log
+          retention-days: 30
+          if-no-files-found: warn
+
+  after-freeze-independent-grading:
+    needs: pinned-cpu-proposals
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Download already-published frozen inference artifact, not model server
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-creative02-raw-qwen-proposals-before-gold
+          path: /tmp/creative02-inference
+      - name: Grade original proposals on 96 newly generated cases and 8191 exhaustive strings
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/creative_model02/grade.py \
+            --frozen /tmp/creative02-inference/frozen-proposals.json \
+            --output /tmp/creative02-grading/model-representation-audit.json
+      - name: Assert no false promotion regardless of candidate success
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('/tmp/creative02-grading/model-representation-audit.json').read_text(encoding='utf8'))
+          assert d['run_status']=='EVALUATED_FROZEN_PROPOSALS'
+          assert d['holdout_cases']==80 and d['metamorphic_cases']==16
+          assert d['exhaustive_cases']==8191
+          assert d['strong_baseline_correct']==8287
+          assert d['weak_direct_baseline_correct']==8287
+          assert d['independent_oracles_agreed']
+          assert len(d['assessment'])==3
+          assert d['raw_proposals_unchanged']
+          assert not d['general_equivalence_proved']
+          assert not d['spontaneous_general_creativity_proved']
+          assert d['new_mathematical_theorems']==0
+          assert d['scientific_autopromotions']==0
+          print('REAL_MODEL_PROPOSALS_ACCEPTED',d['model_proposals_accepted'])
+          print('EXACT_ON_FINITE_BOUND',d['model_proposals_bounded_equivalent'])
+          for r in d['assessment']:
+              print('CANDIDATE',r['attempt'],r['status'],r['parse_error'],
+                    'RESERVED',r['holdout_correct'],'/',r['holdout_count'],
+                    'EXHAUSTIVE',r['exhaustive_correct'],'/',r['exhaustive_count'])
+          PY
+      - name: Archive all graded results including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-creative02-post-frozen-verdicts-and-counterexamples
+          path: /tmp/creative02-grading/
+          retention-days: 30
+          if-no-files-found: warn
