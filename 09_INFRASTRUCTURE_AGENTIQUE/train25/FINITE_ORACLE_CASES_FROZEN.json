@@ -1,0 +1,213 @@
+{
+  "seed": "0x2525abcd",
+  "heldout_truth_not_visible_to_generator": true,
+  "xor": [
+    {
+      "id": "X01",
+      "n": 5,
+      "moves": [
+        30,
+        25
+      ],
+      "start": 16,
+      "target": 14,
+      "reachable": true
+    },
+    {
+      "id": "X02",
+      "n": 6,
+      "moves": [
+        7,
+        28,
+        1,
+        21
+      ],
+      "start": 49,
+      "target": 51,
+      "reachable": false
+    },
+    {
+      "id": "X03",
+      "n": 7,
+      "moves": [
+        4,
+        15
+      ],
+      "start": 97,
+      "target": 106,
+      "reachable": true
+    },
+    {
+      "id": "X04",
+      "n": 8,
+      "moves": [
+        83,
+        111,
+        119,
+        13
+      ],
+      "start": 212,
+      "target": 255,
+      "reachable": false
+    },
+    {
+      "id": "X05",
+      "n": 5,
+      "moves": [
+        2,
+        4,
+        9
+      ],
+      "start": 12,
+      "target": 3,
+      "reachable": true
+    },
+    {
+      "id": "X06",
+      "n": 6,
+      "moves": [
+        53,
+        45,
+        39
+      ],
+      "start": 29,
+      "target": 14,
+      "reachable": false
+    },
+    {
+      "id": "X07",
+      "n": 7,
+      "moves": [
+        18,
+        50,
+        2
+      ],
+      "start": 114,
+      "target": 96,
+      "reachable": true
+    },
+    {
+      "id": "X08",
+      "n": 8,
+      "moves": [
+        149,
+        43,
+        100,
+        69
+      ],
+      "start": 238,
+      "target": 223,
+      "reachable": false
+    },
+    {
+      "id": "X09",
+      "n": 5,
+      "moves": [
+        7,
+        25,
+        15
+      ],
+      "start": 31,
+      "target": 14,
+      "reachable": true
+    },
+    {
+      "id": "X10",
+      "n": 6,
+      "moves": [
+        40,
+        61,
+        30,
+        12
+      ],
+      "start": 61,
+      "target": 10,
+      "reachable": false
+    },
+    {
+      "id": "X11",
+      "n": 7,
+      "moves": [
+        123,
+        112
+      ],
+      "start": 49,
+      "target": 74,
+      "reachable": true
+    },
+    {
+      "id": "X12",
+      "n": 8,
+      "moves": [
+        193,
+        22,
+        23
+      ],
+      "start": 160,
+      "target": 2,
+      "reachable": false
+    }
+  ],
+  "parentheses": [
+    {
+      "id": "P01",
+      "s": "",
+      "balanced": true
+    },
+    {
+      "id": "P02",
+      "s": "()",
+      "balanced": true
+    },
+    {
+      "id": "P03",
+      "s": "(())",
+      "balanced": true
+    },
+    {
+      "id": "P04",
+      "s": "()()",
+      "balanced": true
+    },
+    {
+      "id": "P05",
+      "s": "(()())",
+      "balanced": true
+    },
+    {
+      "id": "P06",
+      "s": "(()(()))",
+      "balanced": true
+    },
+    {
+      "id": "P07",
+      "s": "(",
+      "balanced": false
+    },
+    {
+      "id": "P08",
+      "s": "())",
+      "balanced": false
+    },
+    {
+      "id": "P09",
+      "s": "(()",
+      "balanced": false
+    },
+    {
+      "id": "P10",
+      "s": "())(",
+      "balanced": false
+    },
+    {
+      "id": "P11",
+      "s": "())())",
+      "balanced": false
+    },
+    {
+      "id": "P12",
+      "s": "(()))(",
+      "balanced": false
+    }
+  ]
+}
