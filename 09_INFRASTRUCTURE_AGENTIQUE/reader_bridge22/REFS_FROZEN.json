@@ -1,0 +1,47 @@
+{
+  "experiment": "OMEGA_READER22_BIB_METADATA_CALIBRATION",
+  "status": "KNOWN_REFERENCES_POSTHOC_NOT_BLIND",
+  "source_path": "02_MATHEMATIQUES/observabilite_temporelle/sources/AUDIT_V11_V8_PREUVE_ET_NOUVEAUTE.md",
+  "source_git_blob": "bf10028da39306aedec6c4e1567d501172552258",
+  "references": [
+    {
+      "id": "R22-1",
+      "title": "Observable Graphs",
+      "year": 2011,
+      "source_author": "Jungers"
+    },
+    {
+      "id": "R22-2",
+      "title": "Observability of Boolean Networks: A Graph-Theoretic Approach",
+      "year": 2013,
+      "source_author": "Laschov"
+    },
+    {
+      "id": "R22-3",
+      "title": "Temporal correlations in the simplest measurement sequences",
+      "year": 2022,
+      "source_author": "Vieira"
+    }
+  ],
+  "decoys": [
+    {
+      "id": "D22-1",
+      "from": "R22-1",
+      "mutate": "year_plus_one"
+    },
+    {
+      "id": "D22-2",
+      "from": "R22-2",
+      "mutate": "title",
+      "title": "Observability of Boolean Networks: A Spurious Approach"
+    },
+    {
+      "id": "D22-3",
+      "from": "R22-3",
+      "mutate": "title",
+      "title": "The P equals NP proof"
+    }
+  ],
+  "independent_human_annotations": false,
+  "mathematical_assertions_verified": false
+}
