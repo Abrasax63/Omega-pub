@@ -1,0 +1,25 @@
+{
+  "status": "PROSPECTIVE_FOR_READER17_ONLY",
+  "model_not_yet_run_at_manifest_commit": true,
+  "reference_labels": "NOT_AVAILABLE",
+  "documents": [
+    {
+      "id": "CL-DYN-RECONCILIATION",
+      "path": "02_MATHEMATIQUES/defauts_recollement/RECONCILIATION_CL_DYN_01_04.md",
+      "blob": "93a66d75605060a4a70185eabc04e07c1fd3f06b",
+      "bytes": 10100
+    },
+    {
+      "id": "CL-DYN-OBS-V8-RECONCILIATION",
+      "path": "02_MATHEMATIQUES/observabilite_temporelle/RECONCILIATION_CL_DYN_OBS_V8.md",
+      "blob": "3716a258530a7f7aefecddd18acd7d7ae694c1f7",
+      "bytes": 3093
+    },
+    {
+      "id": "V11-V8-AUDIT",
+      "path": "02_MATHEMATIQUES/observabilite_temporelle/sources/AUDIT_V11_V8_PREUVE_ET_NOUVEAUTE.md",
+      "blob": "bf10028da39306aedec6c4e1567d501172552258",
+      "bytes": 6672
+    }
+  ]
+}
