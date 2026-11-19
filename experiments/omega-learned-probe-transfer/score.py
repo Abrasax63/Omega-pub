@@ -5,8 +5,8 @@ import hashlib
 import re
 from pathlib import Path
 
-from pilot import ENGINE, HERE, SCHEDULE, SOURCE_GRAMMAR, TARGET_SYSTEM, WEIGHTS
-from pilot import decode, observe, read_json, request_params, save, target_grammar, target_prompt
+from pilot import ENGINE, HERE, MEMO_GRAMMAR, SCHEDULE, SOURCE_GRAMMAR, TARGET_SYSTEM, WEIGHTS
+from pilot import decode, memo_text, observe, read_json, request_params, save, target_grammar, target_prompt
 
 
 def measurements(case, word):
@@ -52,11 +52,13 @@ def score(acquired_path, raw_path):
         raise ValueError("acquisition or runtime mismatch")
     if acquired["probe"]["request"].get("grammar") != SOURCE_GRAMMAR:
         raise ValueError("unexpected source decoding contract")
+    if acquired["reflection"]["request"].get("grammar") != MEMO_GRAMMAR:
+        raise ValueError("unexpected memo decoding contract")
     probe = decode(acquired["probe"], 40)
     reflection = decode(acquired["reflection"], 160)
     if probe and observe(probe["text"]) != acquired["trace"]:
         raise ValueError("source feedback does not replay")
-    note = reflection["text"] if reflection else ""
+    note = memo_text(reflection)
     tasks = read_json(HERE / "tasks.json")
     if [(r["case"], r["arm"]) for r in raw["targets"]] != list(SCHEDULE):
         raise ValueError("target schedule mismatch")

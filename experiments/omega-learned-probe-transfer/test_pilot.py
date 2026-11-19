@@ -1,7 +1,7 @@
 import itertools
 import unittest
 
-from pilot import SCHEDULE, SOURCE_GRAMMAR, observe, request_params, target_grammar, target_prompt
+from pilot import SCHEDULE, SOURCE_GRAMMAR, memo_text, observe, request_params, target_grammar, target_prompt
 from score import grade, measurements
 
 
@@ -41,3 +41,9 @@ class TransferTest(unittest.TestCase):
             self.assertIn('"NONE" | ("ORDRE" | "CHARGE")', params["grammar"])
             self.assertIn(f"[FG]{{{length}}}", params["grammar"])
             self.assertEqual(params["max_tokens"], 64)
+
+    def test_refusal_is_not_classified_as_a_memo(self):
+        self.assertEqual(memo_text({"text": "NONE"}), "")
+        self.assertEqual(memo_text({"text": "Je ne peux pas vous aider."}), "")
+        formatted = "METHODE: Faire deux essais.\nLIMITE: Comparabilité.\nAUTRE ESSAI: Modifier un facteur."
+        self.assertEqual(memo_text({"text": formatted}), formatted)

@@ -14,6 +14,10 @@ ENGINE = "5a4afd80779ba51166b59986e61a0bfbb9e1a4c6"
 SCHEDULE = (("order", "MEMO"), ("order", "SANS_MEMO"),
             ("limit", "SANS_MEMO"), ("limit", "MEMO"))
 SOURCE_GRAMMAR = 'root ::= ("SAME" | "DIFFERENT") " " word " " word\nword ::= [AB]{2,5}\n'
+MEMO_GRAMMAR = (
+    r'root ::= "NONE" | "METHODE: " line "\nLIMITE: " line "\nAUTRE ESSAI: " line' "\n"
+    r'line ::= [^\n\r]{3,112}' "\n"
+)
 TARGET_SYSTEM = (
     "Résous le problème courant. Format unique : ORDRE MOT1 MOT2 si tu varies "
     "l'ordre à composition constante, CHARGE MOT1 MOT2 si tu varies la composition, "
@@ -105,6 +109,20 @@ def observe(reply):
     }
 
 
+def memo_text(reflection):
+    text = reflection["text"] if reflection else ""
+    return text if re.fullmatch(
+        r"METHODE: [^\n\r]{3,112}\nLIMITE: [^\n\r]{3,112}\nAUTRE ESSAI: [^\n\r]{3,112}", text
+    ) else ""
+
+
+def observation_description(trace):
+    if trace["status"] != "OBSERVED":
+        return "Aucune observation valide."
+    return "\n".join(f"Séquence {word}. Mesure finale {value}."
+                     for word, value in zip(trace["words"], trace["outputs"]))
+
+
 def acquire(output):
     probe = complete(
         "Tu conçois une expérience. Format exact : SAME MOT1 MOT2 ou DIFFERENT MOT1 MOT2.",
@@ -121,13 +139,15 @@ def acquire(output):
     result = {"weights_sha256": WEIGHTS, "llama_cpp_commit": ENGINE, "probe": probe, "trace": trace}
     save(output, result)
     result["reflection"] = complete(
-        "Écris une note autonome en français. Une phrase sur la méthode. Une sur sa "
-        "limite. Une sur le prochain essai quand la méthode ne distingue rien. "
-        "Ne transforme pas une absence d'effet observé en preuve générale.",
-        "Voici le relevé des essais que tu as choisis sur l'appareil audio. "
-        "Quels tests conseillerais-tu sur un autre problème, à partir des observations ?\n"
-        + json.dumps(trace, ensure_ascii=False),
+        "Rédige en français le carnet de laboratoire d'une expérience mathématique simulée. "
+        "Une phrase courte par champ : METHODE, LIMITE, AUTRE ESSAI. Réponds NONE si "
+        "aucune méthode ne peut être consignée à partir du relevé.",
+        observation_description(trace)
+        + "\nLes deux essais ont redémarré dans le même état. "
+        "Quelle procédure conseiller à un autre expérimentateur qui cherche un effet de l'ordre ? "
+        "Quelle est sa limite et quel autre essai faire si elle ne départage pas les hypothèses ?",
         160,
+        MEMO_GRAMMAR,
     )
     save(output, result)
 
@@ -140,7 +160,7 @@ def target_prompt(task, trace, note):
 def transfer(acquired, output):
     acquisition = read_json(acquired)
     reflection = decode(acquisition["reflection"], 160)
-    note = reflection["text"] if reflection else ""
+    note = memo_text(reflection)
     tasks = read_json(HERE / "tasks.json")
     result = {"acquired": acquisition, "budget": {"cap": 64, "n_ctx": 4096}, "targets": []}
     for case, arm in SCHEDULE:
