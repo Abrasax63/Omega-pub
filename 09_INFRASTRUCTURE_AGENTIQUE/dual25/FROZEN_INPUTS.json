@@ -1,0 +1,228 @@
+{
+  "status": "FROZEN_BEFORE_SECOND_FORMALIZER_CODE",
+  "reference_commit": "8822669abc397617dd224f1d08409cb27c9e2a82",
+  "reference_pr": 209,
+  "prereg_commit": "86699e2faa1c6245016575145a6161bce52896ff",
+  "case_manifest_blob": "a3c47a21572408576a47dda2e4e964d597711df3",
+  "case_spec_blob": "148f6e035900a74524bf62c6d67b257d41d9c326",
+  "external_six_blob": "00b74a3e54c2b012239d6415373e76ed472ebd9b",
+  "external_twelve_blob": "c578fdd148db45be75cbf4218d04384bacdd003c",
+  "n_controls": 24,
+  "n_short_external": 18,
+  "labels": "AUTHOR_DESIGNED_FOR_CONTRACT_NOT_HUMAN_GOLD",
+  "independent_human_annotation_status": "NONE_COLLECTED",
+  "documents": [
+    {
+      "id": "TA01",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA01.md",
+      "blob": "90e26f4ed7412917fa6a7f8096334489de04d7ca"
+    },
+    {
+      "id": "TA02",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA02.md",
+      "blob": "1614e2ab6b14d105b3020fc041cc4715af9ee2e0"
+    },
+    {
+      "id": "TA03",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA03.md",
+      "blob": "c4280965e61176798d0087623b51769fde35220b"
+    },
+    {
+      "id": "TA04",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA04.md",
+      "blob": "31c4ff9069153ff17369f9a5e0cdd57676e66065"
+    },
+    {
+      "id": "TA05",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA05.md",
+      "blob": "6b7267ad6f366caca8615dc5c3ebdaec18415505"
+    },
+    {
+      "id": "TA06",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA06.md",
+      "blob": "7e2ca6cb4ad9baa8dec527c3f0fc2bd8a6eabe3f"
+    },
+    {
+      "id": "TA07",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA07.md",
+      "blob": "e72a7304ec8621c51a7e9e5a055c813c3f3b2385"
+    },
+    {
+      "id": "TA08",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA08.md",
+      "blob": "5d2dadc2a04fe1dc4868ded348c09d9ef6d7e886"
+    },
+    {
+      "id": "TA09",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA09.md",
+      "blob": "268b11fb419587078283f203ffd7799cf6eddd01"
+    },
+    {
+      "id": "TA10",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA10.md",
+      "blob": "bdd566cafc90ad357b03719b2b87d9de8f6834df"
+    },
+    {
+      "id": "TA11",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA11.md",
+      "blob": "b66555a467b64ebab0532d23eccc8681f23193f3"
+    },
+    {
+      "id": "TA12",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA12.md",
+      "blob": "b7dcfc9f554c916bba4277c988f7f87226a6dc8d"
+    },
+    {
+      "id": "TA13",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA13.md",
+      "blob": "f5e96469426ed5329a4b9ad3667aa313b197f6a5"
+    },
+    {
+      "id": "TA14",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA14.md",
+      "blob": "776ce8b0abd9b5ebb0161aebc7becf8cd2a8afc6"
+    },
+    {
+      "id": "TA15",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA15.md",
+      "blob": "02043e9683aa5b7327e9ec9971282915a081bc99"
+    },
+    {
+      "id": "TA16",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA16.md",
+      "blob": "4eca1c467c6fab27cd0149a91a7bf5ba9b902f34"
+    },
+    {
+      "id": "TA17",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA17.md",
+      "blob": "dfa86d15eeb4d7484db96edbf3020bb5a51a7ec6"
+    },
+    {
+      "id": "TA18",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA18.md",
+      "blob": "79ce88406d33d68375fdd26951de70e29b0edc96"
+    },
+    {
+      "id": "TA19",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA19.md",
+      "blob": "67d65fef3b8360fd6e23351fec638858c7f20e00"
+    },
+    {
+      "id": "TA20",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA20.md",
+      "blob": "91de4435e6cd1340a0fbdbb8152345bedf4762ca"
+    },
+    {
+      "id": "TA21",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA21.md",
+      "blob": "a6b22f523bdfb94553eb5cb6a1eff8137da1ecee"
+    },
+    {
+      "id": "TA22",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA22.md",
+      "blob": "0d78b8f9c18f782a4170da1292e465ce49c6d7d9"
+    },
+    {
+      "id": "TA23",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA23.md",
+      "blob": "806ce63569806eab1c1215b666507aae64f657eb"
+    },
+    {
+      "id": "TA24",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/typed24/cases/TA24.md",
+      "blob": "011747704330fa42291c2e3a83a47308ce3e9435"
+    }
+  ],
+  "external_sources": [
+    {
+      "id": "HU01",
+      "source_url": "https://math.stackexchange.com/questions/2200672/find-the-roots-of-fx-x2x1-modulo-7-and-modulo-13-and-modulo-91",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "HU02",
+      "source_url": "https://math.stackexchange.com/questions/307514/hensel-lifting-and-solving-with-mods",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "HU03",
+      "source_url": "https://math.stackexchange.com/questions/956895/how-did-we-find-the-solution",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "HU04",
+      "source_url": "https://math.stackexchange.com/questions/215487/function-that-sends-1-2-3-4-to-0-1-1-0-respectively/217736",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "HU05",
+      "source_url": "https://math.stackexchange.com/questions/tagged/modular-arithmetic?page=188&tab=Newest",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "HU06",
+      "source_url": "https://math.stackexchange.com/questions/315232/is-there-a-pattern-or-a-name-and-expression-for-the-pattern-of-the-intervals-b",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX01",
+      "source_url": "https://math.stackexchange.com/questions/3091527/bijective-function-using-modular-multiplicative-inverse",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX02",
+      "source_url": "https://math.stackexchange.com/questions/3022985/multiplication-by-k-is-a-bijection-bmod-n-iff-gcdk-n-1",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX03",
+      "source_url": "https://math.stackexchange.com/questions/799255/polynomial-that-is-surjective-mod-n-for-all-n",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX04",
+      "source_url": "https://math.stackexchange.com/questions/3318930/input-and-output-of-function-using-congruence-classes-modulo-n-show-neither-sur",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX05",
+      "source_url": "https://math.stackexchange.com/questions/1973680/bijection-of-modular-functions",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX06",
+      "source_url": "https://math.stackexchange.com/questions/1471511/modulo-arithmetic-in-mod-12",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX07",
+      "source_url": "https://math.stackexchange.com/questions/2423412/question-about-showing-bijection-when-proving-an-isomorphism",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX08",
+      "source_url": "https://math.stackexchange.com/questions/4021941/x1-choose-2-fracx1x2-is-a-bijection-on-bbb-z-m-iff-m-2k",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX09",
+      "source_url": "https://math.stackexchange.com/questions/3038670/what-is-an-irreducible-element-in-bbbz-6x",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX10",
+      "source_url": "https://math.stackexchange.com/questions/151530/the-number-of-elements-which-are-squares-in-a-finite-field",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX11",
+      "source_url": "https://fr.wikipedia.org/wiki/Application_(mathématiques)",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    },
+    {
+      "id": "EX12",
+      "source_url": "https://fr.wikipedia.org/wiki/Théorème_du_point_fixe_de_Lefschetz",
+      "sha256": "TO_BE_RECHECKED_FROM_LITERAL"
+    }
+  ]
+}

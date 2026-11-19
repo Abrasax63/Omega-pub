@@ -1,0 +1,76 @@
+name: Omega DUAL25 - dual formalizers, counterwitnesses and human review gate
+on:
+  push:
+    branches:
+      - experiment/omega-dual25-formalizer-fidelity-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-dual25-semantic-consensus
+  cancel-in-progress: false
+
+jobs:
+  independent-algorithms-local-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test both formalizers, false consensus and source provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/dual25
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/dual25 \
+            -p 'test_*.py' -v \
+            2>&1 | tee /tmp/dual25/unit-tests.log
+          python 09_INFRASTRUCTURE_AGENTIQUE/dual25/experiment.py \
+            --report /tmp/dual25/results.json \
+            --review-packet /tmp/dual25/HUMAN_REVIEW_PACKET.json \
+            --markdown /tmp/dual25/RESULT.md
+          python 09_INFRASTRUCTURE_AGENTIQUE/dual25/review_intake.py \
+            --packet /tmp/dual25/HUMAN_REVIEW_PACKET.json \
+            --blank-form /tmp/dual25/HUMAN_ANNOTATION_BLANK_FORM.json \
+            --status /tmp/dual25/human-annotation-status.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path("/tmp/dual25/results.json").read_text())
+          packet=json.loads(Path("/tmp/dual25/HUMAN_REVIEW_PACKET.json").read_text())
+          assert data["status"] == "DUAL25_MECHANICAL_ABLATION_COMPLETED"
+          assert data["source_controlled_contracts"] == 24
+          assert data["machine_agreement_count"] == 13
+          assert data["withheld_cases"] == 11
+          assert data["discriminating_interpretation_witnesses"] >= 2
+          assert data["external_short_sources"] == 18
+          assert data["external_claims_verified"] == 0
+          assert data["sem22_original_exact_claims_rechecked"] == 168
+          assert data["independent_human_reference_status"] == "PENDING_NO_HUMAN_GOLD"
+          assert data["can_measure_fidelity_to_real_human_intent"] is False
+          assert packet["human_annotation_status"] == "PENDING_NOT_PERFORMED"
+          assert packet["source_count"] == 42
+          intake=json.loads(Path("/tmp/dual25/human-annotation-status.json").read_text())
+          assert intake["status"] == "PENDING_INDEPENDENT_HUMAN_ANNOTATIONS"
+          assert intake["human_semantic_fidelity_estimate"] is None
+          assert intake["human_annotations_submitted"] == 0
+          assert data["automatic_formal_certifications"] == 0
+          print("DUAL25_STRUCTURAL_AGREEMENT", data["machine_agreement_count"], "/24", flush=True)
+          print("DUAL25_WITHHELD", data["withheld_cases"], "/24", flush=True)
+          print("DUAL25_HUMAN_FIDELITY", "UNMEASURED", flush=True)
+          PY
+      - name: Archive full diagnostic, counterexamples and blind human review packet
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dual25-two-formalizers-and-human-review-packet
+          path: /tmp/dual25/
+          retention-days: 14
+          if-no-files-found: warn
