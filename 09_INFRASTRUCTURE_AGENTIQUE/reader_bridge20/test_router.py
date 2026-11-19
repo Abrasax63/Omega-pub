@@ -66,12 +66,14 @@ class AutomaticExactRouterTests(unittest.TestCase):
         self.assertFalse(control["promotion_allowed"])
 
     def test_source_hash_tamper_fails_closed(self):
+        import tempfile
         mutated = self.raw.replace(b"29 * 5 = 145", b"29 * 5 = 146", 1)
         self.assertNotEqual(mutated, self.raw)
-        with self.assertRaises(ValueError):
-            # The source must first pass the frozen blob pin.
-            path = HERE / "NO_SUCH_SOURCE"
-            safe_read(path, SOURCE_BLOB)
+        with tempfile.TemporaryDirectory() as folder:
+            changed = Path(folder) / "CASES_FROZEN.md"
+            changed.write_bytes(mutated)
+            with self.assertRaisesRegex(ValueError, "source changed after pin"):
+                safe_read(changed, SOURCE_BLOB)
 
     def test_missing_limits_and_operand_replacement_rejected(self):
         first = self.blocks[0]
