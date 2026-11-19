@@ -3,7 +3,9 @@ on:
   pull_request:
     paths:
       - 'tools/repro_fingerprint.py'
+      - 'tools/repro_history_pilot.py'
       - 'tests/test_repro_fingerprint.py'
+      - 'tests/test_repro_history_pilot.py'
       - '.github/workflows/repro-fingerprint-pilot.yml'
   workflow_dispatch:
 jobs:
@@ -18,3 +20,5 @@ jobs:
           python-version: '3.12'
       - name: Run isolated fingerprint regression tests
         run: python -m unittest discover -s tests -p 'test_repro_fingerprint.py' -v
+      - name: Run isolated history regression tests
+        run: python -m unittest discover -s tests -p 'test_repro_history_pilot.py' -v
