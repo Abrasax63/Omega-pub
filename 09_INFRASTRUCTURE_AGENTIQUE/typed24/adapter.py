@@ -61,8 +61,10 @@ def _status(status: str, reason: str, *, blob:str, source_path:str,
 
 
 def parse_source(raw:bytes,source_path:str)->tuple[dict,dict]:
-    if not isinstance(raw,bytes) or not (20 <= len(raw) <= SOURCE_CAP):
-        raise ValueError("INVALID_SOURCE_SIZE")
+    if not isinstance(raw,bytes) or len(raw)>SOURCE_CAP:
+        raise ValueError("INVALID_SOURCE_SIZE_OR_TYPE")
+    if len(raw)<20:
+        return {"status":"INDETERMINATE","reason":"TOO_SHORT_FOR_COMPLETE_DOCUMENT"},{}
     try:
         lines=raw.decode("utf8",errors="strict").splitlines()
     except UnicodeDecodeError as e:
