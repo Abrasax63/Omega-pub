@@ -1,0 +1,2 @@
+witness {'projections': 2, 'empty': 2, 'old_errors': 2, 'new_errors': 0, 'locality_errors': 0, 'seconds': [1.8e-05, 7e-06, 3.2e-05]}
+reserved {'projections': 4536, 'empty': 456, 'old_errors': 276, 'new_errors': 0, 'locality_errors': 0, 'seconds': [0.137323, 0.134754, 1.06501]}
