@@ -1,0 +1,36 @@
+{
+  "rows": [
+    {
+      "target_bytes": 1024,
+      "actual_bytes": 1024,
+      "json_bytes": 262,
+      "reference_us": 88.866,
+      "candidate_us": 90.265,
+      "overhead_pct": 1.57,
+      "exact_output_equal": true
+    },
+    {
+      "target_bytes": 16384,
+      "actual_bytes": 16384,
+      "json_bytes": 262,
+      "reference_us": 558.531,
+      "candidate_us": 534.484,
+      "overhead_pct": -4.31,
+      "exact_output_equal": true
+    },
+    {
+      "target_bytes": 65536,
+      "actual_bytes": 65536,
+      "json_bytes": 262,
+      "reference_us": 1852.08,
+      "candidate_us": 1866.493,
+      "overhead_pct": 0.78,
+      "exact_output_equal": true
+    }
+  ],
+  "negative": {
+    "reference_accepted": true,
+    "candidate_rejected": true
+  },
+  "calls": 600
+}
