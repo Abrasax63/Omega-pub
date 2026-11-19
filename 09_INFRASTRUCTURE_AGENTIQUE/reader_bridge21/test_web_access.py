@@ -61,6 +61,26 @@ class WebAccessTests(unittest.TestCase):
         self.assertFalse(report["results"][1]["source_truth_automatically_certified"])
         self.assertFalse(report["arbitrary_url_fetch_enabled"])
 
+    def test_agent_query_can_vary_with_fixed_read_only_provider(self):
+        for question in ("finite systems with hidden state", "binary graph observability"):
+            transport=FakeTransport()
+            report=run_once(transport,query=question,mode="search")
+            self.assertEqual(report["http_requests_max"],1)
+            self.assertEqual(report["real_fetch_success_count"],1)
+            self.assertEqual(len(transport.calls),1)
+            self.assertIn("api.crossref.org/works?",transport.calls[0][0])
+            self.assertNotIn("raw.githubusercontent.com",transport.calls[0][0])
+            self.assertEqual(report["bibliographic_query"],question)
+            self.assertEqual(report["results"][0]["status"],"WEB_FETCHED_UNTRUSTED")
+        source_only=run_once(FakeTransport(),mode="source")
+        self.assertEqual(source_only["http_requests_max"],1)
+        self.assertEqual(source_only["results"][0]["kind"],"repo_markdown")
+        self.assertIsNone(source_only["bibliographic_query"])
+        with self.assertRaises(NetworkPolicyError):
+            run_once(FakeTransport(),query="x",mode="search")
+        with self.assertRaises(NetworkPolicyError):
+            run_once(FakeTransport(),mode="arbitrary")
+
     def test_reject_unsafe_url_hosts_and_credentials(self):
         url=crossref_url("finite dynamical systems observability")
         validate_fixed_url(url,source_kind="crossref")
