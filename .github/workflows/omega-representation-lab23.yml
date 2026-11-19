@@ -47,7 +47,9 @@ jobs:
           assert set(d['recipes_falsified'])=={'current_only','future_only','unordered_histogram'}
           assert d['calibration']['invariant_failure_count']==0
           assert d['reserved_validation']['invariant_failure_count']==0
-          assert d['calibration']['first_example_tight_n_bound'] is not None
+          assert d['calibration']['first_example_tight_n_bound'] is None
+          assert d['calibration']['first_example_tight_n_minus_1_bound'] is not None
+          assert d['falsified_preregistered_claim']['status']=='REFUTED_ON_EXHAUSTIVE_N2_N4'
           assert d['scientific_autopromotions']==0
           assert not d['novel_theorem_discovered']
           assert not d['independent_creativity_of_llm_demonstrated']
