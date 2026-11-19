@@ -1,0 +1,126 @@
+{
+  "sample_count": 24,
+  "meaning": "formal output strict gold, NOT consulted during train",
+  "labels": [
+    {
+      "id": "holdxor01",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "holdxor02",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "holdxor03",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "holdxor04",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "holdxor05",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "holdxor06",
+      "target": "EXPR: rank(moves) == rank(moves + [start ^ target])",
+      "domain": "xor_reachability"
+    },
+    {
+      "id": "holdpar01",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "holdpar02",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "holdpar03",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "holdpar04",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "holdpar05",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "holdpar06",
+      "target": "EXPR: sum_balance(s) == 0 and min_prefix_balance(s) >= 0",
+      "domain": "parenthesis_balance"
+    },
+    {
+      "id": "holdood01",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "holdood02",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "holdood03",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "holdood04",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "holdood05",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "holdood06",
+      "target": "ABSTAIN",
+      "domain": "unsupported"
+    },
+    {
+      "id": "holdtrans01",
+      "target": "ABSTAIN",
+      "domain": "transfer_unseen"
+    },
+    {
+      "id": "holdtrans02",
+      "target": "ABSTAIN",
+      "domain": "transfer_unseen"
+    },
+    {
+      "id": "holdtrans03",
+      "target": "ABSTAIN",
+      "domain": "transfer_unseen"
+    },
+    {
+      "id": "holdtrans04",
+      "target": "ABSTAIN",
+      "domain": "transfer_unseen"
+    },
+    {
+      "id": "holdtrans05",
+      "target": "ABSTAIN",
+      "domain": "transfer_unseen"
+    },
+    {
+      "id": "holdtrans06",
+      "target": "ABSTAIN",
+      "domain": "transfer_unseen"
+    }
+  ]
+}
