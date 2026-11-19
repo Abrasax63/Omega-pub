@@ -1,0 +1,173 @@
+{
+  "status": "FROZEN_BEFORE_EVALUATION_CODE",
+  "source_repository": "marcusm117/ProofNet-Verified",
+  "source_commit": "b7ca411a2abaa6caf3580192b30d865e5bd10bc4",
+  "upstream_license": "Apache-2.0",
+  "upstream_review_description": "Authors describe human reviewers plus an AI agent; NOT two independent new human annotations.",
+  "selection_method": "FIXED_DETERMINISTIC_INDICES_16_PRECOMMITTED_IN_PREREG",
+  "no_replacement": true,
+  "reference_kind": "PAIRED_CURATED_NATURAL_LANGUAGE_AND_LEAN4_THEOREM",
+  "n_cases": 16,
+  "items": [
+    {
+      "index": 1,
+      "path": "proofnet-verified-latest/proofnet-1.lean",
+      "git_blob": "2519a3145168d6591e66ad1dbd0bbd0a2270228c",
+      "informal_statement_found": true,
+      "informal_characters": 127,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 152,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-1.lean"
+    },
+    {
+      "index": 2,
+      "path": "proofnet-verified-latest/proofnet-2.lean",
+      "git_blob": "c3a154f14b851dfc7613dc653aeac8eca972ec63",
+      "informal_statement_found": true,
+      "informal_characters": 112,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 149,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-2.lean"
+    },
+    {
+      "index": 3,
+      "path": "proofnet-verified-latest/proofnet-3.lean",
+      "git_blob": "eeac07117ab0016db3ad04c6fba4983ef7905cb9",
+      "informal_statement_found": true,
+      "informal_characters": 67,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 126,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-3.lean"
+    },
+    {
+      "index": 6,
+      "path": "proofnet-verified-latest/proofnet-6.lean",
+      "git_blob": "ff21cbae939c93651ae27ab00b2b016873268c5a",
+      "informal_statement_found": true,
+      "informal_characters": 77,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 171,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-6.lean"
+    },
+    {
+      "index": 10,
+      "path": "proofnet-verified-latest/proofnet-10.lean",
+      "git_blob": "a245cd4f1b7b18b8f7d053a21b38e3e96fb634a8",
+      "informal_statement_found": true,
+      "informal_characters": 205,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 201,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-10.lean"
+    },
+    {
+      "index": 22,
+      "path": "proofnet-verified-latest/proofnet-22.lean",
+      "git_blob": "cae0325aa58eaf319746a59a0779c1cf22de6293",
+      "informal_statement_found": true,
+      "informal_characters": 121,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 191,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-22.lean"
+    },
+    {
+      "index": 40,
+      "path": "proofnet-verified-latest/proofnet-40.lean",
+      "git_blob": "cbc5195523ab9bc8617d5d67c488e05fea4075f7",
+      "informal_statement_found": true,
+      "informal_characters": 92,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 123,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-40.lean"
+    },
+    {
+      "index": 80,
+      "path": "proofnet-verified-latest/proofnet-80.lean",
+      "git_blob": "6dae1a50d6f5e0b523a4ed051966fc5876d13d69",
+      "informal_statement_found": true,
+      "informal_characters": 64,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 241,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-80.lean"
+    },
+    {
+      "index": 120,
+      "path": "proofnet-verified-latest/proofnet-120.lean",
+      "git_blob": "159eb92bfbe0345f8dd455d5b60864317ea754da",
+      "informal_statement_found": true,
+      "informal_characters": 155,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 326,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-120.lean"
+    },
+    {
+      "index": 160,
+      "path": "proofnet-verified-latest/proofnet-160.lean",
+      "git_blob": "bd09675efbac47dda1cf59453e51aecce1dd9bc6",
+      "informal_statement_found": true,
+      "informal_characters": 105,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 100,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-160.lean"
+    },
+    {
+      "index": 200,
+      "path": "proofnet-verified-latest/proofnet-200.lean",
+      "git_blob": "1c767750819738bc08acb92a361e8f7d8635ce93",
+      "informal_statement_found": true,
+      "informal_characters": 128,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 185,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-200.lean"
+    },
+    {
+      "index": 240,
+      "path": "proofnet-verified-latest/proofnet-240.lean",
+      "git_blob": "360724203f3734849f52daaf140880b642bcabdd",
+      "informal_statement_found": true,
+      "informal_characters": 47,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 127,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-240.lean"
+    },
+    {
+      "index": 280,
+      "path": "proofnet-verified-latest/proofnet-280.lean",
+      "git_blob": "de196bedc4f7083447f7d47d5a7ffac112dd5ad0",
+      "informal_statement_found": true,
+      "informal_characters": 141,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 209,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-280.lean"
+    },
+    {
+      "index": 320,
+      "path": "proofnet-verified-latest/proofnet-320.lean",
+      "git_blob": "5dff8c78b3aed702268c8a62933a1df90f91dc44",
+      "informal_statement_found": true,
+      "informal_characters": 49,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 67,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-320.lean"
+    },
+    {
+      "index": 350,
+      "path": "proofnet-verified-latest/proofnet-350.lean",
+      "git_blob": "084f1e8d44ed31ce7b48bd8586f01848f7e403c9",
+      "informal_statement_found": true,
+      "informal_characters": 220,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 149,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-350.lean"
+    },
+    {
+      "index": 367,
+      "path": "proofnet-verified-latest/proofnet-367.lean",
+      "git_blob": "96c909a023cc0e924ac69d090bd2f63c871f5d10",
+      "informal_statement_found": true,
+      "informal_characters": 234,
+      "lean_theorem_found": true,
+      "lean_theorem_characters": 340,
+      "source_url": "https://github.com/marcusm117/ProofNet-Verified/blob/b7ca411a2abaa6caf3580192b30d865e5bd10bc4/proofnet-verified-latest/proofnet-367.lean"
+    }
+  ]
+}
