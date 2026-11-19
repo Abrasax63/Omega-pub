@@ -1,0 +1,195 @@
+name: Omega CONTRAST27 - genuine external Lean matching with swapped candidates
+on:
+  push:
+    branches:
+      - experiment/omega-contrast27-external-lean-pairs-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-contrast27-external-lean-matching
+  cancel-in-progress: false
+
+jobs:
+  immutable-source-and-adversarial-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test position bias, wrong Lean, forged prompts, SHA and marker gate
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/contrast27-control
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/contrast27 \
+            -p 'test_*.py' -v 2>&1 | tee /tmp/contrast27-control/tests.log
+          python 09_INFRASTRUCTURE_AGENTIQUE/contrast27/paired.py \
+            --mode control --out /tmp/contrast27-control/manifest.json
+          python - <<'PY'
+          import json
+          x=json.load(open("/tmp/contrast27-control/manifest.json"))
+          assert x["status"]=="FROZEN_CONTROLS_VALIDATED"
+          assert x["n_cases"]==24
+          assert x["n_pairs"]==12
+          assert x["n_ordered_prompts"]==48
+          assert x["baseline_always_A_accuracy"] == 0.5
+          assert x["baseline_always_B_accuracy"] == 0.5
+          assert not x["decoy_non_equivalence_human_annotated"]
+          print("CONTRAST27_PINNED_PAIRS_OK",x["n_cases"],flush=True)
+          PY
+      - name: Archive exact source manifest validation and anti-bias tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contrast27-frozen-external-sources-and-tests
+          path: /tmp/contrast27-control/
+          retention-days: 14
+          if-no-files-found: warn
+
+  real-local-qwen-paired-selection:
+    needs: immutable-source-and-adversarial-controls
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      MODEL_SMALL_SHA: 74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+      MODEL_LARGE_SHA: 626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/llama.cpp
+          key: omega11-llama-server-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - name: Verify pinned llama.cpp CPU engine and compile
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega11/llama.cpp"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+            git -C "$BASE" checkout --detach 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "5a4afd80779ba51166b59986e61a0bfbb9e1a4c6"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja -DGGML_NATIVE=OFF \
+            -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega-reader18/qwen0p5b.gguf
+          key: reader18-qwen0p5b-74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega-reader18/qwen3b.gguf
+          key: reader18-qwen3b-626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d
+      - name: Download official Qwen 0.5B/3B Q4_K_M weights if missing and verify SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega-reader18"
+          mkdir -p "$BASE"
+          if [[ ! -f "$BASE/qwen0p5b.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 1500 \
+              https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf \
+              -o "$BASE/qwen0p5b.gguf"
+          fi
+          echo "$MODEL_SMALL_SHA  $BASE/qwen0p5b.gguf" | sha256sum -c -
+          if [[ ! -f "$BASE/qwen3b.gguf" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 1500 \
+              https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf \
+              -o "$BASE/qwen3b.gguf"
+          fi
+          echo "$MODEL_LARGE_SHA  $BASE/qwen3b.gguf" | sha256sum -c -
+      - name: Freeze exact offline copies of 24 upstream Git-verified source documents
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/contrast27/source-cache
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0,"09_INFRASTRUCTURE_AGENTIQUE/contrast27")
+          from paired import manifest
+          from runner import fetch_pinned
+          for doc in manifest()["source_docs"]:
+              raw=fetch_pinned(doc)
+              (Path("/tmp/contrast27/source-cache")/(str(doc["index"])+".lean")).write_bytes(raw)
+          print("CONTRAST27_PINNED_EXTERNAL_FILES_CACHED",24,flush=True)
+          PY
+          python 09_INFRASTRUCTURE_AGENTIQUE/contrast27/paired.py \
+            --mode control --offline-dir /tmp/contrast27/source-cache \
+            --out /tmp/contrast27/controls.json
+      - name: Make 96 real paired inference calls, both candidate orders, both models
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT=/tmp/contrast27
+          SERVER="$HOME/.cache/omega11/llama.cpp/build/bin/llama-server"
+          for MODEL_NAME in 0p5b 3b; do
+            "$SERVER" -m "$HOME/.cache/omega-reader18/qwen$MODEL_NAME.gguf" \
+              -c 4096 -t 4 --host 127.0.0.1 --port 8091 \
+              > "$OUT/$MODEL_NAME.server.log" 2>&1 &
+            PID=$!
+            trap 'kill "$PID" 2>/dev/null || true' EXIT
+            python - <<'PY'
+          import json,time,urllib.request
+          for attempt in range(120):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8091/health",timeout=2) as r:
+                      if json.loads(r.read()).get("status")=="ok":
+                          print("CONTRAST27_LOCAL_MODEL_READY",flush=True)
+                          break
+              except Exception:
+                  pass
+              time.sleep(2)
+          else:
+              raise SystemExit("PINNED_LOCAL_MODEL_NOT_READY")
+          PY
+            python 09_INFRASTRUCTURE_AGENTIQUE/contrast27/paired.py \
+              --mode model --model "$MODEL_NAME" \
+              --offline-dir "$OUT/source-cache" \
+              --out "$OUT/model-$MODEL_NAME.json"
+            kill "$PID" 2>/dev/null || true
+            wait "$PID" 2>/dev/null || true
+            trap - EXIT
+          done
+          python 09_INFRASTRUCTURE_AGENTIQUE/contrast27/paired.py \
+            --mode compare --control "$OUT/controls.json" \
+            --small "$OUT/model-0p5b.json" --large "$OUT/model-3b.json" \
+            --out "$OUT/comparison.json"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path("/tmp/contrast27/comparison.json").read_text())
+          assert report["status"]=="COMPLETED_EXTERNAL_CONTRASTIVE_SELECTION_PROXY"
+          assert report["original_reference_items"]==24
+          assert report["experimental_calls"]==96
+          assert report["always_A_or_B_chance_baseline"]==0.5
+          assert not report["decoy_non_equivalence_human_verified"]
+          assert report["cannot_claim_full_semantic_fidelity"]
+          for model,data in report["scores"].items():
+              print("CONTRAST27_MODEL",model,data["both"],flush=True)
+              print("CONTRAST27_STABILITY",model,data["stability"],flush=True)
+              print("CONTRAST27_STABLE_PLUS_MARKERS",model,data["stable_plus_markers"],flush=True)
+          PY
+      - name: Archive raw external original sources, both Lean options, every prompt/reply and metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contrast27-genuine-external-qwen-paired-order-swap-results
+          path: /tmp/contrast27/
+          retention-days: 14
+          if-no-files-found: warn
