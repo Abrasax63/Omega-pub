@@ -1,0 +1,77 @@
+name: Omega Reader20 - source-bound automatic exact verifier routing
+
+on:
+  push:
+    branches:
+      - experiment/omega-reader20-exact-auto-router-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-reader20-exact-auto-router
+  cancel-in-progress: false
+
+jobs:
+  autonomous-exact-routing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Unit tests — provenance, deterministic route, no promotion
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge20
+          python -m unittest -v test_router.py
+      - name: Run frozen 32-claim source → hypotheses → router → exact oracle
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge20/router.py \
+            --output /tmp/omega20/router-predictions.json
+      - name: Freeze decision hash then run independent reference oracles
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge20/independent_audit.py \
+            --router-output /tmp/omega20/router-predictions.json \
+            --output /tmp/omega20/independent-audit.json
+      - name: Enforce scientific scope and all supported/unsupported contracts
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('/tmp/omega20')
+          p=json.loads((root/'router-predictions.json').read_text(encoding='utf8'))
+          a=json.loads((root/'independent-audit.json').read_text(encoding='utf8'))
+          assert p['run_status']=='FINISHED_SOURCE_ROUTING'
+          assert p['routed_count']==24 and p['abstained_count']==8
+          assert p['route_counts']=={
+              'exact_natural_product':8,
+              'finite_map_congruence_count':8,
+              'finite_binary_difference':8,
+          }
+          assert p['automatic_scientific_promotions']==0
+          assert a['success'] and a['routed_correctly']==24
+          assert a['correct_exact_decisions']==24 and a['unsupported_cases_abstained']==8
+          assert a['errors']==0 and a['single_fixed_verifier_baseline_max_correct_route']==8
+          assert not a['new_general_mathematical_theorem']
+          assert not a['source_gold_independent_human']
+          assert a['scientific_auto_promotions']==0
+          print('ROUTING_WITHOUT_MANUAL_VERIFIER_SELECTION',a['success'])
+          print('RESULTS', {k:a[k] for k in (
+              'routed_correctly','correct_exact_decisions',
+              'unsupported_cases_abstained','true_propositions',
+              'false_propositions','single_fixed_verifier_baseline_max_correct_route'
+          )})
+          print('DECISIONS_SHA256',a['decisions_sha256_before_reference_comparison'])
+          PY
+      - name: Preserve raw source decision and independent validation even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-reader20-frozen-exact-route-and-audit
+          path: /tmp/omega20/
+          if-no-files-found: warn
+          retention-days: 30
