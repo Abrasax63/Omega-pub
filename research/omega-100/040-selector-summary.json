@@ -1,0 +1,30 @@
+{
+  "input_sha256": "a57c980fb3c3a20992ae5d721952da731803a02704fa855c7f5b51e7578da4d8",
+  "mode": "real_local_inference",
+  "cards": 8,
+  "oracle_positive": 6,
+  "reference": {
+    "tp": 3,
+    "fp": 21,
+    "fn": 3,
+    "tn": 21,
+    "correct_abstention": 0,
+    "abstention": 0,
+    "format_rejection": 0,
+    "inference_error": 0,
+    "ns": 6056
+  },
+  "model": {
+    "tp": 4,
+    "fp": 11,
+    "fn": 2,
+    "tn": 31,
+    "correct_abstention": 0,
+    "abstention": 1,
+    "format_rejection": 0,
+    "inference_error": 0,
+    "prompt_tokens": 1764,
+    "completion_tokens": 37,
+    "seconds": 34.599639
+  }
+}
