@@ -1,0 +1,84 @@
+{
+  "kind": "SYNTHETIC_AUTHOR_CONSTRUCTED_CASES_ORACLE_ARITHMETIC_NOT_HUMAN_ANNOTATED",
+  "created_before_inference": true,
+  "cases": [
+    {
+      "id": "S01",
+      "a": 4,
+      "b": 6,
+      "m": 7,
+      "order": [
+        "H",
+        "R1",
+        "D",
+        "R2",
+        "Q"
+      ]
+    },
+    {
+      "id": "S02",
+      "a": 8,
+      "b": 9,
+      "m": 11,
+      "order": [
+        "D",
+        "Q",
+        "H",
+        "R1",
+        "R2"
+      ]
+    },
+    {
+      "id": "S03",
+      "a": 3,
+      "b": 7,
+      "m": 13,
+      "order": [
+        "R2",
+        "H",
+        "R1",
+        "Q",
+        "D"
+      ]
+    },
+    {
+      "id": "S04",
+      "a": 11,
+      "b": 13,
+      "m": 17,
+      "order": [
+        "Q",
+        "D",
+        "R1",
+        "H",
+        "R2"
+      ]
+    },
+    {
+      "id": "S05",
+      "a": 8,
+      "b": 14,
+      "m": 19,
+      "order": [
+        "R1",
+        "R2",
+        "H",
+        "Q",
+        "D"
+      ]
+    },
+    {
+      "id": "S06",
+      "a": 15,
+      "b": 18,
+      "m": 23,
+      "order": [
+        "H",
+        "D",
+        "Q",
+        "R2",
+        "R1"
+      ]
+    }
+  ]
+}

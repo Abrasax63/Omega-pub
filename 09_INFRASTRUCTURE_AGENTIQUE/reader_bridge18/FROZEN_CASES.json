@@ -1,0 +1,61 @@
+{
+  "status": "FROZEN_BEFORE_ANY_MODEL_RUN",
+  "oracle_kind": "ARITHMETIC_EXACT_PLUS_AUTHOR_DEFINED_ROLES_NO_EXTERNAL_HUMAN_LABELS",
+  "source_commit_before_manifest": "8abed3aa599e3a7a580fd228f344752a37678f77",
+  "documents": [
+    {
+      "id": "S01",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18/cases/S01.md",
+      "blob": "83bfa13b0869c7a1b73c677ee9e3e0a607b496fd",
+      "conclusion_lines": [
+        6,
+        8
+      ]
+    },
+    {
+      "id": "S02",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18/cases/S02.md",
+      "blob": "72e9ead24d807668778c7cb54ac5abc119b516af",
+      "conclusion_lines": [
+        8,
+        9
+      ]
+    },
+    {
+      "id": "S03",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18/cases/S03.md",
+      "blob": "254270afd7945d42aa7cc1be230c5412b178b883",
+      "conclusion_lines": [
+        5,
+        7
+      ]
+    },
+    {
+      "id": "S04",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18/cases/S04.md",
+      "blob": "e999330eaa1b0fe3997e3f95611799428a4fc836",
+      "conclusion_lines": [
+        7,
+        9
+      ]
+    },
+    {
+      "id": "S05",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18/cases/S05.md",
+      "blob": "537a79c71e9420bdf5690fa77a581fceed7ec890",
+      "conclusion_lines": [
+        5,
+        6
+      ]
+    },
+    {
+      "id": "S06",
+      "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18/cases/S06.md",
+      "blob": "14c57757ff38adf88c26b308d1d0d044e51172d6",
+      "conclusion_lines": [
+        8,
+        9
+      ]
+    }
+  ]
+}
