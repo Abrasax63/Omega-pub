@@ -195,6 +195,29 @@ class IndependentFiniteCheckTests(unittest.TestCase):
                 self.assertEqual(r["status"],"UNSUPPORTED_SOURCE")
                 self.assertEqual(r["results"],[])
 
+    def test_noncanonical_residue_abstains_instead_of_wrong_false(self):
+        # In Z/6Z the class of 8 equals the class of 2; treating 8 as an
+        # ordinary integer would incorrectly mark a genuine equality false.
+        d=self.docs[0]
+        source=(ROOT/d["path"]).read_bytes().decode("utf8")
+        self.assertIn("Proposition : f(f(0)) = 2.",source)
+        revised=source.replace("Proposition : f(f(0)) = 2.",
+                               "Proposition : f(f(0)) = 8.").encode("utf8")
+        report=verify_source(revised,expected_blob=blob(revised),source_path="alternative-residue.md")
+        item=next(x for x in report["results"] if x["literal"]=="Proposition : f(f(0)) = 8.")
+        self.assertEqual(item["verdict"],"INDETERMINATE")
+        self.assertEqual(item["reason"],"NONCANONICAL_MODULAR_REPRESENTATIVE")
+        self.assertFalse(report["all_claims_checked"])
+
+    def test_noncanonical_source_definition_abstains(self):
+        d=self.docs[0]
+        source=(ROOT/d["path"]).read_bytes().decode("utf8")
+        altered=source.replace("(3*x + 5) mod 6.",
+                               "(03*x + 5) mod 6.").encode("utf8")
+        report=verify_source(altered,expected_blob=blob(altered),source_path="noncanonical.md")
+        self.assertEqual(report["status"],"UNSUPPORTED_SOURCE")
+        self.assertIn("NONCANONICAL_NUMERIC_DEFINITION",report["reason"])
+
     def test_false_statement_injection_cannot_override_domain(self):
         c=self.spec[0]
         source=(ROOT/self.docs[0]["path"]).read_bytes().decode("utf8")
