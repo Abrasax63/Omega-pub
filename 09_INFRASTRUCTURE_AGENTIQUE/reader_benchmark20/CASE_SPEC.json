@@ -1,0 +1,326 @@
+{
+  "status": "FROZEN_BEFORE_MODEL_RUN",
+  "description": "20 new mathematical cases; no BENCH19 BF cases reused",
+  "cases": [
+    {
+      "id": "CF01",
+      "kind": "affine",
+      "modulus": 6,
+      "a": 5,
+      "b": 2,
+      "c": 1,
+      "d": 3,
+      "order": [
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INJ",
+        "INV"
+      ]
+    },
+    {
+      "id": "CF02",
+      "kind": "affine",
+      "modulus": 8,
+      "a": 3,
+      "b": 6,
+      "c": 0,
+      "d": 1,
+      "order": [
+        "INJ",
+        "INV",
+        "EVAL1",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "CF03",
+      "kind": "affine",
+      "modulus": 10,
+      "a": 7,
+      "b": 3,
+      "c": 5,
+      "d": 2,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "INJ",
+        "INV",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "CF04",
+      "kind": "affine",
+      "modulus": 12,
+      "a": 5,
+      "b": 5,
+      "c": 6,
+      "d": 0,
+      "order": [
+        "INV",
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INJ"
+      ]
+    },
+    {
+      "id": "CF05",
+      "kind": "affine",
+      "modulus": 15,
+      "a": 11,
+      "b": 7,
+      "c": 10,
+      "d": 3,
+      "order": [
+        "EVAL2",
+        "INJ",
+        "INV",
+        "EVAL1",
+        "FIX"
+      ]
+    },
+    {
+      "id": "CF06",
+      "kind": "affine",
+      "modulus": 17,
+      "a": 4,
+      "b": 9,
+      "c": 11,
+      "d": 15,
+      "order": [
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INJ",
+        "INV"
+      ]
+    },
+    {
+      "id": "CF07",
+      "kind": "affine",
+      "modulus": 19,
+      "a": 9,
+      "b": 11,
+      "c": 16,
+      "d": 3,
+      "order": [
+        "INJ",
+        "INV",
+        "EVAL1",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "CF08",
+      "kind": "affine",
+      "modulus": 21,
+      "a": 10,
+      "b": 13,
+      "c": 17,
+      "d": 2,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "INJ",
+        "INV",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "CF09",
+      "kind": "affine",
+      "modulus": 23,
+      "a": 7,
+      "b": 17,
+      "c": 22,
+      "d": 3,
+      "order": [
+        "INV",
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INJ"
+      ]
+    },
+    {
+      "id": "CF10",
+      "kind": "affine",
+      "modulus": 25,
+      "a": 6,
+      "b": 19,
+      "c": 8,
+      "d": 2,
+      "order": [
+        "EVAL2",
+        "INJ",
+        "INV",
+        "EVAL1",
+        "FIX"
+      ]
+    },
+    {
+      "id": "CF11",
+      "kind": "quadratic",
+      "modulus": 6,
+      "a": 3,
+      "b": 5,
+      "c": 3,
+      "d": 2,
+      "order": [
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INJ",
+        "INV"
+      ]
+    },
+    {
+      "id": "CF12",
+      "kind": "quadratic",
+      "modulus": 8,
+      "a": 5,
+      "b": 2,
+      "c": 6,
+      "d": 1,
+      "order": [
+        "INJ",
+        "INV",
+        "EVAL1",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "CF13",
+      "kind": "quadratic",
+      "modulus": 10,
+      "a": 7,
+      "b": 9,
+      "c": 7,
+      "d": 8,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "INJ",
+        "INV",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "CF14",
+      "kind": "quadratic",
+      "modulus": 12,
+      "a": 4,
+      "b": 7,
+      "c": 11,
+      "d": 11,
+      "order": [
+        "INV",
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INJ"
+      ]
+    },
+    {
+      "id": "CF15",
+      "kind": "quadratic",
+      "modulus": 15,
+      "a": 2,
+      "b": 1,
+      "c": 4,
+      "d": 5,
+      "order": [
+        "EVAL2",
+        "INJ",
+        "INV",
+        "EVAL1",
+        "FIX"
+      ]
+    },
+    {
+      "id": "CF16",
+      "kind": "quadratic",
+      "modulus": 17,
+      "a": 6,
+      "b": 10,
+      "c": 15,
+      "d": 1,
+      "order": [
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INJ",
+        "INV"
+      ]
+    },
+    {
+      "id": "CF17",
+      "kind": "quadratic",
+      "modulus": 19,
+      "a": 8,
+      "b": 12,
+      "c": 6,
+      "d": 1,
+      "order": [
+        "INJ",
+        "INV",
+        "EVAL1",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "CF18",
+      "kind": "quadratic",
+      "modulus": 21,
+      "a": 9,
+      "b": 14,
+      "c": 14,
+      "d": 4,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "INJ",
+        "INV",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "CF19",
+      "kind": "quadratic",
+      "modulus": 23,
+      "a": 10,
+      "b": 16,
+      "c": 1,
+      "d": 5,
+      "order": [
+        "INV",
+        "EVAL1",
+        "FIX",
+        "EVAL2",
+        "INJ"
+      ]
+    },
+    {
+      "id": "CF20",
+      "kind": "quadratic",
+      "modulus": 25,
+      "a": 11,
+      "b": 18,
+      "c": 7,
+      "d": 4,
+      "order": [
+        "EVAL2",
+        "INJ",
+        "INV",
+        "EVAL1",
+        "FIX"
+      ]
+    }
+  ]
+}
