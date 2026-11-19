@@ -1,0 +1,68 @@
+name: Omega PROOFNET26 - externally reviewed complete math and Lean pairs
+on:
+  push:
+    branches:
+      - experiment/omega-proofnet26-external-human-reference-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-proofnet26-immutable-external-meaning
+  cancel-in-progress: false
+
+jobs:
+  human-reviewed-external-references:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test provenance, full original span replay, missing and forged references
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/proofnet26
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/proofnet26 \
+            -p 'test_*.py' -v 2>&1 | tee /tmp/proofnet26/tests.log
+      - name: Replay all 16 pinned third-party theorem pairs with A and B unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/proofnet26/runner.py \
+            --output /tmp/proofnet26/results.json \
+            --markdown /tmp/proofnet26/RESULT.md
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          a=json.loads(Path("/tmp/proofnet26/results.json").read_text(encoding="utf8"))
+          assert a["status"]=="EXTERNAL_PROOFNET_AUDIT_COMPLETED"
+          assert a["n_original_math_pairs"]==16
+          assert a["full_statement_and_lean_pair_verified"]==16
+          assert a["external_reference_lean_available"]==16
+          assert a["model_predictions_produced"]==0
+          assert a["new_human_annotators"]==0
+          assert a["new_double_blind_human_annotations"]==0
+          assert a["human_semantic_fidelity_accuracy"]=="NOT_MEASURABLE_WITH_A_B_TYPE_SYSTEM"
+          assert a["semantic_transfer_verified"] is False
+          assert a["no_new_model_training_or_paid_api"] is True
+          assert a["original_informal_statements_verified"]==0
+          assert a["neutral_layout_only_wrapper_verified"]==0
+          print("PROOFNET26_SOURCE_REPLAY",a["full_statement_and_lean_pair_verified"],"/16",flush=True)
+          print("PROOFNET26_EXTERNAL_COVERAGE",a["original_informal_statements_verified"],"/16",flush=True)
+          print("PROOFNET26_FIDELITY",a["human_semantic_fidelity_accuracy"],flush=True)
+          PY
+      - name: Preserve original statements, formal Lean references, hashes and test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: proofnet26-full-externally-audited-pairs-and-abstention-results
+          path: /tmp/proofnet26/
+          retention-days: 14
+          if-no-files-found: warn
