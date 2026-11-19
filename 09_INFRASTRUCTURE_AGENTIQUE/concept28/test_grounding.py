@@ -13,7 +13,7 @@ from pathlib import Path
 from grounding import (
     load_lexicon,load_holdout,grounded_score,baseline_score,
     matching_lexical_terms,judge,choose,one_pair,NEAR,FAR,
-    EXPECTED,read_tasks,
+    EXPECTED,read_tasks,read_original_statement,
 )
 
 class ConceptGroundedExternalTests(unittest.TestCase):
@@ -165,6 +165,38 @@ class ConceptGroundedExternalTests(unittest.TestCase):
             self.assertGreater(src["bytes"],200)
             self.assertIn("b7ca411a2abaa6caf3580192b30d865e5bd10bc4",
                           src["source_url"])
+
+    def test_full_original_proof_is_not_mistaken_for_missing_theorem(self):
+        from read import blob as git_blob
+        raw=(
+            "import Mathlib\n\n"
+            "/-Informal Statement\nA group has an identity element.\n-/\n\n"
+            "theorem Demo {G : Type*} [Group G] : (1 : G) = 1 := by\n"
+            "  rfl\n"
+        ).encode("utf8")
+        result=read_original_statement(raw,{
+            "index":999,"source_url":"synthetic-fixture-not-external",
+            "git_blob":git_blob(raw),
+        })
+        self.assertEqual(result["proof_body_kind"],
+                         "COMPLETE_ORIGINAL_PROOF_NOT_IN_CANDIDATE")
+        self.assertIn("A group has an identity",result["informal"])
+        self.assertIn("(1 : G) = 1",result["code"])
+        self.assertNotIn("rfl",result["code"])
+
+    def test_full_proof_parser_does_not_accept_multiple_theorems(self):
+        from read import blob as git_blob
+        raw=(
+            "import Mathlib\n\n"
+            "/-Informal Statement\nGroup example.\n-/\n\n"
+            "theorem First {G : Type*} [Group G] : True := by\n  trivial\n"
+            "theorem Second {G : Type*} [Group G] : True := by\n  trivial\n"
+        ).encode("utf8")
+        with self.assertRaisesRegex(ValueError,"UNIQUE_NL_AND_THEOREM"):
+            read_original_statement(raw,{
+                "index":999,"source_url":"synthetic-fixture-not-external",
+                "git_blob":git_blob(raw),
+            })
 
     def test_no_annotation_of_negative_equivalence_is_claimed(self):
         v=load_holdout()
