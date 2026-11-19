@@ -1,0 +1,12 @@
+{
+  "reference": {
+    "unsupported_fields": 14,
+    "equivalent_fields": 4,
+    "entire_case_equivalent": 0
+  },
+  "candidate": {
+    "different_truth_set_fields": 14,
+    "equivalent_fields": 4,
+    "entire_case_equivalent": 0
+  }
+}

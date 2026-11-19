@@ -1,0 +1,65 @@
+{
+  "reference": {
+    "format_valid": 8,
+    "ast_faithful": 0,
+    "stop_reasons": {
+      "stop": 8
+    },
+    "control_status": {
+      "REJECTED_SOURCE_AST_BINDING": 8
+    },
+    "prompt_tokens": 1568,
+    "output_tokens": 368,
+    "inference_seconds": 31.055217688000084,
+    "evaluation_seconds": 0.001385643000503478,
+    "direct": {
+      "correct": 3,
+      "errors": 5,
+      "abstentions": 0
+    },
+    "verified": {
+      "correct": 0,
+      "errors": 0,
+      "abstentions": 8
+    },
+    "executable_fields": 4,
+    "total_fields": 18,
+    "all_fields_executable": 0
+  },
+  "candidate": {
+    "format_valid": 8,
+    "ast_faithful": 0,
+    "stop_reasons": {
+      "stop": 8
+    },
+    "control_status": {
+      "REJECTED_SOURCE_AST_BINDING": 8
+    },
+    "prompt_tokens": 1568,
+    "output_tokens": 374,
+    "inference_seconds": 30.27993951499957,
+    "evaluation_seconds": 0.001762379999490804,
+    "direct": {
+      "correct": 3,
+      "errors": 5,
+      "abstentions": 0
+    },
+    "verified": {
+      "correct": 0,
+      "errors": 0,
+      "abstentions": 8
+    },
+    "executable_fields": 18,
+    "total_fields": 18,
+    "all_fields_executable": 8
+  },
+  "paired_verified": {
+    "gained": 0,
+    "lost": 0
+  },
+  "candidate_direct_vs_verified": {
+    "gained": 0,
+    "lost": 3
+  },
+  "threshold_passed": false
+}
