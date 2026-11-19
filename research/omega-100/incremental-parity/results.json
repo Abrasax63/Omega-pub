@@ -1,0 +1,166 @@
+{
+  "controls": {
+    "historic": {
+      "edges": 25,
+      "bound": 45,
+      "reference": {
+        "status": "correct",
+        "steps": 36,
+        "read_edges": null,
+        "source": "reference"
+      },
+      "raw": {
+        "status": "correct",
+        "steps": 32,
+        "read_edges": 25,
+        "source": "incremental"
+      },
+      "guarded": {
+        "status": "correct",
+        "steps": 32,
+        "read_edges": 25,
+        "source": "incremental"
+      }
+    },
+    "stress": {
+      "edges": 56,
+      "bound": 80,
+      "reference": {
+        "status": "correct",
+        "steps": 59,
+        "read_edges": null,
+        "source": "reference"
+      },
+      "raw": {
+        "status": "abstain",
+        "steps": 64,
+        "read_edges": 54,
+        "source": "incremental"
+      },
+      "guarded": {
+        "status": "correct",
+        "steps": 59,
+        "read_edges": null,
+        "source": "reference"
+      }
+    },
+    "small_contradiction": {
+      "edges": 2,
+      "bound": 5,
+      "reference": {
+        "status": "correct",
+        "steps": 5,
+        "read_edges": null,
+        "source": "reference"
+      },
+      "raw": {
+        "status": "correct",
+        "steps": 3,
+        "read_edges": 2,
+        "source": "incremental"
+      },
+      "guarded": {
+        "status": "correct",
+        "steps": 3,
+        "read_edges": 2,
+        "source": "incremental"
+      }
+    },
+    "small_coherent": {
+      "edges": 4,
+      "bound": 8,
+      "reference": {
+        "status": "correct",
+        "steps": 13,
+        "read_edges": null,
+        "source": "reference"
+      },
+      "raw": {
+        "status": "correct",
+        "steps": 8,
+        "read_edges": 4,
+        "source": "incremental"
+      },
+      "guarded": {
+        "status": "correct",
+        "steps": 8,
+        "read_edges": 4,
+        "source": "incremental"
+      }
+    }
+  },
+  "cases": 36,
+  "policies": {
+    "reference": {
+      "correct": 24,
+      "error": 0,
+      "abstain": 12,
+      "work": 1493,
+      "paths": {
+        "reference": 36
+      },
+      "median_ns": 260131.5,
+      "gains": 0,
+      "losses": 0
+    },
+    "raw": {
+      "correct": 33,
+      "error": 0,
+      "abstain": 3,
+      "work": 1135,
+      "paths": {
+        "reference": 4,
+        "incremental": 32
+      },
+      "median_ns": 240019.0,
+      "gains": 10,
+      "losses": 1
+    },
+    "guarded": {
+      "correct": 33,
+      "error": 0,
+      "abstain": 3,
+      "work": 1135,
+      "paths": {
+        "reference": 7,
+        "incremental": 29
+      },
+      "median_ns": 235820.0,
+      "gains": 9,
+      "losses": 0
+    }
+  },
+  "by_type": {
+    "dense-consistent": {
+      "cases": 8,
+      "reference": 1,
+      "raw": 8,
+      "guarded": 8
+    },
+    "dense-inconsistent": {
+      "cases": 8,
+      "reference": 8,
+      "raw": 8,
+      "guarded": 8
+    },
+    "larger-with-repeats": {
+      "cases": 8,
+      "reference": 4,
+      "raw": 6,
+      "guarded": 6
+    },
+    "sparse-with-loops": {
+      "cases": 8,
+      "reference": 8,
+      "raw": 8,
+      "guarded": 8
+    },
+    "subset-control": {
+      "cases": 4,
+      "reference": 3,
+      "raw": 3,
+      "guarded": 3
+    }
+  },
+  "threshold_passed": true
+}
