@@ -1,0 +1,91 @@
+{
+  "n": 28,
+  "policies": {
+    "reference": {
+      "correct": 19,
+      "abstain": 9,
+      "error": 0,
+      "steps": 1046,
+      "median_batch_ns": 180160.0,
+      "median_ns_per_correct": 9482.105263157895
+    },
+    "A": {
+      "correct": 12,
+      "abstain": 16,
+      "error": 0,
+      "steps": 1339,
+      "median_batch_ns": 151223.5,
+      "median_ns_per_correct": 12601.958333333334
+    },
+    "candidate": {
+      "correct": 23,
+      "abstain": 5,
+      "error": 0,
+      "steps": 928,
+      "median_batch_ns": 170431.5,
+      "median_ns_per_correct": 7410.065217391304
+    }
+  },
+  "paired": {
+    "gained": 4,
+    "same": 24
+  },
+  "groups": {
+    "dense-early-mask": {
+      "cases": 4,
+      "reference_correct": 0,
+      "candidate_correct": 4,
+      "gained": 4,
+      "probe_steps": 122
+    },
+    "subset-control": {
+      "cases": 4,
+      "reference_correct": 3,
+      "candidate_correct": 3,
+      "same": 4,
+      "probe_steps": 0
+    },
+    "sparse-coherent": {
+      "cases": 4,
+      "reference_correct": 4,
+      "candidate_correct": 4,
+      "same": 4,
+      "probe_steps": 0
+    },
+    "dense-late-mask": {
+      "cases": 4,
+      "reference_correct": 0,
+      "candidate_correct": 0,
+      "same": 4,
+      "probe_steps": 28
+    },
+    "dense-contradictory": {
+      "cases": 4,
+      "reference_correct": 4,
+      "candidate_correct": 4,
+      "same": 4,
+      "probe_steps": 16
+    },
+    "sparse-contradictory": {
+      "cases": 4,
+      "reference_correct": 4,
+      "candidate_correct": 4,
+      "same": 4,
+      "probe_steps": 0
+    },
+    "dense-zero": {
+      "cases": 4,
+      "reference_correct": 4,
+      "candidate_correct": 4,
+      "same": 4,
+      "probe_steps": 0
+    }
+  },
+  "phases": {
+    "probe": 4,
+    "ordinary": 16,
+    "fallback": 8
+  },
+  "total_probe_steps": 166,
+  "threshold_passed": true
+}

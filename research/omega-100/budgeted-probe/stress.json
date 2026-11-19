@@ -1,0 +1,14 @@
+{
+  "vertices": 10,
+  "edges": 25,
+  "reference": {
+    "status": "correct",
+    "steps": 36,
+    "probe_steps": 0
+  },
+  "candidate": {
+    "status": "abstain",
+    "steps": 64,
+    "probe_steps": 42
+  }
+}
