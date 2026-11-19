@@ -1,0 +1,85 @@
+name: Omega Reader14 - strict line selector calibration
+on:
+  push:
+    branches:
+      - experiment/omega-line-selector14-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-reader14-selector
+  cancel-in-progress: false
+
+jobs:
+  source-gate-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Safety / parse / no-promotion unit tests
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge14
+          python -m unittest -v test_selector.py
+      - name: No-model original and first-three controls
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge14/selector.py \
+            --mode baseline --output-dir /tmp/reader14
+      - name: Preserve mechanical controls
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reader14-source-controls
+          path: /tmp/reader14/
+          retention-days: 14
+          if-no-files-found: warn
+
+  pinned-cpu-qwen:
+    needs: source-gate-controls
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned CPU inference stack
+        run: |
+          python -m pip install --disable-pip-version-check 'torch==2.5.1+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check 'transformers==4.49.0' 'huggingface-hub==0.29.3'
+      - name: Run real pinned Qwen as a line selector
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge14/selector.py \
+            --mode model --output-dir /tmp/reader14
+      - name: Integrity check (not a scientific pass criterion)
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("/tmp/reader14/reader14-neural.json")
+          d=json.loads(p.read_text(encoding="utf-8"))
+          assert d["status"] == "FINISHED_REAL_INFERENCE"
+          assert len(d["results"]) == 2
+          assert d["automatic_certifications"] == 0
+          assert d["automatic_horn_rules"] == 0
+          assert all(x["model"].get("raw_reply") is not None for x in d["results"])
+          for x in d["results"]:
+              m=x["model"]
+              print(x["doc"], m["status"], "raw", repr(m["raw_reply"]), "selected", m["selected"])
+          PY
+      - name: Preserve raw inputs, replies and rejection reasons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reader14-raw-neural-selection
+          path: /tmp/reader14/
+          retention-days: 14
+          if-no-files-found: warn
