@@ -1,0 +1,12 @@
+[
+  {
+    "journal": "training.log",
+    "sha256": "c071c83f3c31a542b53077ce0171189025cc3e4250bc31b429799bae641d3299",
+    "source": "https://github.com/cricut/FishyJoes/actions/runs/44397873419/job/135132547442",
+    "truth_source": "artifact 14472132115; GitHub digest sha256:05efa846db12c6aaa3aa3f118182f0fdde784e6a7bb4c847c2d6fe18fd338569; ZIP contains exactly the named tgz",
+    "output": "cricut-fishyjoes-runtime-native-ubuntu-0.0.1-582c84d.tgz",
+    "expected": "recalcul",
+    "format": "bash-step",
+    "successful_errexit_step": true
+  }
+]

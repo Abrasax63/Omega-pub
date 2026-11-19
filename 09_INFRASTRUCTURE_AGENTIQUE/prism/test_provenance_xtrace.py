@@ -1,0 +1,137 @@
+import unittest
+
+from provenance_xtrace import extract, fixed_verdict
+
+
+class InstallTraceTests(unittest.TestCase):
+    def test_extracts_github_bash_crlf_npm_pack(self):
+        log = (
+            "2026-11-17T23:46:46.1851793Z + npm pack\r\n"
+            "2026-11-17T23:46:51.1189567Z npm notice filename: "
+            "cricut-fishyjoes-runtime-native-windows-0.0.1-a9d6239.tgz\r\n"
+        )
+        output = "cricut-fishyjoes-runtime-native-windows-0.0.1-a9d6239.tgz"
+        self.assertEqual(fixed_verdict(extract(log, output)), "recalcul")
+
+    def test_npm_publish_is_not_a_pack_writer(self):
+        log = (
+            "+ npm publish package.tgz\r\n"
+            "npm notice filename: package.tgz\r\n"
+        )
+        trace = extract(log, "package.tgz")
+        self.assertFalse(trace["complete"])
+        self.assertEqual(fixed_verdict(trace), "indéterminé")
+
+    def test_publish_notice_does_not_duplicate_prior_pack_notice(self):
+        log = (
+            "+ npm pack\r\n"
+            "npm notice filename: package.tgz\r\n"
+            "+ npm publish package.tgz\r\n"
+            "npm notice filename: package.tgz\r\n"
+        )
+        self.assertEqual(fixed_verdict(extract(log, "package.tgz")), "recalcul")
+
+    def test_bash_and_zsh_pack_conflict_fails_closed(self):
+        log = (
+            "+ npm pack\n"
+            "+step:5> npm pack\n"
+            "npm notice filename: package.tgz\n"
+        )
+        self.assertEqual(fixed_verdict(extract(log, "package.tgz")), "indéterminé")
+
+    def test_extracts_github_zsh_npm_pack_with_matching_notice(self):
+        log = """2026-11-18T21:07:10.5382452Z +/home/runner/work/_temp/step:5> npm pack
+2026-11-18T21:07:19.7292362Z npm notice filename: package-linux.tgz
+2026-11-18T21:07:19.7294947Z package-linux.tgz
+"""
+        self.assertEqual(
+            extract(log, "package-linux.tgz"),
+            {"complete": True, "output": "package-linux.tgz", "writers": [
+                {"command": "npm pack", "exit_code": 0, "output": "package-linux.tgz"}
+            ]},
+        )
+
+    def test_zsh_npm_pack_fails_closed_on_duplicate_notice(self):
+        log = """+step:5> npm pack
+npm notice filename: package.tgz
+npm notice filename: package.tgz
+"""
+        self.assertFalse(extract(log, "package.tgz")["complete"])
+
+    def test_copy_and_wrong_output(self):
+        log = "+ install -m 0600 input 'target file.json'"
+        self.assertEqual(fixed_verdict(extract(log, "target file.json")), "copie")
+        self.assertEqual(fixed_verdict(extract(log, "other.json")), "indéterminé")
+
+    def test_multiple_writers(self):
+        log = "+ cp input target\n+ install -m 0644 input target"
+        self.assertEqual(fixed_verdict(extract(log, "target")), "indéterminé")
+        self.assertEqual(fixed_verdict(extract(log, "target", recognize_install=False)), "copie")
+
+    def test_unsupported_mode(self):
+        self.assertEqual(
+            fixed_verdict(extract("+ install -m invalid input target", "target")),
+            "indéterminé",
+        )
+
+    def test_echoed_step_script_is_not_execution_trace(self):
+        log = (
+            "2026-10-15T09:38:37.4807663Z "
+            "\x1b[36;1msudo install -m 0755 actionlint /usr/local/bin/actionlint\x1b[0m"
+        )
+        trace = extract(log, "/usr/local/bin/actionlint")
+        self.assertEqual(trace["writers"], [])
+        self.assertEqual(fixed_verdict(trace), "indéterminé")
+
+    def test_unparseable_record_prevents_confirmation(self):
+        trace = extract("+ cp input target\n+ python3 -c 'unterminated", "target")
+        self.assertEqual(len(trace["writers"]), 1)
+        self.assertEqual(fixed_verdict(trace), "indéterminé")
+
+    def test_diff_comment_with_apostrophe_does_not_hide_copy(self):
+        trace = extract("+    # Homebrew's binding\n+ cp input target", "target")
+        self.assertEqual(fixed_verdict(trace), "copie")
+
+    def test_buildkit_requires_same_step_verbose_output_and_completion(self):
+        from provenance_xtrace import extract_buildkit_copy
+
+        command = "#22 0.2 + cp -av source/file target/\n"
+        verbose = "#22 0.3 'source/file' -> 'target/file'\n"
+        done = "#22 DONE 1s\n"
+        for log in [command + done, command + verbose, command + verbose.replace("#22", "#23") + done,
+                    command + verbose + command + done, verbose + done]:
+            with self.subTest(log=log):
+                self.assertEqual(fixed_verdict(extract_buildkit_copy(log, "target/file")), "indéterminé")
+        self.assertEqual(fixed_verdict(extract_buildkit_copy(command + verbose + done, "target/file")), "copie")
+
+    def test_buildkit_incomplete_second_writer_prevents_confirmation(self):
+        from provenance_xtrace import extract_buildkit_copy
+
+        confirmed = "#1 1 + cp -av a/f out/\n#1 2 'a/f' -> 'out/f'\n#1 DONE 3s\n"
+        incomplete = "#2 1 + cp -av b/f out/\n#2 DONE 2s\n"
+        for log in (confirmed + incomplete, incomplete + confirmed):
+            with self.subTest(log=log):
+                self.assertEqual(fixed_verdict(extract_buildkit_copy(log, "out/f")), "indéterminé")
+
+    def test_buildkit_contradictory_step_status(self):
+        from provenance_xtrace import extract_buildkit_copy
+
+        log = "#1 1 + cp -av a/f out/\n#1 2 'a/f' -> 'out/f'\n#1 DONE 3s"
+        self.assertEqual(fixed_verdict(extract_buildkit_copy(log + "\n#1 ERROR: failed", "out/f")), "indéterminé")
+        self.assertEqual(fixed_verdict(extract_buildkit_copy(log + "\n#2 ERROR: failed", "out/f")), "copie")
+
+    def test_buildkit_verbose_paths_accept_leading_current_directory(self):
+        from provenance_xtrace import extract_buildkit_copy
+
+        log = "#1 1 + cp -av ./a/f ./out/\n#1 2 './a/f' -> './out/f'\n#1 DONE 3s"
+        self.assertEqual(fixed_verdict(extract_buildkit_copy(log, "./out/f")), "copie")
+        conflict = log.replace("'./out/f'", "'./other/f'")
+        self.assertEqual(fixed_verdict(extract_buildkit_copy(conflict, "./out/f")), "indéterminé")
+
+    def test_cp_requires_two_path_operands(self):
+        for command in ("cp --version target", "cp '--help' target", "cp -r target"):
+            with self.subTest(command=command):
+                self.assertEqual(fixed_verdict(extract("+ " + command, "target")), "indéterminé")
+        for source in ("source", "./--help"):
+            self.assertEqual(fixed_verdict(extract(f"+ cp {source} target", "target")), "copie")
+

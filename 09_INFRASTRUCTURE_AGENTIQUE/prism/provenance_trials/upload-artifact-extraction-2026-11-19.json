@@ -1,0 +1,17 @@
+{
+  "decoded_log_sha256": "3e484f426075147a86614e074e420362359a857aa3d4f4c40938dbfa26993e75",
+  "rows": [
+    {
+      "output": "path/to/dir-1/file1.txt",
+      "complete": false,
+      "writers": 0,
+      "fixed": "indéterminé"
+    },
+    {
+      "output": "some/new/path/file1.txt",
+      "complete": false,
+      "writers": 0,
+      "fixed": "indéterminé"
+    }
+  ]
+}

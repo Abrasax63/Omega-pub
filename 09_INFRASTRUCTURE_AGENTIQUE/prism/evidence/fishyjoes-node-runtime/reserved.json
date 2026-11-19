@@ -1,0 +1,32 @@
+[
+  {
+    "journal": "reserved-mac.log",
+    "sha256": "0e6fc2b965a1b9cf537ca73c4c0d9a2629d4cce33ef91830db1565e082687281",
+    "source": "https://github.com/cricut/FishyJoes/actions/runs/44397873419/job/135132548502",
+    "truth_source": "artifact 14470547601; GitHub digest sha256:87c49bc22a4583962b3f377993ea5c26306d748ccd5a081dad9699bb80193298; ZIP contains exactly the named tgz",
+    "output": "cricut-fishyjoes-runtime-native-macos-0.0.1-582c84d.tgz",
+    "expected": "recalcul",
+    "format": "bash-step",
+    "successful_errexit_step": true
+  },
+  {
+    "journal": "reserved-windows.log",
+    "sha256": "4b61b5a398d5cf5308048b287f95fe1a47f4ffcd9293f7965c5d193ffcfc11a5",
+    "source": "https://github.com/cricut/FishyJoes/actions/runs/44397873419/job/135132548063",
+    "truth_source": "artifact 14471698754; GitHub digest sha256:5ecfb78f5a3c27188919e1b6e0ce7378939a11299eec6aa1a496b852c184ef14; ZIP contains exactly the named tgz",
+    "output": "cricut-fishyjoes-runtime-native-windows-0.0.1-582c84d.tgz",
+    "expected": "recalcul",
+    "format": "bash-step",
+    "successful_errexit_step": true
+  },
+  {
+    "journal": "reserved-contradictory.log",
+    "sha256": "78ef60399c364699362bc0a5c385e251acb56f67dc15e0ed6542a8c319a98ff2",
+    "source": "local negative control; frozen after proposal",
+    "truth_source": "literal cp source.bin copied.bin with a single destination",
+    "output": "copied.bin",
+    "expected": "copie",
+    "format": "bash-step",
+    "successful_errexit_step": true
+  }
+]

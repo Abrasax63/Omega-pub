@@ -1,0 +1,13 @@
+# Provenance — nouveau workflow pythreejs, admissibilité bloquée
+
+19 novembre2026,13h10 Paris. Branche `work/omega-provenance-lab`, SHA initial `ec6edc92bf8b6f062f852601894c27f48d261b8a`. Dernier cycle de provenance : inspection RKE2 consignée à ce SHA ; dernier cycle mathématique `588a8762ef0a12d26cf47636b379a5c862c2bdd3`. Alternance : provenance ici, mathématique au prochain passage.
+
+Question et budget fixés avant inspection : trouver un nouveau workflow avec écriture tracée et fichier de sortie archivé permettant une vérité terrain séparée. Source retenue : [pythreejs CI](https://github.com/jupyter-widgets/pythreejs/blob/584fe393ff593319ce33cd53dd94c8625aa01c88/.github/workflows/ci.yml), SHA `584fe393ff593319ce33cd53dd94c8625aa01c88`. La source contient `set -eux`, copie de distribution dans dist, `sha256sum * | tee SHA256SUMS` et upload de dist. Ce texte ne prouve aucune exécution.
+
+Lecture effective de [l'API des runs](https://api.github.com/repos/jupyter-widgets/pythreejs/actions/runs?per_page=5) : `{"total_count":0,"workflow_runs":[]}`. Aucune trace ni archive récupérable par cette piste. Cinq résultats de recherche de sources examinés, un workflow retenu, une requête d'inventaire de runs, zéro run/log/archive admissible. Ce résultat concerne cet accès et ce dépôt à cet instant, pas l'absence générale de corpus externe.
+
+**INDÉTERMINÉ — cycle sans expérience nouvelle de classification**, faute de trace admissible. Nouvelle inspection d'admissibilité exécutée et documentée, sans gain externe. TP/FP/FN/abstentions et coût comparatif candidat/référence/règle fixe : non mesurés. Référence conservée, aucune cible inventée, aucun corrigé créé, aucun propose/check lancé sans corpus. Comparateur fixe inchangé; aucune parité revendiquée.
+
+Raccord hors ligne : archive localeSHA-256 `c44e59eee9ba17160c0eaf36e6b883e330b65dcb7f95d1b39094411eacc50ffd` vérifiée. Dans copie temporaire uniquement, retrait de la copie locale du module, puis `git apply --check ../../run1011/offline.patch`, application du patch et `python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -q` :66tests passent en0,033s. Aucun workflow déclenché, aucun appel payant. Ces tests de raccord ne constituent pas une expérience externe.
+
+Prochain test décisif de provenance : un autre dépôt à activitéCI récente, sous condition préalable d'un run archivé accessible, puis vérification d'une sortie directement archivée et des octets source avant manifestes distincts et propose/check. Ne pas rejouer pythreejs sans nouvelle donnée accessible, ni les inventaires RKE2 déjà épuisés. Prochain cycle alterné : mathématiquePR82, départ du dernier journal de cette branche.

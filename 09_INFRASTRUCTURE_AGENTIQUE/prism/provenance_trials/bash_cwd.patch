@@ -1,0 +1,12 @@
+--- a/09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_xtrace.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_xtrace.py
+@@ -38,6 +38,9 @@
+             continue
+         if not argv:
+             continue
++        if argv[0] in {"cd", "pushd", "popd"} and not output.startswith("/"):
++            # A relative target is ambiguous when the working directory changes.
++            unparsed = True
+         copy_destination = (
+             copy_output(argv) if recognize_install or argv[0] != "install" else None
+         )

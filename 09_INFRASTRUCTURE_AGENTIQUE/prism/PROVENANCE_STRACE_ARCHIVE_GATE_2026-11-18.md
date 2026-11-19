@@ -1,0 +1,11 @@
+# Provenance — journal strace CI sans événements d’écriture exploitables
+
+18 novembre 2026, 18 h 44 (Paris). **INDÉTERMINÉ — cycle sans expérience nouvelle.** Branche `work/omega-provenance-lab`, départ [2ae9298](https://github.com/Abrasax63/Omega-pub/commit/2ae9298fb31ec7eb4461df7278eab4c5ad62d9f7). [Dernier cycle mathématique](https://github.com/Abrasax63/Omega-pub/commit/d09a3ee320941d67d92eb1dede8e02cc506cace6).
+
+Question : une trace d’exécution externe distingue-t-elle le dernier écrivain d’une réécriture à octets identiques ? Budget fixé avant lecture : un run et un job. Critère d’admissibilité : écritures ordonnées attribuables à un processus et à un chemin, et contrôle séparé des octets et de la réécriture. La règle fixe du raccord est le comparateur prévu après admissibilité.
+
+Le [run strace 44287079008](https://github.com/strace/strace/actions/runs/44287079008) n’expose aucun artefact dans son catalogue. La [source épinglée](https://github.com/strace/strace/blob/ee978e3f8a996180d1b4e1c656891f193bc33c68/.github/workflows/ci.yml) configure les tests et l’envoi de couverture. Le journal texte du [job GCC x86_64](https://github.com/strace/strace/actions/runs/44287079008/job/134742389890) a été récupéré en lecture seule et analysé comme donnée. SHA-256 du texte décodé `fc6d4fcb5c0b9876d0104640dd7628b7c23391b140df29108408d4e2e185f493`. Il compte 18 696 éléments après séparation sur le saut de ligne, 2 816 lignes avec marqueur PASS ou FAIL, et aucun marqueur d’appel `openat(`, `write(` ou `renameat(`. Ce filtre lexical et les statuts de test ne fournissent pas le journal d’écritures et le témoin indépendant requis.
+
+Raccord hors ligne SHA-256 `c44e59eee9ba17160c0eaf36e6b883e330b65dcb7f95d1b39094411eacc50ffd`. Patch appliqué en copie temporaire après `git apply --check`. Suite `python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -q` : 66/66. Pas de proposition ni de réserve ouverte. Métriques de comparaison non mesurées, référence conservée.
+
+Prochain test décisif : cibler un artefact de journalisation qui conserve les événements individuels, puis vérifier dans la source du run qu’un témoin de réécriture existe avant de collecter ses cas réservés. Prochain cycle alterné : mathématique.

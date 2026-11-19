@@ -1,0 +1,32 @@
+[
+  {
+    "format": "bash-step",
+    "journal": "fishyjoes-bash-crlf-reserved-windows.log",
+    "output": "cricut-fishyjoes-runtime-native-windows-8.6.1.tgz",
+    "source": "https://github.com/cricut/FishyJoes/actions/runs/44172435750/job/134354816411#pack",
+    "truth_source": "https://github.com/cricut/FishyJoes/actions/runs/44172435750/artifacts/14369755073#sha256-62382e960b4d8897ccd33670acbc8ef11e479d9c9aea24df5811c5ed2ae953f3",
+    "expected": "recalcul",
+    "successful_errexit_step": true,
+    "sha256": "ba331c7554636291fb8d23d6a66f405fa9afc0e02d9eed6ddd06be8bb24f4642"
+  },
+  {
+    "format": "bash-step",
+    "journal": "fishyjoes-bash-crlf-reserved-macos.log",
+    "output": "cricut-fishyjoes-runtime-native-macos-8.6.1.tgz",
+    "source": "https://github.com/cricut/FishyJoes/actions/runs/44172435750/job/134354816556#pack",
+    "truth_source": "https://github.com/cricut/FishyJoes/actions/runs/44172435750/artifacts/14367878617#sha256-56370d176ddd685e09fb2b2210e025d8bdea98c6035ed585130a31a6aff1d790",
+    "expected": "recalcul",
+    "successful_errexit_step": true,
+    "sha256": "d3f2ab6a98ad1357a00827899a5205490dca3474ea747b94507f3946ad55a653"
+  },
+  {
+    "format": "bash-step",
+    "journal": "fishyjoes-bash-crlf-negative-publish.log",
+    "output": "cricut-fishyjoes-runtime-native-windows-8.6.1.tgz",
+    "source": "https://github.com/cricut/FishyJoes/actions/runs/44172435750/job/134354816411#publish-negative-control",
+    "truth_source": "https://github.com/cricut/FishyJoes/actions/runs/44172435750/job/134354816411#npm-publish-command",
+    "expected": "indéterminé",
+    "successful_errexit_step": true,
+    "sha256": "4c267384327c6c00a5f05955b867a2ed3a223680ee672a96330372b0ad2dc273"
+  }
+]
