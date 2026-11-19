@@ -1,0 +1,86 @@
+name: Omega reproducibility fingerprint pilot
+on:
+  pull_request:
+    paths:
+      - 'tools/repro_fingerprint.py'
+      - 'tools/repro_history_pilot.py'
+      - 'tools/repro_scientific_pilot.py'
+      - 'tools/repro_policy_benchmark.py'
+      - 'tools/repro_wallclock_benchmark.py'
+      - 'tools/repro_targeted_gate.py'
+      - 'tools/repro_targeted_benchmark.py'
+      - 'tools/repro_adversarial_integrity.py'
+      - 'tools/repro_real_dependency_probe.py'
+      - 'tests/test_repro_fingerprint.py'
+      - 'tests/test_repro_history_pilot.py'
+      - 'tests/test_repro_scientific_pilot.py'
+      - 'tests/repro_sympy_version_probe.py'
+      - 'tests/test_repro_policy_benchmark.py'
+      - 'tests/test_repro_targeted_gate.py'
+      - 'tests/test_repro_adversarial_integrity.py'
+      - '.github/workflows/repro-fingerprint-pilot.yml'
+  workflow_dispatch:
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install scientific pilot dependency
+        run: python -m pip install 'sympy==1.13.3'
+      - name: Run isolated fingerprint regression tests
+        run: python -m unittest discover -s tests -p 'test_repro_fingerprint.py' -v
+      - name: Run isolated history regression tests
+        run: python -m unittest discover -s tests -p 'test_repro_history_pilot.py' -v
+
+      - name: Compare reuse policies (deterministic simulated costs)
+        run: python -m unittest discover -s tests -p 'test_repro_policy_benchmark.py' -v
+      - name: Inspect actual scientific script runtime imports
+        run: python -m tools.repro_real_dependency_probe | tee repro_import_trace.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repro-real-dependency-trace
+          path: repro_import_trace.txt
+          retention-days: 7
+      - name: Test adversarial cache integrity
+        run: python -m unittest discover -s tests -p 'test_repro_adversarial_integrity.py' -v
+      - name: Test targeted metadata gate
+        run: python -m unittest discover -s tests -p 'test_repro_targeted_gate.py' -v
+      - name: Measure targeted metadata gate cost
+        run: python -m tools.repro_targeted_benchmark | tee repro_targeted_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repro-targeted-microbenchmark
+          path: repro_targeted_results.json
+          retention-days: 7
+      - name: Measure real wall-clock microbenchmark
+        run: python -m tools.repro_wallclock_benchmark | tee repro_wallclock_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repro-wallclock-microbenchmark
+          path: repro_wallclock_results.json
+          retention-days: 7
+      - name: Run existing Omega scientific script pilot
+        run: python -m unittest discover -s tests -p 'test_repro_scientific_pilot.py' -v
+
+  dependency-version-probe:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        sympy-version: ['1.12', '1.13.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install actual dependency version
+        run: python -m pip install "sympy==${{ matrix.sympy-version }}"
+      - name: Execute Omega scientific calculation and print fingerprint
+        run: python -m tests.repro_sympy_version_probe
