@@ -1,0 +1,60 @@
+{
+  "reference": {
+    "format_valid": 0,
+    "ast_faithful": 0,
+    "stop_reasons": {
+      "stop": 7,
+      "length": 1
+    },
+    "control_status": {
+      "PREMISE_COUNT": 7,
+      "JSON_OR_VERDICT": 1
+    },
+    "prompt_tokens": 1431,
+    "output_tokens": 860,
+    "inference_seconds": 92.97673218700038,
+    "evaluation_seconds": 0.0003827419996014214,
+    "direct": {
+      "correct": 2,
+      "errors": 5,
+      "abstentions": 1
+    },
+    "verified": {
+      "correct": 0,
+      "errors": 0,
+      "abstentions": 8
+    }
+  },
+  "candidate": {
+    "format_valid": 8,
+    "ast_faithful": 0,
+    "stop_reasons": {
+      "stop": 8
+    },
+    "control_status": {
+      "REJECTED_SOURCE_AST_BINDING": 8
+    },
+    "prompt_tokens": 1581,
+    "output_tokens": 370,
+    "inference_seconds": 37.112463564000336,
+    "evaluation_seconds": 0.0019927529997403326,
+    "direct": {
+      "correct": 3,
+      "errors": 5,
+      "abstentions": 0
+    },
+    "verified": {
+      "correct": 0,
+      "errors": 0,
+      "abstentions": 8
+    }
+  },
+  "paired_verified": {
+    "gained": 0,
+    "lost": 0
+  },
+  "candidate_direct_vs_verified": {
+    "gained": 0,
+    "lost": 3
+  }
+}
