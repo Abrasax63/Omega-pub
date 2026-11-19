@@ -1,0 +1,154 @@
+name: Omega TRAIN25 - actual small-LLM CPU LoRA and blind before-after eval
+
+on:
+  push:
+    branches:
+      - experiment/omega-train25-verifier-supervised-lora-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-train25-verified-formalization
+  cancel-in-progress: false
+
+jobs:
+  offline-fixed-dataset-and-math-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Reject dataset drift, train-test exact leaks and unsafe formulas
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/train25
+          python data_guard.py
+          python -m unittest -v test_train25.py
+
+  actual-lora-updates-cpu:
+    needs: offline-fixed-dataset-and-math-controls
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned free CPU training libraries
+        run: |
+          python -m pip install --disable-pip-version-check --quiet "torch==2.5.1" \
+            --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --quiet \
+            "transformers==4.49.0" "peft==0.15.2" "accelerate==1.5.2" \
+            "safetensors==0.5.3" "huggingface_hub==0.30.2"
+          python - <<'PY'
+          import torch,transformers,peft
+          print("CPU_LIBRARIES",torch.__version__,transformers.__version__,
+                peft.__version__,"CUDA",torch.cuda.is_available(),flush=True)
+          PY
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: Actually update LoRA trainable weights on 96 fixed examples
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/train25/train_lora.py \
+            --output /tmp/omega-train25/train
+      - name: Demand saved nonzero weight delta and preserved fixed dataset SHA
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('/tmp/omega-train25/train')
+          x=json.loads((root/'train_manifest.json').read_text())
+          assert x['status']=='TRAINED_ACTUAL_LORA_PARAMETERS_CHANGED'
+          assert x['steps']==24 and x['weight_delta_L2']>0
+          assert 0<x['trained_parameters']<x['total_model_parameters_with_adapter']
+          assert x['train_data_git_blob']=='b293a5db37bb059a7eb4264956e05614a8d08a6a'
+          assert not x['source_weights_qwen3b_modified']
+          assert x['automatic_scientific_promotions']==0
+          assert list((root/'adapter').glob('*.safetensors'))
+          print('LO_RA_REAL_WEIGHT_DELTA',x['weight_delta_L2'],
+                'TRAINABLE',x['trained_parameters'],'TRAIN_STEPS',x['steps'],flush=True)
+          PY
+      - name: Preserve adapter weights and training loss, even on training failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-train25-actual-cpu-lora-adapter-and-loss
+          path: /tmp/omega-train25/train/
+          retention-days: 30
+          if-no-files-found: warn
+
+  separate-holdout-evaluation:
+    needs: actual-lora-updates-cpu
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Restore exactly the trained adapter artifact from previous job
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-train25-actual-cpu-lora-adapter-and-loss
+          path: /tmp/omega-train25/train/
+      - name: Install same pinned CPU model libraries
+        run: |
+          python -m pip install --disable-pip-version-check --quiet "torch==2.5.1" \
+            --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --quiet \
+            "transformers==4.49.0" "peft==0.15.2" "accelerate==1.5.2" \
+            "safetensors==0.5.3" "huggingface_hub==0.30.2"
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: Compare original and LoRA version with identical prompts and finite exact oracles
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/train25/evaluate_lora.py \
+            --training-output /tmp/omega-train25/train \
+            --output /tmp/omega-train25/eval/before-after.json
+      - name: Interpret negative result as valid evidence, not a failed workflow
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('/tmp/omega-train25/eval/before-after.json').read_text())
+          assert x['status'] in ('TRAINED_AND_EVALUATED','TRAINED_NO_EVIDENCE_OF_GAIN')
+          assert x['real_weight_updates']
+          assert x['holdout_new_prompts']==24
+          assert x['strong_baseline_exact_cases']==24
+          assert not x['creative_novel_ideas_discovered']
+          assert not x['general_math_transfer_demonstrated']
+          assert not x['qwen3b_weights_modified']
+          assert x['auto_certifications']==0 and x['paid_api_calls']==0
+          print('TRAIN25_BASE',x['before'],'POST',x['after'],
+                'RESULT',x['status'],flush=True)
+          PY
+      - name: Archive complete unedited before and after model outputs and verifier evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-train25-holdout-base-vs-lora-exact-results
+          path: /tmp/omega-train25/eval/
+          retention-days: 30
+          if-no-files-found: warn

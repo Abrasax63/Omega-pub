@@ -1,0 +1,103 @@
+{
+  "prompts": [
+    {
+      "id": "holdxor01",
+      "prompt": "Les transitions appliquent des vecteurs de bits avec XOR, répétables. Décide si la destination est accessible à partir du départ."
+    },
+    {
+      "id": "holdxor02",
+      "prompt": "A finite switch circuit can flip groups of lights any number of times. Convert reachability into a mathematically testable condition."
+    },
+    {
+      "id": "holdxor03",
+      "prompt": "On possède une collection de masques binaires ; chacun peut être utilisé à volonté. Détermine si une configuration cible est produisible."
+    },
+    {
+      "id": "holdxor04",
+      "prompt": "Une suite d'opérations XOR prises dans moves permet-elle de transformer start en target ? Fournis le test formel."
+    },
+    {
+      "id": "holdxor05",
+      "prompt": "In a system of reusable XOR masks, how do we decide membership of a desired state displacement?"
+    },
+    {
+      "id": "holdxor06",
+      "prompt": "Une machine modifie un registre de bits par application de masques réversibles. Exprime la condition de réalisabilité."
+    },
+    {
+      "id": "holdpar01",
+      "prompt": "A given word has only parentheses. Express its correct nestedness as a numeric invariant."
+    },
+    {
+      "id": "holdpar02",
+      "prompt": "Dans une formule avec seulement des ouvertures et fermetures, indique le critère exact d'équilibrage."
+    },
+    {
+      "id": "holdpar03",
+      "prompt": "Je cherche une condition arithmétique remplaçant une pile pour reconnaître des parenthèses valides."
+    },
+    {
+      "id": "holdpar04",
+      "prompt": "Un mot de Dyck sur une seule sorte de parenthèse est-il bien parenthésé ? Écris une expression."
+    },
+    {
+      "id": "holdpar05",
+      "prompt": "Give a Boolean condition for every closing bracket to have a matching prior open bracket and none left at the end."
+    },
+    {
+      "id": "holdpar06",
+      "prompt": "Formule le langage des parenthèses bien imbriquées par un invariant de préfixe et un bilan final."
+    },
+    {
+      "id": "holdood01",
+      "prompt": "Calcule la topologie d'un espace de configurations quantiques sans hypothèse de dimension."
+    },
+    {
+      "id": "holdood02",
+      "prompt": "Donne une solution complète à un problème ouvert en théorie des nombres sans données."
+    },
+    {
+      "id": "holdood03",
+      "prompt": "Find a guaranteed drug candidate for a disease without biological observations."
+    },
+    {
+      "id": "holdood04",
+      "prompt": "Trouve une nouvelle loi physique universelle avec les données absentes."
+    },
+    {
+      "id": "holdood05",
+      "prompt": "Calculate the full homotopy type of an arbitrary unknown manifold."
+    },
+    {
+      "id": "holdood06",
+      "prompt": "Établis une formule de causalité pour un phénomène non spécifié."
+    },
+    {
+      "id": "holdtrans01",
+      "prompt": "Dans un graphe orienté à sorties symboliques, deux états ont-ils le même futur observé ?"
+    },
+    {
+      "id": "holdtrans02",
+      "prompt": "Définis l'équivalence des états d'un automate déterministe au bout de h observations."
+    },
+    {
+      "id": "holdtrans03",
+      "prompt": "Describe a finite-dynamics partition refinement method without a given coding grammar."
+    },
+    {
+      "id": "holdtrans04",
+      "prompt": "Pour une application finie T, traduis la distinguabilité temporelle en contraintes calculables."
+    },
+    {
+      "id": "holdtrans05",
+      "prompt": "Consider hidden states of a deterministic machine with a finite observation alphabet. Find an exact equivalence criterion."
+    },
+    {
+      "id": "holdtrans06",
+      "prompt": "Quand deux états deviennent-ils séparables par une série de lectures du même capteur ?"
+    }
+  ],
+  "labels_included": false,
+  "sample_count": 24,
+  "seen_by_training": false
+}
