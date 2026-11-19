@@ -1,0 +1,320 @@
+{
+  "name": "TRAIN26_HOLDOUT_PROMPTS",
+  "n": 48,
+  "contains_labels": false,
+  "prompts": [
+    {
+      "id": "HXOR-F-1",
+      "task": "FORMALIZE",
+      "domain": "xor",
+      "prompt": "TASK=FORMALIZE. Dans un problème de bascules XOR réutilisables, formalise l'appartenance du déplacement cible à l'espace engendré par les masques. Problem: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HXOR-F-2",
+      "task": "FORMALIZE",
+      "domain": "xor",
+      "prompt": "TASK=FORMALIZE. In a toggle game, the required bitwise displacement must lie in the vector span of the allowed operations. Give a test. Problem: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HXOR-F-3",
+      "task": "FORMALIZE",
+      "domain": "xor",
+      "prompt": "TASK=FORMALIZE. Reframe an exponential switch-state search using the linear rank of its available transformations. Problem: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HXOR-F-4",
+      "task": "FORMALIZE",
+      "domain": "xor",
+      "prompt": "TASK=FORMALIZE. An automated scientific agent suggests using a GF(2) generating family for the light-switch game. Translate it precisely. Problem: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HXOR-R-1",
+      "task": "REPAIR",
+      "domain": "xor",
+      "prompt": "TASK=REPAIR. A proposal is false: popcount(start ^ target) <= len(moves). Counterexample: start=0,target=7,moves=[7] reaches its target with one action affecting three bits. Correct the invariant for this original task: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Return the repaired exact expression.",
+      "invalid_candidate": "popcount(start ^ target) <= len(moves)"
+    },
+    {
+      "id": "HXOR-R-2",
+      "task": "REPAIR",
+      "domain": "xor",
+      "prompt": "TASK=REPAIR. A proposal is false: rank(moves) == rank([start ^ target]). Counterexample: moves=[1,2],start=0,target=3 is reachable, although the two ranks need not match. Correct the invariant for this original task: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Return the repaired exact expression.",
+      "invalid_candidate": "rank(moves) == rank([start ^ target])"
+    },
+    {
+      "id": "HXOR-R-3",
+      "task": "REPAIR",
+      "domain": "xor",
+      "prompt": "TASK=REPAIR. A proposal is false: start == target. Counterexample: start=7,target=0,moves=[7] is reachable. Correct the invariant for this original task: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Return the repaired exact expression.",
+      "invalid_candidate": "start == target"
+    },
+    {
+      "id": "HXOR-R-4",
+      "task": "REPAIR",
+      "domain": "xor",
+      "prompt": "TASK=REPAIR. A proposal is false: len(moves) >= popcount(start ^ target). Counterexample: moves=[15],start=0,target=15 is reachable using one operation. Correct the invariant for this original task: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Return the repaired exact expression.",
+      "invalid_candidate": "len(moves) >= popcount(start ^ target)"
+    },
+    {
+      "id": "HXOR-C-1",
+      "task": "CRITIQUE",
+      "domain": "xor",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: rank(moves + [start ^ target]) == rank(moves). Original problem: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Output ACCEPT or REJECT.",
+      "candidate": "rank(moves + [start ^ target]) == rank(moves)"
+    },
+    {
+      "id": "HXOR-C-2",
+      "task": "CRITIQUE",
+      "domain": "xor",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: rank(moves) == rank(moves + [start ^ target]). Original problem: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Output ACCEPT or REJECT.",
+      "candidate": "rank(moves) == rank(moves + [start ^ target])"
+    },
+    {
+      "id": "HXOR-C-3",
+      "task": "CRITIQUE",
+      "domain": "xor",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: popcount(start ^ target) <= len(moves). Original problem: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Output ACCEPT or REJECT.",
+      "candidate": "popcount(start ^ target) <= len(moves)"
+    },
+    {
+      "id": "HXOR-C-4",
+      "task": "CRITIQUE",
+      "domain": "xor",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: rank(moves) == rank([start ^ target]). Original problem: With a list of reusable XOR masks acting on binary state start, decide whether target is reachable. The masks can flip multiple bits. Output ACCEPT or REJECT.",
+      "candidate": "rank(moves) == rank([start ^ target])"
+    },
+    {
+      "id": "HPAREN-F-1",
+      "task": "FORMALIZE",
+      "domain": "paren",
+      "prompt": "TASK=FORMALIZE. Exprime l'appartenance à un langage de parenthèses emboîtées au moyen d'une hauteur de chemin qui ne descend jamais sous zéro. Problem: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HPAREN-F-2",
+      "task": "FORMALIZE",
+      "domain": "paren",
+      "prompt": "TASK=FORMALIZE. A bracket walk should end at zero height and never visit negative height; translate that perspective into one Boolean formula. Problem: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HPAREN-F-3",
+      "task": "FORMALIZE",
+      "domain": "paren",
+      "prompt": "TASK=FORMALIZE. Correct nesting of parentheses can be viewed as a nonnegative prefix-height walk with zero final displacement. Formalize. Problem: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HPAREN-F-4",
+      "task": "FORMALIZE",
+      "domain": "paren",
+      "prompt": "TASK=FORMALIZE. The programmer wants to recognize a Dyck word without simulating a stack. Give the exact two-invariant predicate. Problem: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HPAREN-R-1",
+      "task": "REPAIR",
+      "domain": "paren",
+      "prompt": "TASK=REPAIR. A proposal is false: sum_balance(s) >= 0 and min_prefix_balance(s) >= 0. Counterexample: the lone opening '(' passes but is not a balanced word. Correct the invariant for this original task: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Return the repaired exact expression.",
+      "invalid_candidate": "sum_balance(s) >= 0 and min_prefix_balance(s) >= 0"
+    },
+    {
+      "id": "HPAREN-R-2",
+      "task": "REPAIR",
+      "domain": "paren",
+      "prompt": "TASK=REPAIR. A proposal is false: min_prefix_balance(s) == 0. Counterexample: the lone opening '(' passes because its minimum is zero but it is not closed. Correct the invariant for this original task: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Return the repaired exact expression.",
+      "invalid_candidate": "min_prefix_balance(s) == 0"
+    },
+    {
+      "id": "HPAREN-R-3",
+      "task": "REPAIR",
+      "domain": "paren",
+      "prompt": "TASK=REPAIR. A proposal is false: sum_balance(s) == 0. Counterexample: the word ')(' has total zero but violates an early prefix. Correct the invariant for this original task: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Return the repaired exact expression.",
+      "invalid_candidate": "sum_balance(s) == 0"
+    },
+    {
+      "id": "HPAREN-R-4",
+      "task": "REPAIR",
+      "domain": "paren",
+      "prompt": "TASK=REPAIR. A proposal is false: len(s) > 0. Counterexample: the word '()' passes but ')(' also passes despite being invalid. Correct the invariant for this original task: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Return the repaired exact expression.",
+      "invalid_candidate": "len(s) > 0"
+    },
+    {
+      "id": "HPAREN-C-1",
+      "task": "CRITIQUE",
+      "domain": "paren",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: min_prefix_balance(s) >= 0 and sum_balance(s) == 0. Original problem: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Output ACCEPT or REJECT.",
+      "candidate": "min_prefix_balance(s) >= 0 and sum_balance(s) == 0"
+    },
+    {
+      "id": "HPAREN-C-2",
+      "task": "CRITIQUE",
+      "domain": "paren",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: sum_balance(s) == 0 and min_prefix_balance(s) >= 0. Original problem: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Output ACCEPT or REJECT.",
+      "candidate": "sum_balance(s) == 0 and min_prefix_balance(s) >= 0"
+    },
+    {
+      "id": "HPAREN-C-3",
+      "task": "CRITIQUE",
+      "domain": "paren",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: sum_balance(s) >= 0 and min_prefix_balance(s) >= 0. Original problem: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Output ACCEPT or REJECT.",
+      "candidate": "sum_balance(s) >= 0 and min_prefix_balance(s) >= 0"
+    },
+    {
+      "id": "HPAREN-C-4",
+      "task": "CRITIQUE",
+      "domain": "paren",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: min_prefix_balance(s) == 0. Original problem: A word s uses only '(' and ')' and must be correctly nested with every opening closed. Output ACCEPT or REJECT.",
+      "candidate": "min_prefix_balance(s) == 0"
+    },
+    {
+      "id": "HOBS-F-1",
+      "task": "FORMALIZE",
+      "domain": "obs",
+      "prompt": "TASK=FORMALIZE. Un automate observé permet de distinguer deux états par les signatures de classes raffinées h fois. Écris ce changement de représentation. Problem: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HOBS-F-2",
+      "task": "FORMALIZE",
+      "domain": "obs",
+      "prompt": "TASK=FORMALIZE. Instead of explicitly following the output words, compute h-step partition classes for two states and compare them. Problem: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HOBS-F-3",
+      "task": "FORMALIZE",
+      "domain": "obs",
+      "prompt": "TASK=FORMALIZE. Replace direct trace equivalence with equality of the deterministic observation-refinement codes at horizon h. Problem: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HOBS-F-4",
+      "task": "FORMALIZE",
+      "domain": "obs",
+      "prompt": "TASK=FORMALIZE. Observability can be represented by successor-aware splitting of output-color blocks. Give the exact equivalence check. Problem: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Respond using the strict one-line formal language."
+    },
+    {
+      "id": "HOBS-R-1",
+      "task": "REPAIR",
+      "domain": "obs",
+      "prompt": "TASK=REPAIR. A proposal is false: partition_code(T, pi, 1, x) == partition_code(T, pi, 1, y). Counterexample: T=[2,1,2], pi=[0,0,1], x=0,y=1,h=2: first observations agree, the second disagree. Correct the invariant for this original task: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Return the repaired exact expression.",
+      "invalid_candidate": "partition_code(T, pi, 1, x) == partition_code(T, pi, 1, y)"
+    },
+    {
+      "id": "HOBS-R-2",
+      "task": "REPAIR",
+      "domain": "obs",
+      "prompt": "TASK=REPAIR. A proposal is false: partition_code(T, pi, 0, x) == partition_code(T, pi, 0, y). Counterexample: at zero horizon all states share a class, but x and y may differ as soon as they are observed. Correct the invariant for this original task: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Return the repaired exact expression.",
+      "invalid_candidate": "partition_code(T, pi, 0, x) == partition_code(T, pi, 0, y)"
+    },
+    {
+      "id": "HOBS-R-3",
+      "task": "REPAIR",
+      "domain": "obs",
+      "prompt": "TASK=REPAIR. A proposal is false: pi[x] == pi[y]. Counterexample: T=[2,1,2],pi=[0,0,1],x=0,y=1,h=2 has equal initial colors but distinct length-2 words. Correct the invariant for this original task: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Return the repaired exact expression.",
+      "invalid_candidate": "pi[x] == pi[y]"
+    },
+    {
+      "id": "HOBS-R-4",
+      "task": "REPAIR",
+      "domain": "obs",
+      "prompt": "TASK=REPAIR. A proposal is false: unordered_histogram(T, pi, h, x) == unordered_histogram(T, pi, h, y). Counterexample: the words (0,1) and (1,0) have the same multiset but are different traces. Correct the invariant for this original task: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Return the repaired exact expression.",
+      "invalid_candidate": "unordered_histogram(T, pi, h, x) == unordered_histogram(T, pi, h, y)"
+    },
+    {
+      "id": "HOBS-C-1",
+      "task": "CRITIQUE",
+      "domain": "obs",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: partition_code(T, pi, h, y) == partition_code(T, pi, h, x). Original problem: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Output ACCEPT or REJECT.",
+      "candidate": "partition_code(T, pi, h, y) == partition_code(T, pi, h, x)"
+    },
+    {
+      "id": "HOBS-C-2",
+      "task": "CRITIQUE",
+      "domain": "obs",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: partition_code(T, pi, h, x) == partition_code(T, pi, h, y). Original problem: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Output ACCEPT or REJECT.",
+      "candidate": "partition_code(T, pi, h, x) == partition_code(T, pi, h, y)"
+    },
+    {
+      "id": "HOBS-C-3",
+      "task": "CRITIQUE",
+      "domain": "obs",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: partition_code(T, pi, 1, x) == partition_code(T, pi, 1, y). Original problem: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Output ACCEPT or REJECT.",
+      "candidate": "partition_code(T, pi, 1, x) == partition_code(T, pi, 1, y)"
+    },
+    {
+      "id": "HOBS-C-4",
+      "task": "CRITIQUE",
+      "domain": "obs",
+      "prompt": "TASK=CRITIQUE. Check the equivalence of this mathematical shortcut on every finite valid instance, not just one: partition_code(T, pi, 0, x) == partition_code(T, pi, 0, y). Original problem: For a deterministic finite T with observation pi, compare the h consecutive observations from states x and y. Output ACCEPT or REJECT.",
+      "candidate": "partition_code(T, pi, 0, x) == partition_code(T, pi, 0, y)"
+    },
+    {
+      "id": "HUNSUP-A-1",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "prompt": "TASK=FORMALIZE. Can you predict an unspecified chemical reaction energy from a formula not supplied? If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HUNSUP-A-2",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "prompt": "TASK=FORMALIZE. Donne un algorithme de preuve universel pour une conjecture non formulée. If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HUNSUP-A-3",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "prompt": "TASK=FORMALIZE. Provide a verified expression for a novel economic model whose variables were not provided. If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HUNSUP-A-4",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "prompt": "TASK=FORMALIZE. Compute a definite quantum scattering amplitude without stating the physical Hamiltonian. If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HUNSUP-A-5",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "prompt": "TASK=FORMALIZE. Donne une loi de croissance universelle pour une population sans préciser le système. If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HUNSUP-A-6",
+      "task": "ABSTAIN",
+      "domain": "unsupported",
+      "prompt": "TASK=FORMALIZE. Prove an unspecified open theorem in number theory without hypotheses. If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HTRANS-A-1",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "prompt": "TASK=FORMALIZE. For a connected weighted graph, give a certified minimal spanning tree expression. If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HTRANS-A-2",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "prompt": "TASK=FORMALIZE. How do you determine Hamiltonian cycle existence for arbitrary undirected graphs? If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HTRANS-A-3",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "prompt": "TASK=FORMALIZE. Dans une chaîne de Markov à états cachés, exprime exactement le filtre bayésien. If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HTRANS-A-4",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "prompt": "TASK=FORMALIZE. Develop an exact scheduler for parallel tasks under general resource constraints. If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HTRANS-A-5",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "prompt": "TASK=FORMALIZE. Provide a universally correct transformation of a nonlinear optimization task. If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    },
+    {
+      "id": "HTRANS-A-6",
+      "task": "ABSTAIN",
+      "domain": "transfer_unseen",
+      "prompt": "TASK=FORMALIZE. For a directed weighted network, formalize shortest paths with negative-weight cycles. If no exact applicable formal grammar has been taught, answer ABSTAIN."
+    }
+  ],
+  "train_seen_exactly": false
+}
