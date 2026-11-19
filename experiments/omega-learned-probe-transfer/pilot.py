@@ -13,6 +13,7 @@ WEIGHTS = "724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7"
 ENGINE = "5a4afd80779ba51166b59986e61a0bfbb9e1a4c6"
 SCHEDULE = (("order", "MEMO"), ("order", "SANS_MEMO"),
             ("limit", "SANS_MEMO"), ("limit", "MEMO"))
+SOURCE_GRAMMAR = 'root ::= ("SAME" | "DIFFERENT") " " word " " word\nword ::= [AB]{2,5}\n'
 TARGET_SYSTEM = (
     "Résous le problème courant. Format unique : ORDRE MOT1 MOT2 si tu varies "
     "l'ordre à composition constante, CHARGE MOT1 MOT2 si tu varies la composition, "
@@ -29,11 +30,24 @@ def save(path, data):
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def complete(system, prompt, cap):
+def request_params(system, prompt, cap, grammar=None):
     params = {
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
         "max_tokens": cap, "temperature": 0, "seed": 19, "stream": False,
     }
+    if grammar is not None:
+        params["grammar"] = grammar
+    return params
+
+
+def target_grammar(case):
+    length = 3 if case == "order" else 4
+    return ('root ::= "NONE" | ("ORDRE" | "CHARGE") " " word " " word\n'
+            f'word ::= [FG]{{{length}}}\n')
+
+
+def complete(system, prompt, cap, grammar=None):
+    params = request_params(system, prompt, cap, grammar)
     request = urllib.request.Request(
         ENDPOINT, data=json.dumps(params, ensure_ascii=False).encode(),
         headers={"Content-Type": "application/json"}, method="POST",
@@ -100,6 +114,7 @@ def acquire(output):
         "modifier l'affichage. Choisis les deux suites et prédis si leurs sorties "
         "seront identiques (SAME) ou différentes (DIFFERENT).",
         40,
+        SOURCE_GRAMMAR,
     )
     answer = decode(probe, 40)
     trace = observe(answer["text"]) if answer else {"status": "INFRA_FAILURE", "experiments": 0}
@@ -130,7 +145,8 @@ def transfer(acquired, output):
     result = {"acquired": acquisition, "budget": {"cap": 64, "n_ctx": 4096}, "targets": []}
     for case, arm in SCHEDULE:
         annotation = note if arm == "MEMO" else "(emplacement neutre)"
-        row = complete(TARGET_SYSTEM, target_prompt(tasks[case], acquisition["trace"], annotation), 64)
+        row = complete(TARGET_SYSTEM, target_prompt(tasks[case], acquisition["trace"], annotation),
+                       64, target_grammar(case))
         result["targets"].append({"case": case, "arm": arm, **row})
         save(output, result)
 

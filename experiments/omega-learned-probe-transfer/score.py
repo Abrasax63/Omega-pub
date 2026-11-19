@@ -5,8 +5,8 @@ import hashlib
 import re
 from pathlib import Path
 
-from pilot import ENGINE, HERE, SCHEDULE, TARGET_SYSTEM, WEIGHTS
-from pilot import decode, observe, read_json, save, target_prompt
+from pilot import ENGINE, HERE, SCHEDULE, SOURCE_GRAMMAR, TARGET_SYSTEM, WEIGHTS
+from pilot import decode, observe, read_json, request_params, save, target_grammar, target_prompt
 
 
 def measurements(case, word):
@@ -50,6 +50,8 @@ def score(acquired_path, raw_path):
         WEIGHTS, ENGINE
     ):
         raise ValueError("acquisition or runtime mismatch")
+    if acquired["probe"]["request"].get("grammar") != SOURCE_GRAMMAR:
+        raise ValueError("unexpected source decoding contract")
     probe = decode(acquired["probe"], 40)
     reflection = decode(acquired["reflection"], 160)
     if probe and observe(probe["text"]) != acquired["trace"]:
@@ -64,9 +66,7 @@ def score(acquired_path, raw_path):
         expected_note = note if arm == "MEMO" else "(emplacement neutre)"
         expected = target_prompt(tasks[case], acquired["trace"], expected_note)
         req = row["request"]
-        if req != {"messages": [{"role": "system", "content": TARGET_SYSTEM},
-                               {"role": "user", "content": expected}],
-                   "max_tokens": 64, "temperature": 0, "seed": 19, "stream": False}:
+        if req != request_params(TARGET_SYSTEM, expected, 64, target_grammar(case)):
             raise ValueError("unfrozen target input or budget")
         answer = decode(row, 64)
         judgement = grade(case, answer["text"]) if answer else {

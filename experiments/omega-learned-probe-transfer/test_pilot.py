@@ -1,7 +1,7 @@
 import itertools
 import unittest
 
-from pilot import SCHEDULE, observe, target_prompt
+from pilot import SCHEDULE, SOURCE_GRAMMAR, observe, request_params, target_grammar, target_prompt
 from score import grade, measurements
 
 
@@ -32,3 +32,12 @@ class TransferTest(unittest.TestCase):
         b = target_prompt("task", trace, "(emplacement neutre)")
         self.assertEqual(a.replace("memo content", "(emplacement neutre)"), b)
         self.assertEqual([arm for _, arm in SCHEDULE], ["MEMO", "SANS_MEMO", "SANS_MEMO", "MEMO"])
+
+    def test_grammar_keeps_both_hypotheses_and_both_decisions_available(self):
+        self.assertIn('("SAME" | "DIFFERENT")', SOURCE_GRAMMAR)
+        self.assertIn('[AB]{2,5}', SOURCE_GRAMMAR)
+        for case, length in [("order", 3), ("limit", 4)]:
+            params = request_params("sys", "problem", 64, target_grammar(case))
+            self.assertIn('"NONE" | ("ORDRE" | "CHARGE")', params["grammar"])
+            self.assertIn(f"[FG]{{{length}}}", params["grammar"])
+            self.assertEqual(params["max_tokens"], 64)
