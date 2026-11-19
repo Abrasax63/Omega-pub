@@ -1,0 +1,32 @@
+{
+  "cases": 8,
+  "oracle_on_manual_contract_correct": 8,
+  "oracle_outcomes": {
+    "counterexample": 4,
+    "holds": 3,
+    "empty": 1
+  },
+  "binding_outcomes": {
+    "PREMISE_COUNT": 6,
+    "JSON_OR_VERDICT": 2
+  },
+  "generations": 8,
+  "prompt_tokens": 1418,
+  "completion_tokens": 1315,
+  "inference_seconds": 113.6914169209997,
+  "comparison_and_control_seconds": 0.0002636859996982821,
+  "wrong_direct_to_correct_omega": 0,
+  "noncorrect_direct_to_correct_omega": 0,
+  "correct_direct_lost_by_omega": 1,
+  "universal_promotions": 0,
+  "direct": {
+    "correct": 1,
+    "errors": 5,
+    "abstentions": 2
+  },
+  "omega": {
+    "correct": 0,
+    "errors": 0,
+    "abstentions": 8
+  }
+}
