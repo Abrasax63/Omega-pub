@@ -1,0 +1,117 @@
+name: Omega Reader - paired hypothesis fidelity
+on:
+  push:
+    branches:
+      - experiment/omega-reader-paired-hypothesis-2026-11-19
+
+permissions:
+  contents: read
+
+env:
+  PILOT_PATH: 09_INFRASTRUCTURE_AGENTIQUE/reader_paired_hypothesis
+  LLAMA_COMMIT: 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+  MODEL_SHA: 724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify frozen sources, legacy gate and independent finite oracle
+        run: python3 -m unittest discover -v -s "$PILOT_PATH"
+
+  inference:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/llama.cpp
+          key: omega11-llama-server-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega11/model.gguf
+          key: omega11-qwen2p5-coder3b-724fb256bec1ff062b2f65e4569e871ad2e95ab2a3989723d1769c54294730b7
+      - name: Verify Qwen weights and build the pinned CPU engine
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/omega11"
+          BASE="$CACHE/llama.cpp"
+          MODEL="$CACHE/model.gguf"
+          mkdir -p "$CACHE"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 750 \
+              'https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf' \
+              -o "$MODEL"
+          fi
+          echo "$MODEL_SHA  $MODEL" | sha256sum -c -
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin "$LLAMA_COMMIT"
+            git -C "$BASE" checkout --detach "$LLAMA_COMMIT"
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "$LLAMA_COMMIT"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja -DGGML_NATIVE=OFF \
+            -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - name: Run one real local generation for each source
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/omega11"
+          "$CACHE/llama.cpp/build/bin/llama-server" -m "$CACHE/model.gguf" \
+            -c 4096 -t 4 --host 127.0.0.1 --port 8091 >"$RUNNER_TEMP/omega-paired-llama.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for _ in $(seq 1 120); do
+            if curl -fsS --max-time 2 http://127.0.0.1:8091/health >/dev/null 2>&1; then
+              break
+            fi
+            kill -0 "$SERVER_PID"
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:8091/health
+          python3 "$PILOT_PATH/pilot.py" --raw "$RUNNER_TEMP/omega-paired-raw.json"
+      - name: Freeze raw completions before grading
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-paired-hypothesis-raw
+          path: |
+            ${{ runner.temp }}/omega-paired-raw.json
+            ${{ runner.temp }}/omega-paired-llama.log
+          if-no-files-found: warn
+          retention-days: 21
+
+  score:
+    needs: inference
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: omega-paired-hypothesis-raw
+          path: ${{ runner.temp }}/omega-paired-raw
+      - name: Grade citations and run the oracle on the selected contract
+        run: |
+          set -euo pipefail
+          python3 "$PILOT_PATH/judge.py" \
+            --raw "$RUNNER_TEMP/omega-paired-raw/omega-paired-raw.json" \
+            --output "$RUNNER_TEMP/omega-paired-result.json" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: omega-paired-hypothesis-result
+          path: ${{ runner.temp }}/omega-paired-result.json
+          if-no-files-found: error
+          retention-days: 21
