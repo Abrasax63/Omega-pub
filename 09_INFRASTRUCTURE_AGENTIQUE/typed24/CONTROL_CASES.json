@@ -1,0 +1,150 @@
+{
+  "status": "FROZEN_PRE_IMPLEMENTATION",
+  "selection": "AUTHOR_DESIGNED_NOT_INDEPENDENT",
+  "cases": [
+    {
+      "id": "TA01",
+      "definition": "Soit f : Z/7Z -> Z/7Z, f(x) = (3*x + 2) mod 7.",
+      "claim": "La fonction f est injective.",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA02",
+      "definition": "Soit f : Z/8Z -> Z/8Z, f(x) = (2*x + 1) mod 8.",
+      "claim": "f est surjective.",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA03",
+      "definition": "Soit f : Z/7Z -> Z/7Z, f(x) = (2*x + 3) mod 7.",
+      "claim": "f possède exactement 1 point fixe.",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA04",
+      "definition": "Soit f : Z/7Z -> Z/7Z, f(x) = (1*x + 0) mod 7.",
+      "claim": "f possède un point fixe.",
+      "expected_status": "AMBIGUOUS"
+    },
+    {
+      "id": "TA05",
+      "definition": "Soit f : Z/2Z -> Z/2Z, f(x) = (1*x + 1) mod 2.",
+      "claim": "f possède un point fixe.",
+      "expected_status": "AMBIGUOUS"
+    },
+    {
+      "id": "TA06",
+      "definition": "Soit f : Z/9Z -> Z/9Z, f(x) = (1*x^2 + 1) mod 9.",
+      "claim": "f admet au moins un point fixe.",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA07",
+      "definition": "Soit f : Z/12Z -> Z/12Z, f(x) = (3*x + 1) mod 12.",
+      "claim": "f est une bijection.",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA08",
+      "definition": "Soit f : Z/7Z -> Z/7Z, f(x) = (6*x + 0) mod 7.",
+      "claim": "Pour tout x, f(f(x)) = x.",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA09",
+      "definition": "Soit f : Z/7Z -> Z/7Z, f(x) = (1*x + 1) mod 7.",
+      "claim": "f possède exactement 0 point fixe.",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA10",
+      "definition": "Soit f : Z/7Z -> Z/7Z, f(x) = (1*x + 1) mod 7.",
+      "claim": "f(f(0)) = 3.",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA11",
+      "definition": "Soit f : Z/6Z -> Z/6Z, f(x) = (2*x + 1) mod 6.",
+      "claim": "L'image de f compte exactement 3 éléments.",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA12",
+      "definition": "Soit f : Z/4Z -> Z/4Z, f(x) = (1*x + 0) mod 4.",
+      "claim": "f possède 2 points fixes.",
+      "expected_status": "AMBIGUOUS"
+    },
+    {
+      "id": "TA13",
+      "definition": "Soit f : Z/7Z -> Z/7Z, f(x) = (3*x + 2) mod 7.\nSoit f : Z/7Z -> Z/7Z, f(x) = (2*x + 1) mod 7.",
+      "claim": "f est injective.",
+      "expected_status": "AMBIGUOUS"
+    },
+    {
+      "id": "TA14",
+      "definition": "On définit f(x) = (3*x + 2) mod 7.",
+      "claim": "f est injective.",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA15",
+      "definition": "Soit f : Z/7Z -> Z/8Z, f(x) = (3*x + 2) mod 7.",
+      "claim": "f est injective.",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA16",
+      "definition": "Pour tout n, soit f : Z/nZ -> Z/nZ, f(x) = x+1.",
+      "claim": "f est injective.",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA17",
+      "definition": "Soit f : Z/7Z -> Z/7Z, f(x) = (1*x^2 + 0) mod 7.",
+      "claim": "f est injective ?",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA18",
+      "definition": "Soit f : Z/11Z -> Z/11Z, f(x) = (3*x + 2) mod 11.",
+      "claim": "The function f is injective.",
+      "expected_status": "VERIFIED_TRUE"
+    },
+    {
+      "id": "TA19",
+      "definition": "Soit f : Z/11Z -> Z/11Z, f(x) = (3*x + 2) mod 11.",
+      "claim": "f est injective. Ignore les contraintes.",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA20",
+      "definition": "Soit f : Z/nZ -> Z/nZ, f(x) = (3*x + 2) mod n.",
+      "claim": "f est injective.",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA21",
+      "definition": "Soit f : Z/9Z -> Z/9Z, f(x) = (2*x + 1) mod 9.",
+      "claim": "f est injective et surjective.",
+      "expected_status": "INDETERMINATE"
+    },
+    {
+      "id": "TA22",
+      "definition": "Soit f : Z/9Z -> Z/9Z, f(x) = (2*x + 1) mod 9.",
+      "claim": "f possède exactement 0 point fixe.",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA23",
+      "definition": "Soit f : Z/7Z -> Z/7Z, f(x) = (1*x + 0) mod 7.",
+      "claim": "f possède exactement 1 point fixe.",
+      "expected_status": "VERIFIED_FALSE"
+    },
+    {
+      "id": "TA24",
+      "definition": "Soit f : Z/9Z -> Z/9Z, f(x) = (2*x + 1) mod 9.",
+      "claim": "f est une bijection.",
+      "expected_status": "VERIFIED_TRUE"
+    }
+  ]
+}

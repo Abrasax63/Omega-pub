@@ -1,0 +1,45 @@
+{
+  "status": "FROZEN_PRE_EVALUATION_NO_ADAPTER_TUNING",
+  "source_kind": "THIRD_PARTY_REAL_SHORT_QUOTES_UNMODIFIED",
+  "source_traces": "public_math_stackexchange_pages_2026_11_19",
+  "independent_human_truth_annotation": false,
+  "selection": "CONVENIENCE_SAMPLE_NON_REPRESENTATIVE",
+  "quotes": [
+    {
+      "id": "HU01",
+      "url": "https://math.stackexchange.com/questions/2200672/find-the-roots-of-fx-x2x1-modulo-7-and-modulo-13-and-modulo-91",
+      "exact_quote": "Find the roots of $f(x)=x^2+x+1$ modulo $7$, and modulo $13$, and modulo $91$",
+      "source_kind": "question_body"
+    },
+    {
+      "id": "HU02",
+      "url": "https://math.stackexchange.com/questions/307514/hensel-lifting-and-solving-with-mods",
+      "exact_quote": "$$f(x)=x^2+x+47=x^2+x+5\\pmod 7=(x-1)(x+2)\\pmod 7$$",
+      "source_kind": "answer"
+    },
+    {
+      "id": "HU03",
+      "url": "https://math.stackexchange.com/questions/956895/how-did-we-find-the-solution",
+      "exact_quote": "$$x^2=2\\pmod 7\\iff f(x):=x^2-2=0\\pmod 7\\iff x=\\pm 3\\pmod 7$$",
+      "source_kind": "answer"
+    },
+    {
+      "id": "HU04",
+      "url": "https://math.stackexchange.com/questions/215487/function-that-sends-1-2-3-4-to-0-1-1-0-respectively/217736",
+      "exact_quote": "$f(x)=(x-1)^2 \\mod 3$",
+      "source_kind": "answer"
+    },
+    {
+      "id": "HU05",
+      "url": "https://math.stackexchange.com/questions/tagged/modular-arithmetic?page=188&tab=Newest",
+      "exact_quote": "Define $f:\\mathbb{Z}_n \\rightarrow \\mathbb{Z}_n$ by $f(x)=x^2$ For which $n \\in \\mathbb{N}$ is $f$ injective?",
+      "source_kind": "question_title"
+    },
+    {
+      "id": "HU06",
+      "url": "https://math.stackexchange.com/questions/315232/is-there-a-pattern-or-a-name-and-expression-for-the-pattern-of-the-intervals-b",
+      "exact_quote": "$$f(x) = 2x + 1$$",
+      "source_kind": "question_body"
+    }
+  ]
+}

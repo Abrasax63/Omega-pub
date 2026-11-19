@@ -1,0 +1,68 @@
+name: Omega TYPED24 - typed semantic adapter, ambiguity and source fidelity
+on:
+  push:
+    branches:
+      - experiment/omega-typed24-ambiguity-gate-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-typed24-source-fidelity
+  cancel-in-progress: false
+
+jobs:
+  typed-source-and-ambiguity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check independent source hashes, typed ambiguity and non-regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/typed24
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/typed24 \
+            -p 'test_adapter.py' -v \
+            2>&1 | tee /tmp/typed24/tests.log
+          python 09_INFRASTRUCTURE_AGENTIQUE/typed24/benchmark.py \
+            --output /tmp/typed24/experiment.json \
+            --markdown /tmp/typed24/RESULT.md
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path("/tmp/typed24/experiment.json").read_text())
+          assert report["status"] == "TYPED24_LOCAL_CONTRACT_COMPLETED"
+          c=report["contract"]
+          assert c["n_cases"] == 24
+          assert c["baseline_sem22_supported"] == 0
+          assert c["typed_adapter_verified"] == 13
+          assert c["verified_true"] == 7
+          assert c["verified_false"] == 6
+          assert c["ambiguous"] == 4
+          assert c["indeterminate"] == 7
+          assert report["new_external"]["n"] == 6
+          assert report["new_external"]["verified"] == 0
+          assert report["new_external"]["safe_abstention"] == 6
+          assert report["non_regression"]["sem22_exact_math_reverified"] == 168
+          assert report["non_regression"]["external23_legacy_refusal_count"] == 12
+          assert report["automatic_formal_certifications"] == 0
+          print("TYPED24_CONTRACT_VALIDATED", c["typed_adapter_verified"], flush=True)
+          print("TYPED24_AMBIGUOUS", c["ambiguous"], flush=True)
+          print("TYPED24_EXTERNAL_GENERALIZATION", "NOT_DEMONSTRATED", flush=True)
+          PY
+      - name: Save detailed typed interpretations, traces, source quotes and test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: typed24-ambiguity-and-source-fidelity-results
+          path: /tmp/typed24/
+          retention-days: 14
+          if-no-files-found: warn
