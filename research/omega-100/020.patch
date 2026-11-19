@@ -1,0 +1,32 @@
+diff --git a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
+index 0be45c3..c03899f 100644
+--- a/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12/read.py
+@@ -6,6 +6,8 @@ meaning extraction. The content is never promoted to a theorem.
+ """
+ from __future__ import annotations
+ import hashlib
++import os
++import stat
+ import re
+ from pathlib import Path
+ 
+@@ -30,7 +32,17 @@ def safe_read(path: Path, expected: str) -> bytes:
+         raise ValueError("source path missing, symlinked or oversized")
+     if not re.fullmatch(r"[a-f0-9]{40}", expected):
+         raise ValueError("source requires immutable 40-character Git blob")
+-    raw = path.read_bytes()
++    try:
++        descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++    except OSError as error:
++        raise ValueError("source path missing, symlinked or unreadable") from error
++    with os.fdopen(descriptor, "rb") as source:
++        metadata = os.fstat(source.fileno())
++        if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > MAX_BYTES:
++            raise ValueError("source is not a bounded regular file")
++        raw = source.read(MAX_BYTES + 1)
++    if len(raw) > MAX_BYTES:
++        raise ValueError("oversized Markdown")
+     if blob(raw) != expected:
+         raise ValueError("source changed after pin")
+     return raw
