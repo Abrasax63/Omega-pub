@@ -93,6 +93,8 @@ def parse_predicate(text: str) -> tuple[str, int | None, str | None]:
         m = pattern.fullmatch(text)
         if m:
             value = int(m.group(1))
+            if m.group(1) != str(value):
+                return "UNSUPPORTED", None, "NONCANONICAL_NUMBER"
             if kind == "FIX_COUNT":
                 expected_plural = "point fixe" if value <= 1 else "points fixes"
                 if m.group(2) != expected_plural:
