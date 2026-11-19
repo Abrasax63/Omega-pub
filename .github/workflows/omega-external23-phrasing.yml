@@ -1,0 +1,64 @@
+name: Omega EXT23 - external human-authored math formulations OOD audit
+on:
+  push:
+    branches:
+      - experiment/omega-external23-human-wording-2026-11-19
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-external23-holdout
+  cancel-in-progress: false
+
+jobs:
+  external-language-holdout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Recheck all 12 externally authored quotes and 168 internal semantic predicates
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ext23
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/external23 \
+            -p 'test_external.py' -v \
+            2>&1 | tee /tmp/ext23/test-log.txt
+          python 09_INFRASTRUCTURE_AGENTIQUE/external23/evaluate.py \
+            --output /tmp/ext23/external-audit.json \
+            --markdown /tmp/ext23/external-audit.md
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("/tmp/ext23/external-audit.json")
+          data=json.loads(p.read_text(encoding="utf8"))
+          assert data["status"] == "EXTERNAL_TEXT_AUDIT_COMPLETED"
+          assert data["source_count"] == 12
+          assert data["number_external_sources_with_links"] == 12
+          assert data["raw_source_abstentions"] == 12
+          assert data["claim_transplant_abstentions"] == 12
+          assert data["unsafe_true_or_false_predictions"] == 0
+          assert data["supported_external_claim_count"] == 0
+          assert data["semantic_generalization_demonstrated"] is False
+          assert data["automatic_promotions"] == 0
+          assert data["formal_certifications"] == 0
+          print("EXT23_SAFE_ABSTENTION_CONFIRMED", data["source_count"], flush=True)
+          print("EXT23_REAL_EXTERNAL_COVERAGE", data["supported_external_claim_count"], flush=True)
+          print("EXT23_GENERALIZATION", "NOT_ESTABLISHED", flush=True)
+          PY
+      - name: Archive external excerpts, case-level results, and safety test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ext23-original-sourced-phrasing-audit
+          path: /tmp/ext23/
+          retention-days: 14
+          if-no-files-found: warn
