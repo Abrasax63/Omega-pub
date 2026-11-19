@@ -1,0 +1,146 @@
+[
+  {
+    "id": "P1",
+    "request": "En partant de 4, où arrive-t-on après 6 étapes ?",
+    "transition": [
+      1,
+      3,
+      4,
+      2,
+      5,
+      0
+    ]
+  },
+  {
+    "id": "P2",
+    "request": "Quel état obtient-on après 3 pas en partant de 2 ?",
+    "transition": [
+      2,
+      4,
+      5,
+      3,
+      0,
+      1
+    ]
+  },
+  {
+    "id": "P3",
+    "request": "En partant de 1, où arrive-t-on après 0 étape ?",
+    "transition": [
+      3,
+      5,
+      0,
+      4,
+      1,
+      2
+    ]
+  },
+  {
+    "id": "P4",
+    "request": "Quel état obtient-on après 8 pas en partant de 3 ?",
+    "transition": [
+      4,
+      0,
+      1,
+      5,
+      2,
+      3
+    ]
+  },
+  {
+    "id": "P5",
+    "request": "On est au sommet 5. Donne le sommet atteint au quatrième déplacement.",
+    "transition": [
+      5,
+      1,
+      2,
+      0,
+      3,
+      4
+    ]
+  },
+  {
+    "id": "P6",
+    "request": "Fais agir quatre fois la transformation sur l'état 0. Quel est le résultat ?",
+    "transition": [
+      0,
+      2,
+      3,
+      1,
+      4,
+      5
+    ]
+  },
+  {
+    "id": "P7",
+    "request": "Après le septième passage, dans quel état se trouve le trajet démarré au sommet 4 ?",
+    "transition": [
+      1,
+      3,
+      4,
+      2,
+      5,
+      0
+    ]
+  },
+  {
+    "id": "P8",
+    "request": "Si 2 est le point de départ, indique la position atteinte au bout de cinq déplacements.",
+    "transition": [
+      2,
+      4,
+      5,
+      3,
+      0,
+      1
+    ]
+  },
+  {
+    "id": "P9",
+    "request": "Depuis le sommet 2, donne l'état après quelques déplacements.",
+    "transition": [
+      3,
+      5,
+      0,
+      4,
+      1,
+      2
+    ]
+  },
+  {
+    "id": "P10",
+    "request": "Après quatre étapes, à quel état arrive-t-on ? Le point de départ n'est pas indiqué.",
+    "transition": [
+      4,
+      0,
+      1,
+      5,
+      2,
+      3
+    ]
+  },
+  {
+    "id": "P11",
+    "request": "Pars de l'état 1 ou de l'état 4, puis applique la transformation exactement deux fois.",
+    "transition": [
+      5,
+      1,
+      2,
+      0,
+      3,
+      4
+    ]
+  },
+  {
+    "id": "P12",
+    "request": "Depuis 3, calcule la position. J'ai noté deux étapes et aussi cinq étapes, sans savoir laquelle est demandée.",
+    "transition": [
+      0,
+      2,
+      3,
+      1,
+      4,
+      5
+    ]
+  }
+]

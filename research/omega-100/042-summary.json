@@ -1,0 +1,29 @@
+{
+  "input_sha256": "b1ccab6914ecc193ce856ddee42710e4e32411216b1f63c4150545bbfc851424",
+  "annotation_sha256": "f5d2518d6487447cd00d47a0f236b1fe07b9a8487009578283bdd7f940d7fcba",
+  "reference": {
+    "correct_routes": 4,
+    "false_routes": 0,
+    "missed_clear": 4,
+    "correct_abstentions": 4,
+    "rejections": 0,
+    "inference_errors": 0,
+    "final_collisions": 0
+  },
+  "reference_ns": 189980,
+  "hybrid": {
+    "correct_routes": 6,
+    "false_routes": 1,
+    "missed_clear": 2,
+    "correct_abstentions": 0,
+    "rejections": 5,
+    "inference_errors": 0,
+    "final_collisions": 0
+  },
+  "calls": 8,
+  "client_seconds": 10.544922368998414,
+  "tokens": {
+    "prompt_tokens": 1021,
+    "completion_tokens": 36
+  }
+}
