@@ -145,6 +145,8 @@ def evaluate(transport=None) -> dict:
             "expected_title":ref["title"],"expected_year":ref["year"],
             "baseline_without_web":BASELINE,
             "web_status":remote["status"],
+            "remote_error_type":remote.get("error_type"),
+            "remote_error":remote.get("error"),
             "remote_body_sha256":remote.get("body_sha256"),
             "retrieved_utc":remote.get("retrieved_utc"),
             "query_url":remote["url"],
