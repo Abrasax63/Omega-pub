@@ -4,8 +4,10 @@ on:
     paths:
       - 'tools/repro_fingerprint.py'
       - 'tools/repro_history_pilot.py'
+      - 'tools/repro_scientific_pilot.py'
       - 'tests/test_repro_fingerprint.py'
       - 'tests/test_repro_history_pilot.py'
+      - 'tests/test_repro_scientific_pilot.py'
       - '.github/workflows/repro-fingerprint-pilot.yml'
   workflow_dispatch:
 jobs:
@@ -18,7 +20,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install scientific pilot dependency
+        run: python -m pip install 'sympy==1.13.3'
       - name: Run isolated fingerprint regression tests
         run: python -m unittest discover -s tests -p 'test_repro_fingerprint.py' -v
       - name: Run isolated history regression tests
         run: python -m unittest discover -s tests -p 'test_repro_history_pilot.py' -v
+
+      - name: Run existing Omega scientific script pilot
+        run: python -m unittest discover -s tests -p 'test_repro_scientific_pilot.py' -v
