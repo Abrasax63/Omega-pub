@@ -1,0 +1,325 @@
+{
+  "status": "FROZEN_BEFORE_MODEL_INFERENCE",
+  "cases": [
+    {
+      "id": "BF01",
+      "kind": "affine",
+      "modulus": 5,
+      "a": 1,
+      "b": 1,
+      "c": 2,
+      "d": 3,
+      "order": [
+        "INJ",
+        "FIX",
+        "EVAL2",
+        "EVAL1",
+        "INV"
+      ]
+    },
+    {
+      "id": "BF02",
+      "kind": "affine",
+      "modulus": 7,
+      "a": 2,
+      "b": 1,
+      "c": 4,
+      "d": 3,
+      "order": [
+        "EVAL2",
+        "EVAL1",
+        "INV",
+        "INJ",
+        "FIX"
+      ]
+    },
+    {
+      "id": "BF03",
+      "kind": "affine",
+      "modulus": 8,
+      "a": 3,
+      "b": 2,
+      "c": 0,
+      "d": 5,
+      "order": [
+        "INV",
+        "INJ",
+        "FIX",
+        "EVAL2",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "BF04",
+      "kind": "affine",
+      "modulus": 9,
+      "a": 2,
+      "b": 3,
+      "c": 1,
+      "d": 6,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "EVAL1",
+        "INV",
+        "INJ"
+      ]
+    },
+    {
+      "id": "BF05",
+      "kind": "affine",
+      "modulus": 11,
+      "a": 5,
+      "b": 5,
+      "c": 8,
+      "d": 10,
+      "order": [
+        "EVAL1",
+        "INV",
+        "INJ",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "BF06",
+      "kind": "affine",
+      "modulus": 12,
+      "a": 4,
+      "b": 7,
+      "c": 0,
+      "d": 11,
+      "order": [
+        "INJ",
+        "FIX",
+        "EVAL2",
+        "EVAL1",
+        "INV"
+      ]
+    },
+    {
+      "id": "BF07",
+      "kind": "affine",
+      "modulus": 13,
+      "a": 3,
+      "b": 2,
+      "c": 8,
+      "d": 6,
+      "order": [
+        "EVAL2",
+        "EVAL1",
+        "INV",
+        "INJ",
+        "FIX"
+      ]
+    },
+    {
+      "id": "BF08",
+      "kind": "affine",
+      "modulus": 14,
+      "a": 7,
+      "b": 4,
+      "c": 5,
+      "d": 11,
+      "order": [
+        "INV",
+        "INJ",
+        "FIX",
+        "EVAL2",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "BF09",
+      "kind": "affine",
+      "modulus": 15,
+      "a": 6,
+      "b": 4,
+      "c": 13,
+      "d": 10,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "EVAL1",
+        "INV",
+        "INJ"
+      ]
+    },
+    {
+      "id": "BF10",
+      "kind": "affine",
+      "modulus": 16,
+      "a": 15,
+      "b": 6,
+      "c": 1,
+      "d": 6,
+      "order": [
+        "EVAL1",
+        "INV",
+        "INJ",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "BF11",
+      "kind": "quadratic",
+      "modulus": 5,
+      "a": 1,
+      "b": 1,
+      "c": 2,
+      "d": 2,
+      "order": [
+        "INJ",
+        "FIX",
+        "EVAL2",
+        "EVAL1",
+        "INV"
+      ]
+    },
+    {
+      "id": "BF12",
+      "kind": "quadratic",
+      "modulus": 7,
+      "a": 2,
+      "b": 2,
+      "c": 4,
+      "d": 4,
+      "order": [
+        "EVAL2",
+        "EVAL1",
+        "INV",
+        "INJ",
+        "FIX"
+      ]
+    },
+    {
+      "id": "BF13",
+      "kind": "quadratic",
+      "modulus": 8,
+      "a": 3,
+      "b": 0,
+      "c": 0,
+      "d": 4,
+      "order": [
+        "INV",
+        "INJ",
+        "FIX",
+        "EVAL2",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "BF14",
+      "kind": "quadratic",
+      "modulus": 9,
+      "a": 1,
+      "b": 4,
+      "c": 3,
+      "d": 5,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "EVAL1",
+        "INV",
+        "INJ"
+      ]
+    },
+    {
+      "id": "BF15",
+      "kind": "quadratic",
+      "modulus": 11,
+      "a": 4,
+      "b": 3,
+      "c": 6,
+      "d": 7,
+      "order": [
+        "EVAL1",
+        "INV",
+        "INJ",
+        "FIX",
+        "EVAL2"
+      ]
+    },
+    {
+      "id": "BF16",
+      "kind": "quadratic",
+      "modulus": 12,
+      "a": 5,
+      "b": 1,
+      "c": 7,
+      "d": 7,
+      "order": [
+        "INJ",
+        "FIX",
+        "EVAL2",
+        "EVAL1",
+        "INV"
+      ]
+    },
+    {
+      "id": "BF17",
+      "kind": "quadratic",
+      "modulus": 13,
+      "a": 6,
+      "b": 2,
+      "c": 0,
+      "d": 8,
+      "order": [
+        "EVAL2",
+        "EVAL1",
+        "INV",
+        "INJ",
+        "FIX"
+      ]
+    },
+    {
+      "id": "BF18",
+      "kind": "quadratic",
+      "modulus": 14,
+      "a": 2,
+      "b": 5,
+      "c": 0,
+      "d": 7,
+      "order": [
+        "INV",
+        "INJ",
+        "FIX",
+        "EVAL2",
+        "EVAL1"
+      ]
+    },
+    {
+      "id": "BF19",
+      "kind": "quadratic",
+      "modulus": 15,
+      "a": 7,
+      "b": 4,
+      "c": 11,
+      "d": 12,
+      "order": [
+        "FIX",
+        "EVAL2",
+        "EVAL1",
+        "INV",
+        "INJ"
+      ]
+    },
+    {
+      "id": "BF20",
+      "kind": "quadratic",
+      "modulus": 16,
+      "a": 3,
+      "b": 7,
+      "c": 11,
+      "d": 10,
+      "order": [
+        "EVAL1",
+        "INV",
+        "INJ",
+        "FIX",
+        "EVAL2"
+      ]
+    }
+  ]
+}
