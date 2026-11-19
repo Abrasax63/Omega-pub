@@ -1,0 +1,106 @@
+{
+  "status": "FROZEN_BEFORE_EVALUATION_CODE",
+  "origin": "THIRD_PARTY_TEXT_PREEXISTING_OMEGA",
+  "selection": "NON_BLIND_CONVENIENCE_SAMPLE",
+  "truth_labels": "NONE_INDEPENDENT",
+  "attribution": "Math Stack Exchange original question and answer contributors and Wikipedia editors via their respective page histories; see source URLs",
+  "reuse_note": "Short attributed quotations for testing; full originals remain on original URLs. Source authors not Omega.",
+  "sources": [
+    {
+      "id": "EX01",
+      "source_type": "mathstackexchange_post",
+      "source_url": "https://math.stackexchange.com/questions/3091527/bijective-function-using-modular-multiplicative-inverse",
+      "quote": "mapping $f:\\mathbb{Z}_N\\rightarrow\\mathbb{Z}_N$ defined as $f(x)=(xR^{-1})\\mod N$ is bijective if $N$ and $R$ are co-prime?",
+      "notes": "Variables N,R; inverse; symbolic generality",
+      "category": "symbolic_parameters"
+    },
+    {
+      "id": "EX02",
+      "source_type": "mathstackexchange_post",
+      "source_url": "https://math.stackexchange.com/questions/3022985/multiplication-by-k-is-a-bijection-bmod-n-iff-gcdk-n-1",
+      "quote": "$\\ f(x)=k\\cdot x\\ (mod\\ n)$ a bijection for $k,n\\in\\mathbb{N},\\ gcd(k,n)=1$?",
+      "notes": "General n,k, gcd assumption",
+      "category": "symbolic_parameters"
+    },
+    {
+      "id": "EX03",
+      "source_type": "mathstackexchange_post",
+      "source_url": "https://math.stackexchange.com/questions/799255/polynomial-that-is-surjective-mod-n-for-all-n",
+      "quote": "In other words, $f$ permutes the residue class modulo $n$ for every $n$.",
+      "notes": "Quantification across all moduli",
+      "category": "unbounded_quantification"
+    },
+    {
+      "id": "EX04",
+      "source_type": "mathstackexchange_post",
+      "source_url": "https://math.stackexchange.com/questions/3318930/input-and-output-of-function-using-congruence-classes-modulo-n-show-neither-sur",
+      "quote": "$f_n : Z_n → Z_n, f(x) = x^2$",
+      "notes": "Finite squaring map but n remains a variable",
+      "category": "symbolic_parameters"
+    },
+    {
+      "id": "EX05",
+      "source_type": "mathstackexchange_post",
+      "source_url": "https://math.stackexchange.com/questions/1973680/bijection-of-modular-functions",
+      "quote": "$f(x)$ = $x + 1$ mod $m$.",
+      "notes": "Affine map, symbolic modulus",
+      "category": "symbolic_parameters"
+    },
+    {
+      "id": "EX06",
+      "source_type": "mathstackexchange_answer",
+      "source_url": "https://math.stackexchange.com/questions/1471511/modulo-arithmetic-in-mod-12",
+      "quote": "Let's seek for two different numbers modulo $12$ such that their image by $f(x)=3x+1$ is the same.",
+      "notes": "Concrete n=12, affine f but original claim is an instruction, not a closed truth statement",
+      "category": "finite_numeric_open_question"
+    },
+    {
+      "id": "EX07",
+      "source_type": "mathstackexchange_post",
+      "source_url": "https://math.stackexchange.com/questions/2423412/question-about-showing-bijection-when-proving-an-isomorphism",
+      "quote": "I know the bijection is $f(x) \\equiv 3^x \\pmod{7}$",
+      "notes": "Exponential map and different domain and codomain",
+      "category": "outside_supported_function_family"
+    },
+    {
+      "id": "EX08",
+      "source_type": "mathstackexchange_answer",
+      "source_url": "https://math.stackexchange.com/questions/4021941/x1-choose-2-fracx1x2-is-a-bijection-on-bbb-z-m-iff-m-2k",
+      "quote": "Claim:$\\;f_m$ is injective if and only if $m$ is a power of $2$.",
+      "notes": "Claims theorem across infinitely many m",
+      "category": "unbounded_quantification"
+    },
+    {
+      "id": "EX09",
+      "source_type": "mathstackexchange_answer",
+      "source_url": "https://math.stackexchange.com/questions/3038670/what-is-an-irreducible-element-in-bbbz-6x",
+      "quote": "The polynomial $f(x)=2x+1$ fits $(b)$, so it is irreducible in $\\Bbb{Z}_6[x]$.",
+      "notes": "Polynomial irreducibility; do not confuse with function bijectivity",
+      "category": "outside_supported_predicate"
+    },
+    {
+      "id": "EX10",
+      "source_type": "mathstackexchange_answer",
+      "source_url": "https://math.stackexchange.com/questions/151530/the-number-of-elements-which-are-squares-in-a-finite-field",
+      "quote": "then the map $x \\mapsto x^2$ is injective and thus bijective since the field is finite.",
+      "notes": "The field is of order 2^k, not generic Z/nZ",
+      "category": "different_algebraic_domain"
+    },
+    {
+      "id": "EX11",
+      "source_type": "wikipedia_fr_article",
+      "source_url": "https://fr.wikipedia.org/wiki/Application_(mathématiques)",
+      "quote": "lorsque tout élément de l'ensemble d'arrivée de f a au plus un antécédent",
+      "notes": "Definition of injectivity, no concrete f",
+      "category": "abstract_definition"
+    },
+    {
+      "id": "EX12",
+      "source_type": "wikipedia_fr_article",
+      "source_url": "https://fr.wikipedia.org/wiki/Théorème_du_point_fixe_de_Lefschetz",
+      "quote": "si ce nombre Λ_{f} est non nul, alors il existe au moins un point x fixe par f",
+      "notes": "Algebraic topology theorem, not finite modular map",
+      "category": "different_mathematical_domain"
+    }
+  ]
+}
