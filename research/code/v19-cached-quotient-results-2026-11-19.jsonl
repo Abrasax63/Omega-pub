@@ -1,0 +1,3 @@
+{"controls": {"mutation_invalidated": true, "event_contradiction_rejected": true}}
+{"split": "train", "q": 4, "k": 3, "systems": 27, "queries": 1134, "empty": 294, "errors": 0, "cache_builds": 27, "seconds_reference_candidate": [[0.013815302000011798, 0.015680309000003945], [0.016316346999985853, 0.01930596299996523], [0.014941992999979448, 0.015556605999961448]], "retain": false}
+{"split": "reserve", "q": 5, "k": 4, "systems": 256, "queries": 18432, "empty": 6396, "errors": 0, "cache_builds": 256, "seconds_reference_candidate": [[0.4568722610000009, 0.47984844300003715], [0.47431918000000906, 0.4854596079999851], [0.4627809709999724, 0.4903496389999873]], "retain": false}
