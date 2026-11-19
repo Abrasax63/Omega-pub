@@ -104,7 +104,16 @@ def audit(published_report: dict, raw: bytes) -> dict:
     choices = published_report["decisions"]
     if len(choices) != 32:
         raise ValueError("NOT_THE_FROZEN_32_DECISIONS")
-    raw_json = json.dumps(choices, sort_keys=True, ensure_ascii=False)
+    # Freeze the meaningful decisions, excluding wall-clock timing jitter.
+    # Identical scientific decisions across machines must have the same hash.
+    stable = [
+        {k: row.get(k) for k in (
+            "case_id", "source_blob", "router_status", "selected_verifier",
+            "contract_ast", "exact_result", "reject_reason", "evidence",
+            "promotion_allowed"
+        )} for row in choices
+    ]
+    raw_json = json.dumps(stable, sort_keys=True, ensure_ascii=False)
     decisions_sha256_before_gold = hashlib.sha256(raw_json.encode("utf-8")).hexdigest()
     source_cases = split_reference_cases(raw.decode("utf-8"))
     good_routing = good_verdict = abstentions = silent_errors = 0
