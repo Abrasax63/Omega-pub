@@ -29,7 +29,7 @@ class NewExternalMemoryTests(unittest.TestCase):
 
     def test_independent_source_extractors_match_and_tampering_fails(self):
         raw=b"import Mathlib\n\n/-Informal Statement\n\nFor x, 2*x= x+x.\n-/\n\ntheorem toy : True := by\n  sorry\n"
-        item={"id":11,"git_blob":ext.git_blob(raw)}
+        item={"id":11,"git_blob":ext.git_blob(raw),"path":"proofnet-verified-latest/proofnet-11.lean"}
         result=ext.parse_source(raw,item)
         self.assertEqual(result["informal_exact"],"\nFor x, 2*x= x+x.")
         self.assertTrue(result["lean_reference_exact"].endswith("sorry"))
