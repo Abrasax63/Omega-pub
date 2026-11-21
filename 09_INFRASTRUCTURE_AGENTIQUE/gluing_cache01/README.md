@@ -44,3 +44,14 @@ python 09_INFRASTRUCTURE_AGENTIQUE/gluing_cache01/bench.py
 ```
 
 Le branchement à l'orchestrateur d'Omega exigerait ensuite : cache par version de dépendances et contraintes complètes, stockage de témoins, contrôle exact sur les cache hits, taux réel de réutilisation, tests de non-régression, mode témoin sans cache et retour arrière immédiat.
+
+
+## Contre-test de non-réutilisation
+
+`bench_low_reuse.py` soumet **1 000 transitions différentes**, une fois chacune, avec la même observation et la même question. Les clés de cache ne correspondent jamais : **0 hit**. Il vérifie l'identité des verdicts ET des témoins, et l'égalité des opérations de propagation, tout en mesurant le coût du cache. Les allocations sont mesurées par `tracemalloc` (estimations d'allocations Python, pas RSS).
+
+Ce contre-test détermine quand **ne pas** activer le cache : si la charge ne répète ni système ni préfixe, il ajoute de la gestion et consomme de la mémoire sans économiser un seul calcul exact. Les temps à l'échelle de quelques millisecondes restent dépendants du runner, donc ne constituent pas une mesure d'énergie ou une estimation des performances générales.
+
+```bash
+python 09_INFRASTRUCTURE_AGENTIQUE/gluing_cache01/bench_low_reuse.py
+```
