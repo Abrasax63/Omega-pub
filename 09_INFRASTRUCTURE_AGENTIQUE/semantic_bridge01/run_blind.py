@@ -272,7 +272,7 @@ def main():
             "source_references_not_Lean_proofs":True
         }
         report["structural_prediction_sha256"]=sha_bytes(canonical(structural))
-        report["structural_precomputed_before_llm":True
+        report["structural_precomputed_before_llm"]=True
         profile_bytes=args.profile.read_bytes()
         if sha_bytes(profile_bytes)!="f6f1fae5cae5c79a6c0145496f5f2456311ba76f3b8b7ce22bd3a7a464a34996":
             raise ValueError("REAL_SCALE_PROFILE_SHA_CHANGED")
