@@ -1,0 +1,107 @@
+name: Omega KV-EXT01 - external source scientific pipeline on real Qwen
+on:
+  push:
+    branches:
+      - experiment/omega-kv-external-proofnet-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: omega-kv-ext01-2026-11-21
+  cancel-in-progress: false
+
+jobs:
+  prereg-and-offline-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ensure existing provenance, external and verifier code untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 4fda038199d0dff90b47d91fa221f31536e55941
+          git diff --exit-code 4fda038199d0dff90b47d91fa221f31536e55941 HEAD -- \
+            09_INFRASTRUCTURE_AGENTIQUE/proofnet26 \
+            09_INFRASTRUCTURE_AGENTIQUE/external23 \
+            09_INFRASTRUCTURE_AGENTIQUE/semantic22 \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12 \
+            09_INFRASTRUCTURE_AGENTIQUE/typed24 \
+            09_INFRASTRUCTURE_AGENTIQUE/dual25
+      - name: Offline adversarial protocol, tampering and fail-closed tests
+        run: |
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/kv_external27 -p 'test_bench.py' -v
+
+  real-external-source-cache-abba:
+    needs: prereg-and-offline-controls
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      LLAMA_SHA: 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      MODEL_SHA: 626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/external-llama
+          key: omega-kv-ext01-llama-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/external-qwen3b.gguf
+          key: omega-kv-ext01-3b-626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d
+      - name: Build pinned local CPU llama.cpp
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega/external-llama"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin "$LLAMA_SHA"
+            git -C "$BASE" checkout --detach "$LLAMA_SHA"
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "$LLAMA_SHA"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja -DGGML_NATIVE=OFF \
+            -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - name: Get exact pinned 3B GGUF only (not paid API)
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL="$HOME/.cache/omega/external-qwen3b.gguf"
+          mkdir -p "$(dirname "$MODEL")"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 1500 \
+              "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf" \
+              -o "$MODEL"
+          fi
+          echo "$MODEL_SHA  $MODEL" | sha256sum -c -
+      - name: Verify real external sources, run real LLM, strict parse and both source gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u 09_INFRASTRUCTURE_AGENTIQUE/kv_external27/bench.py \
+            --server "$HOME/.cache/omega/external-llama/build/bin/llama-server" \
+            --model "$HOME/.cache/omega/external-qwen3b.gguf" \
+            --output /tmp/omega-kv-ext01/report.json
+      - name: Archive 4-block raw local model outputs, source gate statuses and timings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-kv-ext01-real-source-pipeline
+          path: |
+            /tmp/omega-kv-ext01/report.json
+            /tmp/omega-kv-ext01/*.server.log
+          retention-days: 14
+          if-no-files-found: warn
