@@ -1,0 +1,114 @@
+name: Omega KV-Reader18 - real scientific cache parity
+on:
+  push:
+    branches:
+      - experiment/omega-kv-reader18-parity-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: omega-kv-reader18-2026-11-21
+  cancel-in-progress: false
+jobs:
+  frozen-reader-and-bench-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm Reader18 scientific components unchanged since pinned PR head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin a84d9d414ffa4f426c89405893c2e642334bc3d3
+          git diff --exit-code a84d9d414ffa4f426c89405893c2e642334bc3d3 HEAD -- \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12 \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge14 \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18
+      - name: Frozen sources, exact labels, gate and A/B logic
+        run: |
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/kv_reader18 -p 'test_bench.py' -v
+  local-models-scientific-kv:
+    needs: frozen-reader-and-bench-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - model_label: 0p5b
+            model_file: qwen2p5-0p5b.gguf
+            model_url: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf
+            model_sha: 74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+          - model_label: 3b
+            model_file: qwen2p5-3b.gguf
+            model_url: https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf
+            model_sha: 626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d
+    env:
+      LLAMA_SHA: 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      MODEL_URL: ${{ matrix.model_url }}
+      MODEL_SHA: ${{ matrix.model_sha }}
+      MODEL_FILE: ${{ matrix.model_file }}
+      MODEL_LABEL: ${{ matrix.model_label }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/llama-science
+          key: omega-kv-reader18-llama-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/models/${{ matrix.model_file }}
+          key: omega-kv-reader18-${{ matrix.model_label }}-${{ matrix.model_sha }}
+      - name: Fetch and build pinned CPU llama-server
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega/llama-science"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin "$LLAMA_SHA"
+            git -C "$BASE" checkout --detach "$LLAMA_SHA"
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "$LLAMA_SHA"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja -DGGML_NATIVE=OFF \
+            -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - name: Fetch exactly pinned GGUF (no paid API)
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL="$HOME/.cache/omega/models/$MODEL_FILE"
+          mkdir -p "$(dirname "$MODEL")"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 1500 "$MODEL_URL" -o "$MODEL"
+          fi
+          echo "$MODEL_SHA  $MODEL" | sha256sum -c -
+      - name: Real Reader18 model inference, provenance gates, cache ABBA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u 09_INFRASTRUCTURE_AGENTIQUE/kv_reader18/bench.py \
+            --server "$HOME/.cache/omega/llama-science/build/bin/llama-server" \
+            --model "$HOME/.cache/omega/models/$MODEL_FILE" \
+            --model-label "$MODEL_LABEL" \
+            --output "/tmp/omega-kv-reader18/$MODEL_LABEL/report.json"
+      - name: Archive all texts, verdicts, timings and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-kv-reader18-${{ matrix.model_label }}
+          path: /tmp/omega-kv-reader18/${{ matrix.model_label }}/
+          retention-days: 14
+          if-no-files-found: warn
