@@ -1,0 +1,68 @@
+{
+  "source_commit": "b7ca411a2abaa6caf3580192b30d865e5bd10bc4",
+  "upstream_repo": "marcusm117/ProofNet-Verified",
+  "source_shas_collected_after_blind_matcher_locked": true,
+  "locked_matcher_sha": "fcb3a1c0ab5a8521923618d112db17185a4068d4",
+  "sources": [
+    {
+      "id": 12,
+      "git_blob": "4b2b70172723059b576ed8fb8624c976339a5a6c",
+      "path": "proofnet-verified-latest/proofnet-12.lean"
+    },
+    {
+      "id": 18,
+      "git_blob": "96e6f183a78157ecb4dd6ac8db1865e1abce49bb",
+      "path": "proofnet-verified-latest/proofnet-18.lean"
+    },
+    {
+      "id": 35,
+      "git_blob": "64c0b891029203888c4448ac0eb745fe5b4384ad",
+      "path": "proofnet-verified-latest/proofnet-35.lean"
+    },
+    {
+      "id": 56,
+      "git_blob": "3fce3f6a1a46bdd7b0a3f709a6e36e41e13155d8",
+      "path": "proofnet-verified-latest/proofnet-56.lean"
+    },
+    {
+      "id": 78,
+      "git_blob": "c2c9172dcc5a638ee0e41810c4aeb52e0bd6d5ac",
+      "path": "proofnet-verified-latest/proofnet-78.lean"
+    },
+    {
+      "id": 100,
+      "git_blob": "1445afdeeb0cd90b5a5888ef685391dac5d1c9c7",
+      "path": "proofnet-verified-latest/proofnet-100.lean"
+    },
+    {
+      "id": 142,
+      "git_blob": "12c52d1c98aefc87bf70881a39d3ffc30e11e0ff",
+      "path": "proofnet-verified-latest/proofnet-142.lean"
+    },
+    {
+      "id": 182,
+      "git_blob": "eff92b1e566478dc4ebe3a9bd2587c8995f48878",
+      "path": "proofnet-verified-latest/proofnet-182.lean"
+    },
+    {
+      "id": 23,
+      "git_blob": "c5060361caa9122253686903de2c139eb19549fe",
+      "path": "proofnet-verified-latest/proofnet-23.lean"
+    },
+    {
+      "id": 43,
+      "git_blob": "b120af84ba317b310f375b69e42895c60695c088",
+      "path": "proofnet-verified-latest/proofnet-43.lean"
+    },
+    {
+      "id": 153,
+      "git_blob": "0a0166ebf9115e7a3bd41f70b4ad7696caaa0483",
+      "path": "proofnet-verified-latest/proofnet-153.lean"
+    },
+    {
+      "id": 263,
+      "git_blob": "10200f6c72babe4239753abb77bab7e312bc4c68",
+      "path": "proofnet-verified-latest/proofnet-263.lean"
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+name: Omega SEM-BRIDGE01 - prereg blind semantic diagnostic holdout
+on:
+  push:
+    branches:
+      - experiment/omega-semantic-bridge-blind-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: omega-sem-bridge01-2026-11-21
+  cancel-in-progress: false
+
+jobs:
+  old-examples-and-blind-protocol-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Existing readers, source QA and scientific controls must not change
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 3c1d8112319ec0bd06ee3daca041530da59b542d
+          git diff --exit-code 3c1d8112319ec0bd06ee3daca041530da59b542d HEAD -- 09_INFRASTRUCTURE_AGENTIQUE/external_memory01 09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18 09_INFRASTRUCTURE_AGENTIQUE/cycle01
+      - name: Blind source-free concept rules and gold isolation tests
+        run: |
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01 -p 'test_development.py' -v
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01 -p 'test_protocol.py' -v
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01 -p 'test_source_ingestion.py' -v
+      - name: Verify matcher exactly equals SHA locked before source inspection
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin fcb3a1c0ab5a8521923618d112db17185a4068d4
+          git diff --exit-code fcb3a1c0ab5a8521923618d112db17185a4068d4 HEAD -- 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01/structural_bridge.py 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01/test_development.py 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01/test_protocol.py
+
+  pinned-external-source-audit:
+    needs: old-examples-and-blind-protocol-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify all 12 novel external Git blobs and independent NL/Lean extraction
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import sys, json
+          from pathlib import Path
+          sys.path.insert(0,"09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01")
+          import run_blind as b
+          manifest=b.get_manifest()
+          folder=Path("/tmp/omega-sem-bridge01/source_audit/external_sources")
+          sources=b.get_pinned_sources(manifest,folder)
+          inputs=b.freeze_inputs(manifest,sources)
+          first=b.run_structural(inputs)
+          assert len(sources)==12 and len(first)==18
+          assert all(not z['source_semantics_proved'] for z in first)
+          path=folder.parent/"source_audit.json"
+          path.write_text(json.dumps({
+              "status":"EXTERNAL_SOURCE_BYTES_AND_TWO_EXTRACTORS_VERIFIED",
+              "count":len(sources),
+              "ids":list(sources),
+              "source_blobs":[p['raw_git_blob'] for p in sources.values()],
+              "blind_inputs":len(inputs),
+              "matcher_locked_sha":"fcb3a1c0ab5a8521923618d112db17185a4068d4",
+              "no_proofs_compiled":True,
+              "model_predictions":0
+          },indent=2)+"\n")
+          print("SOURCE_AUDIT","PASS",len(sources),len(inputs))
+          PY
+      - name: Preserve exact external sources for downstream frozen test
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-sem-bridge01-pinned-external-source-audit
+          path: /tmp/omega-sem-bridge01/source_audit/
+          retention-days: 14
+          if-no-files-found: warn
+
+  real-model-versus-preregistered-structural-bridge:
+    needs: pinned-external-source-audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      MODEL_SHA: 74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+      LLAMA_SHA: 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      PROFILE_SHA: f6f1fae5cae5c79a6c0145496f5f2456311ba76f3b8b7ce22bd3a7a464a34996
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download previously verified scale01 profile
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-scale01-0p5b
+          path: /tmp/omega-sem-bridge01/profile
+          repository: Abrasax63/Omega-pub
+          run-id: 44875280301
+          github-token: ${{ github.token }}
+      - name: Download source audit from this exact run
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-sem-bridge01-pinned-external-source-audit
+          path: /tmp/omega-sem-bridge01/output
+      - name: Verify prior measured physical profile and frozen original source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "$PROFILE_SHA  /tmp/omega-sem-bridge01/profile/report.json" | sha256sum -c -
+          test -s /tmp/omega-sem-bridge01/output/source_audit.json
+          test "$(find /tmp/omega-sem-bridge01/output/external_sources -name '*.lean' | wc -l)" = 12
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/sem-bridge01/llama
+          key: omega-sem-bridge01-llama-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/sem-bridge01/qwen0p5b.gguf
+          key: omega-sem-bridge01-qwen0p5b-74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+      - name: Build pinned local CPU llama-server
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega/sem-bridge01/llama"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin "$LLAMA_SHA"
+            git -C "$BASE" checkout --detach "$LLAMA_SHA"
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "$LLAMA_SHA"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_UI=OFF -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - name: Pin model bytes and fail rather than silently substitute
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL="$HOME/.cache/omega/sem-bridge01/qwen0p5b.gguf"
+          mkdir -p "$(dirname "$MODEL")"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 1500 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf' -o "$MODEL"
+          fi
+          echo "$MODEL_SHA  $MODEL" | sha256sum -c -
+      - name: Blind frozen signatures vs real Qwen source-pair recognition
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01/run_blind.py --profile /tmp/omega-sem-bridge01/profile/report.json --model "$HOME/.cache/omega/sem-bridge01/qwen0p5b.gguf" --server "$HOME/.cache/omega/sem-bridge01/llama/build/bin/llama-server" --output-dir /tmp/omega-sem-bridge01/output
+      - name: Keep all raw predictions and failures for reproducibility
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-sem-bridge01-12-blind-math-18-pairs
+          path: /tmp/omega-sem-bridge01/output/
+          retention-days: 30
+          if-no-files-found: warn
