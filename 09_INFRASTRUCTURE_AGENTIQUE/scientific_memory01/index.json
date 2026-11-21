@@ -1,0 +1,16 @@
+{
+  "validated_count": 11,
+  "head_sha256": "a284b09b977e1cb7700249aaffb779e632d533c2d64563e2db8d34ddae3d7231",
+  "chain_verified": true,
+  "unique_hashes_verified": 11,
+  "status": "SOURCE_AND_BOUNDED_MATH_EVIDENCE_ONLY",
+  "source_run_id": 44878133828,
+  "n_new_observations": 11,
+  "n_pinned_new_external_documents": 8,
+  "n_unverified_llm_predictions": 24,
+  "llm_predictions_in_verified_memory": 0,
+  "lean_proofs_locally_compiled": 0,
+  "source_report_sha256": "623af55f76889746111d5ea348412e99a70e3adbaa0fb045ee9e49d76b06d6dc",
+  "scientific_semantic_fidelity": "NOT_VERIFIED",
+  "production_main_changed": false
+}
