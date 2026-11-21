@@ -36,9 +36,14 @@ jobs:
           python -m unittest discover \
             -s 09_INFRASTRUCTURE_AGENTIQUE/scale01 \
             -p 'test_bitset.py' -v
+      - name: Adaptive compressed routing - never cache one-shot systems
+        run: |
+          python -m unittest discover \\
+            -s 09_INFRASTRUCTURE_AGENTIQUE/scale01 \\
+            -p 'test_adaptive_bitset.py' -v
       - name: Compare real Python memory footprint and execution time up to 2048 states
         run: |
-          python -u 09_INFRASTRUCTURE_AGENTIQUE/scale01/bench_bitset.py
+          python -u 09_INFRASTRUCTURE_AGENTIQUE/scale01/bench_bitset.py\n          python -u 09_INFRASTRUCTURE_AGENTIQUE/scale01/bench_adaptive_bitset.py
       - name: Archive all comparisons including regressions
         if: always()
         uses: actions/upload-artifact@v4
