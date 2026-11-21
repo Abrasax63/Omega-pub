@@ -1,0 +1,49 @@
+name: Omega COMPRESS01 - exact gluing bitset witness compression
+on:
+  push:
+    branches:
+      - experiment/omega-bitset-witnesses-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: omega-compress01-2026-11-21
+  cancel-in-progress: false
+jobs:
+  preserve-all-witnesses-and-measure-memory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Existing scientific and reader components stay unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 06cb52cc6f59e80a1a25d5795e1bcb4ae9c8234b
+          git diff --exit-code 06cb52cc6f59e80a1a25d5795e1bcb4ae9c8234b HEAD -- \
+            02_MATHEMATIQUES/defauts_recollement \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18 \
+            09_INFRASTRUCTURE_AGENTIQUE/kv_reader18 \
+            09_INFRASTRUCTURE_AGENTIQUE/scale01/witness_cache.py \
+            09_INFRASTRUCTURE_AGENTIQUE/scale01/exact_router.py
+      - name: Exhaustive 268336 exact word / witness / multiplicity comparison
+        run: |
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/scale01 \
+            -p 'test_bitset.py' -v
+      - name: Compare real Python memory footprint and execution time up to 2048 states
+        run: |
+          python -u 09_INFRASTRUCTURE_AGENTIQUE/scale01/bench_bitset.py
+      - name: Archive all comparisons including regressions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-compress01-bitset-memory
+          path: /tmp/omega-compress01/
+          retention-days: 14
+          if-no-files-found: warn
