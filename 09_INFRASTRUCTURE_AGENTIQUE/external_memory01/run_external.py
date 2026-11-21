@@ -39,7 +39,7 @@ PROMPT_SYSTEM=(
     "A, B ou NONE si aucune ne correspond. "
     "Ne fournis ni preuve ni explication. Un seul jeton : A, B ou NONE."
 )
-NL_RE=re.compile(r"(?m)^/-Informal Statement\s*\n([\s\S]*?)\n-/$")
+NL_RE=re.compile(r"(?m)^/-Informal Statement[ \t]*\n([\s\S]*?)\n-/$")
 LEAN_RE=re.compile(r"(?m)^theorem\s+[\s\S]*?:= by\s*\n\s*sorry\b")
 
 
