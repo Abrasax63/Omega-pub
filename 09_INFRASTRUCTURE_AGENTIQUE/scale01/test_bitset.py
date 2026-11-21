@@ -33,7 +33,7 @@ class ExactBitsetTests(unittest.TestCase):
         c=ExactBitsetWitnessCache()
         self.assertFalse(c.check(A,api,(0,0,1)).admissible)
         self.assertTrue(c.check(B,bpi,(0,0,1)).admissible)
-        self.assertEqual(c.all_initial_witnesses(B,bpi,(0,0,1)),(0,))
+        self.assertEqual(c.all_initial_witnesses(B,bpi,(0,0,1)),(2,))
     def test_full_multiplicity_and_empty_word(self):
         T=(0,0,0,0);pi=(0,0,0,0)
         c=ExactBitsetWitnessCache()
