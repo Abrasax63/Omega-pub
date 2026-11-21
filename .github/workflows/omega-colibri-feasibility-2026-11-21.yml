@@ -68,6 +68,25 @@ jobs:
           set -euo pipefail
           cd upstream-colibri
           python3 -m unittest discover -s c/tests -p test_makefile_platform.py -v
+      - name: Test model recommendations and memory constraints (mocked)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd upstream-colibri/c
+          python3 -m unittest discover -s tests -p test_setup_catalog.py -v
+          python3 -m unittest discover -s tests -p test_setup_hw.py -v
+      - name: Test analysis-cache reuse and invalidation (synthetic shards)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd upstream-colibri/c
+          python3 -m unittest discover -s tests -p test_analysis_cache.py -v
+      - name: Test complete resource planner with lightweight fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd upstream-colibri/c
+          python3 -m unittest discover -s tests -p test_resource_plan.py -v
       - name: Report scope
         shell: bash
         run: |
