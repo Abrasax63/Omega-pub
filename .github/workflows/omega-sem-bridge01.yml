@@ -34,4 +34,4 @@ jobs:
         run: |
           python -m unittest discover \
             -s 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01 \
-            -p 'test_development.py' -v
+            -p 'test_development.py' -v\n          python -m unittest discover \\\n            -s 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01 \\\n            -p 'test_protocol.py' -v
