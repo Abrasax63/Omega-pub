@@ -1,0 +1,160 @@
+name: Omega EXTERNAL-MEMORY01 - unseen-to-trials mathematical sources and durable ledger
+on:
+  push:
+    branches:
+      - experiment/omega-external-new-memory-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: omega-external-memory01-2026-11-21
+  cancel-in-progress: false
+
+jobs:
+  offline-external-truth-and-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prior Omega scientific components remain unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 435b7df990d169ee297d9893b6ce90a13bee254e
+          git diff --exit-code 435b7df990d169ee297d9893b6ce90a13bee254e HEAD -- \
+            02_MATHEMATIQUES/defauts_recollement \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18 \
+            09_INFRASTRUCTURE_AGENTIQUE/scale01 \
+            09_INFRASTRUCTURE_AGENTIQUE/cycle01 \
+            09_INFRASTRUCTURE_AGENTIQUE/kv_reader18
+      - name: Test independently parsed source, bounded oracle, and append-only ledger
+        run: |
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/external_memory01 \
+            -p 'test_external.py' -v
+      - name: Verify eight actually new external bytes against immutable Git blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"09_INFRASTRUCTURE_AGENTIQUE/external_memory01")
+          import run_external as e
+          m=e.parse_manifest()
+          data=e.audited_sources(m,__import__("pathlib").Path("/tmp/omega-external01/offline_sources"))
+          print("NEW_EXACT_PINNED_EXTERNAL_SOURCES",len(data),[(i,x["raw_git_blob"]) for i,x in data.items()])
+          print("INDEPENDENT_ARITHMETIC",e.arithmetic_crosscheck())
+          PY
+      - name: Archive pinned source audit on success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-external01-upstream-source-audit
+          path: /tmp/omega-external01/offline_sources/
+          retention-days: 14
+          if-no-files-found: warn
+
+  actual-llm-external-holdout-and-memory-candidates:
+    needs: offline-external-truth-and-provenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      MODEL_SHA: 74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+      LLAMA_SHA: 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      PROFILE_SHA: f6f1fae5cae5c79a6c0145496f5f2456311ba76f3b8b7ce22bd3a7a464a34996
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read real SCALE01 memory and model parity record (not inferred)
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-scale01-0p5b
+          path: /tmp/omega-external01/profile
+          repository: Abrasax63/Omega-pub
+          run-id: 44875280301
+          github-token: ${{ github.token }}
+      - name: Verify exact report SHA and frozen model admission gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "$PROFILE_SHA  /tmp/omega-external01/profile/report.json" | sha256sum -c -
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/omega-external01/profile/report.json'))
+          assert p['status']=='FINISHED'
+          assert p['summary']['quality_status']=='LOCAL_TEXT_AND_SOURCE_GATE_PARITY'
+          assert p['model_label']=='0p5b'
+          PY
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/external-memory01/llama
+          key: omega-external-memory01-llama-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/external-memory01/qwen0p5b.gguf
+          key: omega-external-memory01-qwen0p5b-74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+      - name: Build verified source revision of CPU llama-server
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega/external-memory01/llama"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin "$LLAMA_SHA"
+            git -C "$BASE" checkout --detach "$LLAMA_SHA"
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "$LLAMA_SHA"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_UI=OFF -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - name: Verify exact original GGUF model bytes, no paid API
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL="$HOME/.cache/omega/external-memory01/qwen0p5b.gguf"
+          mkdir -p "$(dirname "$MODEL")"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 1500 \
+              'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf' \
+              -o "$MODEL"
+          fi
+          echo "$MODEL_SHA  $MODEL" | sha256sum -c -
+      - name: REAL Qwen ON/OFF on new third-party maths and independent checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u 09_INFRASTRUCTURE_AGENTIQUE/external_memory01/run_external.py \
+            --profile /tmp/omega-external01/profile/report.json \
+            --model "$HOME/.cache/omega/external-memory01/qwen0p5b.gguf" \
+            --server "$HOME/.cache/omega/external-memory01/llama/build/bin/llama-server" \
+            --output-dir /tmp/omega-external01/output
+      - name: Prepare *review-only* chained scientific memory publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u 09_INFRASTRUCTURE_AGENTIQUE/external_memory01/publisher.py \
+            --artifact-dir /tmp/omega-external01/output \
+            --run-id "$GITHUB_RUN_ID" \
+            --output-dir /tmp/omega-external01/publish
+      - name: Archive source bytes, failures, raw model outcomes and promotion plan
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-external-memory01-e2e-provenance-quarantine-publication
+          path: |
+            /tmp/omega-external01/output/
+            /tmp/omega-external01/publish/
+          retention-days: 30
+          if-no-files-found: warn
