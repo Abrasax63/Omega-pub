@@ -21,6 +21,14 @@ jobs:
         run: |
           cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
           python -m unittest discover -p 'test_router.py' -v
+      - name: Passive prefix reuse - 21 unit tests, byte-for-byte wire identity
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
+          python -m unittest discover -p 'test_prefix_observer.py' -v
+      - name: Prefix overlap on synthetic varied prompts (no LLM)
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
+          python bench_prefix.py
       - name: Synthetic benchmark and output equality
         run: |
           cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
