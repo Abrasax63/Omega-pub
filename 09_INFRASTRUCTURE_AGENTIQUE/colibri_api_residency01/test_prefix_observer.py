@@ -6,9 +6,9 @@ from prefix_observer import PrefixObserver
 S=dict(tenant="A",authorization_scope="auth",endpoint="local",
        model_revision="rev1",template_revision="template1")
 def pack(sys="S",usr="U",**changes):
-    return json.dumps(dict(model="m",max_tokens=32,temperature=0,
-            messages=[dict(role="system",content=sys),dict(role="user",content=usr)],
-            **changes),ensure_ascii=False).encode()
+    base=dict(model="m",max_tokens=32,temperature=0,
+              messages=[dict(role="system",content=sys),dict(role="user",content=usr)])
+    return json.dumps(base | changes,ensure_ascii=False).encode()
 class PrefixTests(unittest.TestCase):
     def setUp(self):
         self.o=PrefixObserver()
