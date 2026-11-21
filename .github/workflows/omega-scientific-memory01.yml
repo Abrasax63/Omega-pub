@@ -6,6 +6,8 @@ on:
     paths:
       - '09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01/verified_ledger.jsonl'
       - '09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01/index.json'
+      - '09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01/model_quarantine.jsonl'
+      - '.github/workflows/omega-scientific-memory01.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,6 +27,11 @@ jobs:
           python -m unittest discover \
             -s 09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01 \
             -p 'test_memory.py' -v
+      - name: Audit separately persisted original Qwen responses and known divergence
+        run: |
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01 \
+            -p 'test_quarantine.py' -v
       - name: Replay actual persistent ledger and compare immutable SHA256 chain
         run: |
           python 09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01/read_memory.py
