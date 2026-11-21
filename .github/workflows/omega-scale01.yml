@@ -1,0 +1,130 @@
+name: Omega SCALE01 - finite-state, data volume and local model RAM
+on:
+  push:
+    branches:
+      - experiment/omega-scale-residency-gluing-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: omega-scale01-2026-11-21
+  cancel-in-progress: false
+
+jobs:
+  exact-scaling-and-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Old reader and scientific source components remain immutable
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin a2c4d4dc1fb02ec691d02a6e7db0846e85a541da
+          git diff --exit-code a2c4d4dc1fb02ec691d02a6e7db0846e85a541da HEAD -- \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12 \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge14 \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18 \
+            09_INFRASTRUCTURE_AGENTIQUE/kv_reader18 \
+            02_MATHEMATIQUES/defauts_recollement/sources
+      - name: Exact gluing oracles, adaptive policy, and model A/B guards
+        run: |
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/scale01 -p 'test*.py' -v
+      - name: Scale exact state space with and without reuse and with bounded adaptive cache
+        run: |
+          python -u 09_INFRASTRUCTURE_AGENTIQUE/scale01/bench_finite.py \
+            --output /tmp/omega-scale01/exact/report.json
+      - name: Preserve exact proof-witness measurements, even if model jobs fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-scale01-exact
+          path: /tmp/omega-scale01/exact/
+          retention-days: 14
+          if-no-files-found: warn
+
+  real-local-model-size-and-data-volume:
+    needs: exact-scaling-and-safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: 0p5b
+            file: qwen0p5b.gguf
+            url: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf
+            sha: 74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+          - label: 3b
+            file: qwen3b.gguf
+            url: https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf
+            sha: 626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d
+    env:
+      LLAMA_SHA: 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      MODEL_URL: ${{ matrix.url }}
+      MODEL_SHA: ${{ matrix.sha }}
+      MODEL_FILE: ${{ matrix.file }}
+      MODEL_LABEL: ${{ matrix.label }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/scale01/llama-${{ matrix.label }}
+          key: omega-scale01-llama-${{ matrix.label }}-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/scale01/${{ matrix.file }}
+          key: omega-scale01-${{ matrix.label }}-${{ matrix.sha }}
+      - name: Build strictly pinned llama-server CPU
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega/scale01/llama-$MODEL_LABEL"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin "$LLAMA_SHA"
+            git -C "$BASE" checkout --detach "$LLAMA_SHA"
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "$LLAMA_SHA"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_UI=OFF -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - name: Download original pinned GGUF only if needed, verify model bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL="$HOME/.cache/omega/scale01/$MODEL_FILE"
+          mkdir -p "$(dirname "$MODEL")"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 1500 "$MODEL_URL" -o "$MODEL"
+          fi
+          echo "$MODEL_SHA  $MODEL" | sha256sum -c -
+      - name: Real Qwen local 6/12/24 document throughput, cache ABBA, source F1, VmHWM
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u 09_INFRASTRUCTURE_AGENTIQUE/scale01/model_scale.py \
+            --server "$HOME/.cache/omega/scale01/llama-$MODEL_LABEL/build/bin/llama-server" \
+            --model "$HOME/.cache/omega/scale01/$MODEL_FILE" \
+            --model-label "$MODEL_LABEL" \
+            --output "/tmp/omega-scale01/$MODEL_LABEL/report.json"
+      - name: Archive raw model text, source selections, timing and memory (on failure too)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-scale01-${{ matrix.label }}
+          path: /tmp/omega-scale01/${{ matrix.label }}/
+          retention-days: 14
+          if-no-files-found: warn
