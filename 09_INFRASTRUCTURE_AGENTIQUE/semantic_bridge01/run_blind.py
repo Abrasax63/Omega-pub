@@ -20,11 +20,12 @@ INFRA=HERE.parent
 sys.path.insert(0,str(INFRA/"external_memory01"))
 sys.path.insert(0,str(INFRA/"cycle01"))
 from run_external import (
-    parse_source,fetch_source,build_messages,parse_label,
+    fetch_source,build_messages,parse_label,
 )
 from single_resident import SingleResidentGovernor,ModelProfile,LocalLlamaBackend
 from cycle import query_server,canonical,sha_bytes
 from structural_bridge import match,guarded_proposal,MIN_SCORE,MIN_MARGIN
+from source_ingestion import extract as parse_source
 
 MANIFEST=HERE/"BLIND_HOLDOUT.json"
 PINNED=HERE/"SOURCE_BLOBS.json"
