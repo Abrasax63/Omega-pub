@@ -1,0 +1,38 @@
+name: Omega RESIDENCY01 - no unsafe model loading or silent downgrade
+on:
+  push:
+    branches:
+      - experiment/omega-model-residency-governor-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: omega-residency01-2026-11-21
+  cancel-in-progress: false
+
+jobs:
+  pinned-local-governor-simulation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: No changes to prior reader, KV or scientific verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 06cb52cc6f59e80a1a25d5795e1bcb4ae9c8234b
+          git diff --exit-code 06cb52cc6f59e80a1a25d5795e1bcb4ae9c8234b HEAD -- \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18 \
+            09_INFRASTRUCTURE_AGENTIQUE/kv_reader18 \
+            09_INFRASTRUCTURE_AGENTIQUE/scale01 \
+            02_MATHEMATIQUES/defauts_recollement
+      - name: Simulated single-resident swaps, actual SHA checks on temporary bytes
+        run: |
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/residency01 \
+            -p 'test*.py' -v
