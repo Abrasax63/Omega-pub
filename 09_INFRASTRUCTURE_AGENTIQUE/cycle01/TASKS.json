@@ -1,0 +1,140 @@
+{
+  "version": "OMEGA_CYCLE01_FROZEN_2026_11_21",
+  "source": {
+    "path": "02_MATHEMATIQUES/defauts_recollement/sources/DELTA_H_RECOLLEMENT_INTERNE_2026-09-29.md",
+    "git_blob": "0d449a5911b7364d03b5557b24afc3dfc6eef292"
+  },
+  "reader_manifest": {
+    "path": "09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18/FROZEN_CASES.json",
+    "git_blob": "c522672789a811a3ffa574b6abe5c48599266e6e"
+  },
+  "exact_questions": [
+    {
+      "id": "C01-GHOST",
+      "T": [
+        0,
+        0,
+        2
+      ],
+      "pi": [
+        0,
+        1,
+        1
+      ],
+      "word": [
+        1,
+        1,
+        0
+      ],
+      "expected_admissible": false,
+      "expected_first_empty_length": 3
+    },
+    {
+      "id": "C02-WITNESS",
+      "T": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "pi": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "word": [
+        0,
+        0,
+        1
+      ],
+      "expected_admissible": true,
+      "expected_first_empty_length": null
+    },
+    {
+      "id": "C03-DEEP",
+      "T": [
+        0,
+        3,
+        1,
+        3
+      ],
+      "pi": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "word": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "expected_admissible": false,
+      "expected_first_empty_length": 4
+    },
+    {
+      "id": "C04-SHORT",
+      "T": [
+        0,
+        3,
+        1,
+        3
+      ],
+      "pi": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "word": [
+        0,
+        0,
+        1
+      ],
+      "expected_admissible": true,
+      "expected_first_empty_length": null
+    },
+    {
+      "id": "C05-DEEP-REPEAT",
+      "T": [
+        0,
+        3,
+        1,
+        3
+      ],
+      "pi": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "word": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "expected_admissible": false,
+      "expected_first_empty_length": 4
+    }
+  ],
+  "reader_cases": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S05",
+    "S06"
+  ],
+  "model_label": "0p5b",
+  "model_sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+  "llama_cpp_sha": "5a4afd80779ba51166b59986e61a0bfbb9e1a4c6",
+  "scale01_profile": {
+    "run_id": 44875280301,
+    "artifact_name": "omega-scale01-0p5b",
+    "artifact_id": 14696031972,
+    "report_sha256": "f6f1fae5cae5c79a6c0145496f5f2456311ba76f3b8b7ce22bd3a7a464a34996"
+  }
+}
