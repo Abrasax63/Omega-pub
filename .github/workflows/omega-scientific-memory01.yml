@@ -1,0 +1,47 @@
+name: Omega SCI-MEMORY01 - validate persistent research evidence
+on:
+  push:
+    branches:
+      - experiment/omega-scientific-memory-durable-2026-11-21
+    paths:
+      - '09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01/verified_ledger.jsonl'
+      - '09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01/index.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-durable-scientific-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test scientific ledger replay, provenance and no unverified promotion
+        run: |
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01 \
+            -p 'test_memory.py' -v
+      - name: Replay actual persistent ledger and compare immutable SHA256 chain
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01/read_memory.py
+      - name: Validate source count and explicit scientific limits
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,sys
+          sys.path.insert(0,'09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01')
+          from read_memory import ScientificMemoryReader
+          m=ScientificMemoryReader()
+          assert m.state['validated_count']==11
+          assert {i for i in (11,17,34,55,77,99,141,181) if m.verified_source(i)}=={11,17,34,55,77,99,141,181}
+          assert len(m.independent_checks())==2
+          assert len(m.benchmark())==1
+          assert m.index['llm_predictions_in_verified_memory']==0
+          assert m.index['lean_proofs_locally_compiled']==0
+          assert m.index['scientific_semantic_fidelity']=='NOT_VERIFIED'
+          print('DURABLE_RESEARCH_MEMORY_VERIFIED',m.state)
+          PY
