@@ -1,0 +1,202 @@
+{
+  "status": "BLIND_HOLDOUT_FROZEN_BEFORE_SEMANTIC_PARSER_CODE_OR_SOURCE_VIEW",
+  "upstream_repo": "marcusm117/ProofNet-Verified",
+  "upstream_commit": "b7ca411a2abaa6caf3580192b30d865e5bd10bc4",
+  "holdout_ids": [
+    12,
+    18,
+    35,
+    56,
+    78,
+    100,
+    142,
+    182,
+    23,
+    43,
+    153,
+    263
+  ],
+  "source_paths": [
+    "proofnet-verified-latest/proofnet-12.lean",
+    "proofnet-verified-latest/proofnet-18.lean",
+    "proofnet-verified-latest/proofnet-35.lean",
+    "proofnet-verified-latest/proofnet-56.lean",
+    "proofnet-verified-latest/proofnet-78.lean",
+    "proofnet-verified-latest/proofnet-100.lean",
+    "proofnet-verified-latest/proofnet-142.lean",
+    "proofnet-verified-latest/proofnet-182.lean",
+    "proofnet-verified-latest/proofnet-23.lean",
+    "proofnet-verified-latest/proofnet-43.lean",
+    "proofnet-verified-latest/proofnet-153.lean",
+    "proofnet-verified-latest/proofnet-263.lean"
+  ],
+  "previously_used_omega_indices": [
+    1,
+    2,
+    3,
+    6,
+    10,
+    22,
+    40,
+    80,
+    120,
+    160,
+    200,
+    240,
+    280,
+    320,
+    350,
+    367,
+    11,
+    17,
+    34,
+    55,
+    77,
+    99,
+    141,
+    181
+  ],
+  "tasks": [
+    {
+      "task": "P12",
+      "id": 12,
+      "a": 12,
+      "b": 18,
+      "gold": "A"
+    },
+    {
+      "task": "P18",
+      "id": 18,
+      "a": 35,
+      "b": 18,
+      "gold": "B"
+    },
+    {
+      "task": "P35",
+      "id": 35,
+      "a": 35,
+      "b": 56,
+      "gold": "A"
+    },
+    {
+      "task": "P56",
+      "id": 56,
+      "a": 78,
+      "b": 56,
+      "gold": "B"
+    },
+    {
+      "task": "P78",
+      "id": 78,
+      "a": 78,
+      "b": 100,
+      "gold": "A"
+    },
+    {
+      "task": "P100",
+      "id": 100,
+      "a": 142,
+      "b": 100,
+      "gold": "B"
+    },
+    {
+      "task": "P142",
+      "id": 142,
+      "a": 142,
+      "b": 182,
+      "gold": "A"
+    },
+    {
+      "task": "P182",
+      "id": 182,
+      "a": 23,
+      "b": 182,
+      "gold": "B"
+    },
+    {
+      "task": "P23",
+      "id": 23,
+      "a": 23,
+      "b": 43,
+      "gold": "A"
+    },
+    {
+      "task": "P43",
+      "id": 43,
+      "a": 153,
+      "b": 43,
+      "gold": "B"
+    },
+    {
+      "task": "P153",
+      "id": 153,
+      "a": 153,
+      "b": 263,
+      "gold": "A"
+    },
+    {
+      "task": "P263",
+      "id": 263,
+      "a": 12,
+      "b": 263,
+      "gold": "B"
+    },
+    {
+      "task": "N12",
+      "id": 12,
+      "a": 35,
+      "b": 56,
+      "gold": "NONE"
+    },
+    {
+      "task": "N35",
+      "id": 35,
+      "a": 78,
+      "b": 100,
+      "gold": "NONE"
+    },
+    {
+      "task": "N78",
+      "id": 78,
+      "a": 142,
+      "b": 182,
+      "gold": "NONE"
+    },
+    {
+      "task": "N142",
+      "id": 142,
+      "a": 23,
+      "b": 43,
+      "gold": "NONE"
+    },
+    {
+      "task": "N23",
+      "id": 23,
+      "a": 153,
+      "b": 263,
+      "gold": "NONE"
+    },
+    {
+      "task": "N153",
+      "id": 153,
+      "a": 12,
+      "b": 18,
+      "gold": "NONE"
+    }
+  ],
+  "gold_kind": "ORIGINAL_UPSTREAM_NL_LEAN_SAME_FILE_PAIRING_NOT_INDEPENDENT_HUMAN_SEMANTIC_GOLD",
+  "model": "Qwen2.5-0.5B-Instruct-Q4_K_M",
+  "engine": "llama.cpp@5a4afd80779ba51166b59986e61a0bfbb9e1a4c6",
+  "prohibitions": [
+    "no reading holdout texts for parser development",
+    "no source id as matcher feature",
+    "no retrain on holdout",
+    "no retroactive label/prompt change",
+    "no Lean proof claim for sorry files"
+  ],
+  "quantitative_policy": {
+    "min_confident_semantic_score": 2.5,
+    "min_margin": 1,
+    "abstain_if_neither_candidate_supported": true
+  }
+}
