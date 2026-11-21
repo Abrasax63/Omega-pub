@@ -1,0 +1,94 @@
+name: Omega Colibri - low-resource feasibility (no model)
+on:
+  push:
+    branches:
+      - experiment/omega-colibri-feasibility-2026-11-21
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-colibri-feasibility-2026-11-21
+  cancel-in-progress: false
+
+jobs:
+  colibri-no-model-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      COLIBRI_SHA: 0a5504a1dc64f86fcd0fe7db298b0448c730e7e6
+    steps:
+      - name: Checkout Omega without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Fetch pinned Colibri source (no model download)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none --depth=1 https://github.com/JustVugg/colibri.git upstream-colibri
+          git -C upstream-colibri fetch --depth=1 origin "$COLIBRI_SHA"
+          git -C upstream-colibri checkout --detach "$COLIBRI_SHA"
+          test "$(git -C upstream-colibri rev-parse HEAD)" = "$COLIBRI_SHA"
+          printf 'Colibri source sha: %s\n' "$COLIBRI_SHA"
+      - name: Check hardware detection JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 upstream-colibri/c/setup_hw.py --json > /tmp/colibri-hw.json
+          python3 - <<'PY'
+          import json
+          x = json.load(open('/tmp/colibri-hw.json', encoding='utf-8'))
+          assert isinstance(x, dict), type(x)
+          print('Hardware detection: JSON object with keys', sorted(x.keys()))
+          PY
+      - name: Check offline resource planner JSON (no installation)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 upstream-colibri/c/coli setup --list --json > /tmp/colibri-model-list.json
+          python3 - <<'PY'
+          import json
+          x = json.load(open('/tmp/colibri-model-list.json', encoding='utf-8'))
+          assert isinstance(x, (dict, list)), type(x)
+          print('Model planner JSON parsed:', type(x).__name__)
+          print('Planner output size:', len(json.dumps(x)))
+          PY
+      - name: Build and test expert-store backend registry without weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd upstream-colibri/c
+          gcc -O2 -D_FILE_OFFSET_BITS=64 test_expert_store_registry.c expert_store_registry.c -o /tmp/test_colibri_expert_registry
+          /tmp/test_colibri_expert_registry
+      - name: Run isolated cross-platform Makefile unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd upstream-colibri
+          python3 -m unittest discover -s c/tests -p test_makefile_platform.py -v
+      - name: Test model recommendations and memory constraints (mocked)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd upstream-colibri/c
+          python3 -m unittest discover -s tests -p test_setup_catalog.py -v
+          python3 -m unittest discover -s tests -p test_setup_hw.py -v
+      - name: Test analysis-cache reuse and invalidation (synthetic shards)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd upstream-colibri/c
+          python3 -m unittest discover -s tests -p test_analysis_cache.py -v
+      - name: Test complete resource planner with lightweight fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd upstream-colibri/c
+          python3 -m unittest discover -s tests -p test_resource_plan.py -v
+      - name: Report scope
+        shell: bash
+        run: |
+          echo 'Done: planner, hardware JSON, registry and platform tests only.'
+          echo 'Not run: model inference, SSD streaming benchmark, speed/energy, Omega integration.'
