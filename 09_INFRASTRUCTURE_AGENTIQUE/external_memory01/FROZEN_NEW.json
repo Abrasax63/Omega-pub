@@ -1,0 +1,165 @@
+{
+  "status": "FROZEN_BEFORE_NEW_MODEL_RUN",
+  "source_repo": "marcusm117/ProofNet-Verified",
+  "source_commit": "b7ca411a2abaa6caf3580192b30d865e5bd10bc4",
+  "source_license": "Apache-2.0",
+  "nonoverlap_previous_proofnet26_16_indices": true,
+  "independent_new_human_annotations": false,
+  "source_files_contain_lean_sorry": true,
+  "source_items": [
+    {
+      "id": 11,
+      "path": "proofnet-verified-latest/proofnet-11.lean",
+      "git_blob": "9f05a55ab77d668057f6418811324a3f51c1463a"
+    },
+    {
+      "id": 17,
+      "path": "proofnet-verified-latest/proofnet-17.lean",
+      "git_blob": "3500e0310d9f4f023b354f49a541f2fa81db99c3"
+    },
+    {
+      "id": 34,
+      "path": "proofnet-verified-latest/proofnet-34.lean",
+      "git_blob": "afdc7680e7dd9ea9d5d0447e5a3b2cae45b3dee2"
+    },
+    {
+      "id": 55,
+      "path": "proofnet-verified-latest/proofnet-55.lean",
+      "git_blob": "4acbc4243662333c4b3c5e8b7c7b07170b6eed30"
+    },
+    {
+      "id": 77,
+      "path": "proofnet-verified-latest/proofnet-77.lean",
+      "git_blob": "f5811faba3a76cfbc7147eb49b75eed12e3a6960"
+    },
+    {
+      "id": 99,
+      "path": "proofnet-verified-latest/proofnet-99.lean",
+      "git_blob": "0f18db57a5b731512b4f7538ef31164ca7d47f24"
+    },
+    {
+      "id": 141,
+      "path": "proofnet-verified-latest/proofnet-141.lean",
+      "git_blob": "b77f09d0c1c00ceaafbd3cdd946e7a33ab451085"
+    },
+    {
+      "id": 181,
+      "path": "proofnet-verified-latest/proofnet-181.lean",
+      "git_blob": "7ab616a2c5d4f0e2d0f3a2992d7cc0f75548fba2"
+    }
+  ],
+  "tasks": [
+    {
+      "task": "P11",
+      "id": 11,
+      "a": 11,
+      "b": 17,
+      "gold": "A"
+    },
+    {
+      "task": "P17",
+      "id": 17,
+      "a": 34,
+      "b": 17,
+      "gold": "B"
+    },
+    {
+      "task": "P34",
+      "id": 34,
+      "a": 34,
+      "b": 55,
+      "gold": "A"
+    },
+    {
+      "task": "P55",
+      "id": 55,
+      "a": 77,
+      "b": 55,
+      "gold": "B"
+    },
+    {
+      "task": "P77",
+      "id": 77,
+      "a": 77,
+      "b": 99,
+      "gold": "A"
+    },
+    {
+      "task": "P99",
+      "id": 99,
+      "a": 141,
+      "b": 99,
+      "gold": "B"
+    },
+    {
+      "task": "P141",
+      "id": 141,
+      "a": 141,
+      "b": 181,
+      "gold": "A"
+    },
+    {
+      "task": "P181",
+      "id": 181,
+      "a": 11,
+      "b": 181,
+      "gold": "B"
+    },
+    {
+      "task": "N11",
+      "id": 11,
+      "a": 34,
+      "b": 55,
+      "gold": "NONE"
+    },
+    {
+      "task": "N34",
+      "id": 34,
+      "a": 77,
+      "b": 99,
+      "gold": "NONE"
+    },
+    {
+      "task": "N77",
+      "id": 77,
+      "a": 141,
+      "b": 181,
+      "gold": "NONE"
+    },
+    {
+      "task": "N141",
+      "id": 141,
+      "a": 11,
+      "b": 17,
+      "gold": "NONE"
+    }
+  ],
+  "sources_tested_against_prior_freeze": [
+    1,
+    2,
+    3,
+    6,
+    10,
+    22,
+    40,
+    80,
+    120,
+    160,
+    200,
+    240,
+    280,
+    320,
+    350,
+    367
+  ],
+  "model": {
+    "label": "0p5b",
+    "gguf_sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+    "engine_commit": "5a4afd80779ba51166b59986e61a0bfbb9e1a4c6"
+  },
+  "scale_profile": {
+    "run_id": 44875280301,
+    "artifact_name": "omega-scale01-0p5b",
+    "report_sha256": "f6f1fae5cae5c79a6c0145496f5f2456311ba76f3b8b7ce22bd3a7a464a34996"
+  }
+}
