@@ -1,0 +1,49 @@
+name: Omega COLI-API-01 - synthetic call residency
+on:
+  push:
+    branches:
+      - experiment/omega-colibri-api-residency-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  call-residency:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit tests (no API, no model download)
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
+          python -m unittest discover -p 'test_router.py' -v
+      - name: Passive prefix reuse - 21 unit tests, byte-for-byte wire identity
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
+          python -m unittest discover -p 'test_prefix_observer.py' -v
+      - name: Prefix overlap on synthetic varied prompts (no LLM)
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
+          python bench_prefix.py
+      - name: Fetch and pin real SEM22 exact checker source (no weights)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SEM_SHA=38b3f6250429901bb307cbea4d49dbcc9c8f6379
+          git fetch --no-tags --depth=1 origin refs/heads/experiment/omega-semantic22-exact-finite-checker-2026-11-19
+          test "$(git rev-parse FETCH_HEAD)" = "$SEM_SHA"
+          git show "$SEM_SHA:09_INFRASTRUCTURE_AGENTIQUE/semantic22/checker.py" > /tmp/omega_sem22_checker.py
+          test -s /tmp/omega_sem22_checker.py
+      - name: Existing Omega exact scientific verifier - memoization parity
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
+          python -m unittest discover -p 'test_exact_verifier_cache.py' -v
+          python bench_exact_verifier.py
+      - name: Synthetic benchmark and output equality
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
+          python bench_replay.py
