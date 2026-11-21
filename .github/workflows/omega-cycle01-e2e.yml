@@ -1,0 +1,138 @@
+name: Omega CYCLE01 - integrated scientific exact plus local LLM plus memory
+on:
+  push:
+    branches:
+      - experiment/omega-cycle-e2e-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: omega-cycle01-2026-11-21
+  cancel-in-progress: false
+
+jobs:
+  offline-scientific-cycle-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm historical exact and reader components unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin ce12ffadda9fd31245015452003a9967c4796079
+          git diff --exit-code ce12ffadda9fd31245015452003a9967c4796079 HEAD -- \
+            02_MATHEMATIQUES/defauts_recollement \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge12 \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge14 \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18 \
+            09_INFRASTRUCTURE_AGENTIQUE/scale01 \
+            09_INFRASTRUCTURE_AGENTIQUE/kv_reader18
+      - name: Exact safe model governor must be byte-identical to RESIDENCY01
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin bb517ff2c5516077a733067245330ce498c2aba5
+          git show bb517ff2c5516077a733067245330ce498c2aba5:09_INFRASTRUCTURE_AGENTIQUE/residency01/single_resident.py \
+            | cmp - 09_INFRASTRUCTURE_AGENTIQUE/cycle01/single_resident.py
+      - name: Offline end-to-end source, exact, LLM gate and memory tests
+        run: |
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/cycle01 \
+            -p 'test_cycle.py' -v
+
+  real-local-scientific-cycle:
+    needs: offline-scientific-cycle-gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    env:
+      LLAMA_SHA: 5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      MODEL_SHA: 74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+      PROFILE_SHA: f6f1fae5cae5c79a6c0145496f5f2456311ba76f3b8b7ce22bd3a7a464a34996
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch measured 0.5B RSS and Reader18 parity evidence from prior SCALE01 run
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-scale01-0p5b
+          path: /tmp/omega-cycle01/profile
+          repository: Abrasax63/Omega-pub
+          run-id: 44875280301
+          github-token: ${{ github.token }}
+      - name: Verify actual SCALE01 full report bytes before admission
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "$PROFILE_SHA  /tmp/omega-cycle01/profile/report.json" | sha256sum -c -
+          python - <<'PY'
+          import json
+          r=json.load(open("/tmp/omega-cycle01/profile/report.json"))
+          assert r["status"]=="FINISHED"
+          assert r["summary"]["quality_status"]=="LOCAL_TEXT_AND_SOURCE_GATE_PARITY"
+          assert r["model_label"]=="0p5b"
+          assert r["model_weight_file_bytes"]==491400032
+          PY
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/scale01/llama-0p5b
+          key: omega-scale01-llama-0p5b-5a4afd80779ba51166b59986e61a0bfbb9e1a4c6
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/omega/scale01/qwen0p5b.gguf
+          key: omega-scale01-0p5b-74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db
+      - name: Build or verify pinned CPU model runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$HOME/.cache/omega/scale01/llama-0p5b"
+          mkdir -p "$(dirname "$BASE")"
+          if [[ ! -f "$BASE/CMakeLists.txt" ]]; then
+            git clone --depth 1 --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$BASE"
+            git -C "$BASE" fetch --depth=1 origin "$LLAMA_SHA"
+            git -C "$BASE" checkout --detach "$LLAMA_SHA"
+          fi
+          test "$(git -C "$BASE" rev-parse HEAD)" = "$LLAMA_SHA"
+          cmake -S "$BASE" -B "$BASE/build" -G Ninja \
+            -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_UI=OFF -DLLAMA_USE_PREBUILT_UI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$BASE/build" --target llama-server -j 4
+      - name: Verify locally resident model SHA256 (download only if missing)
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL="$HOME/.cache/omega/scale01/qwen0p5b.gguf"
+          mkdir -p "$(dirname "$MODEL")"
+          if [[ ! -f "$MODEL" ]]; then
+            curl -fL --retry 3 --connect-timeout 30 --max-time 1500 \
+              "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf" \
+              -o "$MODEL"
+          fi
+          echo "$MODEL_SHA  $MODEL" | sha256sum -c -
+      - name: REAL source -> exact or LLM -> gate -> append-only memory -> report
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u 09_INFRASTRUCTURE_AGENTIQUE/cycle01/cycle.py \
+            --profile /tmp/omega-cycle01/profile/report.json \
+            --model "$HOME/.cache/omega/scale01/qwen0p5b.gguf" \
+            --server "$HOME/.cache/omega/scale01/llama-0p5b/build/bin/llama-server" \
+            --output-dir /tmp/omega-cycle01/output
+      - name: Archive evidence and memory even if a run fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cycle01-real-scientific-e2e
+          path: /tmp/omega-cycle01/output/
+          retention-days: 14
+          if-no-files-found: warn
