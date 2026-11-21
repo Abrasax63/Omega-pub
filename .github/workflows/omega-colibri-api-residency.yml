@@ -1,0 +1,27 @@
+name: Omega COLI-API-01 - synthetic call residency
+on:
+  push:
+    branches:
+      - experiment/omega-colibri-api-residency-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  call-residency:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit tests (no API, no model download)
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
+          python -m unittest discover -p 'test_router.py' -v
+      - name: Synthetic benchmark and output equality
+        run: |
+          cd 09_INFRASTRUCTURE_AGENTIQUE/colibri_api_residency01
+          python bench_replay.py
