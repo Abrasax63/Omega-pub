@@ -41,7 +41,7 @@ def fixture(i):
 class ExactVerifierReuseTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.fn=load_verifier()
+        cls.fn=staticmethod(load_verifier())
 
     def run_one(self, cache, raw, source, revision=PINNED_REVISION, blob_override=None):
         return cache.verify(raw,expected_blob=blob_override or blob(raw),
