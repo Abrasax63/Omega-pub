@@ -35,6 +35,4 @@ jobs:
           python -m unittest discover \
             -s 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01 \
             -p 'test_development.py' -v
-          python -m unittest discover \\
-            -s 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01 \\
-            -p 'test_protocol.py' -v
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01 -p 'test_protocol.py' -v
