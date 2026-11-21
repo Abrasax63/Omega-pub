@@ -1,0 +1,37 @@
+name: Omega SEM-BRIDGE-01 - prereg blind NL to Lean concept bridge
+on:
+  push:
+    branches:
+      - experiment/omega-semantic-bridge-blind-2026-11-21
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: omega-sem-bridge01-2026-11-21
+  cancel-in-progress: false
+jobs:
+  blind-bridge-development-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prior source readers and scientific verification unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 3c1d8112319ec0bd06ee3daca041530da59b542d
+          git diff --exit-code 3c1d8112319ec0bd06ee3daca041530da59b542d HEAD -- \
+            09_INFRASTRUCTURE_AGENTIQUE/external_memory01 \
+            09_INFRASTRUCTURE_AGENTIQUE/reader_bridge18 \
+            09_INFRASTRUCTURE_AGENTIQUE/cycle01
+      - name: Freeze old-example-only blind diagnostic matcher and safeguards
+        run: |
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/semantic_bridge01 \
+            -p 'test_development.py' -v
