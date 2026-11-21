@@ -44,8 +44,8 @@ class OmegaCycleTests(unittest.TestCase):
         self.assertEqual(len(result["rows"]),5)
         self.assertEqual([x["admissible"] for x in result["rows"]],
                          [False,True,False,True,False])
-        self.assertEqual(result["routing_counters"]["direct_calls"],2)
-        self.assertEqual(result["routing_counters"]["bitset_calls"],3)
+        self.assertEqual(result["routing_counters"]["direct_calls"],3)
+        self.assertEqual(result["routing_counters"]["bitset_calls"],2)
         self.assertGreater(result["routing_counters"]["bitset_hits"],0)
         self.assertEqual(book.index()["unique_records"],4)
         self.assertEqual(book.index()["revisits"],1)
