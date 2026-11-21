@@ -35,11 +35,14 @@ jobs:
       - name: Benchmark frozen prefix-rich traces against no-cache exact baseline
         run: |
           python 09_INFRASTRUCTURE_AGENTIQUE/gluing_cache01/bench.py
+      - name: Adversarial no-reuse control - cache overhead and memory
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/gluing_cache01/bench_low_reuse.py
       - name: Keep inspectable exact computation results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: omega-gluing-cache01-exact
-          path: /tmp/omega-gluing-cache01/report.json
+          path: /tmp/omega-gluing-cache01/*.json
           retention-days: 14
           if-no-files-found: warn
