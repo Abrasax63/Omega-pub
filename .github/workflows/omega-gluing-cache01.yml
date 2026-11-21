@@ -1,0 +1,48 @@
+name: Omega GLUE-CACHE-01 - exact finite witness preservation
+on:
+  push:
+    branches:
+      - experiment/omega-gluing-witness-cache-2026-11-21
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-gluing-cache01
+  cancel-in-progress: false
+
+jobs:
+  finite-witness-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Existing independent CL-DYN reference oracles must be present
+        run: |
+          test -s 02_MATHEMATIQUES/defauts_recollement/sources/delta_gluing_audit.py
+          test -s 02_MATHEMATIQUES/defauts_recollement/sources/delta_gluing_crosscheck.py
+      - name: Validate phantom words, invalidation and independent exhaustive parity
+        run: |
+          python -m unittest discover \
+            -s 09_INFRASTRUCTURE_AGENTIQUE/gluing_cache01 \
+            -p 'test_witness_cache.py' -v
+      - name: Benchmark frozen prefix-rich traces against no-cache exact baseline
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/gluing_cache01/bench.py
+      - name: Adversarial no-reuse control - cache overhead and memory
+        run: |
+          python 09_INFRASTRUCTURE_AGENTIQUE/gluing_cache01/bench_low_reuse.py
+      - name: Keep inspectable exact computation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-gluing-cache01-exact
+          path: /tmp/omega-gluing-cache01/*.json
+          retention-days: 14
+          if-no-files-found: warn
