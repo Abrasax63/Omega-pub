@@ -20,7 +20,7 @@ class MasteryTests(unittest.TestCase):
         self.assertEqual(m._target_f("ab1AB"),["ab"])
         self.assertEqual(m._target_f("0?"),[])
         self.assertNotEqual(m._target_e("ab010"),m.v2.oracle("C","ab010"))
-        self.assertNotEqual(m._target_f("a|b|a"),m.v2.oracle("D","a|b|a"))
+        self.assertNotEqual(m._target_f("ab|ab|a"),m.v2.oracle("D","ab|ab|a"))
 
     def test_fresh_hidden_cases_deterministic_disjoint(self):
         for task in "EF":
