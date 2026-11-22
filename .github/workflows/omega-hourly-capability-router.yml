@@ -1,0 +1,66 @@
+name: Omega Hourly Capability Router - offline advisory only
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-hourly-capability-router.yml"
+      - "research/learning_hub/hourly_router/**"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-hourly-selection-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run all registry and safe-routing falsification tests (no model)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover \
+            -s research/learning_hub/hourly_router \
+            -p test_route.py -v
+      - name: Check end-to-end selection policies and fail-closed fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/omega-hourly-router
+          python research/learning_hub/hourly_router/route.py \
+            --kind local_python_semantic_bug \
+            > /tmp/omega-hourly-router/semantic-selection.json
+          python research/learning_hub/hourly_router/route.py \
+            --kind mathematical_proof_or_counterexample \
+            > /tmp/omega-hourly-router/maths-selection.json
+          python research/learning_hub/hourly_router/route.py \
+            --kind other \
+            > /tmp/omega-hourly-router/unknown-selection.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/omega-hourly-router')
+          s=json.loads((p/'semantic-selection.json').read_text())
+          m=json.loads((p/'maths-selection.json').read_text())
+          u=json.loads((p/'unknown-selection.json').read_text())
+          assert s['selected_capabilities'][0]['id']=='symbolic_semantic_one_edit'
+          assert 'python_lora_syntax_pilot' in s['declined_capabilities']
+          assert m['selected_capabilities'][0]['id']=='existing_math_pilot'
+          assert not any('python' in c['id'] for c in m['selected_capabilities'])
+          assert u['selected_capabilities']==[]
+          assert all(x['advice_only'] and not x['actual_execution_performed']
+                     for x in (s,m,u))
+          print('ROUTER_SELECTION_VERIFIED; HOURLY_AUTOMATION_NOT_YET_TESTED')
+          PY
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-hourly-routing-plans
+          path: /tmp/omega-hourly-router/
+          retention-days: 7
+          if-no-files-found: warn
