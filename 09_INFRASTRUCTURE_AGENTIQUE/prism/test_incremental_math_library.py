@@ -115,6 +115,32 @@ class LibraryTests(unittest.TestCase):
         self.assertEqual(len(records), 2)
         self.assertNotEqual(records[0]["candidate_id"], records[1]["candidate_id"])
 
+    def test_revised_interpretation_same_sources_kept_as_new_candidate(self):
+        def retrieve(_):
+            return {"status": "RETRIEVED", "sources": [source(42, 9, SOURCE_A)]}
+        for gap in ("", "Holomorphic function"):
+            run("Seed", self.ledger, max_hops=1,
+                model_call=ScriptedModel([
+                    "Analytic function",
+                    card("Analytic function", 42, SOURCE_A, gap=gap),
+                ]), retriever=retrieve)
+        entries = read_ledger(self.ledger)
+        self.assertEqual(len(entries), 2)
+        self.assertNotEqual(entries[0]["candidate_id"], entries[1]["candidate_id"])
+        self.assertEqual(entries[0]["sources"], entries[1]["sources"])
+
+    def test_source_excerpt_hash_mismatch_fails_before_model_card(self):
+        forged = source(42, 9, SOURCE_A)
+        forged["excerpt_sha256"] = "0" * 64
+        model = ScriptedModel(["Analytic function"])
+        report = run("Seed", self.ledger, model_call=model,
+                     retriever=lambda _: {"status": "RETRIEVED",
+                                          "sources": [forged]})
+        self.assertEqual(report["stop_reason"], "INVALID_SOURCE_PROVENANCE")
+        self.assertEqual(report["stored"], 0)
+        self.assertFalse(self.ledger.exists())
+        self.assertEqual(len(model.calls), 1)
+
     def test_bad_json_preserved_but_never_promoted(self):
         model = ScriptedModel(["Analytic function", "not JSON at all"])
         out = run("Research question", self.ledger, model_call=model,
