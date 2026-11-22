@@ -15,6 +15,8 @@ on:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_research_reflector.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/research_theses_candidates.json"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/work_inventory.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/research_synthesizer.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_research_synthesizer.py"
   workflow_dispatch:
     inputs:
       bootstrap:
@@ -69,6 +71,7 @@ jobs:
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_fast_cycle.py -v 2>&1 | tee "$RUNNER_TEMP/omega-pilot-tests.log"
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_fast_cycle_queue.py -v 2>&1 | tee "$RUNNER_TEMP/omega-queue-tests.log"
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_research_reflector.py -v 2>&1 | tee "$RUNNER_TEMP/omega-reflection-tests.log"
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_research_synthesizer.py -v 2>&1 | tee "$RUNNER_TEMP/omega-synthesis-tests.log"
           (cd _sources/provenance/09_INFRASTRUCTURE_AGENTIQUE/prism &&
             python -m unittest -v test_provenance_cycle test_provenance_lab) 2>&1 | tee "$RUNNER_TEMP/omega-existing-tests.log"
       - name: Ground two alternative-structure research theses and audit redundancy safely
@@ -92,6 +95,26 @@ jobs:
           assert report["deduplication"]["safe_to_drop_tests"] == []
           assert not any(report["action_policy"].values())
           print("Source anchors, hypotheses and no-deletion guard: PASS")
+          PY
+      - name: Generate structural hypothesis from finite V19 data, test a separate reserve
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 150 python 09_INFRASTRUCTURE_AGENTIQUE/prism/research_synthesizer.py \
+            --math _sources/math \
+            --output "$RUNNER_TEMP/omega-fast/synthesis.json" 2>&1 | tee "$RUNNER_TEMP/omega-synthesis-run.log"
+          python - <<'PY'
+          import json, os, pathlib
+          p = pathlib.Path(os.environ["RUNNER_TEMP"]) / "omega-fast/synthesis.json"
+          r = json.loads(p.read_text())
+          assert r["model_type"].startswith("finite enumerative")
+          assert r["scientific_claims_certified"] == 0
+          assert not r["autonomous_semantic_comprehension_demonstrated"]
+          assert r["relabeling_invariance"]["disagreements"] == 0
+          assert len(r["generated_rule"]["atoms"]) <= 3
+          for name in ("always_negative", "unsigned_quotient_cycle", "learned_conjunction"):
+              assert sum(r["comparison"][name].values()) > 0
+          print("Generated finite structural rule with independently computed reserve: PASS")
           PY
       - name: Restore durable ledger; never silently restart after a lost artifact
         shell: bash
@@ -207,6 +230,7 @@ jobs:
             ${{ runner.temp }}/omega-fast/results/
             ${{ runner.temp }}/omega-fast/run.log
             ${{ runner.temp }}/omega-fast/reflection.json
+            ${{ runner.temp }}/omega-fast/synthesis.json
             ${{ runner.temp }}/omega-fast/restart.log
             ${{ runner.temp }}/omega-fast/state.json
           retention-days: 7
@@ -220,6 +244,9 @@ jobs:
             ${{ runner.temp }}/omega-pilot-tests.log
             ${{ runner.temp }}/omega-queue-tests.log
             ${{ runner.temp }}/omega-reflection-tests.log
+            ${{ runner.temp }}/omega-synthesis-tests.log
+            ${{ runner.temp }}/omega-synthesis-run.log
+            ${{ runner.temp }}/omega-fast/synthesis.json
             ${{ runner.temp }}/omega-fast/reflection.json
             ${{ runner.temp }}/omega-existing-tests.log
             ${{ runner.temp }}/omega-fast/results/
