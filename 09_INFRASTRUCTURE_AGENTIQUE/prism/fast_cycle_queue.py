@@ -141,8 +141,31 @@ def next_unverified_question(omega_dir):
     }
 
 
+def unverified_research_inbox(report_path):
+    """Read validated candidate IDs without ever treating a hypothesis as executed."""
+    if report_path is None:
+        return []
+    raw = json.loads(Path(report_path).read_text(encoding="utf-8"))
+    rows = raw.get("grounded_hypothesis_proposals")
+    if not isinstance(rows, list):
+        raise ValueError("Ungrounded/absent research hypotheses report")
+    if raw.get("scientific_claims_certified") != 0:
+        raise ValueError("Research inbox cannot import certified claims")
+    selected, seen = [], set()
+    for row in rows:
+        if not isinstance(row, dict) or row.get("status") != "PROPOSED_UNVERIFIED" or \
+                row.get("can_enter_executed_ledger") is not False:
+            raise ValueError("Research inbox attempted hypothesis promotion")
+        if not isinstance(row.get("id"), str) or row["id"] in seen:
+            raise ValueError("Duplicate/invalid research hypothesis ID")
+        seen.add(row["id"])
+        selected.append({"id": row["id"], "status": "NOT_EXECUTED_NEEDS_INDEPENDENT_TEST",
+                         "source_blob": row.get("anchor", {}).get("git_blob")})
+    return selected
+
+
 def run_queue(state_file, output_dir, *, catalog_file, omega_dir, math_dir,
-              provenance_dir, bootstrap=False, max_cycles=2):
+              provenance_dir, bootstrap=False, max_cycles=2, ideas_report=None):
     catalog = read_catalog(catalog_file)
     tasks = catalog["tasks"]
     state_file, output_dir = Path(state_file), Path(output_dir)
@@ -158,6 +181,7 @@ def run_queue(state_file, output_dir, *, catalog_file, omega_dir, math_dir,
     used = check_state(state, tasks, results_dir)
     snapshot = source_snapshot(omega_dir, math_dir, provenance_dir)
     inbox = next_unverified_question(omega_dir)
+    staged_ideas = unverified_research_inbox(ideas_report)
     selected = [t for t in tasks if t["id"] not in used][:max_cycles]
     attempts, blocked = [], 0
     for task in selected:
@@ -205,6 +229,7 @@ def run_queue(state_file, output_dir, *, catalog_file, omega_dir, math_dir,
         "executed_ids": [e["id"] for e in attempts if e["status"] != "BLOCKED"],
         "statuses": [e["status"] for e in attempts],
         "inbox": inbox,
+        "staged_research_theses": staged_ideas,
         "scientific_discoveries_claimed": 0,
         "note": "Finite regression queue; fresh hypotheses require preregistration and independent evidence.",
     }
@@ -216,12 +241,14 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ("state", "output-dir", "catalog", "omega-dir", "math-dir", "provenance-dir"):
         p.add_argument("--" + name, type=Path, required=True)
+    p.add_argument("--ideas-report", type=Path)
     p.add_argument("--bootstrap", action="store_true")
     p.add_argument("--max-cycles", type=int, choices=(1, 2), default=2)
     a = p.parse_args()
     result = run_queue(a.state, a.output_dir, catalog_file=a.catalog, omega_dir=a.omega_dir,
                        math_dir=a.math_dir, provenance_dir=a.provenance_dir,
-                       bootstrap=a.bootstrap, max_cycles=a.max_cycles)
+                       bootstrap=a.bootstrap, max_cycles=a.max_cycles,
+                       ideas_report=a.ideas_report)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     if result["blocked"]:
         raise SystemExit(1)
