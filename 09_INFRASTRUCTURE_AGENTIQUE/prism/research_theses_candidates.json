@@ -35,7 +35,9 @@
         "independent_evidence": "Nouveau lot indépendant, paraphrases rédigées sans voir les sorties du modèle, annotations revues hors modèle; pas de réutilisation du holdout 042.",
         "metrics": "Routes exactes / claires, fausses routes / toutes, abstentions correctes / ambiguës, coûts en secondes et tokens.",
         "failure_criteria": "Rejeter si une seule fausse route, si une abstention ambiguë est manquée, ou si couverture/cout ne dépasse pas la référence sous budget égal.",
-        "budget": "Pilote d'au plus 24 questions nouvelles, deux bras et une seule instance 3B sans API payante, seuils figés avant lecture."
+        "budget": "Pilote d'au plus 24 questions nouvelles, deux bras et une seule instance 3B sans API payante, seuils figés avant lecture.",
+        "counterfactual_prediction": "Si deux horizons concurrents sont ajoutés à la même requête, les deux représentations doivent signaler l'ambiguïté et s'abstenir, sans sélectionner arbitrairement l'un des nombres.",
+        "cross_representation_invariant": "Pour toute requête retenue, la paire (état,horizon) extraite des slots doit être exactement celle justifiée par les deux arêtes du graphe; sinon abstention et trace de divergence."
       },
       "limitations": "Proposition non exécutée; une citation textuelle correcte n'établit pas l'intention de l'utilisateur ni une compréhension sémantique générale."
     },
@@ -72,7 +74,9 @@
         "independent_evidence": "Familles finies non utilisées pour fixer le seuil, avec cas positifs et négatifs; comparer résultats et coût à oracle constant.",
         "metrics": "Taux de survie, faux négatifs/faux positifs, nombre de projections, médiane et distribution des temps par famille.",
         "failure_criteria": "Ne pas adopter si une seule divergence de verdict, ou si le coût total n'améliore pas la référence sur des familles tenues à l'écart.",
-        "budget": "Au plus 4 familles nouvelles et 30 secondes de calcul par bras sur CPU; seuil choisi avant la réserve."
+        "budget": "Au plus 4 familles nouvelles et 30 secondes de calcul par bras sur CPU; seuil choisi avant la réserve.",
+        "counterfactual_prediction": "Si le signe XOR d'une unique arête du cycle pertinent change dans un cas cohérent et minimal, le verdict signé peut changer alors que le quotient non signé conserve la même topologie; l'oracle indépendant doit confirmer le nouveau verdict.",
+        "cross_representation_invariant": "La topologie non signée du quotient et le graphe XOR signé doivent partager les mêmes arêtes projetées; seul le graphe signé porte la parité. Chaque verdict affirmatif doit correspondre au projecteur exhaustif."
       },
       "limitations": "Idée dérivée des contrôles signés déjà documentés; originalité non établie; portée limitée aux structures V19 déclarées."
     }
