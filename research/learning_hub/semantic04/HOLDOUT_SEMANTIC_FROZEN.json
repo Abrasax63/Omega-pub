@@ -1,0 +1,826 @@
+{
+  "schema": "OMEGA_SEMANTIC04_FROZEN_HOLDOUT",
+  "date": "2026-11-22",
+  "source_adapter_run": 45073297901,
+  "source_adapter_artifact_id": 14774003555,
+  "training_parameters_updated_this_run": false,
+  "novel_fault_type": "SEMANTIC_VALID_PYTHON",
+  "holdout_tasks": 12,
+  "holdout_families": 6,
+  "training_source_not_reopened": true,
+  "unknown_gold_never_sent_to_models": true,
+  "source_tasks": [
+    {
+      "id": "SEM04-double_vowels-vowel_condition",
+      "family": "double_vowels",
+      "defect": "vowel_condition",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for c in s:\n        if c.lower() not in 'aeiou':\n            out.append(c.lower())\n            out.append(c.lower())\n    return out\n",
+      "public_examples": [
+        {
+          "input": "aBec",
+          "output": [
+            "a",
+            "a",
+            "e",
+            "e"
+          ]
+        },
+        {
+          "input": "Uo!?y",
+          "output": [
+            "u",
+            "u",
+            "o",
+            "o"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "IoUab",
+          "output": [
+            "i",
+            "i",
+            "o",
+            "o",
+            "u",
+            "u",
+            "a",
+            "a"
+          ]
+        },
+        {
+          "input": "E3zAa",
+          "output": [
+            "e",
+            "e",
+            "a",
+            "a",
+            "a",
+            "a"
+          ]
+        },
+        {
+          "input": "aeiou",
+          "output": [
+            "a",
+            "a",
+            "e",
+            "e",
+            "i",
+            "i",
+            "o",
+            "o",
+            "u",
+            "u"
+          ]
+        },
+        {
+          "input": "xyz",
+          "output": []
+        },
+        {
+          "input": "a!AE?",
+          "output": [
+            "a",
+            "a",
+            "a",
+            "a",
+            "e",
+            "e"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in s:\n        if c.lower() in 'aeiou':\n            out.append(c.lower())\n            out.append(c.lower())\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.lower() not in 'aeiou':\n            out.append(c.lower())\n            out.append(c.lower())\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"aBec\",\"output\":[\"a\",\"a\",\"e\",\"e\"]},{\"input\":\"Uo!?y\",\"output\":[\"u\",\"u\",\"o\",\"o\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-double_vowels-missing_duplicate_append",
+      "family": "double_vowels",
+      "defect": "missing_duplicate_append",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for c in s:\n        if c.lower() in 'aeiou':\n            out.append(c.lower())\n    return out\n",
+      "public_examples": [
+        {
+          "input": "aBec",
+          "output": [
+            "a",
+            "a",
+            "e",
+            "e"
+          ]
+        },
+        {
+          "input": "Uo!?y",
+          "output": [
+            "u",
+            "u",
+            "o",
+            "o"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "IoUab",
+          "output": [
+            "i",
+            "i",
+            "o",
+            "o",
+            "u",
+            "u",
+            "a",
+            "a"
+          ]
+        },
+        {
+          "input": "E3zAa",
+          "output": [
+            "e",
+            "e",
+            "a",
+            "a",
+            "a",
+            "a"
+          ]
+        },
+        {
+          "input": "aeiou",
+          "output": [
+            "a",
+            "a",
+            "e",
+            "e",
+            "i",
+            "i",
+            "o",
+            "o",
+            "u",
+            "u"
+          ]
+        },
+        {
+          "input": "xyz",
+          "output": []
+        },
+        {
+          "input": "a!AE?",
+          "output": [
+            "a",
+            "a",
+            "a",
+            "a",
+            "e",
+            "e"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in s:\n        if c.lower() in 'aeiou':\n            out.append(c.lower())\n            out.append(c.lower())\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.lower() in 'aeiou':\n            out.append(c.lower())\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"aBec\",\"output\":[\"a\",\"a\",\"e\",\"e\"]},{\"input\":\"Uo!?y\",\"output\":[\"u\",\"u\",\"o\",\"o\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-even_distinct_lower-wrong_parity",
+      "family": "even_distinct_lower",
+      "defect": "wrong_parity",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 1 and c.lower() not in out:\n            out.append(c.lower())\n    return out\n",
+      "public_examples": [
+        {
+          "input": "AaBbA",
+          "output": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "input": "X1y2Xz",
+          "output": [
+            "x",
+            "y"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "BbAaBb",
+          "output": [
+            "b",
+            "a"
+          ]
+        },
+        {
+          "input": "012340",
+          "output": [
+            "0",
+            "2",
+            "4"
+          ]
+        },
+        {
+          "input": "aAAa",
+          "output": [
+            "a"
+          ]
+        },
+        {
+          "input": "yYzZ",
+          "output": [
+            "y",
+            "z"
+          ]
+        },
+        {
+          "input": "Z09Ab",
+          "output": [
+            "z",
+            "9",
+            "b"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 0 and c.lower() not in out:\n            out.append(c.lower())\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 1 and c.lower() not in out:\n            out.append(c.lower())\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"AaBbA\",\"output\":[\"a\",\"b\"]},{\"input\":\"X1y2Xz\",\"output\":[\"x\",\"y\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-even_distinct_lower-reversed_membership",
+      "family": "even_distinct_lower",
+      "defect": "reversed_membership",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 0 and c.lower() in out:\n            out.append(c.lower())\n    return out\n",
+      "public_examples": [
+        {
+          "input": "AaBbA",
+          "output": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "input": "X1y2Xz",
+          "output": [
+            "x",
+            "y"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "BbAaBb",
+          "output": [
+            "b",
+            "a"
+          ]
+        },
+        {
+          "input": "012340",
+          "output": [
+            "0",
+            "2",
+            "4"
+          ]
+        },
+        {
+          "input": "aAAa",
+          "output": [
+            "a"
+          ]
+        },
+        {
+          "input": "yYzZ",
+          "output": [
+            "y",
+            "z"
+          ]
+        },
+        {
+          "input": "Z09Ab",
+          "output": [
+            "z",
+            "9",
+            "b"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 0 and c.lower() not in out:\n            out.append(c.lower())\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 0 and c.lower() in out:\n            out.append(c.lower())\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"AaBbA\",\"output\":[\"a\",\"b\"]},{\"input\":\"X1y2Xz\",\"output\":[\"x\",\"y\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-pipe_alpha_upper-wrong_delimiter",
+      "family": "pipe_alpha_upper",
+      "defect": "wrong_delimiter",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for word in s.split(':'):\n        if word.isalpha():\n            out.append(word.upper())\n    return out\n",
+      "public_examples": [
+        {
+          "input": "ab|12|Cd",
+          "output": [
+            "AB",
+            "CD"
+          ]
+        },
+        {
+          "input": "Xy|:|z",
+          "output": [
+            "XY",
+            "Z"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "A|b|1",
+          "output": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "input": "ab|CD|ef",
+          "output": [
+            "AB",
+            "CD",
+            "EF"
+          ]
+        },
+        {
+          "input": "Aa|77|BB",
+          "output": [
+            "AA",
+            "BB"
+          ]
+        },
+        {
+          "input": "a:b|c",
+          "output": [
+            "C"
+          ]
+        },
+        {
+          "input": "||zz|OK",
+          "output": [
+            "ZZ",
+            "OK"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for word in s.split('|'):\n        if word.isalpha():\n            out.append(word.upper())\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for word in s.split(':'):\n        if word.isalpha():\n            out.append(word.upper())\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"ab|12|Cd\",\"output\":[\"AB\",\"CD\"]},{\"input\":\"Xy|:|z\",\"output\":[\"XY\",\"Z\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-pipe_alpha_upper-wrong_case",
+      "family": "pipe_alpha_upper",
+      "defect": "wrong_case",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for word in s.split('|'):\n        if word.isalpha():\n            out.append(word.lower())\n    return out\n",
+      "public_examples": [
+        {
+          "input": "ab|12|Cd",
+          "output": [
+            "AB",
+            "CD"
+          ]
+        },
+        {
+          "input": "Xy|:|z",
+          "output": [
+            "XY",
+            "Z"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "A|b|1",
+          "output": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "input": "ab|CD|ef",
+          "output": [
+            "AB",
+            "CD",
+            "EF"
+          ]
+        },
+        {
+          "input": "Aa|77|BB",
+          "output": [
+            "AA",
+            "BB"
+          ]
+        },
+        {
+          "input": "a:b|c",
+          "output": [
+            "C"
+          ]
+        },
+        {
+          "input": "||zz|OK",
+          "output": [
+            "ZZ",
+            "OK"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for word in s.split('|'):\n        if word.isalpha():\n            out.append(word.upper())\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for word in s.split('|'):\n        if word.isalpha():\n            out.append(word.lower())\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"ab|12|Cd\",\"output\":[\"AB\",\"CD\"]},{\"input\":\"Xy|:|z\",\"output\":[\"XY\",\"Z\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-reverse_nonzero_digits-wrong_iteration_direction",
+      "family": "reverse_nonzero_digits",
+      "defect": "wrong_iteration_direction",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for c in s:\n        if c.isdigit() and c != '0':\n            out.append(c)\n    return out\n",
+      "public_examples": [
+        {
+          "input": "a1023",
+          "output": [
+            "3",
+            "2",
+            "1"
+          ]
+        },
+        {
+          "input": "0B45",
+          "output": [
+            "5",
+            "4"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "0901b2",
+          "output": [
+            "2",
+            "1",
+            "9"
+          ]
+        },
+        {
+          "input": "8a7",
+          "output": [
+            "7",
+            "8"
+          ]
+        },
+        {
+          "input": "xx",
+          "output": []
+        },
+        {
+          "input": "0005",
+          "output": [
+            "5"
+          ]
+        },
+        {
+          "input": "a12b3",
+          "output": [
+            "3",
+            "2",
+            "1"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in reversed(s):\n        if c.isdigit() and c != '0':\n            out.append(c)\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isdigit() and c != '0':\n            out.append(c)\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"a1023\",\"output\":[\"3\",\"2\",\"1\"]},{\"input\":\"0B45\",\"output\":[\"5\",\"4\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-reverse_nonzero_digits-wrong_zero_condition",
+      "family": "reverse_nonzero_digits",
+      "defect": "wrong_zero_condition",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for c in reversed(s):\n        if c.isdigit() and c == '0':\n            out.append(c)\n    return out\n",
+      "public_examples": [
+        {
+          "input": "a1023",
+          "output": [
+            "3",
+            "2",
+            "1"
+          ]
+        },
+        {
+          "input": "0B45",
+          "output": [
+            "5",
+            "4"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "0901b2",
+          "output": [
+            "2",
+            "1",
+            "9"
+          ]
+        },
+        {
+          "input": "8a7",
+          "output": [
+            "7",
+            "8"
+          ]
+        },
+        {
+          "input": "xx",
+          "output": []
+        },
+        {
+          "input": "0005",
+          "output": [
+            "5"
+          ]
+        },
+        {
+          "input": "a12b3",
+          "output": [
+            "3",
+            "2",
+            "1"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in reversed(s):\n        if c.isdigit() and c != '0':\n            out.append(c)\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for c in reversed(s):\n        if c.isdigit() and c == '0':\n            out.append(c)\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"a1023\",\"output\":[\"3\",\"2\",\"1\"]},{\"input\":\"0B45\",\"output\":[\"5\",\"4\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-overlap_bigrams-off_by_one",
+      "family": "overlap_bigrams",
+      "defect": "off_by_one",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for i in range(len(s) - 2):\n        out.append(s[i:i+2])\n    return out\n",
+      "public_examples": [
+        {
+          "input": "abcd",
+          "output": [
+            "ab",
+            "bc",
+            "cd"
+          ]
+        },
+        {
+          "input": "qwert",
+          "output": [
+            "qw",
+            "we",
+            "er",
+            "rt"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "ab",
+          "output": [
+            "ab"
+          ]
+        },
+        {
+          "input": "wxyz",
+          "output": [
+            "wx",
+            "xy",
+            "yz"
+          ]
+        },
+        {
+          "input": "a",
+          "output": []
+        },
+        {
+          "input": "",
+          "output": []
+        },
+        {
+          "input": "abcde",
+          "output": [
+            "ab",
+            "bc",
+            "cd",
+            "de"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for i in range(len(s) - 1):\n        out.append(s[i:i+2])\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for i in range(len(s) - 2):\n        out.append(s[i:i+2])\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"abcd\",\"output\":[\"ab\",\"bc\",\"cd\"]},{\"input\":\"qwert\",\"output\":[\"qw\",\"we\",\"er\",\"rt\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-overlap_bigrams-wrong_slice_width",
+      "family": "overlap_bigrams",
+      "defect": "wrong_slice_width",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for i in range(len(s) - 1):\n        out.append(s[i:i+1])\n    return out\n",
+      "public_examples": [
+        {
+          "input": "abcd",
+          "output": [
+            "ab",
+            "bc",
+            "cd"
+          ]
+        },
+        {
+          "input": "qwert",
+          "output": [
+            "qw",
+            "we",
+            "er",
+            "rt"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "ab",
+          "output": [
+            "ab"
+          ]
+        },
+        {
+          "input": "wxyz",
+          "output": [
+            "wx",
+            "xy",
+            "yz"
+          ]
+        },
+        {
+          "input": "a",
+          "output": []
+        },
+        {
+          "input": "",
+          "output": []
+        },
+        {
+          "input": "abcde",
+          "output": [
+            "ab",
+            "bc",
+            "cd",
+            "de"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for i in range(len(s) - 1):\n        out.append(s[i:i+2])\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for i in range(len(s) - 1):\n        out.append(s[i:i+1])\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"abcd\",\"output\":[\"ab\",\"bc\",\"cd\"]},{\"input\":\"qwert\",\"output\":[\"qw\",\"we\",\"er\",\"rt\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-indexed_upper_alpha-index_offset",
+      "family": "indexed_upper_alpha",
+      "defect": "index_offset",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if c.isalpha():\n            out.append(str(i + 1) + ':' + c.upper())\n    return out\n",
+      "public_examples": [
+        {
+          "input": "a1Bc",
+          "output": [
+            "0:A",
+            "2:B",
+            "3:C"
+          ]
+        },
+        {
+          "input": "Z?x",
+          "output": [
+            "0:Z",
+            "2:X"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "0aB",
+          "output": [
+            "1:A",
+            "2:B"
+          ]
+        },
+        {
+          "input": "Axyz",
+          "output": [
+            "0:A",
+            "1:X",
+            "2:Y",
+            "3:Z"
+          ]
+        },
+        {
+          "input": "1a2B3",
+          "output": [
+            "1:A",
+            "3:B"
+          ]
+        },
+        {
+          "input": "ab",
+          "output": [
+            "0:A",
+            "1:B"
+          ]
+        },
+        {
+          "input": "",
+          "output": []
+        },
+        {
+          "input": "!?X",
+          "output": [
+            "2:X"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if c.isalpha():\n            out.append(str(i) + ':' + c.upper())\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if c.isalpha():\n            out.append(str(i + 1) + ':' + c.upper())\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"a1Bc\",\"output\":[\"0:A\",\"2:B\",\"3:C\"]},{\"input\":\"Z?x\",\"output\":[\"0:Z\",\"2:X\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    },
+    {
+      "id": "SEM04-indexed_upper_alpha-wrong_case",
+      "family": "indexed_upper_alpha",
+      "defect": "wrong_case",
+      "kind": "SEMANTIC_VALID_PYTHON",
+      "broken_source": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if c.isalpha():\n            out.append(str(i) + ':' + c.lower())\n    return out\n",
+      "public_examples": [
+        {
+          "input": "a1Bc",
+          "output": [
+            "0:A",
+            "2:B",
+            "3:C"
+          ]
+        },
+        {
+          "input": "Z?x",
+          "output": [
+            "0:Z",
+            "2:X"
+          ]
+        }
+      ],
+      "hidden_cases": [
+        {
+          "input": "0aB",
+          "output": [
+            "1:A",
+            "2:B"
+          ]
+        },
+        {
+          "input": "Axyz",
+          "output": [
+            "0:A",
+            "1:X",
+            "2:Y",
+            "3:Z"
+          ]
+        },
+        {
+          "input": "1a2B3",
+          "output": [
+            "1:A",
+            "3:B"
+          ]
+        },
+        {
+          "input": "ab",
+          "output": [
+            "0:A",
+            "1:B"
+          ]
+        },
+        {
+          "input": "",
+          "output": []
+        },
+        {
+          "input": "!?X",
+          "output": [
+            "2:X"
+          ]
+        }
+      ],
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if c.isalpha():\n            out.append(str(i) + ':' + c.upper())\n    return out\n",
+      "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if c.isalpha():\n            out.append(str(i) + ':' + c.lower())\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"a1Bc\",\"output\":[\"0:A\",\"2:B\",\"3:C\"]},{\"input\":\"Z?x\",\"output\":[\"0:Z\",\"2:X\"]}]",
+      "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
+    }
+  ]
+}
