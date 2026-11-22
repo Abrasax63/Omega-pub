@@ -11,6 +11,10 @@ on:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_fast_cycle_queue.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/research_reflector.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_research_reflector.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/research_theses_candidates.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/work_inventory.json"
   workflow_dispatch:
     inputs:
       bootstrap:
@@ -64,8 +68,31 @@ jobs:
           set -euo pipefail
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_fast_cycle.py -v 2>&1 | tee "$RUNNER_TEMP/omega-pilot-tests.log"
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_fast_cycle_queue.py -v 2>&1 | tee "$RUNNER_TEMP/omega-queue-tests.log"
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_research_reflector.py -v 2>&1 | tee "$RUNNER_TEMP/omega-reflection-tests.log"
           (cd _sources/provenance/09_INFRASTRUCTURE_AGENTIQUE/prism &&
             python -m unittest -v test_provenance_cycle test_provenance_lab) 2>&1 | tee "$RUNNER_TEMP/omega-existing-tests.log"
+      - name: Ground two alternative-structure research theses and audit redundancy safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/research_reflector.py \
+            --proposals 09_INFRASTRUCTURE_AGENTIQUE/prism/research_theses_candidates.json \
+            --work-items 09_INFRASTRUCTURE_AGENTIQUE/prism/work_inventory.json \
+            --provenance _sources/provenance \
+            --math _sources/math \
+            --omega100 _sources/omega100 \
+            --output "$RUNNER_TEMP/omega-fast/reflection.json"
+          python - <<'PY'
+          import json, pathlib, os
+          report = json.loads((pathlib.Path(os.environ["RUNNER_TEMP"]) /
+                               "omega-fast/reflection.json").read_text())
+          assert len(report["grounded_hypothesis_proposals"]) == 2
+          assert report["scientific_claims_certified"] == 0
+          assert report["deduplication"]["safe_to_delete_files"] == []
+          assert report["deduplication"]["safe_to_drop_tests"] == []
+          assert not any(report["action_policy"].values())
+          print("Source anchors, hypotheses and no-deletion guard: PASS")
+          PY
       - name: Restore durable ledger; never silently restart after a lost artifact
         shell: bash
         env:
@@ -176,6 +203,7 @@ jobs:
             ${{ runner.temp }}/omega-fast/state.json
             ${{ runner.temp }}/omega-fast/results/
             ${{ runner.temp }}/omega-fast/run.log
+            ${{ runner.temp }}/omega-fast/reflection.json
             ${{ runner.temp }}/omega-fast/restart.log
             ${{ runner.temp }}/omega-fast/state.json
           retention-days: 7
@@ -188,6 +216,8 @@ jobs:
           path: |
             ${{ runner.temp }}/omega-pilot-tests.log
             ${{ runner.temp }}/omega-queue-tests.log
+            ${{ runner.temp }}/omega-reflection-tests.log
+            ${{ runner.temp }}/omega-fast/reflection.json
             ${{ runner.temp }}/omega-existing-tests.log
             ${{ runner.temp }}/omega-fast/results/
             ${{ runner.temp }}/omega-fast/run.log
