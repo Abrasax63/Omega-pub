@@ -1,35 +1,43 @@
-# Pilote accéléré Omega — raccord aux moteurs existants
+# Omega — pilote accéléré avec file persistante
 
-**PR #230, état expérimental, 22 novembre 2026.** Aucun changement de `main`, du planificateur ChatGPT horaire, des données privées ou des branches de travail #81/#82/Omega 100. Aucune API payante ni GPU.
+**État : pilote de raccord vérifié, non activé en cadence périodique.**
+Branche `experiment/omega-fast-cycle-15min-2026-11-22`, PR brouillon #230.
 
-## Ce qui fonctionne déjà
+## Ce qui est réutilisé
 
-- Le workflow charge en lecture seule les vraies branches `work/omega-provenance-lab` (#81), `work/omega-math-brick-pilot-2026-11-14` (#82) et `experiment/omega-100-2026-11-18` (mémoire Omega 100).
-- Il relit la suite des fiches `NNN.md` et les empreintes des deux modules scientifiques. Les lacunes dans la numérotation bloquent le pilote.
-- Il lance deux tests falsifiables **distincts**, avec entrées synthétiques définies dans `fast_cycle.py`, références et critères avant exécution. Ils ne sont pas de nouvelles découvertes ni des gains externes.
-  - `PROV-COPY-SCOPE-V1` : candidat de provenance `cp -v`, comparaison avec une référence vide et une règle fixe ; vérifie les abstentions sur journaux incomplets et écritures multiples.
-  - `V19-C5-LEAVES-N8-V1` : contrôle du projecteur V19 existant face à une énumération exhaustive, sur deux cas finis à huit états, en modes local/global.
-- Le registre JSON est chaîné par SHA-256 et refuse doublons, altérations et état absent (sauf amorçage explicite). À second passage, une tâche terminée ne se rejoue pas. Les statuts `VERIFIED_FINITE`, `REFUTED_ON_PILOT` et `BLOCKED` portent uniquement sur les critères finis de ce pilote.
-- Les traces du run sont archivées ; un run GitHub sur PR reçoit un registre **isolé**, non réutilisé par les futurs schedules.
+- Code de provenance `provenance_cycle.py` et `provenance_lab.py` de la PR #81.
+- Projecteur `audit_v19_shadow_guard.py` et oracle exhaustif V19 de la PR #82.
+- Mémoire scientifique `research/omega-100/NNN.md` depuis la branche du programme Omega 100.
+- Les questions existantes sont triées en **sondes exécutables préenregistrées** et **prochaines questions non exécutables sans nouveau protocole**.
 
-## Exécution vérifiée sur GitHub
+## La file et la mémoire
 
-Run [45045775658](https://github.com/Abrasax63/Omega-pub/actions/runs/45045775658), branche `experiment/omega-fast-cycle-15min-2026-11-22`, SHA `7eafcbf41a7fc9ca1fc43c7744030cb8cba47bed` : succès.
+`fast_cycle_catalog.json` contient 7 vérifications finies explicites : 2 contrôles de raccord historiques et 5 échantillons finis V19 distincts, avec hypothèse, référence, périmètre et budget maximum. Ajouter une tâche est une action explicite sur le catalogue : **le programme ne fabrique pas tout seul une hypothèse scientifique nouvelle**.
 
-- 4/4 tests contractuels du pilote ; 7/7 tests existants de provenance.
-- 2/2 vérifications finies exécutées, 0 blocage.
-- Provenance : 2 confirmations correctes, 0 fausse, 2 abstentions ; **égalité avec la règle fixe**, donc **aucun gain externe démontré**.
-- V19 : 4 projections ; 0 divergence candidat/exhaustif et 0 divergence local/global sur ces deux cas ; pas de preuve de généralisation.
-- Artefact `omega-fast-cycle-ci-45045775658` : journal d'exécution, deux comptes rendus JSON et journaux de tests. Ces pièces constituent une validation d'intégration, pas une nouvelle certification scientifique.
+`fast_cycle_queue.py` consomme au plus deux tâches nouvelles par invocation. Le registre `state.json` (schéma 2) et les rapports `results/<id>.json` sont chaînés par SHA-256. Une tâche déjà exécutée ne repasse pas. Tout changement rétrospectif du pré-enregistrement ou du résultat archivé est refusé. Le registre initial est écrit avant la première sonde afin de conserver un état vide vérifiable si elle bloque. Les tâches bloquées restent non validées ; le registre n'avance pas.
 
-## Limites importantes, avant activation
+À chaque passage, `next_unverified_question()` relit la dernière fiche Omega 100 et en extrait la prochaine question **en statut non exécuté**. Il ne fait aucune inférence ni aucune promotion de résultat. Les résultats négatifs sont conservés comme résultats de test finis, non comme gains.
 
-1. Le `schedule` GitHub toutes les 15 minutes ne fonctionne **que si le workflow est présent sur la branche par défaut**. Sur cette PR en brouillon, il **n'est pas actif**. Il ne faut pas fusionner uniquement pour activer la cadence sans revue. Un ordonnanceur externe est une alternative pour rester entièrement hors de `main`.
-2. Les deux tests falsifiables prédéfinis sont un *pilote de raccord*. Après eux, le registre empêche correctement les rejouements et rapporte **0 nouvelle expérience**. Cela ne fournit donc pas encore 96 expériences originales par jour.
-3. Le stockage de l'état dans des artefacts GitHub (7 jours) est un mécanisme pilote ; sa restauration inter-runs et sa résistance aux expirations doivent encore être vérifiées en condition réelle. Si l'état manque, le programme s'arrête plutôt que de le réinitialiser automatiquement.
-4. Le planificateur de rôles du prisme prépare le travail mais n'appelle aucun modèle. Le pilote n'ajoute pas de génération LLM autonome et ne revendique aucune découverte ou compréhension sémantique nouvelle.
-5. La cadence n'a pas été mesurée en charge réelle ; la limitation à 12 minutes par job et la concurrence non chevauchante ne garantissent pas des exécutions ponctuelles à chaque quart d'heure.
+## Vérification sur GitHub, 22 novembre 2026
 
-## Prochain test décisif
+- [Run 45047135611](https://github.com/Abrasax63/Omega-pub/actions/runs/45047135611), SHA `bc47b2beca08fa25685cc80af8172c4d10e02fa2`, **succès**.
+- Tests : 4/4 du raccord initial, 5/5 de la file, 7/7 du laboratoire de provenance, soit **16/16**.
+- Premier appel : `PROV-COPY-SCOPE-V1` et `V19-C5-LEAVES-N8-V1`, 2/2 sondes finies.
+- Second appel indépendant au même processus GitHub, en réutilisant le même registre sérialisé : `V19-C4-N7-H2-V1` et `V19-C5-N8-H3-V1`, 2/2 sondes finies.
+- **4 identifiants distincts, zéro blocage, zéro gain scientifique nouveau revendiqué.**
+- Il reste **3 vérifications préenregistrées**. Cette réserve limitée n'est pas un moteur de découverte infinie.
+- Les sorties sont archivées dans `omega-fast-cycle-ci-45047135611`.
 
-Sur un exécuteur explicitement autorisé, faire un **amorçage manuel**, télécharger le registre du premier passage, puis lancer le second passage avec **ce même registre**. Attendu : 0 expérience répétée, empreintes identiques, aucune nouvelle conclusion. Ensuite connecter une **file d'expériences inédites** alimentée par les problèmes non résolus et les références de #81/#82/Omega 100, avec séparation stricte entre propositions, corrigés réservés et vérifications. N'activer le calendrier rapide qu'après cette démonstration et la validation des limites de coût.
+Un bogue de bootstrap et une incohérence de chemin des résultats ont été détectés par GitHub Actions, corrigés puis revalidés. Les anciens runs rouges ne doivent pas être considérés comme verts.
+
+## Limitations non résolues
+
+1. L'essai de reprise a été fait dans **deux invocations de programme au sein d'un même job GitHub**, et non dans deux runs GitHub indépendants. La restauration depuis des artefacts inter-runs reste à vérifier.
+2. Les artefacts sont conservés 7 jours ; un état expiré doit bloquer, jamais remettre le compteur à zéro silencieusement.
+3. Le `schedule` toutes les 15 minutes n'est pas actif sur cette branche : GitHub requiert un workflow sur la branche par défaut. Pas de modification de `main` ni de la tâche ChatGPT existante.
+4. La file finie doit être réalimentée par de véritables questions préenregistrées et de nouvelles sources indépendantes. L'inbox Omega 100 identifie une piste, mais n'a ni généré de nouveau jeu de test ni lancé de modèle local.
+5. Le modèle LLM et les vérificateurs sémantiques n'ont pas été évalués dans ce pilote ; zéro nouvelle certification ou généralisation revendiquée.
+
+## Prochaine vérification décisive
+
+Démontrer **deux runs GitHub distincts** utilisant le même registre récupéré depuis un artefact précédent, avec contrôle de ses empreintes et du dernier ID : zéro répétition et refus si un rapport manque. Ensuite ajouter un adaptateur d'expérience nouvelle (Omega100 ou provenance externe), budget fixé et données de réserve réellement indépendantes. N'activer la cadence qu'après cette validation, sans achat de GPU.
