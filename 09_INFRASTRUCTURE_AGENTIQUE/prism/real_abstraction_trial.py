@@ -84,6 +84,10 @@ class RealClient:
             "model":MODEL,"messages":messages, "temperature":0,
             "seed":9123, "max_tokens":max_tokens,"stream":False,
         }
+        # Syntax constraint only, not a mathematical answer or a hidden key.
+        # The free local llama.cpp server parses this JSON mode.
+        if max_tokens >= 200:
+            req_data["response_format"]={"type":"json_object"}
         start=time.monotonic()
         request=Request(self.endpoint,
             headers={"Content-Type":"application/json"},
