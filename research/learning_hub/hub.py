@@ -277,6 +277,60 @@ def verify_state(state,registry):
     return True
 
 
+
+def verify_persisted_index(index,state,registry):
+    """An independently readable durable index of already admitted candidates.
+
+    The index is NOT a new training dataset or a new test. Verify every
+    reference and code sample against the full source-derived hub state.
+    """
+    verify_state(state,registry)
+    require(isinstance(index,dict) and
+            index.get("schema")=="OMEGA_LEARNING_HUB_PERSISTED_SKILL_INDEX_01",
+            "SKILL_INDEX_SCHEMA_INVALID")
+    require(index.get("source_v3_commit")==SOURCE_SHA and
+            index.get("source_v3_report_sha256")==SOURCE_REPORT_SHA,
+            "INDEX_SOURCE_FINGERPRINT_MISMATCH")
+    require(index.get("registry_sha256")==state["registry_sha256"],
+            "INDEX_REGISTRY_CHANGED")
+    require(index.get("candidate_dataset_sha256")==
+            state["candidate_manifest"]["records_sha256"],
+            "INDEX_DATASET_HASH_MISMATCH")
+    require(index.get("ledger_head_sha256")==state["ledger_head_sha256"],
+            "INDEX_EVENT_LEDGER_MISMATCH")
+    require(index.get("status")=="QUARANTINE_INSUFFICIENT_VERIFIED_DIVERSITY",
+            "INDEX_NOT_IN_QUARANTINE")
+    require(index.get("training_started") is False and
+            index.get("parametric_learning_demonstrated") is False and
+            index.get("general_python_competence_certified") is False,
+            "INDEX_CLAIMS_UNPROVEN_LEARNING")
+    require(index.get("used_hidden_tests_not_available_as_fresh_holdout") is True,
+            "INDEX_ATTEMPTS_HOLDOUT_REUSE")
+    rows=index.get("verified_candidates")
+    require(isinstance(rows,list) and len(rows)==len(state["skill_candidates"]),
+            "INDEX_CANDIDATE_COUNT_INVALID")
+    by_id={x["family_id"]:x for x in state["skill_candidates"]}
+    require(len(by_id)==len(rows),"INDEX_DUPLICATE_SOURCE")
+    seen=set()
+    for row in rows:
+        name=row.get("family_id")
+        require(name in by_id and name not in seen,"INDEX_UNKNOWN_OR_DUPLICATE_FAMILY")
+        seen.add(name)
+        original=by_id[name]
+        require(row.get("task")==original["task"]=="PYTHON_REPAIR",
+                "INDEX_TASK_NOT_VERIFIED")
+        require(row.get("best_code")==original["target"],
+                "INDEX_CODE_MISMATCH")
+        require(row.get("source_raw_model_sha256")==
+                original["admission_evidence"]["model_raw_sha256"],
+                "INDEX_MODEL_RAW_HASH_MISMATCH")
+        require(row.get("candidate_record_sha256")==original["record_sha256"],
+                "INDEX_CANDIDATE_HASH_MISMATCH")
+        require(row.get("original_best_attempt")==
+                original["original_best_attempt"],"INDEX_ATTEMPT_MISMATCH")
+    return True
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     sub=p.add_subparsers(dest="command",required=True)
@@ -289,6 +343,10 @@ def main():
     validate=sub.add_parser("verify")
     validate.add_argument("--registry",type=Path,default=HERE/"REGISTRY.json")
     validate.add_argument("--state",type=Path,required=True)
+    stable=sub.add_parser("verify-index")
+    stable.add_argument("--registry",type=Path,default=HERE/"REGISTRY.json")
+    stable.add_argument("--state",type=Path,required=True)
+    stable.add_argument("--index",type=Path,default=HERE/"VERIFIED_SKILL_INDEX_2026-11-22.json")
     args=p.parse_args()
     registry=validate_registry(read_json(args.registry,MAX_REGISTRY_BYTES))
     if args.command=="inspect":
@@ -309,6 +367,13 @@ def main():
         print(json.dumps({"integrity":"VERIFIED","status":state["status"],
                           "training_started":False,
                           "candidates":len(state["skill_candidates"])}))
+    elif args.command=="verify-index":
+        state=read_json(args.state,MAX_SNAPSHOT_BYTES)
+        index=read_json(args.index,MAX_SNAPSHOT_BYTES)
+        verify_persisted_index(index,state,registry)
+        print(json.dumps({"durable_index":"VERIFIED",
+                          "entries":len(index["verified_candidates"]),
+                          "training_started":False}))
 
 
 if __name__=="__main__":
