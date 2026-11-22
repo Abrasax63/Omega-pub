@@ -1,0 +1,2068 @@
+{
+  "schema": "OMEGA_PY_SFT_01_TRAIN_FROZEN",
+  "frozen_on": "2026-11-22",
+  "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "nonmodel_supervised_labels_count": 60,
+  "model_generated_labels_count": 2,
+  "weights_training_reuses_prior_train26_stack": true,
+  "train_examples": [
+    {
+      "id": "CUR-lower_each-for_colon",
+      "family": "lower_each",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        out.append(c.lower())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"a\",\"b\",\"b\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"9\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "c",
+            "a",
+            "a",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "b",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-lower_each-return_brace",
+      "family": "lower_each",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        out.append(c.lower())\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"a\",\"b\",\"b\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"9\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "c",
+            "a",
+            "a",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "b",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-lower_each-conditional_or_indent",
+      "family": "lower_each",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n    out.append(c.lower())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"a\",\"b\",\"b\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"9\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "c",
+            "a",
+            "a",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "b",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-upper_each-for_colon",
+      "family": "upper_each",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        out.append(c.upper())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"A\",\"B\",\"B\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"|\",\"B\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "C",
+            "A",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-upper_each-return_brace",
+      "family": "upper_each",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        out.append(c.upper())\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"A\",\"B\",\"B\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"|\",\"B\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "C",
+            "A",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-upper_each-conditional_or_indent",
+      "family": "upper_each",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n    out.append(c.upper())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"A\",\"B\",\"B\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"|\",\"B\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "C",
+            "A",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-digits_only-for_colon",
+      "family": "digits_only",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c.isdigit():\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"0\",\"9\"]},{\"input\":\"A9|b?\",\"expected\":[\"9\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isdigit():\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "2"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-digits_only-return_brace",
+      "family": "digits_only",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isdigit():\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"0\",\"9\"]},{\"input\":\"A9|b?\",\"expected\":[\"9\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isdigit():\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "2"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-digits_only-conditional_or_indent",
+      "family": "digits_only",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isdigit()\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"0\",\"9\"]},{\"input\":\"A9|b?\",\"expected\":[\"9\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isdigit():\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "2"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-uppercase_to_lower-for_colon",
+      "family": "uppercase_to_lower",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c.isupper():\n            out.append(c.lower())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"b\"]},{\"input\":\"A9|b?\",\"expected\":[\"a\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isupper():\n            out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "a"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-uppercase_to_lower-return_brace",
+      "family": "uppercase_to_lower",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isupper():\n            out.append(c.lower())\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"b\"]},{\"input\":\"A9|b?\",\"expected\":[\"a\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isupper():\n            out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "a"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-uppercase_to_lower-conditional_or_indent",
+      "family": "uppercase_to_lower",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isupper()\n            out.append(c.lower())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"b\"]},{\"input\":\"A9|b?\",\"expected\":[\"a\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isupper():\n            out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "a"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-lowercase_to_upper-for_colon",
+      "family": "lowercase_to_upper",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c.islower():\n            out.append(c.upper())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"B\"]},{\"input\":\"A9|b?\",\"expected\":[\"B\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.islower():\n            out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "A"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-lowercase_to_upper-return_brace",
+      "family": "lowercase_to_upper",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.islower():\n            out.append(c.upper())\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"B\"]},{\"input\":\"A9|b?\",\"expected\":[\"B\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.islower():\n            out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "A"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-lowercase_to_upper-conditional_or_indent",
+      "family": "lowercase_to_upper",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.islower()\n            out.append(c.upper())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"B\"]},{\"input\":\"A9|b?\",\"expected\":[\"B\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.islower():\n            out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "A"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-alpha_lower-for_colon",
+      "family": "alpha_lower",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c.isalpha():\n            out.append(c.lower())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"a\",\"b\",\"b\"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"b\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isalpha():\n            out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "c",
+            "a",
+            "a"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-alpha_lower-return_brace",
+      "family": "alpha_lower",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isalpha():\n            out.append(c.lower())\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"a\",\"b\",\"b\"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"b\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isalpha():\n            out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "c",
+            "a",
+            "a"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-alpha_lower-conditional_or_indent",
+      "family": "alpha_lower",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isalpha()\n            out.append(c.lower())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"a\",\"b\",\"b\"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"b\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isalpha():\n            out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "c",
+            "a",
+            "a"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-alpha_upper-for_colon",
+      "family": "alpha_upper",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c.isalpha():\n            out.append(c.upper())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"A\",\"B\",\"B\"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"B\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isalpha():\n            out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "C",
+            "A",
+            "A"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B",
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-alpha_upper-return_brace",
+      "family": "alpha_upper",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isalpha():\n            out.append(c.upper())\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"A\",\"B\",\"B\"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"B\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isalpha():\n            out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "C",
+            "A",
+            "A"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B",
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-alpha_upper-conditional_or_indent",
+      "family": "alpha_upper",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isalpha()\n            out.append(c.upper())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"A\",\"B\",\"B\"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"B\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isalpha():\n            out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "C",
+            "A",
+            "A"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B",
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-omit_pipe-for_colon",
+      "family": "omit_pipe",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c != '|':\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c != '|':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-omit_pipe-return_brace",
+      "family": "omit_pipe",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c != '|':\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c != '|':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-omit_pipe-conditional_or_indent",
+      "family": "omit_pipe",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c != '|'\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c != '|':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-omit_spaces-for_colon",
+      "family": "omit_spaces",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c != ' ':\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"0\",\"9\",\"!\",\"?\"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c != ' ':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-omit_spaces-return_brace",
+      "family": "omit_spaces",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c != ' ':\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"0\",\"9\",\"!\",\"?\"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c != ' ':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-omit_spaces-conditional_or_indent",
+      "family": "omit_spaces",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c != ' '\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"0\",\"9\",\"!\",\"?\"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c != ' ':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-only_letter_a-for_colon",
+      "family": "only_letter_a",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c.lower() == 'a':\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\"]},{\"input\":\"A9|b?\",\"expected\":[\"A\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.lower() == 'a':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "a",
+            "A"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": []
+        }
+      ]
+    },
+    {
+      "id": "CUR-only_letter_a-return_brace",
+      "family": "only_letter_a",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.lower() == 'a':\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\"]},{\"input\":\"A9|b?\",\"expected\":[\"A\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.lower() == 'a':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "a",
+            "A"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": []
+        }
+      ]
+    },
+    {
+      "id": "CUR-only_letter_a-conditional_or_indent",
+      "family": "only_letter_a",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.lower() == 'a'\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\"]},{\"input\":\"A9|b?\",\"expected\":[\"A\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.lower() == 'a':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "a",
+            "A"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": []
+        }
+      ]
+    },
+    {
+      "id": "CUR-duplicate_chars-for_colon",
+      "family": "duplicate_chars",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        out.append(c)\n        out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"a\",\"A\",\"A\",\"b\",\"b\",\"B\",\"B\",\"0\",\"0\",\"9\",\"9\",\"!\",\"!\",\"?\",\"?\",\" \",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"A\",\"9\",\"9\",\"|\",\"|\",\"b\",\"b\",\"?\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c)\n        out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "C",
+            "c",
+            "c",
+            "a",
+            "a",
+            "A",
+            "A",
+            "2",
+            "2",
+            "?",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "9",
+            "0",
+            "0",
+            "|",
+            "|",
+            ":",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "b",
+            "B",
+            "B",
+            "1",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-duplicate_chars-return_brace",
+      "family": "duplicate_chars",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        out.append(c)\n        out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"a\",\"A\",\"A\",\"b\",\"b\",\"B\",\"B\",\"0\",\"0\",\"9\",\"9\",\"!\",\"!\",\"?\",\"?\",\" \",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"A\",\"9\",\"9\",\"|\",\"|\",\"b\",\"b\",\"?\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c)\n        out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "C",
+            "c",
+            "c",
+            "a",
+            "a",
+            "A",
+            "A",
+            "2",
+            "2",
+            "?",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "9",
+            "0",
+            "0",
+            "|",
+            "|",
+            ":",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "b",
+            "B",
+            "B",
+            "1",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-duplicate_chars-conditional_or_indent",
+      "family": "duplicate_chars",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n    out.append(c)\n        out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"a\",\"A\",\"A\",\"b\",\"b\",\"B\",\"B\",\"0\",\"0\",\"9\",\"9\",\"!\",\"!\",\"?\",\"?\",\" \",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"A\",\"9\",\"9\",\"|\",\"|\",\"b\",\"b\",\"?\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c)\n        out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "C",
+            "c",
+            "c",
+            "a",
+            "a",
+            "A",
+            "A",
+            "2",
+            "2",
+            "?",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "9",
+            "0",
+            "0",
+            "|",
+            "|",
+            ":",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "b",
+            "B",
+            "B",
+            "1",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-prefix_x-for_colon",
+      "family": "prefix_x",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        out.append('X' + c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"Xa\",\"XA\",\"Xb\",\"XB\",\"X0\",\"X9\",\"X!\",\"X?\",\"X \"]},{\"input\":\"A9|b?\",\"expected\":[\"XA\",\"X9\",\"X|\",\"Xb\",\"X?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append('X' + c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "XC",
+            "Xc",
+            "Xa",
+            "XA",
+            "X2",
+            "X?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "X9",
+            "X0",
+            "X|",
+            "X:"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "Xb",
+            "XB",
+            "X1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-prefix_x-return_brace",
+      "family": "prefix_x",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        out.append('X' + c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"Xa\",\"XA\",\"Xb\",\"XB\",\"X0\",\"X9\",\"X!\",\"X?\",\"X \"]},{\"input\":\"A9|b?\",\"expected\":[\"XA\",\"X9\",\"X|\",\"Xb\",\"X?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append('X' + c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "XC",
+            "Xc",
+            "Xa",
+            "XA",
+            "X2",
+            "X?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "X9",
+            "X0",
+            "X|",
+            "X:"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "Xb",
+            "XB",
+            "X1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-prefix_x-conditional_or_indent",
+      "family": "prefix_x",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n    out.append('X' + c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"Xa\",\"XA\",\"Xb\",\"XB\",\"X0\",\"X9\",\"X!\",\"X?\",\"X \"]},{\"input\":\"A9|b?\",\"expected\":[\"XA\",\"X9\",\"X|\",\"Xb\",\"X?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append('X' + c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "XC",
+            "Xc",
+            "Xa",
+            "XA",
+            "X2",
+            "X?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "X9",
+            "X0",
+            "X|",
+            "X:"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "Xb",
+            "XB",
+            "X1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-suffix_bang-for_colon",
+      "family": "suffix_bang",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        out.append(c + '!')\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a!\",\"A!\",\"b!\",\"B!\",\"0!\",\"9!\",\"!!\",\"?!\",\" !\"]},{\"input\":\"A9|b?\",\"expected\":[\"A!\",\"9!\",\"|!\",\"b!\",\"?!\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c + '!')\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C!",
+            "c!",
+            "a!",
+            "A!",
+            "2!",
+            "?!"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9!",
+            "0!",
+            "|!",
+            ":!"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b!",
+            "B!",
+            "1!"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-suffix_bang-return_brace",
+      "family": "suffix_bang",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        out.append(c + '!')\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a!\",\"A!\",\"b!\",\"B!\",\"0!\",\"9!\",\"!!\",\"?!\",\" !\"]},{\"input\":\"A9|b?\",\"expected\":[\"A!\",\"9!\",\"|!\",\"b!\",\"?!\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c + '!')\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C!",
+            "c!",
+            "a!",
+            "A!",
+            "2!",
+            "?!"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9!",
+            "0!",
+            "|!",
+            ":!"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b!",
+            "B!",
+            "1!"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-suffix_bang-conditional_or_indent",
+      "family": "suffix_bang",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n    out.append(c + '!')\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a!\",\"A!\",\"b!\",\"B!\",\"0!\",\"9!\",\"!!\",\"?!\",\" !\"]},{\"input\":\"A9|b?\",\"expected\":[\"A!\",\"9!\",\"|!\",\"b!\",\"?!\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.append(c + '!')\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C!",
+            "c!",
+            "a!",
+            "A!",
+            "2!",
+            "?!"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9!",
+            "0!",
+            "|!",
+            ":!"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b!",
+            "B!",
+            "1!"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-even_index-for_colon",
+      "family": "even_index",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s)\n        if i % 2 == 0:\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"b\",\"0\",\"!\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"|\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 0:\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "a",
+            "2"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "|"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-even_index-return_brace",
+      "family": "even_index",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 0:\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"b\",\"0\",\"!\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"|\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 0:\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "a",
+            "2"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "|"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-even_index-conditional_or_indent",
+      "family": "even_index",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 0\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"b\",\"0\",\"!\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"|\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 0:\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "a",
+            "2"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "|"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-odd_index-for_colon",
+      "family": "odd_index",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s)\n        if i % 2 == 1:\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"B\",\"9\",\"?\"]},{\"input\":\"A9|b?\",\"expected\":[\"9\",\"b\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 1:\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "A",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "0",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-odd_index-return_brace",
+      "family": "odd_index",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 1:\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"B\",\"9\",\"?\"]},{\"input\":\"A9|b?\",\"expected\":[\"9\",\"b\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 1:\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "A",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "0",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-odd_index-conditional_or_indent",
+      "family": "odd_index",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 1\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"B\",\"9\",\"?\"]},{\"input\":\"A9|b?\",\"expected\":[\"9\",\"b\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 2 == 1:\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "A",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "0",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-punct_only-for_colon",
+      "family": "punct_only",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c in '!?':\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"!\",\"?\"]},{\"input\":\"A9|b?\",\"expected\":[\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c in '!?':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": []
+        }
+      ]
+    },
+    {
+      "id": "CUR-punct_only-return_brace",
+      "family": "punct_only",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c in '!?':\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"!\",\"?\"]},{\"input\":\"A9|b?\",\"expected\":[\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c in '!?':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": []
+        }
+      ]
+    },
+    {
+      "id": "CUR-punct_only-conditional_or_indent",
+      "family": "punct_only",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c in '!?'\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"!\",\"?\"]},{\"input\":\"A9|b?\",\"expected\":[\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c in '!?':\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": []
+        }
+      ]
+    },
+    {
+      "id": "CUR-unique_chars-for_colon",
+      "family": "unique_chars",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c not in out:\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c not in out:\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-unique_chars-return_brace",
+      "family": "unique_chars",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c not in out:\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c not in out:\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-unique_chars-conditional_or_indent",
+      "family": "unique_chars",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c not in out\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"9\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c not in out:\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-nondigits-for_colon",
+      "family": "nondigits",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if not c.isdigit():\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if not c.isdigit():\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-nondigits-return_brace",
+      "family": "nondigits",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if not c.isdigit():\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if not c.isdigit():\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-nondigits-conditional_or_indent",
+      "family": "nondigits",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if not c.isdigit()\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"A\",\"b\",\"B\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"A\",\"|\",\"b\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if not c.isdigit():\n            out.append(c)\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "C",
+            "c",
+            "a",
+            "A",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b",
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-lower_alpha_unique-for_colon",
+      "family": "lower_alpha_unique",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c.isalpha() and c.lower() not in out:\n            out.append(c.lower())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"b\"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"b\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isalpha() and c.lower() not in out:\n            out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "a"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-lower_alpha_unique-return_brace",
+      "family": "lower_alpha_unique",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isalpha() and c.lower() not in out:\n            out.append(c.lower())\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"b\"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"b\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isalpha() and c.lower() not in out:\n            out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "a"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-lower_alpha_unique-conditional_or_indent",
+      "family": "lower_alpha_unique",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isalpha() and c.lower() not in out\n            out.append(c.lower())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"a\",\"b\"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"b\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isalpha() and c.lower() not in out:\n            out.append(c.lower())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "a"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": []
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-switch_case-for_colon",
+      "family": "switch_case",
+      "defect": "for_colon",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c.isupper():\n            out.append(c.lower())\n        else:\n            out.append(c.upper())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"a\",\"B\",\"b\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"9\",\"|\",\"B\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isupper():\n            out.append(c.lower())\n        else:\n            out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "C",
+            "A",
+            "a",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B",
+            "b",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-switch_case-return_brace",
+      "family": "switch_case",
+      "defect": "return_brace",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isupper():\n            out.append(c.lower())\n        else:\n            out.append(c.upper())\n    return out}\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"a\",\"B\",\"b\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"9\",\"|\",\"B\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isupper():\n            out.append(c.lower())\n        else:\n            out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "C",
+            "A",
+            "a",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B",
+            "b",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUR-switch_case-conditional_or_indent",
+      "family": "switch_case",
+      "defect": "conditional_or_indent",
+      "provenance": "CURATED_SYNTHETIC_GOLD_NOT_MODEL_DISCOVERED",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isupper()\n            out.append(c.lower())\n        else:\n            out.append(c.upper())\n    return out\n\nObserved examples: [{\"input\":\"aAbB09!? \",\"expected\":[\"A\",\"a\",\"B\",\"b\",\"0\",\"9\",\"!\",\"?\",\" \"]},{\"input\":\"A9|b?\",\"expected\":[\"a\",\"9\",\"|\",\"B\",\"?\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        if c.isupper():\n            out.append(c.lower())\n        else:\n            out.append(c.upper())\n    return out\n",
+      "verification_cases": [
+        {
+          "input": "CcaA2?",
+          "expected": [
+            "c",
+            "C",
+            "A",
+            "a",
+            "2",
+            "?"
+          ]
+        },
+        {
+          "input": "90|:",
+          "expected": [
+            "9",
+            "0",
+            "|",
+            ":"
+          ]
+        },
+        {
+          "input": "bB1",
+          "expected": [
+            "B",
+            "b",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V3-PY-INDENTATION",
+      "family": "v3_python_reverse",
+      "defect": "indentation",
+      "provenance": "OMEGA_V3_ORIGINAL_VERIFIED",
+      "source_run_id": 45064696523,
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out=[]\n    for c in s:\n    out.insert(0,c)\n    return out\n\nObserved examples: [{\"input\":\"abc\",\"expected\":[\"c\",\"b\",\"a\"]},{\"input\":\"a1\",\"expected\":[\"1\",\"a\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    out = []\n    for c in s:\n        out.insert(0, c)\n    return out",
+      "verification_cases": [
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": "bB?2",
+          "expected": [
+            "2",
+            "?",
+            "B",
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V3-PY-QUOTES",
+      "family": "v3_python_upper_list",
+      "defect": "quotes",
+      "provenance": "OMEGA_V3_ORIGINAL_VERIFIED",
+      "source_run_id": 45064696523,
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    return [s.upper()]\n    \"\"\"\n\nObserved examples: [{\"input\":\"ab\",\"expected\":[\"AB\"]},{\"input\":\"A|b\",\"expected\":[\"A|B\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "target": "def transform(s):\n    return [s.upper()]",
+      "verification_cases": [
+        {
+          "input": "",
+          "expected": [
+            ""
+          ]
+        },
+        {
+          "input": "bB?2",
+          "expected": [
+            "BB?2"
+          ]
+        }
+      ]
+    }
+  ],
+  "holdout_imported_by_train": false
+}
