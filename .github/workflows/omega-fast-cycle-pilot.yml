@@ -17,6 +17,9 @@ on:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/work_inventory.json"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/research_synthesizer.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_research_synthesizer.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/riemann_reading_cases.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/riemann_reading_benchmark.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_riemann_reading_benchmark.py"
   workflow_dispatch:
     inputs:
       bootstrap:
@@ -72,6 +75,7 @@ jobs:
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_fast_cycle_queue.py -v 2>&1 | tee "$RUNNER_TEMP/omega-queue-tests.log"
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_research_reflector.py -v 2>&1 | tee "$RUNNER_TEMP/omega-reflection-tests.log"
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_research_synthesizer.py -v 2>&1 | tee "$RUNNER_TEMP/omega-synthesis-tests.log"
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_riemann_reading_benchmark.py -v 2>&1 | tee "$RUNNER_TEMP/omega-riemann-tests.log"
           (cd _sources/provenance/09_INFRASTRUCTURE_AGENTIQUE/prism &&
             python -m unittest -v test_provenance_cycle test_provenance_lab) 2>&1 | tee "$RUNNER_TEMP/omega-existing-tests.log"
       - name: Ground two alternative-structure research theses and audit redundancy safely
@@ -115,6 +119,26 @@ jobs:
           for name in ("always_negative", "unsigned_quotient_cycle", "learned_conjunction"):
               assert sum(r["comparison"][name].values()) > 0
           print("Generated finite structural rule with independently computed reserve: PASS")
+          PY
+      - name: Test source-scoped Riemann reading dependency benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/riemann_reading_benchmark.py \
+            --manifest 09_INFRASTRUCTURE_AGENTIQUE/prism/riemann_reading_cases.json \
+            --omega100 _sources/omega100 \
+            --output "$RUNNER_TEMP/omega-fast/riemann-benchmark.json" 2>&1 | tee "$RUNNER_TEMP/omega-riemann-run.log"
+          python - <<'PY'
+          import json, pathlib, os
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "omega-fast"
+          x = json.loads((root / "riemann-benchmark.json").read_text())
+          assert x["proofs_of_RH_generated"] == 0
+          assert x["scientific_discoveries"] == 0
+          assert x["machine_verified_Lean_proof_rechecked"] is False
+          assert x["chebyshev"]["finite_violations"] == 0
+          assert x["case_count"] == 16
+          assert x["metrics"]["conditions"]["certificates_checked"] > 0
+          print("Riemann reading test completed WITHOUT claiming proof or PDF comprehension")
           PY
       - name: Restore durable ledger; never silently restart after a lost artifact
         shell: bash
@@ -234,6 +258,7 @@ jobs:
             ${{ runner.temp }}/omega-fast/run.log
             ${{ runner.temp }}/omega-fast/reflection.json
             ${{ runner.temp }}/omega-fast/synthesis.json
+            ${{ runner.temp }}/omega-fast/riemann-benchmark.json
             ${{ runner.temp }}/omega-fast/restart.log
             ${{ runner.temp }}/omega-fast/state.json
           retention-days: 7
@@ -249,6 +274,9 @@ jobs:
             ${{ runner.temp }}/omega-reflection-tests.log
             ${{ runner.temp }}/omega-synthesis-tests.log
             ${{ runner.temp }}/omega-synthesis-run.log
+            ${{ runner.temp }}/omega-riemann-tests.log
+            ${{ runner.temp }}/omega-riemann-run.log
+            ${{ runner.temp }}/omega-fast/riemann-benchmark.json
             ${{ runner.temp }}/omega-fast/synthesis.json
             ${{ runner.temp }}/omega-fast/reflection.json
             ${{ runner.temp }}/omega-existing-tests.log
