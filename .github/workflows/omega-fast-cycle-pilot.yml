@@ -1,17 +1,28 @@
-name: Omega fast-cycle pilot (15 min, read-only)
+name: Omega accelerated pilot - existing scientific engines
 
-# The schedule becomes active ONLY if this file exists on the default branch.
-# On this experimental branch, use workflow_dispatch for manual validation.
+# The cron activates ONLY if this workflow is explicitly put on the default branch.
+# This draft PR does NOT activate the schedule and does not change ChatGPT tasks.
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-fast-cycle-pilot.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_fast_cycle.py"
   workflow_dispatch:
+    inputs:
+      bootstrap:
+        type: boolean
+        default: false
+        description: "Explicitly create a fresh state only if no prior state exists"
   schedule:
-    - cron: '7,22,37,52 * * * *'
+    - cron: "7,22,37,52 * * * *"
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
-  group: omega-fast-cycle-pilot
+  group: omega-fast-cycle-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -19,37 +30,99 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout pilot (read-only)
+        uses: actions/checkout@v4
         with:
+          persist-credentials: false
+      - name: Checkout established provenance engine (PR 81)
+        uses: actions/checkout@v4
+        with:
+          ref: work/omega-provenance-lab
+          path: _sources/provenance
+          persist-credentials: false
+      - name: Checkout established mathematical oracle (PR 82)
+        uses: actions/checkout@v4
+        with:
+          ref: work/omega-math-brick-pilot-2026-11-14
+          path: _sources/math
+          persist-credentials: false
+      - name: Checkout Omega 100 memory
+        uses: actions/checkout@v4
+        with:
+          ref: experiment/omega-100-2026-11-18
+          path: _sources/omega100
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - name: Verify provenance laboratory
-        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
-        run: |
-          python -m unittest -v test_provenance_lab test_provenance_cycle test_provenance_xtrace 2>&1 | tee "$RUNNER_TEMP/provenance-tests.log"
-      - name: Record bounded run evidence
-        if: always()
+          python-version: "3.11"
+      - name: Pilot and original-engine regression tests
         shell: bash
         run: |
-          python - <<'PY'
-          import json, os, pathlib
-          data = {
-              "mode": "read_only_regression_pilot",
-              "sha": os.environ["GITHUB_SHA"],
-              "run_id": os.environ["GITHUB_RUN_ID"],
-              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
-              "note": "A scheduled trigger is not a new scientific experiment or improvement.",
-          }
-          pathlib.Path(os.environ["RUNNER_TEMP"], "omega-cycle.json").write_text(json.dumps(data, indent=2)+"\n")
-          PY
-      - name: Archive evidence
-        if: always()
+          set -euo pipefail
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_fast_cycle.py -v 2>&1 | tee "$RUNNER_TEMP/omega-pilot-tests.log"
+          (cd _sources/provenance/09_INFRASTRUCTURE_AGENTIQUE/prism &&
+            python -m unittest -v test_provenance_cycle test_provenance_lab) 2>&1 | tee "$RUNNER_TEMP/omega-existing-tests.log"
+      - name: Restore durable ledger; never silently restart after a lost artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MANUAL_BOOTSTRAP: ${{ inputs.bootstrap }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/omega-fast"
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            echo "PR test: explicit isolated bootstrap, not a persistent research cycle"
+            echo "true" > "$RUNNER_TEMP/omega-fast/bootstrap.txt"
+            exit 0
+          fi
+          LAST_RUN="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=omega-fast-cycle-ledger-v1&per_page=100" \
+            --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == env.GITHUB_REF_NAME)] | sort_by(.created_at) | last | .workflow_run.id // empty')"
+          if [[ -n "$LAST_RUN" ]]; then
+            gh run download "$LAST_RUN" --repo "$GITHUB_REPOSITORY" \
+              --name omega-fast-cycle-ledger-v1 --dir "$RUNNER_TEMP/omega-fast"
+            test -s "$RUNNER_TEMP/omega-fast/state.json"
+            echo "false" > "$RUNNER_TEMP/omega-fast/bootstrap.txt"
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "$MANUAL_BOOTSTRAP" == "true" ]]; then
+            echo "true" > "$RUNNER_TEMP/omega-fast/bootstrap.txt"
+          else
+            echo "::error::No durable ledger found. Explicit manual bootstrap required; fail closed."
+            exit 1
+          fi
+      - name: Execute up to two different bounded falsification probes
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARGS=()
+          if [[ "$(cat "$RUNNER_TEMP/omega-fast/bootstrap.txt")" == "true" ]]; then
+            ARGS+=(--bootstrap)
+          fi
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle.py \
+            --state "$RUNNER_TEMP/omega-fast/state.json" \
+            --output-dir "$RUNNER_TEMP/omega-fast/results" \
+            --provenance-dir _sources/provenance \
+            --math-dir _sources/math \
+            --omega-dir _sources/omega100 \
+            --max-cycles 2 "${ARGS[@]}" 2>&1 | tee "$RUNNER_TEMP/omega-fast/run.log"
+      - name: Save only non-PR durable ledger for future runs
+        if: always() && github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: omega-cycle-${{ github.run_id }}-${{ github.run_attempt }}
+          name: omega-fast-cycle-ledger-v1
           path: |
-            ${{ runner.temp }}/omega-cycle.json
-            ${{ runner.temp }}/provenance-tests.log
+            ${{ runner.temp }}/omega-fast/state.json
+            ${{ runner.temp }}/omega-fast/results/
+            ${{ runner.temp }}/omega-fast/run.log
           retention-days: 7
+          if-no-files-found: warn
+      - name: Archive PR integration evidence, not a persistent ledger
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-fast-cycle-ci-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/omega-pilot-tests.log
+            ${{ runner.temp }}/omega-existing-tests.log
+            ${{ runner.temp }}/omega-fast/results/
+            ${{ runner.temp }}/omega-fast/run.log
+          retention-days: 7
+          if-no-files-found: warn
