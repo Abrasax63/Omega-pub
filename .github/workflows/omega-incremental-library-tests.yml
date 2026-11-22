@@ -6,6 +6,8 @@ on:
       - ".github/workflows/omega-incremental-library-tests.yml"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/incremental_math_library.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_incremental_math_library.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/concept_abstraction_lab.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_concept_abstraction_lab.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/math_web_learning_pilot.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_math_web_learning_pilot.py"
   workflow_dispatch:
@@ -28,3 +30,4 @@ jobs:
         run: |
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_math_web_learning_pilot.py' -v
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_incremental_math_library.py' -v
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_concept_abstraction_lab.py' -v
