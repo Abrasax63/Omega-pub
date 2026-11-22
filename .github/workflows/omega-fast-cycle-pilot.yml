@@ -129,6 +129,44 @@ jobs:
           assert len({e["id"] for e in entries}) == 4
           print("Two-invocation anti-replay: PASS")
           PY
+      - name: Recover archived state from an earlier distinct GitHub run (PR-only gate)
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/omega-fast-crossrun"
+          mkdir -p "$ROOT"
+          # A fixed, independently archived state from prior run 45047307664.
+          gh run download 45047307664 --repo "$GITHUB_REPOSITORY" \
+            --name omega-fast-cycle-ci-45047307664 --dir "$ROOT"
+          test -s "$ROOT/omega-fast/state.json"
+          test -s "$ROOT/omega-fast/results/PROV-COPY-SCOPE-V1.json"
+          python - <<'PY'
+          import json, os, pathlib
+          file = pathlib.Path(os.environ["RUNNER_TEMP"]) / "omega-fast-crossrun/omega-fast/state.json"
+          ids = [x["id"] for x in json.loads(file.read_text())["entries"]]
+          assert ids == ["PROV-COPY-SCOPE-V1", "V19-C5-LEAVES-N8-V1",
+                         "V19-C4-N7-H2-V1", "V19-C5-N8-H3-V1"], ids
+          PY
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py \
+            --state "$ROOT/omega-fast/state.json" \
+            --output-dir "$ROOT/omega-fast" \
+            --provenance-dir _sources/provenance \
+            --math-dir _sources/math \
+            --omega-dir _sources/omega100 \
+            --catalog 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json \
+            --max-cycles 2 2>&1 | tee "$ROOT/crossrun.log"
+          python - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "omega-fast-crossrun/omega-fast"
+          entries = json.loads((root / "state.json").read_text())["entries"]
+          ids = [x["id"] for x in entries]
+          assert len(ids) == len(set(ids)) == 6, ids
+          assert ids[4:] == ["V19-C4-N8-H4-V1", "V19-C5-N9-H2-V1"], ids
+          print("Cross-GitHub-run restore and no-replay: PASS")
+          PY
       - name: Save only non-PR durable ledger for future runs
         if: always() && github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
@@ -155,5 +193,7 @@ jobs:
             ${{ runner.temp }}/omega-fast/run.log
             ${{ runner.temp }}/omega-fast/restart.log
             ${{ runner.temp }}/omega-fast/state.json
+            ${{ runner.temp }}/omega-fast-crossrun/omega-fast/state.json
+            ${{ runner.temp }}/omega-fast-crossrun/crossrun.log
           retention-days: 7
           if-no-files-found: warn
