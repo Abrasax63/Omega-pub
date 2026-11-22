@@ -1,0 +1,71 @@
+name: Omega Semantic Repair - execution-guided audit (no model)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-execution-guided-audit.yml"
+      - "research/learning_hub/semantic04/execution_guided.py"
+      - "research/learning_hub/semantic04/test_execution_guided.py"
+      - "research/learning_hub/semantic04/posthoc_guided_audit.py"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify-repair-and-posthoc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run public-only mutation, adversarial security, abstention and existing tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover \
+            -s research/learning_hub/semantic04 \
+            -p test_execution_guided.py -v
+          python -m unittest discover \
+            -s research/learning_hub/semantic04 \
+            -p test_semantic04.py -v
+      - name: Restore ALREADY CONSUMED raw model outputs without model calls
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-semantic04-raw-comparison
+          run-id: 45074827572
+          github-token: ${{ github.token }}
+          path: /tmp/omega-guided/original
+      - name: Replay previously consumed observations strictly as posthoc diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/omega-guided/results
+          python research/learning_hub/semantic04/posthoc_guided_audit.py \
+            --old-report /tmp/omega-guided/original/semantic04_report.json \
+            --output /tmp/omega-guided/results/posthoc.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/omega-guided/results/posthoc.json').read_text())
+          assert r['protocol']=='OMEGA_EXECUTION_GUIDED_POSTHOC_01'
+          assert r['status']=='POSTHOC_CONSUMED_HOLDOUT_NOT_GENERALIZATION'
+          assert r['previous_symbolic_exact']==11
+          assert r['independent_new_benchmark'] is False
+          assert r['candidate_recall_not_actual_solver_accuracy']
+          assert r['new_training_steps']==r['new_model_calls']==0
+          assert len(r['rows'])==12
+          print('POSTHOC_ONLY_NO_NEW_LEARNING_CLAIM')
+          PY
+      - name: Archive actual results without hidden tests in any training model
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-execution-guided-posthoc-audit
+          path: /tmp/omega-guided/results/
+          retention-days: 7
+          if-no-files-found: warn
