@@ -42,12 +42,17 @@ def evaluate(old_report):
                                      row["public_examples"])
         hybrid_decision=eg.resolve(row["broken_source"],
                                    row["public_examples"],model_text=model_raw)
+        guarded_decision=eg.resolve_guarded(row["broken_source"],
+                                           row["public_examples"],model_text=model_raw)
         baseline_selected=baseline_decision["selected_code"]
         hybrid_selected=hybrid_decision["selected_code"]
+        guarded_selected=guarded_decision["selected_code"]
         baseline_exact=(baseline_selected is not None and
                         core.grade(baseline_selected,row["hidden_cases"])["all_correct"])
         hybrid_exact=(hybrid_selected is not None and
                       core.grade(hybrid_selected,row["hidden_cases"])["all_correct"])
+        guarded_exact=(guarded_selected is not None and
+                       core.grade(guarded_selected,row["hidden_cases"])["all_correct"])
         record.append({
             "id":row["id"],
             "old_symbolic_exact":old_sym["strict"]["all_correct"],
@@ -61,6 +66,9 @@ def evaluate(old_report):
             "baseline_selected_exact":baseline_exact,
             "hybrid_safe_resolution_status":hybrid_decision["status"],
             "hybrid_selected_exact":hybrid_exact,
+            "guarded_selected_exact":guarded_exact,
+            "guarded_model_considered":guarded_decision["model_seed_considered"],
+            "guarded_status":guarded_decision["status"],
             "new_oracle_probe_required":hybrid_decision["status"]=="NEEDS_ORACLE_RESPONSE",
             "new_model_calls":0,"old_hidden_inputs_not_used_in_selection":True
         })
@@ -74,6 +82,8 @@ def evaluate(old_report):
             r["candidate_recall_any_exact_on_consumed_cases"] for r in record),
         "baseline_safe_selected_exact":sum(r["baseline_selected_exact"] for r in record),
         "hybrid_safe_selected_exact":sum(r["hybrid_selected_exact"] for r in record),
+        "guarded_hybrid_safe_selected_exact":sum(r["guarded_selected_exact"] for r in record),
+        "guarded_model_seed_consulted":sum(r["guarded_model_considered"] for r in record),
         "baseline_ambiguous_or_abstained":sum(
             r["baseline_safe_resolution_status"]!="UNIQUE_PUBLIC_CANDIDATE_NEEDS_INDEPENDENT_TEST"
             for r in record),
