@@ -38,6 +38,9 @@ jobs:
             -p test_sft01.py -v
 
   compare-no-training:
+    # First evaluation already launched on frozen SHA 74951f3811f611d16cf00109f65fcce754200d35.
+    # Prevent subsequent PR edits from rerunning this consumed holdout.
+    if: false
     needs: prereg-and-offline-falsification
     runs-on: ubuntu-latest
     timeout-minutes: 35
