@@ -1,0 +1,145 @@
+name: Omega RH RAW-02 fresh-page JSON-format control (CPU free model)
+
+# PR-only experiment, not the scheduled Omega cycle.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-rh-raw-blind-v2.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/rh_raw_model_v2.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_rh_raw_model_v2.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-rh-raw-blind-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cpu-raw-reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      SOURCE_URL: https://www.math.uwaterloo.ca/~mrubinst/alpoge_claude_grh/zeta-paper.pdf
+      LLAMA_BIN_URL: https://github.com/ggml-org/llama.cpp/releases/download/b12633/llama-b12633-bin-ubuntu-x64.tar.gz
+      MODEL_URL: https://huggingface.co/bartowski/Qwen2.5-0.5B-Instruct-GGUF/resolve/d71b21e09fe053c278d73092a855b8a99684693a/Qwen2.5-0.5B-Instruct-Q4_K_M.gguf
+    steps:
+      - name: Checkout experimental code without research answer keys in model context
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fail-closed tests of unhinted inference interface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_rh_raw_model_v2.py -v 2>&1 | tee "$RUNNER_TEMP/rh-raw-tests.log"
+      - name: Install PDF text inspection tools for minimal Ubuntu runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          command -v pdfinfo
+          command -v pdftotext
+      - name: Fetch original PDF unchanged and extract new physical pages 4-5
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/rh-input"
+          curl --fail --show-error --silent --location \
+            --retry 3 --retry-all-errors --max-time 180 \
+            "$SOURCE_URL" -o "$RUNNER_TEMP/rh-input/source.pdf"
+          test "$(stat -c %s "$RUNNER_TEMP/rh-input/source.pdf")" -ge 100000
+          pdfinfo "$RUNNER_TEMP/rh-input/source.pdf" | tee "$RUNNER_TEMP/rh-input/pdfinfo.txt"
+          pdftotext -f 4 -l 4 -layout "$RUNNER_TEMP/rh-input/source.pdf" "$RUNNER_TEMP/rh-input/page-4.txt"
+          pdftotext -f 5 -l 5 -layout "$RUNNER_TEMP/rh-input/source.pdf" "$RUNNER_TEMP/rh-input/page-5.txt"
+          sha256sum "$RUNNER_TEMP/rh-input/source.pdf" | awk '{print $1}' > "$RUNNER_TEMP/rh-input/pdf.sha256"
+          sha256sum "$RUNNER_TEMP/rh-input/page-4.txt" "$RUNNER_TEMP/rh-input/page-5.txt" \
+            | sed "s@${RUNNER_TEMP}/rh-input/@@g" | tee "$RUNNER_TEMP/rh-source-fingerprints.txt"
+          echo "SOURCE_PDF_SHA256=$(cat "$RUNNER_TEMP/rh-input/pdf.sha256")" >> "$GITHUB_ENV"
+          test "$(cat "$RUNNER_TEMP/rh-input/pdf.sha256")" = "667d88b3c375adf0466678094f452ca966aef0f4d368f6340d2bd5328b7fb706"
+          test "$(wc -c < "$RUNNER_TEMP/rh-input/page-4.txt")" -ge 200
+          test "$(wc -c < "$RUNNER_TEMP/rh-input/page-5.txt")" -ge 200
+      - name: Fetch pinned open CPU inference software and pinned Qwen model
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/rh-bin"
+          curl --fail --show-error --silent --location \
+            --retry 2 --retry-all-errors --max-time 240 \
+            "$LLAMA_BIN_URL" -o "$RUNNER_TEMP/rh-bin/llama.tar.gz"
+          test "$(stat -c %s "$RUNNER_TEMP/rh-bin/llama.tar.gz")" -ge 1000000
+          tar -xzf "$RUNNER_TEMP/rh-bin/llama.tar.gz" -C "$RUNNER_TEMP/rh-bin"
+          SERVER="$(find "$RUNNER_TEMP/rh-bin" -type f -name llama-server | head -1)"
+          test -n "$SERVER"
+          chmod +x "$SERVER"
+          echo "LLAMA_SERVER=$SERVER" >> "$GITHUB_ENV"
+          curl --fail --show-error --silent --location \
+            --retry 2 --retry-all-errors --max-time 400 \
+            "$MODEL_URL" -o "$RUNNER_TEMP/rh-bin/model.gguf"
+          python - <<'PY'
+          import os, pathlib
+          path = pathlib.Path(os.environ["RUNNER_TEMP"]) / "rh-bin/model.gguf"
+          assert path.stat().st_size >= 300_000_000
+          assert path.open("rb").read(4) == b"GGUF"
+          PY
+          sha256sum "$RUNNER_TEMP/rh-bin/model.gguf" | awk '{print $1}' > "$RUNNER_TEMP/rh-model-fingerprint.txt"
+          echo "MODEL_SHA256=$(cat "$RUNNER_TEMP/rh-model-fingerprint.txt")" >> "$GITHUB_ENV"
+          test "$(cat "$RUNNER_TEMP/rh-model-fingerprint.txt")" = "6eb923e7d26e9cea28811e1a8e852009b21242fb157b26149d3b188f3a8c8653"
+      - name: Start local CPU model with no external inference API
+        shell: bash
+        run: |
+          set -euo pipefail
+          BIN="$(dirname "$LLAMA_SERVER")"
+          LD_LIBRARY_PATH="$BIN:${LD_LIBRARY_PATH:-}" "$LLAMA_SERVER" \
+            -m "$RUNNER_TEMP/rh-bin/model.gguf" \
+            --host 127.0.0.1 --port 8080 -c 6144 -t 2 -ngl 0 \
+            > "$RUNNER_TEMP/rh-server.log" 2>&1 &
+          for i in $(seq 1 80); do
+            if curl --max-time 2 --silent --fail http://127.0.0.1:8080/health >/dev/null; then
+              echo "Model ready on local runner"
+              exit 0
+            fi
+            sleep 2
+          done
+          tail -n 40 "$RUNNER_TEMP/rh-server.log"
+          exit 1
+      - name: Run raw-page reader plus Omega literal-source verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 480 python 09_INFRASTRUCTURE_AGENTIQUE/prism/rh_raw_model_v2.py \
+            --page-4 "$RUNNER_TEMP/rh-input/page-4.txt" \
+            --page-5 "$RUNNER_TEMP/rh-input/page-5.txt" \
+            --pdf-sha256 "$SOURCE_PDF_SHA256" \
+            --model-sha256 "$MODEL_SHA256" \
+            --output "$RUNNER_TEMP/rh-output" \
+            2>&1 | tee "$RUNNER_TEMP/rh-inference-summary.log"
+          python - <<'PY'
+          import json,os,pathlib
+          d = json.loads((pathlib.Path(os.environ["RUNNER_TEMP"]) /
+                          "rh-output/report.json").read_text())
+          assert d["model_calls"] == 4
+          assert d["manual_claims_given_to_model"] == 0
+          assert d["no_semantic_hints"] is True
+          assert d["scientific_claims_certified"] == 0
+          assert not d["understanding_certified"]
+          print("New raw model pages, JSON-only output; semantic score pending")
+          PY
+      - name: Archive evidence but not original PDF or model weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-rh-raw-blind-v2-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/rh-source-fingerprints.txt
+            ${{ runner.temp }}/rh-model-fingerprint.txt
+            ${{ runner.temp }}/rh-raw-tests.log
+            ${{ runner.temp }}/rh-inference-summary.log
+            ${{ runner.temp }}/rh-output/report.json
+          retention-days: 7
+          if-no-files-found: warn
