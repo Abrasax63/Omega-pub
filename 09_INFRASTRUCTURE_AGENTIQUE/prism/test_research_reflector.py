@@ -95,6 +95,17 @@ class ReflectorTests(unittest.TestCase):
             with self.assertRaisesRegex(UnsafeProposal, "promotion"):
                 validate_proposal(p, roots)
 
+    def test_counterfactual_is_required_for_interpretation_contract(self):
+        with TemporaryDirectory() as td:
+            p, roots = self.prepare(td)
+            p["test"]["counterfactual_prediction"] = ""
+            with self.assertRaisesRegex(UnsafeProposal, "contract"):
+                validate_proposal(p, roots)
+            p["test"]["counterfactual_prediction"] = "A distinct predicted outcome"
+            p["test"]["cross_representation_invariant"] = ""
+            with self.assertRaisesRegex(UnsafeProposal, "contract"):
+                validate_proposal(p, roots)
+
     def test_same_words_different_holdout_is_not_exact_duplication(self):
         base = {
             "id": "A", "objective": "Verify exact binary parity on forced graphs",
