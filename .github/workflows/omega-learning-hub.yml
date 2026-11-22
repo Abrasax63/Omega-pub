@@ -64,6 +64,8 @@ jobs:
             > /tmp/omega-learning-hub/summary.log
           python research/learning_hub/hub.py verify \
             --state /tmp/omega-learning-hub/state.json
+          python research/learning_hub/hub.py verify-index \
+            --state /tmp/omega-learning-hub/state.json
           python - <<'PY'
           import json
           from pathlib import Path
