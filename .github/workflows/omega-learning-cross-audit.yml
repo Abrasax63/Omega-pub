@@ -1,0 +1,90 @@
+name: Omega learning cross-audit - offline admission and safe Python
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-learning-cross-audit.yml"
+      - "research/learning_lab/verified_python_training_export.py"
+      - "research/learning_lab/test_verified_python_training_export.py"
+      - "research/learning_lab/prog_reconstruction_pilot.py"
+      - "research/learning_lab/AUDIT_REUTILISATION_ETAT_2026-11-22.md"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify-contract-no-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check inherited Python runtime and fresh admission gates without inference
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s research/learning_lab \
+            -p test_prog_reconstruction_pilot.py -v
+          python -m unittest discover -s research/learning_lab \
+            -p test_python_curriculum_v2.py -v
+          python -m unittest discover -s research/learning_lab \
+            -p test_python_mastery_v3.py -v
+          python -m unittest discover -s research/learning_lab \
+            -p test_verified_python_training_export.py -v
+      - name: Assert bridge never silently launches training
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("research/learning_lab/verified_python_training_export.py")
+          text=p.read_text()
+          assert "torch.optim" not in text
+          assert "get_peft_model" not in text
+          assert "HOLDOUT_GOLD_EVAL_ONLY" not in text
+          assert "MIN_INDEPENDENT_FAMILIES=12" in text
+          print("EXPERIENCE_ADMISSION_ONLY_NO_GRADIENT_NO_HOLDOUT_RETRAIN")
+          PY
+
+      - name: Retrieve already completed V3 raw report as optional evidence (no model rerun)
+        id: prior_report
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-python-mastery-v3-45064696523
+          run-id: 45064696523
+          github-token: ${{ github.token }}
+          path: /tmp/omega-python-prior
+      - name: Admit model-proposed code only if independently checked and sufficiently diverse
+        if: steps.prior_report.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/learning_lab/verified_python_training_export.py \
+            --report /tmp/omega-python-prior/report.json \
+            --source-run https://github.com/Abrasax63/Omega-pub/actions/runs/45064696523 \
+            --source-commit 436df0d8f542c080cc84443e2971b96fecc41c86 \
+            --output /tmp/omega-python-candidates.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/omega-python-candidates.json'))
+          m=p['manifest']
+          assert m['status']=='QUARANTINE_INSUFFICIENT_VERIFIED_DIVERSITY'
+          assert m['admitted_examples']==2
+          assert m['independent_families']==2
+          assert m['weight_training_performed'] is False
+          assert m['source_report_original_holdout_reused_as_train'] is False
+          assert m['compatible_with_train26_labels'] is False
+          print('REAL_V3_SAMPLES_ADMITTED_AS_UNDERPOWERED_QUARANTINE_ONLY',m['admitted_examples'])
+          PY
+      - name: Archive checked candidate dataset, not hidden E/F cases or model weights
+        if: steps.prior_report.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-python-admission-quarantine-${{ github.run_id }}
+          path: /tmp/omega-python-candidates.json
+          retention-days: 7
+          if-no-files-found: error

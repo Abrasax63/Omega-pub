@@ -154,11 +154,11 @@ FORBIDDEN_AST = (ast.Import,ast.ImportFrom,ast.ClassDef,ast.AsyncFunctionDef,
                  ast.Await,ast.NamedExpr)
 BUILTIN_CALLS = frozenset((
     "len","range","enumerate","str","int","list","dict","set",
-    "tuple","min","max","sum","abs","bool","ord","chr",
+    "tuple","min","max","sum","abs","bool","ord","chr","reversed",
 ))
 METHODS = frozenset((
     "append","lower","upper","casefold","join","split","replace",
-    "startswith","endswith","isdigit","isalpha","strip","pop","count",
+    "startswith","endswith","isdigit","isalpha","isalnum","isupper","islower","strip","pop","count","insert",
 ))
 
 
@@ -216,7 +216,7 @@ resource.setrlimit(resource.RLIMIT_AS,(192*1024*1024,192*1024*1024))
 resource.setrlimit(resource.RLIMIT_FSIZE,(0,0))
 payload=json.load(sys.stdin)
 allowed=("len","range","enumerate","str","int","list","dict","set",
-         "tuple","min","max","sum","abs","bool","ord","chr")
+         "tuple","min","max","sum","abs","bool","ord","chr","reversed")
 env={"__builtins__":{k:getattr(builtins,k) for k in allowed}}
 code=compile(payload["code"],"student_program","exec")
 exec(code,env,env)
