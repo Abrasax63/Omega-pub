@@ -8,6 +8,9 @@ on:
       - ".github/workflows/omega-fast-cycle-pilot.yml"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_fast_cycle.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_fast_cycle_queue.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json"
   workflow_dispatch:
     inputs:
       bootstrap:
@@ -60,6 +63,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_fast_cycle.py -v 2>&1 | tee "$RUNNER_TEMP/omega-pilot-tests.log"
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_fast_cycle_queue.py -v 2>&1 | tee "$RUNNER_TEMP/omega-queue-tests.log"
           (cd _sources/provenance/09_INFRASTRUCTURE_AGENTIQUE/prism &&
             python -m unittest -v test_provenance_cycle test_provenance_lab) 2>&1 | tee "$RUNNER_TEMP/omega-existing-tests.log"
       - name: Restore durable ledger; never silently restart after a lost artifact
@@ -88,7 +92,7 @@ jobs:
             echo "::error::No durable ledger found. Explicit manual bootstrap required; fail closed."
             exit 1
           fi
-      - name: Execute up to two different bounded falsification probes
+      - name: Execute up to two preregistered probes from the persistent queue
         shell: bash
         run: |
           set -euo pipefail
@@ -96,13 +100,35 @@ jobs:
           if [[ "$(cat "$RUNNER_TEMP/omega-fast/bootstrap.txt")" == "true" ]]; then
             ARGS+=(--bootstrap)
           fi
-          python 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle.py \
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py \
             --state "$RUNNER_TEMP/omega-fast/state.json" \
             --output-dir "$RUNNER_TEMP/omega-fast/results" \
             --provenance-dir _sources/provenance \
             --math-dir _sources/math \
             --omega-dir _sources/omega100 \
+            --catalog 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json \
             --max-cycles 2 "${ARGS[@]}" 2>&1 | tee "$RUNNER_TEMP/omega-fast/run.log"
+      - name: Second process resumes from persisted state (PR verification only)
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py \
+            --state "$RUNNER_TEMP/omega-fast/state.json" \
+            --output-dir "$RUNNER_TEMP/omega-fast" \
+            --provenance-dir _sources/provenance \
+            --math-dir _sources/math \
+            --omega-dir _sources/omega100 \
+            --catalog 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json \
+            --max-cycles 2 2>&1 | tee "$RUNNER_TEMP/omega-fast/restart.log"
+          python - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "omega-fast"
+          entries = json.loads((root / "state.json").read_text())["entries"]
+          assert len(entries) == 4, "Two invocations must complete four different probes"
+          assert len({e["id"] for e in entries}) == 4
+          print("Two-invocation anti-replay: PASS")
+          PY
       - name: Save only non-PR durable ledger for future runs
         if: always() && github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
@@ -112,6 +138,8 @@ jobs:
             ${{ runner.temp }}/omega-fast/state.json
             ${{ runner.temp }}/omega-fast/results/
             ${{ runner.temp }}/omega-fast/run.log
+            ${{ runner.temp }}/omega-fast/restart.log
+            ${{ runner.temp }}/omega-fast/state.json
           retention-days: 7
           if-no-files-found: warn
       - name: Archive PR integration evidence, not a persistent ledger
@@ -121,6 +149,7 @@ jobs:
           name: omega-fast-cycle-ci-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/omega-pilot-tests.log
+            ${{ runner.temp }}/omega-queue-tests.log
             ${{ runner.temp }}/omega-existing-tests.log
             ${{ runner.temp }}/omega-fast/results/
             ${{ runner.temp }}/omega-fast/run.log
