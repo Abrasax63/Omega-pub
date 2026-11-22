@@ -29,8 +29,8 @@ et non une amélioration démontrée du raisonnement.
    l'extrait retourné), **pas de certification de sens**.
 5. Enregistrement append-only d'une fiche avec URL, identifiant de page,
    révision, empreinte du texte consulté, sortie brute, statut explicite,
-   chaînage SHA-256. Une recherche de même concept sur une **révision
-   différente** crée un nouvel enregistrement plutôt que d'écraser le précédent.
+   chaînage SHA-256. Une **nouvelle interprétation**, même sur la même
+   révision, est conservée comme nouvelle version sans effacer l'ancienne.
 6. Deux à trois itérations maximum par appel, sans lancement d'un serveur,
    sans coût API imposé, sans boucle infinie. La fonction est appelable plus
    tard par un orchestrateur déjà existant **après** revue.
@@ -63,7 +63,7 @@ python -m unittest -v test_math_web_learning_pilot test_incremental_math_library
 ## Garde-fous et limites
 
 - **Aucune suppression/fusion de concepts par similarité automatique.** Seuls
-  les doublons exacts de concept + versions de sources sont ignorés.
+  les doublons exacts de concept + versions de sources + sortie du modèle sont ignorés.
 - Une citation verbatim prouve uniquement une **correspondance textuelle**,
   pas une définition correcte, une conséquence logique ni une preuve.
 - La vérification de SHA détecte les modifications accidentelles du registre ;
