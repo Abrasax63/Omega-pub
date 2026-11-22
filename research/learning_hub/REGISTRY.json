@@ -1,0 +1,93 @@
+{
+  "schema": "OMEGA_LEARNING_HUB_01",
+  "created_utc": "2026-11-22",
+  "purpose": "Read-only aggregation of already-built learning capabilities, not a new model trainer",
+  "source_experiment": {
+    "name": "OMEGA-PY-MASTERY-03-2026-11-22",
+    "pr": 234,
+    "run_id": 45064696523,
+    "run_url": "https://github.com/Abrasax63/Omega-pub/actions/runs/45064696523",
+    "source_commit": "436df0d8f542c080cc84443e2971b96fecc41c86",
+    "report_sha256": "37871f7dc1a414faf8c4f9784fbb551828a04f0a534cf01c4de5000c27572049",
+    "imported_via": "research/learning_lab/verified_python_training_export.py",
+    "prior_holdout_consumed": true
+  },
+  "components": [
+    {
+      "name": "python_reconstruction",
+      "pr": 232,
+      "role": "model observes, writes, and tests code; no weight update",
+      "code": "research/learning_lab/prog_reconstruction_pilot.py",
+      "available_in_this_branch": true
+    },
+    {
+      "name": "python_curriculum",
+      "pr": 233,
+      "role": "compiler diagnostic feedback and separated development vs hidden tests",
+      "code": "research/learning_lab/python_curriculum_v2.py",
+      "available_in_this_branch": true
+    },
+    {
+      "name": "python_mastery",
+      "pr": 234,
+      "role": "mastery gate and nondestructive best-code preservation",
+      "code": "research/learning_lab/python_mastery_v3.py",
+      "available_in_this_branch": true
+    },
+    {
+      "name": "python_verified_export",
+      "pr": 234,
+      "role": "non-causal verified candidate exporter and quarantine",
+      "code": "research/learning_lab/verified_python_training_export.py",
+      "available_in_this_branch": true
+    },
+    {
+      "name": "autoresearch_gate",
+      "pr": 83,
+      "role": "budget, regression, provenance grouping; separate unmerged branch",
+      "code": "09_INFRASTRUCTURE_AGENTIQUE/auto_research/gate.py",
+      "source_commit": "6b74250ded6c794c814a3fcc9f02f25b322955da",
+      "available_in_this_branch": false
+    },
+    {
+      "name": "scientific_memory",
+      "pr": 228,
+      "role": "append-only scientific provenance ledger, distinct from code skill knowledge",
+      "code": "09_INFRASTRUCTURE_AGENTIQUE/scientific_memory01/read_memory.py",
+      "source_commit": "894177389d3c82b3c859fe300b5963f1fbbc446c",
+      "available_in_this_branch": false
+    },
+    {
+      "name": "lora_trainer",
+      "pr": 198,
+      "role": "SmolLM2-135M real LoRA CPU training, mathematical labels only",
+      "code": "09_INFRASTRUCTURE_AGENTIQUE/train26/train_full.py",
+      "source_commit": "a5724671fa0ef520c6cec39c070b939130d59fdd",
+      "verified_run": 44512647677,
+      "available_in_this_branch": false,
+      "accepts_python_repair_samples": false
+    },
+    {
+      "name": "lora_transfer_evaluation",
+      "pr": 199,
+      "role": "out-of-family post-train external holdout and counterexample feedback",
+      "code": "09_INFRASTRUCTURE_AGENTIQUE/transfer27/grade.py",
+      "source_commit": "8dd45b960151110b452087a73d0ceaa4e242ba91",
+      "verified_run": 44518970468,
+      "available_in_this_branch": false
+    }
+  ],
+  "minimum_distinct_verified_python_families_for_further_training_design": 12,
+  "minimum_verified_python_samples_for_further_training_design": 24,
+  "python_trainer_implemented": false,
+  "external_fresh_holdout_pre_registered": false,
+  "allow_automatic_model_training": false,
+  "allow_automatic_merge": false,
+  "allow_automatic_theorem_certification": false,
+  "forbidden_future_holdout_group_prefixes": [
+    "OMEGA-PY-MASTERY-03:course:",
+    "OMEGA-PY-MASTERY-03:E",
+    "OMEGA-PY-MASTERY-03:F"
+  ],
+  "programming_scores_are_not_model_weight_updates": true
+}

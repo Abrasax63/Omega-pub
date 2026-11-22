@@ -1,0 +1,35 @@
+{
+  "schema": "OMEGA_LEARNING_HUB_PERSISTED_SKILL_INDEX_01",
+  "source_integration_run": "https://github.com/Abrasax63/Omega-pub/actions/runs/45071116029",
+  "source_integration_artifact": "https://github.com/Abrasax63/Omega-pub/actions/runs/45071116029/artifacts/14773217686",
+  "source_v3_run": "https://github.com/Abrasax63/Omega-pub/actions/runs/45064696523",
+  "source_v3_commit": "436df0d8f542c080cc84443e2971b96fecc41c86",
+  "source_v3_report_sha256": "37871f7dc1a414faf8c4f9784fbb551828a04f0a534cf01c4de5000c27572049",
+  "registry_sha256": "8762b5eaf5662ffe6188883309ccd5e27538fb0f29a0b83c791783c91fbf1953",
+  "candidate_dataset_sha256": "8645cd69e4271cfdacf4e15eafb6f186d1ef519f6f5e98742a3c318a596f7f44",
+  "ledger_head_sha256": "6be4a3a7046289440fa220aedfbb76eb23bcc7f10167ca9a6edd3bdf67b35ab4",
+  "status": "QUARANTINE_INSUFFICIENT_VERIFIED_DIVERSITY",
+  "verified_candidates": [
+    {
+      "family_id": "py-syntax-indentation",
+      "task": "PYTHON_REPAIR",
+      "best_code": "def transform(s):\n    out = []\n    for c in s:\n        out.insert(0, c)\n    return out",
+      "source_raw_model_sha256": "fe00feba17aabc7c65716b4086672d5b429d8269ff0dc30ddab6428ea80930ae",
+      "candidate_record_sha256": "89b63a6835577f97f849d572b77296496be874a847c51e45a657fc328221c4a7",
+      "original_best_attempt": 0
+    },
+    {
+      "family_id": "py-syntax-quotes",
+      "task": "PYTHON_REPAIR",
+      "best_code": "def transform(s):\n    return [s.upper()]",
+      "source_raw_model_sha256": "05ac1032216df712857a25b7b090dd651bed800114eaf7be7978ce4b06d7271c",
+      "candidate_record_sha256": "70944a4622e6c1ebfaa146a50cb72631b3f936648ce00cf1b5bf40cb655fba1f",
+      "original_best_attempt": 1
+    }
+  ],
+  "training_started": false,
+  "parametric_learning_demonstrated": false,
+  "general_python_competence_certified": false,
+  "used_hidden_tests_not_available_as_fresh_holdout": true,
+  "note": "Index persists verified small-code examples, source hashes, and eligibility. Not a trained model; no model weights and no hidden oracle copies."
+}

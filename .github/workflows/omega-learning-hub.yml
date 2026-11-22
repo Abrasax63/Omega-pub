@@ -1,0 +1,94 @@
+name: Omega Learning Hub - consolidated audited skills (offline only)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-learning-hub.yml"
+      - "research/learning_hub/**"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  integrate-without-retraining:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Regression checks for previously implemented programming components
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s research/learning_lab \
+            -p test_prog_reconstruction_pilot.py -v
+          python -m unittest discover -s research/learning_lab \
+            -p test_python_curriculum_v2.py -v
+          python -m unittest discover -s research/learning_lab \
+            -p test_python_mastery_v3.py -v
+          python -m unittest discover -s research/learning_lab \
+            -p test_verified_python_training_export.py -v
+          python -m unittest discover -s research/learning_hub \
+            -p test_hub.py -v
+
+      - name: Retrieve original already evaluated model report without model calls
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-python-mastery-v3-45064696523
+          run-id: 45064696523
+          github-token: ${{ github.token }}
+          path: /tmp/omega-python-v3-source
+
+      - name: Confirm immutable report bytes and provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s /tmp/omega-python-v3-source/report.json
+          printf '%s\n' \
+            '37871f7dc1a414faf8c4f9784fbb551828a04f0a534cf01c4de5000c27572049  /tmp/omega-python-v3-source/report.json' | sha256sum -c -
+
+      - name: Run one actual aggregation, reusing validated existing Python routines
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/omega-learning-hub
+          python research/learning_hub/hub.py inspect \
+            > /tmp/omega-learning-hub/components.json
+          python research/learning_hub/hub.py consolidate \
+            --report /tmp/omega-python-v3-source/report.json \
+            --output /tmp/omega-learning-hub/state.json \
+            > /tmp/omega-learning-hub/summary.log
+          python research/learning_hub/hub.py verify \
+            --state /tmp/omega-learning-hub/state.json
+          python research/learning_hub/hub.py verify-index \
+            --state /tmp/omega-learning-hub/state.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s=json.loads(Path('/tmp/omega-learning-hub/state.json').read_text())
+          assert s['status']=='INTEGRATED_QUARANTINE_ONLY'
+          assert len(s['skill_candidates'])==2
+          assert s['training_gate']['status']=='TRAINING_NOT_AUTHORIZED'
+          assert s['training_gate']['admitted_verified_code_samples']==2
+          assert not s['training_started'] and not s['model_weights_updated']
+          assert len(s['events'])==3
+          assert s['previous_experiment_observations']['F_direct_of_40']==0
+          assert s['previous_experiment_observations']['F_transfer_of_40']==0
+          print('OMEGA_HUB_ACTUAL_CONSOLIDATION: 2 VERIFIED CANDIDATES, TRAINING BLOCKED')
+          PY
+
+      - name: Archive unified state and components only (not model weights or used hidden cases)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-learning-hub-offline-${{ github.run_id }}
+          path: |
+            /tmp/omega-learning-hub/state.json
+            /tmp/omega-learning-hub/components.json
+            /tmp/omega-learning-hub/summary.log
+          retention-days: 7
+          if-no-files-found: warn
