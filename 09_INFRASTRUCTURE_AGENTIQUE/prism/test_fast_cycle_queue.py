@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from fast_cycle_queue import check_state, read_catalog, run_queue, unverified_research_inbox
+from fast_cycle_queue import check_state, read_catalog, run_queue, unverified_research_inbox, generated_rule_inbox
 from fast_cycle import digest
 
 
@@ -74,6 +74,35 @@ class QueueTests(unittest.TestCase):
             path.write_text(json.dumps(payload))
             with self.assertRaisesRegex(ValueError, "certified"):
                 unverified_research_inbox(path)
+
+    def test_induced_structural_formula_is_staged_not_certified(self):
+        with TemporaryDirectory() as td:
+            path = Path(td) / "synthesis.json"
+            from fast_cycle import digest
+            rule = ["cycle_four_quotient", "odd_signed_cycle"]
+            payload = {
+                "status": "FINITE_PROGRAM_SYNTHESIS_TESTED_NOT_NEW_THEOREM",
+                "scientific_claims_certified": 0,
+                "autonomous_semantic_comprehension_demonstrated": False,
+                "generated_rule": {"atoms": rule},
+                "frozen_rule_sha256": digest(rule),
+                "source_anchor": {"git_blob": "a" * 40},
+                "comparison": {"learned_conjunction": {"TP": 3, "FP": 0, "TN": 10, "FN": 0}},
+            }
+            path.write_text(json.dumps(payload))
+            entry = generated_rule_inbox(path)[0]
+            self.assertEqual(entry["status"], "NOT_PROVEN_NEEDS_EXTERNAL_REPLICATION")
+            self.assertFalse(entry["can_enter_executed_ledger"])
+            self.assertEqual(entry["formula"], rule)
+            payload["scientific_claims_certified"] = 1
+            path.write_text(json.dumps(payload))
+            with self.assertRaisesRegex(ValueError, "promotion"):
+                generated_rule_inbox(path)
+            payload["scientific_claims_certified"] = 0
+            payload["generated_rule"]["atoms"] = ["cycle_four_quotient"]
+            path.write_text(json.dumps(payload))
+            with self.assertRaisesRegex(ValueError, "changed"):
+                generated_rule_inbox(path)
 
     def test_separate_process_passes_do_not_replay(self):
         with TemporaryDirectory() as td:
