@@ -28,7 +28,7 @@ le gain fonctionnel peut disparaître. Un résultat nul reste valide.
 ## Sources immuables
 
 - Nouveau jeu \`HOLDOUT_SEMANTIC_FROZEN.json\` ; SHA1 de blob Git
-  **60e17c1ac8dfa1d1f3ce2cc6468fcd471bda4869**, avant inférence.
+  **00c48008244f787cfcd38fad278a4ed57452ebe5**, avant inférence.
 - 12 tâches : **six familles fonctionnelles distinctes, deux défauts
   sémantiques par famille**. Chaque défaut est un programme Python
   **syntactiquement valide mais erroné**.
@@ -109,3 +109,7 @@ avant examen des sorties ; elle ne constitue pas une nouvelle cohorte.
 modèle/seed et collecte d'exemples d'erreurs sélectionnées par Omega,
 sur tests indépendants. Ne pas réutiliser ce holdout comme
 « nouveau » après inspection.
+
+### Erratum vérifié AVANT toute nouvelle inférence
+
+La première vérification CI a révélé six cas cachés (au lieu des cinq prévus) pour chacun des deux défauts de la famille indexed_upper_alpha. Un cas à entrée vide a été retiré de chacun des deux enregistrements **avant tout appel au modèle** ; la donnée et sa nouvelle empreinte de blob Git sont désormais gelées à `00c48008244f787cfcd38fad278a4ed57452ebe5`. Les tâches, sorties visibles, règles et hypothèses demeurent inchangées. Le premier run avait seulement échoué au préflight.
