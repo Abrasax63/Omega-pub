@@ -188,3 +188,27 @@ def extend_public(observations,new_input,new_output):
     if not isinstance(new_input,str) or len(new_input)>24 or not isinstance(new_output,list):
         raise ValueError("INVALID_NEW_ORACLE_OBSERVATION")
     return observations+[{"input":new_input,"output":new_output}]
+
+
+def resolve_guarded(broken, observations, model_text=None, limit=MAX_CANDIDATES):
+    """Fail-safe hybrid: protect a unique symbolic public-test solution.
+
+    Model candidates are consulted ONLY when the strictly validated
+    symbolic one-edit pipeline finds no candidate. An ambiguity is not
+    resolved by model preference or apparent confidence; it requires
+    a new independent oracle observation. This design cannot worsen
+    a uniquely selected symbolic solution merely by adding model text.
+    """
+    original=resolve(broken,observations,model_text=None,limit=limit)
+    result={**original,
+            "selection_policy":"SYMBOLIC_FIRST_ONLY_FALLBACK_WHEN_ZERO_MATCHES",
+            "model_seed_considered":False,
+            "protected_symbolic_choice":(
+                original["status"]=="UNIQUE_PUBLIC_CANDIDATE_NEEDS_INDEPENDENT_TEST")}
+    if model_text is None or original["status"]!="NO_VERIFIED_CANDIDATE":
+        return result
+    candidate=resolve(broken,observations,model_text=model_text,limit=limit)
+    return {**candidate,
+            "selection_policy":"SYMBOLIC_FIRST_ONLY_FALLBACK_WHEN_ZERO_MATCHES",
+            "model_seed_considered":candidate["seed_count"]>1,
+            "protected_symbolic_choice":False}
