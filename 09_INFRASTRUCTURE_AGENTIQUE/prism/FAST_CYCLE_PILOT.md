@@ -30,14 +30,22 @@ Branche `experiment/omega-fast-cycle-15min-2026-11-22`, PR brouillon #230.
 
 Un bogue de bootstrap et une incohérence de chemin des résultats ont été détectés par GitHub Actions, corrigés puis revalidés. Les anciens runs rouges ne doivent pas être considérés comme verts.
 
-## Limitations non résolues
+## Validation de reprise sur deux runs GitHub distincts
 
-1. L'essai de reprise a été fait dans **deux invocations de programme au sein d'un même job GitHub**, et non dans deux runs GitHub indépendants. La restauration depuis des artefacts inter-runs reste à vérifier.
-2. Les artefacts sont conservés 7 jours ; un état expiré doit bloquer, jamais remettre le compteur à zéro silencieusement.
+Le [run 45047307664](https://github.com/Abrasax63/Omega-pub/actions/runs/45047307664) a archivé le registre `omega-fast/state.json` et quatre rapports dans `omega-fast-cycle-ci-45047307664`.
+
+Le [run 45047406683](https://github.com/Abrasax63/Omega-pub/actions/runs/45047406683), sur le commit `8df6b603c10e4273c07c461bf02bd9f700a43da2`, a **téléchargé cet artefact d'un run GitHub antérieur**, contrôlé ses premiers identifiants et ses rapports puis repris `fast_cycle_queue.py` avec le même état. Résultats : deux nouvelles sondes `V19-C4-N8-H4-V1` et `V19-C5-N9-H2-V1` exécutées sans blocage, **six identifiants distincts au total et zéro rejeu**. La reprise inter-runs est **VÉRIFIÉE sur ce pilote fixé**.
+
+Les 4 tests initiaux, 5 tests de file et 7 tests des moteurs existants passent encore dans ce run (**16/16**). Après cette reprise, il reste **1 sonde préenregistrée**. Ces calculs finis ne constituent pas six découvertes scientifiques ni une amélioration générale démontrée.
+
+## Limitations restantes
+
+1. La restauration **de ce registre de PR connu** est validée entre deux runs distincts ; le mécanisme générique de sélection automatique du dernier artefact dans une cadence permanente n'a pas encore été évalué sur plusieurs déclenchements planifiés.
+2. Les artefacts sont conservés 7 jours. Un état expiré doit bloquer, jamais réinitialiser les expériences silencieusement.
 3. Le `schedule` toutes les 15 minutes n'est pas actif sur cette branche : GitHub requiert un workflow sur la branche par défaut. Pas de modification de `main` ni de la tâche ChatGPT existante.
-4. La file finie doit être réalimentée par de véritables questions préenregistrées et de nouvelles sources indépendantes. L'inbox Omega 100 identifie une piste, mais n'a ni généré de nouveau jeu de test ni lancé de modèle local.
+4. La file finie doit être réalimentée avec **de nouvelles questions véritablement préenregistrées** et une vérité terrain indépendante. L'inbox Omega 100 relève une question, mais n'a ni généré un jeu de données nouveau ni lancé de modèle local.
 5. Le modèle LLM et les vérificateurs sémantiques n'ont pas été évalués dans ce pilote ; zéro nouvelle certification ou généralisation revendiquée.
 
 ## Prochaine vérification décisive
 
-Démontrer **deux runs GitHub distincts** utilisant le même registre récupéré depuis un artefact précédent, avec contrôle de ses empreintes et du dernier ID : zéro répétition et refus si un rapport manque. Ensuite ajouter un adaptateur d'expérience nouvelle (Omega100 ou provenance externe), budget fixé et données de réserve réellement indépendantes. N'activer la cadence qu'après cette validation, sans achat de GPU.
+Créer un **nouvel adaptateur de tâche scientifique** avec protocole et cas réservés réellement indépendants, puis tester la sélection du dernier état dans une troisième exécution planifiée (non initiée ici). N'activer une cadence soutenue qu'après ce test et l'estimation du rendement et des coûts. Le GPU n'est pas nécessaire pour ces vérifications exactes.
