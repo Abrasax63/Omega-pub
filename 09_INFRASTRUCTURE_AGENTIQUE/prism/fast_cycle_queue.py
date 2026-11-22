@@ -164,8 +164,41 @@ def unverified_research_inbox(report_path):
     return selected
 
 
+def generated_rule_inbox(path):
+    """Register a source-anchored induced formula as a *candidate*, not a theorem."""
+    if path is None:
+        return []
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    if data.get("status") != "FINITE_PROGRAM_SYNTHESIS_TESTED_NOT_NEW_THEOREM":
+        raise ValueError("Unknown generator status")
+    if data.get("scientific_claims_certified") != 0 or \
+            data.get("autonomous_semantic_comprehension_demonstrated") is not False:
+        raise ValueError("Unsafe automatic scientific promotion")
+    features = data.get("generated_rule", {}).get("atoms")
+    if not isinstance(features, list) or not features or not all(isinstance(f, str) for f in features):
+        raise ValueError("Missing induced structural rule")
+    if len(set(features)) != len(features) or len(features) > 3:
+        raise ValueError("Bad induced rule grammar")
+    if digest(features) != data.get("frozen_rule_sha256"):
+        raise ValueError("Induced rule changed after source freeze")
+    blob = data.get("source_anchor", {}).get("git_blob")
+    if not isinstance(blob, str) or len(blob) != 40:
+        raise ValueError("Unpinned research source")
+    fingerprint = digest({"rule": features, "source": blob})
+    return [{
+        "id": "GENERATED-V19-" + fingerprint[:16].upper(),
+        "status": "NOT_PROVEN_NEEDS_EXTERNAL_REPLICATION",
+        "formula": list(features),
+        "source_blob": blob,
+        "development_reserve_metrics": data.get("comparison", {}).get("learned_conjunction"),
+        "rule_sha256": data["frozen_rule_sha256"],
+        "origin": "BOUNDED_SYMBOLIC_INDUCTION_NOT_LLM_AND_NOT_NEW_THEOREM",
+        "can_enter_executed_ledger": False,
+    }]
+
+
 def run_queue(state_file, output_dir, *, catalog_file, omega_dir, math_dir,
-              provenance_dir, bootstrap=False, max_cycles=2, ideas_report=None):
+              provenance_dir, bootstrap=False, max_cycles=2, ideas_report=None, synthesis_report=None):
     catalog = read_catalog(catalog_file)
     tasks = catalog["tasks"]
     state_file, output_dir = Path(state_file), Path(output_dir)
@@ -182,6 +215,7 @@ def run_queue(state_file, output_dir, *, catalog_file, omega_dir, math_dir,
     snapshot = source_snapshot(omega_dir, math_dir, provenance_dir)
     inbox = next_unverified_question(omega_dir)
     staged_ideas = unverified_research_inbox(ideas_report)
+    generated = generated_rule_inbox(synthesis_report)
     selected = [t for t in tasks if t["id"] not in used][:max_cycles]
     attempts, blocked = [], 0
     for task in selected:
@@ -230,6 +264,7 @@ def run_queue(state_file, output_dir, *, catalog_file, omega_dir, math_dir,
         "statuses": [e["status"] for e in attempts],
         "inbox": inbox,
         "staged_research_theses": staged_ideas,
+        "generated_research_candidates": generated,
         "scientific_discoveries_claimed": 0,
         "note": "Finite regression queue; fresh hypotheses require preregistration and independent evidence.",
     }
@@ -242,13 +277,15 @@ def main():
     for name in ("state", "output-dir", "catalog", "omega-dir", "math-dir", "provenance-dir"):
         p.add_argument("--" + name, type=Path, required=True)
     p.add_argument("--ideas-report", type=Path)
+    p.add_argument("--synthesis-report", type=Path)
     p.add_argument("--bootstrap", action="store_true")
     p.add_argument("--max-cycles", type=int, choices=(1, 2), default=2)
     a = p.parse_args()
     result = run_queue(a.state, a.output_dir, catalog_file=a.catalog, omega_dir=a.omega_dir,
                        math_dir=a.math_dir, provenance_dir=a.provenance_dir,
                        bootstrap=a.bootstrap, max_cycles=a.max_cycles,
-                       ideas_report=a.ideas_report)
+                       ideas_report=a.ideas_report,
+                       synthesis_report=a.synthesis_report)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     if result["blocked"]:
         raise SystemExit(1)
