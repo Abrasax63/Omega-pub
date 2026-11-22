@@ -172,7 +172,7 @@ def run(seed_text, ledger, endpoint="http://127.0.0.1:8080", max_hops=2,
         return report
 
     visited = set()
-    for _ in range(max_hops):
+    for hop in range(max_hops):
         normalized = topic.casefold()
         if normalized in visited:
             report["stop_reason"] = "QUERY_LOOP"
@@ -227,6 +227,9 @@ def run(seed_text, ledger, endpoint="http://127.0.0.1:8080", max_hops=2,
             break
         if not guard["verbatim_source_quote_valid"]:
             report["stop_reason"] = "UNSUPPORTED_CARD_QUARANTINED"
+            break
+        if hop + 1 >= max_hops:
+            report["stop_reason"] = "RESEARCH_BUDGET_EXHAUSTED"
             break
         following = card.get("next_gap")
         topic = accept_query(following)
