@@ -1,6 +1,8 @@
 name: Omega Python mastery 03 - progressive repair and best-state safeguard
 
 # Run only when opening this preregistered workflow in a PR.
+# First attempt stopped at preflight, before any model call; this revision
+# corrects only a mistaken distinguishing test, without changing tasks.
 # Do not replay inspected hidden tests and present as independent.
 on:
   pull_request:
