@@ -145,5 +145,61 @@ class LearningHubTests(unittest.TestCase):
         self.assertNotIn("torch.optim.",script)
 
 
+
+def synthetic_index(state):
+    return {
+      "schema":"OMEGA_LEARNING_HUB_PERSISTED_SKILL_INDEX_01",
+      "source_v3_commit":hub.SOURCE_SHA,
+      "source_v3_report_sha256":hub.SOURCE_REPORT_SHA,
+      "registry_sha256":state["registry_sha256"],
+      "candidate_dataset_sha256":state["candidate_manifest"]["records_sha256"],
+      "ledger_head_sha256":state["ledger_head_sha256"],
+      "status":"QUARANTINE_INSUFFICIENT_VERIFIED_DIVERSITY",
+      "training_started":False,"parametric_learning_demonstrated":False,
+      "general_python_competence_certified":False,
+      "used_hidden_tests_not_available_as_fresh_holdout":True,
+      "verified_candidates":[{
+         "family_id":s["family_id"],"task":s["task"],"best_code":s["target"],
+         "source_raw_model_sha256":s["admission_evidence"]["model_raw_sha256"],
+         "candidate_record_sha256":s["record_sha256"],
+         "original_best_attempt":s["original_best_attempt"],
+      } for s in state["skill_candidates"]],
+    }
+
+
+class PersistentIndexTests(unittest.TestCase):
+    def test_exact_candidate_index_matches_a_valid_snapshot(self):
+        s=synthetic_state()
+        self.assertTrue(hub.verify_persisted_index(synthetic_index(s),s,registry()))
+
+    def test_index_rejects_modified_source_code(self):
+        s=synthetic_state()
+        idx=synthetic_index(s)
+        idx["verified_candidates"][0]["best_code"]="def transform(s): return []"
+        with self.assertRaisesRegex(ValueError,"INDEX_CODE_MISMATCH"):
+            hub.verify_persisted_index(idx,s,registry())
+
+    def test_index_rejects_duplicated_skill_family(self):
+        s=synthetic_state()
+        idx=synthetic_index(s)
+        idx["verified_candidates"][0]["family_id"]=idx["verified_candidates"][1]["family_id"]
+        with self.assertRaisesRegex(ValueError,"INDEX_UNKNOWN_OR_DUPLICATE_FAMILY"):
+            hub.verify_persisted_index(idx,s,registry())
+
+    def test_index_rejects_model_training_claim(self):
+        s=synthetic_state()
+        idx=synthetic_index(s)
+        idx["parametric_learning_demonstrated"]=True
+        with self.assertRaisesRegex(ValueError,"INDEX_CLAIMS_UNPROVEN_LEARNING"):
+            hub.verify_persisted_index(idx,s,registry())
+
+    def test_index_rejects_changed_audit_event_head(self):
+        s=synthetic_state()
+        idx=synthetic_index(s)
+        idx["ledger_head_sha256"]="0"*64
+        with self.assertRaisesRegex(ValueError,"INDEX_EVENT_LEDGER_MISMATCH"):
+            hub.verify_persisted_index(idx,s,registry())
+
+
 if __name__=="__main__":
     unittest.main()
