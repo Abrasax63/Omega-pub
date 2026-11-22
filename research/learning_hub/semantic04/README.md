@@ -4,7 +4,7 @@
 
 Ce pilote **ne réentraîne pas le modèle**. Il réutilise exactement l'adaptateur SmolLM2-135M du [run #45073297901](https://github.com/Abrasax63/Omega-pub/actions/runs/45073297901), enregistré dans l'artefact GitHub 14774003555. Les poids Qwen3B d'Omega ne sont pas modifiés.
 
-Le [préenregistrement](PREREG.md) et le jeu [HOLDOUT_SEMANTIC_FROZEN.json](HOLDOUT_SEMANTIC_FROZEN.json) ont été créés **avant tout nouvel appel au modèle**, avec empreinte de Git blob \`60e17c1ac8dfa1d1f3ce2cc6468fcd471bda4869\`.
+Le [préenregistrement](PREREG.md) et le jeu [HOLDOUT_SEMANTIC_FROZEN.json](HOLDOUT_SEMANTIC_FROZEN.json) ont été créés **avant tout nouvel appel au modèle**, avec empreinte de Git blob \`00c48008244f787cfcd38fad278a4ed57452ebe5\`.
 
 ### Examen
 
