@@ -102,7 +102,7 @@ jobs:
           fi
           python 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py \
             --state "$RUNNER_TEMP/omega-fast/state.json" \
-            --output-dir "$RUNNER_TEMP/omega-fast/results" \
+            --output-dir "$RUNNER_TEMP/omega-fast" \
             --provenance-dir _sources/provenance \
             --math-dir _sources/math \
             --omega-dir _sources/omega100 \
