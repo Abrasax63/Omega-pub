@@ -81,3 +81,18 @@ Créer de nouvelles familles pédagogiques de programmation avec sources et lice
 [PR #233](https://github.com/Abrasax63/Omega-pub/pull/233) ·
 [PR #234](https://github.com/Abrasax63/Omega-pub/pull/234) ·
 [AUDIT_REUTILISATION_ETAT_2026-11-22.md](../learning_lab/AUDIT_REUTILISATION_ETAT_2026-11-22.md)
+
+
+## Mémoire durable — index contrôlé
+
+Le premier regroupement a produit un état validé par [run #45071116029](https://github.com/Abrasax63/Omega-pub/actions/runs/45071116029), avec **55/55 tests** et **2 corrections Python en quarantaine**. Le registre chaîné avait la tête \`6be4a3a7046289440fa220aedfbb76eb23bcc7f10167ca9a6edd3bdf67b35ab4\`.
+
+Pour ne pas dépendre exclusivement d'un artefact GitHub expirant, les deux entrées et leurs empreintes ont été consignées dans [VERIFIED_SKILL_INDEX_2026-11-22.json](./VERIFIED_SKILL_INDEX_2026-11-22.json), sans les oracles cachés. Le workflow relit le véritable rapport V3 et **compare la copie persistante** aux programmes et hashes du rapport reconstitué. Une modification du code, du statut ou de l'index est détectée. L'index reste une **liste de candidats vérifiés sur exercices limités**, pas une compétence générale certifiée.
+
+\`\`\`sh
+python research/learning_hub/hub.py verify-index \
+  --state path/to/hub-state.json
+\`\`\`
+
+Aucun apprentissage paramétrique n'est ajouté par ce mécanisme. La mémoire persistante est distincte de la mémoire scientifique CORE : aucun fait mathématique ou theorem n'est promu automatiquement.
+
