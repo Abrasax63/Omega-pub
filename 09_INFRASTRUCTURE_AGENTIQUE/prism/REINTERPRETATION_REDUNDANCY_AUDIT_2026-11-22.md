@@ -52,3 +52,14 @@ Citer correctement une phrase ne prouve pas que sa signification est maîtrisée
 3. Examiner le graphe des dépendances des fichiers qui paraissent redondants avant de proposer toute mise en quarantaine; ne supprimer automatiquement **aucun** actif du dépôt.
 
 **Verdict :** capacité de préparer des interprétations alternatives **implémentée et vérifiée au niveau du contrat**, génération autonome de thèses **non démontrée**, compréhension scientifique générale **non démontrée**, doublons de travail à supprimer **non confirmés**.
+
+## Validation d'intégration finale : propositions en attente, jamais certifiées
+
+[Run #45048723462](https://github.com/Abrasax63/Omega-pub/actions/runs/45048723462), SHA `9fe4d0be2b8e77a0afe8a15e3f0a1adc92e7cb71`, **succès**.
+
+- **24/24 tests** : 4 du raccord, 6 de la file, 7 du contrôle des propositions et redondances, 7 des moteurs de provenance existants.
+- Les deux thèses ancrées sur des sources réelles sont transmises à `fast_cycle_queue.py` sous le statut `NOT_EXECUTED_NEEDS_INDEPENDENT_TEST`. Elles ne deviennent ni un événement scientifique vérifié ni une nouvelle expérience exécutée.
+- Deux invocations consécutives du pilote, puis une reprise depuis un run GitHub précédent, préservent les identifiants et évitent de rejouer les sondes (contrôles verts).
+- Audit répété : 15 groupes de fichiers identiques, 3 paires d'activités à examiner, **0 suppression** et **0 certification automatique**.
+
+**Mesure manquante :** pas encore de benchmark comparant la qualité des hypothèses d'Omega à des hypothèses de référence sur de nouvelles données, et aucun gain de temps dû à une suppression de tâches. Le résultat validé porte sur l'intégrité des sources, les contrats, la mémoire et le comportement non destructif.
