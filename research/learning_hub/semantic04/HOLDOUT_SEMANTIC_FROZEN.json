@@ -739,10 +739,6 @@
           ]
         },
         {
-          "input": "",
-          "output": []
-        },
-        {
           "input": "!?X",
           "output": [
             "2:X"
@@ -808,10 +804,6 @@
           ]
         },
         {
-          "input": "",
-          "output": []
-        },
-        {
           "input": "!?X",
           "output": [
             "2:X"
@@ -822,5 +814,7 @@
       "model_prompt": "TASK=PYTHON_REPAIR\nRepair the function below to match the observed behavior. The source may COMPILE but implement incorrect logic. Return ONLY complete Python code defining def transform(s), returning list[str]; no explanations or Markdown.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if c.isalpha():\n            out.append(str(i) + ':' + c.lower())\n    return out\n\nOBSERVATIONS:\n[{\"input\":\"a1Bc\",\"output\":[\"0:A\",\"2:B\",\"3:C\"]},{\"input\":\"Z?x\",\"output\":[\"0:Z\",\"2:X\"]}]",
       "provenance": "CURATED_NEW_HOLDOUT_NOT_TRAINING"
     }
-  ]
+  ],
+  "corrected_before_first_model_inference": true,
+  "preflight_error": "6 instead of 5 hidden cases in indexed_upper_alpha; removed empty-string case before model calls"
 }
