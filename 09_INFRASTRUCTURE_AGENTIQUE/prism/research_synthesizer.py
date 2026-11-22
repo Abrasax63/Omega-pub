@@ -303,11 +303,12 @@ def experiment(math_root):
         "unsigned_baseline_counterexample": unsigned_counterexample,
         "relabeling_invariance": invariance_checks(holdout, frozen_rule),
         "parity_counterfactual": counterfactual_checks(holdout, frozen_rule),
-        "fixed_rule_contains_known_mechanism": "cycle_four_quotient" in frozen_rule
-            and "odd_signed_cycle" in frozen_rule,
+        "fixed_rule_matches_known_mechanism": set(frozen_rule) == {"cycle_four_quotient", "odd_signed_cycle"} and len(frozen_rule) == 2,
         "scientific_claims_certified": 0,
         "autonomous_semantic_comprehension_demonstrated": False,
-        "novelty": "RECONSTRUCTION_OF_A_KNOWN_SOURCE_MECHANISM_IN_A_RESTRICTED_GRAMMAR",
+        "novelty": ("RECONSTRUCTION_OF_A_KNOWN_SOURCE_MECHANISM_IN_A_RESTRICTED_GRAMMAR"
+                    if set(frozen_rule) == {"cycle_four_quotient", "odd_signed_cycle"} and len(frozen_rule) == 2
+                    else "NOVELTY_UNDETERMINED_REQUIRES_EXTERNAL_REVIEW"),
         "limits": "Development-level family-disjoint test; reserve authored by same experimenter, not an external blind holdout. Grammar and oracle are human-coded.",
     }
 
