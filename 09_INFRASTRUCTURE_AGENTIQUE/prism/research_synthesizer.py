@@ -251,6 +251,14 @@ def experiment(math_root):
     training = trained["TRAIN-C4-C3-N8"] + trained["TRAIN-C4-C2-N8"]
     if not any(row["truth"] for row in training) or all(row["truth"] for row in training):
         raise ValueError("Training is not discriminating")
+    unsigned_training = tally(training, lambda row: row["features"]["cycle_four_quotient"])
+    error_witness = next(({"T": row["T"], "pair": row["pair"],
+                           "prediction": True, "exact_label": False,
+                           "odd_signed_cycle": row["features"]["odd_signed_cycle"]}
+                          for row in training
+                          if row["features"]["cycle_four_quotient"] and not row["truth"]), None)
+    if not error_witness or unsigned_training["FP"] == 0:
+        raise ValueError("The naive structural claim was not falsified on training")
     learned = learn(training)
     frozen_rule = tuple(learned["atoms"])
     frozen_rule_digest = digest(frozen_rule)  # freeze before the reserve is loaded
@@ -279,6 +287,14 @@ def experiment(math_root):
                                      "input_sha256": digest([(r["T"], r["pair"]) for r in rows])}
                               for name, rows in trained.items()},
         "generated_rule": learned,
+        "counterexample_guided_revision": {
+            "initial_rule": ["cycle_four_quotient"],
+            "training_metrics": unsigned_training,
+            "falsifying_training_example": error_witness,
+            "revised_rule": list(frozen_rule),
+            "post_revision_training_errors": learned["training_errors"],
+            "scope": "Single bounded revision in a human-provided feature grammar, no open-ended creativity",
+        },
         "frozen_rule_sha256": frozen_rule_digest,
         "reserve_families": {name: {"rows": len(rows), "positives": sum(r["truth"] for r in rows),
                                    "input_sha256": digest([(r["T"], r["pair"]) for r in rows])}
