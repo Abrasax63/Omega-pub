@@ -89,6 +89,7 @@ def validate_proposal(proposal: dict, roots: dict[str, Path]) -> dict:
         names.add(rep["name"])
     plan = proposal.get("test")
     fields = ("premises", "baseline", "prediction", "counterexample",
+              "counterfactual_prediction", "cross_representation_invariant",
               "independent_evidence", "metrics", "failure_criteria", "budget")
     if not isinstance(plan, dict) or not all(nonempty(plan.get(k)) for k in fields):
         raise UnsafeProposal("Missing discriminating experiment contract")
