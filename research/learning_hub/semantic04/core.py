@@ -14,7 +14,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "learning_lab"))
 import prog_reconstruction_pilot as sandbox
 
-FROZEN_BLOB = "60e17c1ac8dfa1d1f3ce2cc6468fcd471bda4869"
+FROZEN_BLOB = "00c48008244f787cfcd38fad278a4ed57452ebe5"
 SOURCE_RUN = 45073297901
 PROTOCOL = "OMEGA-SEMANTIC-TRANSFER-04"
 MAX_EDITS = 120
