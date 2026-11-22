@@ -1,0 +1,104 @@
+name: Omega Semantic04 - reuse trained LoRA vs unseen logic errors
+
+# Reuses the actual SFT01 adapter; NO optimizer, NO new model training.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-semantic-transfer04.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: omega-semantic-transfer04-once
+  cancel-in-progress: false
+
+jobs:
+  prereg-and-offline-falsification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Frozen semantic benchmark, symbolic comparator and parser checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s research/learning_hub/semantic04/PREREG.md
+          python -m unittest discover \
+            -s research/learning_hub/semantic04 \
+            -p test_semantic04.py -v
+          python -m unittest discover \
+            -s research/learning_hub/sft01 \
+            -p test_sft01.py -v
+
+  compare-no-training:
+    needs: prereg-and-offline-falsification
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Restore frozen trained adapter from successful SFT01 run
+        uses: actions/download-artifact@v4
+        with:
+          name: omega-python-sft01-actual-weights-and-losses
+          run-id: 45073297901
+          github-token: ${{ github.token }}
+          path: /tmp/omega-semantic04/adapter
+      - name: Install exactly pinned CPU runtime without paid APIs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet "torch==2.5.1" \
+            --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --quiet \
+            "transformers==4.49.0" "peft==0.15.2" "accelerate==1.5.2" \
+            "safetensors==0.5.3" "huggingface_hub==0.30.2"
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: Compare original model, actual LoRA and classical one-edit repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u research/learning_hub/semantic04/model_run.py \
+            --adapter /tmp/omega-semantic04/adapter \
+            --output /tmp/omega-semantic04/results/
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/omega-semantic04/results/semantic04_report.json').read_text())
+          assert r['protocol']=='OMEGA-SEMANTIC-TRANSFER-04'
+          assert r['status']=='OBSERVATIONAL_NOT_GENERALIZATION_PROOF'
+          assert r['new_weight_training'] is False
+          assert r['training_this_run'] is False
+          assert r['source_adapter_run']==45073297901
+          assert r['summary']['base']['strict']['programs']==12
+          assert r['summary']['lora']['permissive']['programs']==12
+          assert r['summary']['symbolic']['strict']['programs']==12
+          assert all(x['hidden_used_for_selection']==0 for x in r['results']['symbolic'])
+          print('SEMANTIC04_NEW_FAULT_BENCHMARK_COMPLETE')
+          PY
+      - name: Archive raw outputs and paired metrics without new model weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-semantic04-raw-comparison
+          path: /tmp/omega-semantic04/results/
+          retention-days: 14
+          if-no-files-found: warn
