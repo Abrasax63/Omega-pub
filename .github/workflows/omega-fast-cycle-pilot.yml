@@ -153,5 +153,7 @@ jobs:
             ${{ runner.temp }}/omega-existing-tests.log
             ${{ runner.temp }}/omega-fast/results/
             ${{ runner.temp }}/omega-fast/run.log
+            ${{ runner.temp }}/omega-fast/restart.log
+            ${{ runner.temp }}/omega-fast/state.json
           retention-days: 7
           if-no-files-found: warn
