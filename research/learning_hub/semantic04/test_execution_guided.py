@@ -105,6 +105,35 @@ class GuidedRepairTests(unittest.TestCase):
         self.assertTrue(all(core.sandbox.validate_program(x["code"]) for x in variants))
         self.assertEqual(len({x["sha256"] for x in variants}),len(variants))
 
+    def test_symbolic_priority_not_degraded_by_untrusted_model_seed(self):
+        source=self.for_code
+        gold=source.replace("if c in 'ab':","if c not in 'ab':")
+        public=[{"input":"abc","output":["C"]},
+                {"input":"baac","output":["C"]}]
+        poisoned_model=("def transform(s):\n"
+                        "    out = []\n"
+                        "    for c in s:\n"
+                        "        out.append(c.upper())\n"
+                        "    return out\n")
+        initial=eg.resolve_guarded(source,public)
+        with_model=eg.resolve_guarded(source,public,model_text=poisoned_model)
+        self.assertEqual(initial["selected_code"],gold)
+        self.assertEqual(with_model["selected_code"],gold)
+        self.assertTrue(with_model["protected_symbolic_choice"])
+        self.assertFalse(with_model["model_seed_considered"])
+
+    def test_guarded_hybrid_does_not_use_model_to_break_ambiguity(self):
+        source=("def transform(s):\n"
+                "    out = []\n"
+                "    for c in s:\n"
+                "        out.append(c)\n"
+                "    return out\n")
+        public=[{"input":"a","output":["a"]}]
+        status=eg.resolve_guarded(source,public,model_text=source)
+        self.assertEqual(status["status"],"NEEDS_ORACLE_RESPONSE")
+        self.assertFalse(status["model_seed_considered"])
+        self.assertEqual(status["hidden_tests_seen"],0)
+
     def test_no_causal_claim_from_public_match(self):
         source=self.for_code
         public=[{"input":"abc","output":["C"]}]
