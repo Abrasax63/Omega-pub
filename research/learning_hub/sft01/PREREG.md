@@ -25,7 +25,7 @@ Ce pilote ne prétend pas entraîner le modèle Qwen3B des PR #232–234 ; il ne
 ## Protocole d'entraînement
 
 - HuggingFaceTB/SmolLM2-135M-Instruct à la révision \`ee72e5415c002e8fc0566a191a07c0b2b708875a\`.
-- LoRA rank 8, alpha 16, dropout 0, \`q_proj\` et \`v_proj\`, CPU float32, AdamW, LR 0.0005, seed 20261122. 2 passages complets du corpus figé, batch 1, limite 256 tokens par exemple; **aucun changement des hyperparamètres après avoir vu les scores de test**.
+- LoRA rank 8, alpha 16, dropout 0, \`q_proj\` et \`v_proj\`, CPU float32, AdamW, LR 0.0005, seed 20261122. 2 passages complets du corpus figé, batch 1, limite 384 tokens par exemple (erratum de capacité documentaire, corrigé avant toute inférence et avant tout accès aux résultats); **aucun changement des hyperparamètres après avoir vu les scores de test**.
 - Enregistrer l'empreinte du jeu d'entraînement, le nombre exact de mises à jour, la perte, la norme L2 non nulle du changement de paramètres et l'empreinte \`.safetensors\`.
 - Sauvegarder le modèle avant toute évaluation finale. Comparer poids de base vs adaptateur entraîné sur les mêmes questions de holdout (greedy, max 220 nouveaux tokens, sans deuxième tentative).
 - Pas d'API payante ; seule une CI CPU GitHub Actions est autorisée ; pas de secrets et aucun fichier modifié par le modèle sur GitHub.
@@ -45,3 +45,7 @@ Ce pilote ne prétend pas entraîner le modèle Qwen3B des PR #232–234 ; il ne
 Cette version utilise des fonctions Python jouets et la stratégie SmolLM2 LoRA éprouvée ; elle ne démarre ni service autonome ni boucle non bornée. L'accès réseau sert exclusivement à installer des dépendances/matériaux publics épinglés ; les programmes générés sont exécutés dans un subprocessus sans accès réseau, fichiers ou API. La validation syntaxique/politique doit refuser tout code qui sort de la liste limitée. Le projet demeure sur une branche DRAFT, \`main\` inchangée.
 
 **Le cursus synthétique est un pré-entraînement pédagogique supervisé, pas une preuve d'auto-apprentissage d'Omega.**
+
+### Erratum technique pré-inférence
+
+L'ancien plafond annoncé à 256 tokens a été porté à 384 **avant toute exécution de modèle** pour accueillir les prompts complets et les exemples publics. Rien d'autre ne change : deux époques, 62 exemples figés, 124 mises à jour maximum, six familles réservées et aucune adaptation aux résultats.
