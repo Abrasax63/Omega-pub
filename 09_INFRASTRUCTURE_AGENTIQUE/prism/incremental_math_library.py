@@ -185,6 +185,24 @@ def run(seed_text, ledger, endpoint="http://127.0.0.1:8080", max_hops=2,
             report["stop_reason"] = "NO_GROUNDED_SOURCE"
             break
         sources = result["sources"]
+        # The extractor hash is checked again at the memory trust boundary.
+        try:
+            provenance_ok = all(
+                isinstance(s["page_id"], int)
+                and not isinstance(s["page_id"], bool)
+                and isinstance(s["revision_id"], int)
+                and isinstance(s["url"], str)
+                and s["url"].startswith("https://en.wikipedia.org/wiki/")
+                and isinstance(s["excerpt"], str)
+                and sha256(s["excerpt"].encode("utf-8")).hexdigest()
+                == s["excerpt_sha256"]
+                for s in sources
+            )
+        except (KeyError, TypeError, AttributeError, UnicodeError):
+            provenance_ok = False
+        if not provenance_ok:
+            report["stop_reason"] = "INVALID_SOURCE_PROVENANCE"
+            break
         context = "\n\n".join(
             "[UNTRUSTED WIKIPEDIA SOURCE page_id=" + str(s["page_id"]) +
             " rev=" + str(s["revision_id"]) + "]\n" +
@@ -208,6 +226,8 @@ def run(seed_text, ledger, endpoint="http://127.0.0.1:8080", max_hops=2,
                 "source_versions": [
                     [s["page_id"], s["revision_id"], s["excerpt_sha256"]]
                     for s in sources],
+                # Preserve corrected/dissenting readings of the SAME sources.
+                "model_output_sha256": sha256(raw.encode("utf-8")).hexdigest(),
             }),
             "topic_chosen_by_model": topic,
             "sources": provenance,
