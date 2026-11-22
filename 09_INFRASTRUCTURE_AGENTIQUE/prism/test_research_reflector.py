@@ -29,6 +29,8 @@ def candidate(blob, quote):
             "baseline": "exact fixed reference",
             "prediction": "fewer errors on fresh examples",
             "counterexample": "ambiguous pair wrongly selected",
+            "counterfactual_prediction": "ambiguous evidence must result in abstention",
+            "cross_representation_invariant": "slot and graph choices must agree",
             "independent_evidence": "new separately annotated questions",
             "metrics": "TP FP FN abstentions and total compute",
             "failure_criteria": "any false route or repeated heldout",
