@@ -158,7 +158,7 @@ BUILTIN_CALLS = frozenset((
 ))
 METHODS = frozenset((
     "append","lower","upper","casefold","join","split","replace",
-    "startswith","endswith","isdigit","isalpha","strip","pop","count",
+    "startswith","endswith","isdigit","isalpha","isalnum","strip","pop","count","insert",
 ))
 
 
