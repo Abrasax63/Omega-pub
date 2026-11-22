@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from fast_cycle_queue import check_state, read_catalog, run_queue
+from fast_cycle_queue import check_state, read_catalog, run_queue, unverified_research_inbox
 from fast_cycle import digest
 
 
@@ -52,6 +52,28 @@ class QueueTests(unittest.TestCase):
                  task("MATH-2"), task("MATH-3", horizon=3)]
         path.write_text(json.dumps({"schema": 1, "tasks": tasks}), encoding="utf-8")
         return path, tasks
+
+    def test_staged_theses_cannot_be_promoted_into_completed_work(self):
+        with TemporaryDirectory() as td:
+            path = Path(td) / "ideas.json"
+            payload = {"scientific_claims_certified": 0,
+                       "grounded_hypothesis_proposals": [
+                           {"id": "HYP-1", "status": "PROPOSED_UNVERIFIED",
+                            "can_enter_executed_ledger": False,
+                            "anchor": {"git_blob": "a" * 40}}
+                       ]}
+            path.write_text(json.dumps(payload))
+            self.assertEqual(unverified_research_inbox(path)[0]["status"],
+                             "NOT_EXECUTED_NEEDS_INDEPENDENT_TEST")
+            payload["grounded_hypothesis_proposals"][0]["can_enter_executed_ledger"] = True
+            path.write_text(json.dumps(payload))
+            with self.assertRaisesRegex(ValueError, "promotion"):
+                unverified_research_inbox(path)
+            payload["grounded_hypothesis_proposals"][0]["can_enter_executed_ledger"] = False
+            payload["scientific_claims_certified"] = 1
+            path.write_text(json.dumps(payload))
+            with self.assertRaisesRegex(ValueError, "certified"):
+                unverified_research_inbox(path)
 
     def test_separate_process_passes_do_not_replay(self):
         with TemporaryDirectory() as td:
