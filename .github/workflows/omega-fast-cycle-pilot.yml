@@ -134,6 +134,7 @@ jobs:
             --math-dir _sources/math \
             --omega-dir _sources/omega100 \
             --catalog 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json \
+            --ideas-report "$RUNNER_TEMP/omega-fast/reflection.json" \
             --max-cycles 2 "${ARGS[@]}" 2>&1 | tee "$RUNNER_TEMP/omega-fast/run.log"
       - name: Second process resumes from persisted state (PR verification only)
         if: github.event_name == 'pull_request'
@@ -147,6 +148,7 @@ jobs:
             --math-dir _sources/math \
             --omega-dir _sources/omega100 \
             --catalog 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json \
+            --ideas-report "$RUNNER_TEMP/omega-fast/reflection.json" \
             --max-cycles 2 2>&1 | tee "$RUNNER_TEMP/omega-fast/restart.log"
           python - <<'PY'
           import json, os, pathlib
@@ -184,6 +186,7 @@ jobs:
             --math-dir _sources/math \
             --omega-dir _sources/omega100 \
             --catalog 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json \
+            --ideas-report "$RUNNER_TEMP/omega-fast/reflection.json" \
             --max-cycles 2 2>&1 | tee "$ROOT/crossrun.log"
           python - <<'PY'
           import json, os, pathlib
