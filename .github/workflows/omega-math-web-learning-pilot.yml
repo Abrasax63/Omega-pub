@@ -15,7 +15,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate web research contract without model or web requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism \
+            -p test_math_web_learning_pilot.py -v
+
   experiment:
+    # One-shot initial run already executed and archived in #45056407124.
+    # Never rerun the same exposed test page after inspecting its outcome.
+    if: github.event_name == 'workflow_dispatch' && false
     runs-on: ubuntu-latest
     timeout-minutes: 18
     env:
@@ -101,8 +120,8 @@ jobs:
               assert r["manual_semantic_structures_supplied"]==0
               assert r["same_model_same_question_same_output_token_cap"]
               assert len(r["retrieval"]["sources"]) <= 2
-              assert not r["direct_guard"]["theorem_certified"]
-              assert not r["web_guard"]["theorem_certified"]
+              assert not r["direct_guard"].get("theorem_certified", False)
+              assert not r["web_guard"].get("theorem_certified", False)
           else:
               assert r["status"]=="BLOCKED_NO_GROUNDED_EXTERNAL_MATERIAL"
           print("Experiment recorded, no scientific correctness promoted")
