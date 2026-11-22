@@ -1,0 +1,30 @@
+name: Omega incremental math library - isolated regression tests
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-incremental-library-tests.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/incremental_math_library.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_incremental_math_library.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/math_web_learning_pilot.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_math_web_learning_pilot.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Offline regression, no LLM and no Web
+        run: |
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_math_web_learning_pilot.py' -v
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_incremental_math_library.py' -v
