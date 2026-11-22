@@ -185,15 +185,27 @@ def generated_rule_inbox(path):
     if not isinstance(blob, str) or len(blob) != 40:
         raise ValueError("Unpinned research source")
     fingerprint = digest({"rule": features, "source": blob})
+    known = (len(features) == 2 and
+             set(features) == {"cycle_four_quotient", "odd_signed_cycle"})
+    expected_novelty = ("RECONSTRUCTION_OF_A_KNOWN_SOURCE_MECHANISM_IN_A_RESTRICTED_GRAMMAR"
+                        if known else "NOVELTY_UNDETERMINED_REQUIRES_EXTERNAL_REVIEW")
+    if data.get("novelty") != expected_novelty or \
+            data.get("fixed_rule_matches_known_mechanism") is not known:
+        raise ValueError("Misclassified known scientific structure")
     return [{
         "id": "GENERATED-V19-" + fingerprint[:16].upper(),
-        "status": "NOT_PROVEN_NEEDS_EXTERNAL_REPLICATION",
+        "status": ("KNOWN_RECONSTRUCTION_NOT_A_NEW_RESEARCH_TASK"
+                   if known else "NOT_PROVEN_NEEDS_EXTERNAL_REPLICATION"),
         "formula": list(features),
         "source_blob": blob,
         "development_reserve_metrics": data.get("comparison", {}).get("learned_conjunction"),
         "rule_sha256": data["frozen_rule_sha256"],
         "origin": "BOUNDED_SYMBOLIC_INDUCTION_NOT_LLM_AND_NOT_NEW_THEOREM",
+        "known_source": ("research/bricks/OBS-V19-SIGNED-CORE_2026-11-19.md"
+                         if known else None),
+        "can_enter_new_research_queue": not known,
         "can_enter_executed_ledger": False,
+        "automatically_delete_historical_source": False,
     }]
 
 
@@ -264,7 +276,10 @@ def run_queue(state_file, output_dir, *, catalog_file, omega_dir, math_dir,
         "statuses": [e["status"] for e in attempts],
         "inbox": inbox,
         "staged_research_theses": staged_ideas,
-        "generated_research_candidates": generated,
+        "generated_research_candidates": [x for x in generated
+                                            if x["can_enter_new_research_queue"]],
+        "reconciled_known_structures": [x for x in generated
+                                        if not x["can_enter_new_research_queue"]],
         "scientific_discoveries_claimed": 0,
         "note": "Finite regression queue; fresh hypotheses require preregistration and independent evidence.",
     }
