@@ -1,0 +1,264 @@
+{
+  "schema": 1,
+  "benchmark_id": "OMEGA-RH-READING-01",
+  "preregistered": "2026-11-22",
+  "status": "MANUAL_TRANSLATION_OF_PRIMARY_SOURCES_NOT_GENERAL_RH_PROOF",
+  "source_documents": [
+    {
+      "id": "LEAN-JOINT-STATEMENT-20261121",
+      "url": "https://leanprover-community.github.io/blog/posts/riemann-hypothesis/",
+      "section": "21 November 2026 joint statement",
+      "role": "formal_proof_status",
+      "evidence_type": "public statement from Lean and Mathlib communities"
+    },
+    {
+      "id": "RUBINSTEIN-GUIDE-20261121",
+      "url": "https://www.math.uwaterloo.ca/~mrubinst/alpoge_claude_grh/zeta-paper.pdf",
+      "section": "Introduction, page 2; Part I.0 page 3; Part II section 4, page 30",
+      "role": "explanatory_source",
+      "evidence_type": "working human-readable guide; sections identify M as imported, B/C as established within this draft"
+    }
+  ],
+  "distinctions": {
+    "lean_formal_proof_status": "community-certified as correct, not rerun by this benchmark",
+    "guide_m_status": "M is required but is quoted from external Lean code in the guide; not independently proved in the guide",
+    "guide_b_c_status": "Estimates B and C are claimed proved in Part III using cited theorems",
+    "administrative_node": "mb is an artificial conjunction node introduced by this benchmark; NOT a mathematical lemma in the guide",
+    "transfer_limit": "All implication sentences below are MANUALLY adapted controlled-Horn statements, not automatically parsed from source PDF",
+    "closure_goal": "Deduction of RH from declared premises m,b,c is a CONDITIONAL dependency exercise, not an independent proof of RH"
+  },
+  "manual_controlled_rules": {
+    "standard": [
+      {
+        "ref": "M-B-CONJOIN",
+        "text": "Si m et b, alors mb.",
+        "premises": [
+          "m",
+          "b"
+        ],
+        "conclusion": "mb"
+      },
+      {
+        "ref": "REQUIRE-M-B-C",
+        "text": "Si mb et c, alors rh.",
+        "premises": [
+          "mb",
+          "c"
+        ],
+        "conclusion": "rh"
+      }
+    ],
+    "paraphrase": [
+      {
+        "ref": "M-B-CONJOIN",
+        "text": "mb découle de m et b.",
+        "premises": [
+          "m",
+          "b"
+        ],
+        "conclusion": "mb"
+      },
+      {
+        "ref": "REQUIRE-M-B-C",
+        "text": "rh résulte de mb et c.",
+        "premises": [
+          "mb",
+          "c"
+        ],
+        "conclusion": "rh"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "RH-C01",
+      "facts": [
+        "m",
+        "b",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "standard",
+      "expect": "ENTAILED",
+      "tag": "all_assumptions"
+    },
+    {
+      "id": "RH-C02",
+      "facts": [
+        "b",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "standard",
+      "expect": "NOT_ENTAILED",
+      "tag": "missing_main_inequality"
+    },
+    {
+      "id": "RH-C03",
+      "facts": [
+        "m",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "standard",
+      "expect": "NOT_ENTAILED",
+      "tag": "missing_estimate_b"
+    },
+    {
+      "id": "RH-C04",
+      "facts": [
+        "m",
+        "b"
+      ],
+      "goal": "rh",
+      "variant": "standard",
+      "expect": "NOT_ENTAILED",
+      "tag": "missing_estimate_c"
+    },
+    {
+      "id": "RH-C05",
+      "facts": [
+        "rh"
+      ],
+      "goal": "m",
+      "variant": "standard",
+      "expect": "NOT_ENTAILED",
+      "tag": "invalid_converse"
+    },
+    {
+      "id": "RH-C06",
+      "facts": [
+        "m",
+        "b",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "reverse_order",
+      "expect": "ENTAILED",
+      "tag": "rule_order_invariance"
+    },
+    {
+      "id": "RH-C07",
+      "facts": [
+        "m",
+        "b",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "paraphrase",
+      "expect": "ENTAILED",
+      "tag": "controlled_paraphrase"
+    },
+    {
+      "id": "RH-C08",
+      "facts": [
+        "m",
+        "b"
+      ],
+      "goal": "mb",
+      "variant": "standard",
+      "expect": "ENTAILED",
+      "tag": "intermediate_conjunction"
+    },
+    {
+      "id": "RH-C09",
+      "facts": [
+        "m",
+        "b",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "first_only",
+      "expect": "NOT_ENTAILED",
+      "tag": "missing_end_rule"
+    },
+    {
+      "id": "RH-C10",
+      "facts": [
+        "m",
+        "b",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "second_only",
+      "expect": "NOT_ENTAILED",
+      "tag": "missing_first_rule"
+    },
+    {
+      "id": "RH-C11",
+      "facts": [
+        "m",
+        "b",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "extra_unrelated",
+      "expect": "ENTAILED",
+      "tag": "irrelevant_premise_rule"
+    },
+    {
+      "id": "RH-C12",
+      "facts": [
+        "m",
+        "b",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "unsupported_correlation",
+      "expect": "ABSTAIN",
+      "tag": "unsupported_source_statement"
+    },
+    {
+      "id": "RH-C13",
+      "facts": [
+        "m",
+        "b",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "unsupported_disjunction",
+      "expect": "ABSTAIN",
+      "tag": "disjunction_outside_grammar"
+    },
+    {
+      "id": "RH-C14",
+      "facts": [],
+      "goal": "rh",
+      "variant": "standard",
+      "expect": "NOT_ENTAILED",
+      "tag": "no_assumptions"
+    },
+    {
+      "id": "RH-C15",
+      "facts": [
+        "mb",
+        "c"
+      ],
+      "goal": "rh",
+      "variant": "standard",
+      "expect": "ENTAILED",
+      "tag": "administrative_intermediate_factual"
+    },
+    {
+      "id": "RH-C16",
+      "facts": [
+        "b",
+        "c",
+        "rh"
+      ],
+      "goal": "m",
+      "variant": "standard",
+      "expect": "NOT_ENTAILED",
+      "tag": "invalid_reverse_explanation"
+    }
+  ],
+  "protocol": {
+    "engines": "Existing Omega 100 controlled_entailment/engine.py, unchanged and frozen in another branch",
+    "independent_oracle": "Finite Boolean truth-table enumeration of manually annotated rules",
+    "reference_baseline": "Existing one_pass mode (single synchronous inference round)",
+    "stopping_rule": "No code tuning after reading this reserve; report positive negative abstain, source limits and failures; no theorem promotion",
+    "max_boolean_atoms": 7,
+    "max_arithmetic_n": 48,
+    "zero_paid_calls": true
+  }
+}
