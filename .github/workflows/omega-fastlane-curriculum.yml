@@ -38,6 +38,10 @@ jobs:
           import json
           from pathlib import Path
           o=json.loads(Path('/tmp/omega-fastlane/candidates.json').read_text())
+          m=json.loads(Path('research/learning_hub/fastlane/VERIFIED_FACTORY_MANIFEST.json').read_text())
+          assert o['dataset_sha256']==m['candidate_dataset_sha256']
+          assert o['examples']==m['eligible_training_only_examples']
+          assert o['families']==m['training_source_families']
           assert o['schema']=='OMEGA_FASTLANE_CURRICULUM_01'
           assert o['examples']>=24 and o['families']>=12
           assert o['inference_calls']==o['training_updates']==0
