@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "objective": "Finite regression queue drawing from Omega #81/#82 and Omega 100. No automatic theorem promotion; new substantive experiments require independent preregistration.",
+  "tasks": [
+    {
+      "id": "PROV-COPY-SCOPE-V1",
+      "kind": "provenance_pilot",
+      "question": "Does the existing provenance-cycle candidate generalize a cp -v rule to held-out synthetic cases without false confirmation?",
+      "hypothesis": "2 correct confirmations, 0 false, abstention on incomplete or multiple-writer traces",
+      "reference": "Existing fixed cp -v classifier plus empty baseline",
+      "scope": "Previously designed synthetic integration replay; not fresh external validation"
+    },
+    {
+      "id": "V19-C5-LEAVES-N8-V1",
+      "kind": "math_smoke",
+      "question": "Does existing V19 guarded/local projection agree with exhaustive oracle on 2 C5+leaves N8 cases?",
+      "hypothesis": "0 divergence over the 4 projected shadows",
+      "reference": "Existing exhaustive_shadow implementation from PR82",
+      "scope": "Previously designed finite integration replay, no general theorem"
+    },
+    {
+      "id": "V19-C4-N7-H2-V1",
+      "kind": "math_family",
+      "q": 4,
+      "n": 7,
+      "horizon": 2,
+      "max_cases": 8,
+      "question": "Does the PR82 local/global shadow equality survive sampled coherent C4+3 leaves at N7, horizon 2?",
+      "hypothesis": "0 local/global divergences and 0 projection/oracle divergences",
+      "reference": "Exhaustive binary-coloring projection from PR82",
+      "scope": "Preregistered fixed-order finite regression, not exhaustive family proof"
+    },
+    {
+      "id": "V19-C5-N8-H3-V1",
+      "kind": "math_family",
+      "q": 5,
+      "n": 8,
+      "horizon": 3,
+      "max_cases": 8,
+      "question": "Does PR82 guarded shadow agree with independent exhaustive oracle for coherent C5+3 leaves N8 at horizon 3?",
+      "hypothesis": "All sampled pairs: 0 guarded/oracle errors and 0 local/global differences",
+      "reference": "Exhaustive binary-coloring projection from PR82",
+      "scope": "Preregistered fixed-order finite regression, not independent semantic discovery"
+    },
+    {
+      "id": "V19-C4-N8-H4-V1",
+      "kind": "math_family",
+      "q": 4,
+      "n": 8,
+      "horizon": 4,
+      "max_cases": 8,
+      "question": "Does PR82 local/global projection preserve exact shadows for coherent C4+4 leaves at N8 and horizon 4?",
+      "hypothesis": "All sampled pairs: 0 local/global differences and 0 oracle errors",
+      "reference": "Exhaustive binary-coloring projection from PR82",
+      "scope": "Horizon 4 is outside earlier exhaustive L in {2,3}; sampled test only, not proof"
+    },
+    {
+      "id": "V19-C5-N9-H2-V1",
+      "kind": "math_family",
+      "q": 5,
+      "n": 9,
+      "horizon": 2,
+      "max_cases": 8,
+      "question": "Does PR82 guarded projection reproduce full binary enumeration on sampled coherent C5+4 leaves N9 at horizon 2?",
+      "hypothesis": "0 oracle or locality divergences on a bounded deterministic sample",
+      "reference": "Exhaustive binary-coloring projection from PR82",
+      "scope": "Finite exploratory extension; sample selected deterministically, no claim of universal equivalence"
+    },
+    {
+      "id": "V19-C6-N9-H3-V1",
+      "kind": "math_family",
+      "q": 6,
+      "n": 9,
+      "horizon": 3,
+      "max_cases": 8,
+      "question": "Does PR82 guarded projection reproduce the exhaustive oracle on coherent C6+3 leaves N9 at horizon 3?",
+      "hypothesis": "0 mismatches on bounded deterministic sample",
+      "reference": "Exhaustive binary-coloring projection from PR82",
+      "scope": "Finite exploratory extension, not statistical independence or general proof"
+    }
+  ]
+}
