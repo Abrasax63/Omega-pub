@@ -1,0 +1,154 @@
+name: Omega Python SFT01 - real 135M CPU LoRA and untouched repair holdout
+
+# One preregistered experiment; a green CI alone is not a scientific gain.
+# Retry after syntax-only data guard fix before the first model call; frozen datasets unchanged.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-python-sft01.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-python-sft01-original
+  cancel-in-progress: false
+
+jobs:
+  frozen-data-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check preregistration, training data and unseen holdout without LLM
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s research/learning_hub/sft01/PREREG.md
+          python -m unittest discover -s research/learning_hub/sft01 \
+            -p test_sft01.py -v
+          python -m unittest discover -s research/learning_hub \
+            -p test_hub.py -v
+
+  actual-pinned-cpu-lora:
+    needs: frozen-data-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install TRAIN26-proven CPU libraries without paid APIs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet "torch==2.5.1" \
+            --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --quiet \
+            "transformers==4.49.0" "peft==0.15.2" "accelerate==1.5.2" \
+            "safetensors==0.5.3" "huggingface_hub==0.30.2"
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: Train 2 full epochs and require 124 actual LoRA optimizer updates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u research/learning_hub/sft01/train_lora.py \
+            --output /tmp/omega-py-sft01/train
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          r=Path('/tmp/omega-py-sft01/train')
+          m=json.loads((r/'train_manifest.json').read_text())
+          assert m['status']=='ACTUAL_LORA_WEIGHTS_TRAINED'
+          assert m['steps']==124 and m['training_examples']==62
+          assert m['synthetic_teacher_examples']==60
+          assert m['previously_verified_omega_examples']==2
+          assert m['all_examples_seen_twice'] and m['weight_delta_L2']>0
+          assert not m['holdout_loaded_by_training_script']
+          assert not m['qwen3b_weights_modified']
+          assert any(p.name.endswith('.safetensors') for p in (r/'adapter').iterdir())
+          print('OMEGA_REAL_WEIGHTS_CHANGED',m['steps'],m['weight_delta_L2'],flush=True)
+          PY
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-python-sft01-actual-weights-and-losses
+          path: /tmp/omega-py-sft01/train/
+          retention-days: 14
+          if-no-files-found: warn
+
+  untouched-test-before-after:
+    needs: actual-pinned-cpu-lora
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: omega-python-sft01-actual-weights-and-losses
+          path: /tmp/omega-py-sft01/train/
+      - name: Install same pinned public model and adapter libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet "torch==2.5.1" \
+            --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --quiet \
+            "transformers==4.49.0" "peft==0.15.2" "accelerate==1.5.2" \
+            "safetensors==0.5.3" "huggingface_hub==0.30.2"
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: Score base and trained weights on 12 new Python repairs with exact test cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u research/learning_hub/sft01/evaluate.py \
+            --training-artifact /tmp/omega-py-sft01/train \
+            --output /tmp/omega-py-sft01/eval/before-after.json
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          r=json.loads(Path('/tmp/omega-py-sft01/eval/before-after.json').read_text())
+          assert r['status'] in ('EXPLORATORY_GAIN_ONLY','TRAINED_NO_CLEAR_FUNCTIONAL_GAIN')
+          assert len(r['before']['rows'])==len(r['after']['rows'])==12
+          assert r['comparison']['same_12_test_prompts']
+          assert r['comparison']['same_generation_budget']
+          assert r['weight_updates_during_evaluation']==0
+          assert not r['hidden_cases_seen_by_training']
+          print('OMEGA_PY_SFT01_RESULT',r['status'],'BEFORE',
+                r['comparison']['before_correct'],'AFTER',
+                r['comparison']['after_correct'],flush=True)
+          PY
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-python-sft01-blind-test-raw
+          path: /tmp/omega-py-sft01/eval/
+          retention-days: 14
+          if-no-files-found: warn

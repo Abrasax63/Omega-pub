@@ -1,0 +1,523 @@
+{
+  "schema": "OMEGA_PY_SFT_01_HOLDOUT_EVAL_ONLY",
+  "frozen_on": "2026-11-22",
+  "test_cases": [
+    {
+      "id": "HOLD-unique_digits-for_colon",
+      "family": "unique_digits",
+      "defect": "for_colon",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c.isdigit() and c not in out:\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"1\",\"2\"]},{\"input\":\"0?Cxy|90\",\"expected\":[\"0\",\"9\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in s:\n        if c.isdigit() and c not in out:\n            out.append(c)\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "2",
+            "0",
+            "4"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": [
+            "0"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": []
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "9"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-unique_digits-return_brace",
+      "family": "unique_digits",
+      "defect": "return_brace",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.isdigit() and c not in out:\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"1\",\"2\"]},{\"input\":\"0?Cxy|90\",\"expected\":[\"0\",\"9\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in s:\n        if c.isdigit() and c not in out:\n            out.append(c)\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "2",
+            "0",
+            "4"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": [
+            "0"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": []
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "9"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-split_colon-for_colon",
+      "family": "split_colon",
+      "defect": "for_colon",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for word in s.split(':')\n        if word:\n            out.append(word)\n    return out\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"aA1\",\"bB2|\"]},{\"input\":\"0?Cxy|90\",\"expected\":[\"0?Cxy|90\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for word in s.split(':'):\n        if word:\n            out.append(word)\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "baA",
+            "204"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": [
+            "F00|ff"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "ae9|IU"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-split_colon-return_brace",
+      "family": "split_colon",
+      "defect": "return_brace",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for word in s.split(':'):\n        if word:\n            out.append(word)\n    return out}\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"aA1\",\"bB2|\"]},{\"input\":\"0?Cxy|90\",\"expected\":[\"0?Cxy|90\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for word in s.split(':'):\n        if word:\n            out.append(word)\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "baA",
+            "204"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": [
+            "F00|ff"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "ae9|IU"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-third_index-for_colon",
+      "family": "third_index",
+      "defect": "for_colon",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s)\n        if i % 3 == 0:\n            out.append(c)\n    return out\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"a\",\":\",\"2\"]},{\"input\":\"0?Cxy|90\",\"expected\":[\"0\",\"x\",\"9\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 3 == 0:\n            out.append(c)\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "b",
+            ":",
+            "4"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": [
+            "F",
+            "|"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": [
+            ":",
+            "B"
+          ]
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "a",
+            "|"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-third_index-return_brace",
+      "family": "third_index",
+      "defect": "return_brace",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 3 == 0:\n            out.append(c)\n    return out}\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"a\",\":\",\"2\"]},{\"input\":\"0?Cxy|90\",\"expected\":[\"0\",\"x\",\"9\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for i, c in enumerate(s):\n        if i % 3 == 0:\n            out.append(c)\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "b",
+            ":",
+            "4"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": [
+            "F",
+            "|"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": [
+            ":",
+            "B"
+          ]
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "a",
+            "|"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-ord_each-for_colon",
+      "family": "ord_each",
+      "defect": "for_colon",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        out.append(str(ord(c)))\n    return out\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"97\",\"65\",\"49\",\"58\",\"98\",\"66\",\"50\",\"124\"]},{\"input\":\"0?Cxy|90\",\"expected\":[\"48\",\"63\",\"67\",\"120\",\"121\",\"124\",\"57\",\"48\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in s:\n        out.append(str(ord(c)))\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "98",
+            "97",
+            "65",
+            "58",
+            "50",
+            "48",
+            "52"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": [
+            "70",
+            "48",
+            "48",
+            "124",
+            "102",
+            "102"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": [
+            "58",
+            "65",
+            "58",
+            "66",
+            "58"
+          ]
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "97",
+            "101",
+            "57",
+            "124",
+            "73",
+            "85"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-ord_each-return_brace",
+      "family": "ord_each",
+      "defect": "return_brace",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        out.append(str(ord(c)))\n    return out}\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"97\",\"65\",\"49\",\"58\",\"98\",\"66\",\"50\",\"124\"]},{\"input\":\"0?Cxy|90\",\"expected\":[\"48\",\"63\",\"67\",\"120\",\"121\",\"124\",\"57\",\"48\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in s:\n        out.append(str(ord(c)))\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "98",
+            "97",
+            "65",
+            "58",
+            "50",
+            "48",
+            "52"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": [
+            "70",
+            "48",
+            "48",
+            "124",
+            "102",
+            "102"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": [
+            "58",
+            "65",
+            "58",
+            "66",
+            "58"
+          ]
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "97",
+            "101",
+            "57",
+            "124",
+            "73",
+            "85"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-vowels_up-for_colon",
+      "family": "vowels_up",
+      "defect": "for_colon",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s\n        if c.lower() in 'aeiou':\n            out.append(c.upper())\n    return out\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"A\",\"A\"]},{\"input\":\"0?Cxy|90\",\"expected\":[]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in s:\n        if c.lower() in 'aeiou':\n            out.append(c.upper())\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "A",
+            "A"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": []
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": [
+            "A"
+          ]
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "A",
+            "E",
+            "I",
+            "U"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-vowels_up-return_brace",
+      "family": "vowels_up",
+      "defect": "return_brace",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in s:\n        if c.lower() in 'aeiou':\n            out.append(c.upper())\n    return out}\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"A\",\"A\"]},{\"input\":\"0?Cxy|90\",\"expected\":[]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in s:\n        if c.lower() in 'aeiou':\n            out.append(c.upper())\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "A",
+            "A"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": []
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": [
+            "A"
+          ]
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "A",
+            "E",
+            "I",
+            "U"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-reverse_upper_lower-for_colon",
+      "family": "reverse_upper_lower",
+      "defect": "for_colon",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in reversed(s)\n        if c.isupper():\n            out.append(c.lower())\n    return out\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"b\",\"a\"]},{\"input\":\"0?Cxy|90\",\"expected\":[\"c\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in reversed(s):\n        if c.isupper():\n            out.append(c.lower())\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "a"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": [
+            "f"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": [
+            "b",
+            "a"
+          ]
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "u",
+            "i"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HOLD-reverse_upper_lower-return_brace",
+      "family": "reverse_upper_lower",
+      "defect": "return_brace",
+      "prompt": "TASK=PYTHON_REPAIR\nGoal: repair the Python function below so it preserves its intended behavior. The function takes a string and returns a list of strings.\nBroken source:\ndef transform(s):\n    out = []\n    for c in reversed(s):\n        if c.isupper():\n            out.append(c.lower())\n    return out}\n\nObserved examples: [{\"input\":\"aA1:bB2|\",\"expected\":[\"b\",\"a\"]},{\"input\":\"0?Cxy|90\",\"expected\":[\"c\"]}]\nReturn ONLY the complete corrected Python def transform(s), no Markdown.",
+      "reference_code_eval_only": "def transform(s):\n    out = []\n    for c in reversed(s):\n        if c.isupper():\n            out.append(c.lower())\n    return out\n",
+      "hidden_cases": [
+        {
+          "input": "baA:204",
+          "expected": [
+            "a"
+          ]
+        },
+        {
+          "input": "F00|ff",
+          "expected": [
+            "f"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": ":A:B:",
+          "expected": [
+            "b",
+            "a"
+          ]
+        },
+        {
+          "input": "ae9|IU",
+          "expected": [
+            "u",
+            "i"
+          ]
+        }
+      ]
+    }
+  ],
+  "heldout_families": [
+    "unique_digits",
+    "split_colon",
+    "third_index",
+    "ord_each",
+    "vowels_up",
+    "reverse_upper_lower"
+  ],
+  "never_loaded_by_training": true,
+  "visible_example_count_per_case": 2,
+  "hidden_behavior_count_per_case": 5
+}
