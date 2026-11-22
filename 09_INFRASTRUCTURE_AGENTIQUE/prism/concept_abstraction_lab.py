@@ -265,13 +265,20 @@ def from_library(ledger_path, endpoint="http://127.0.0.1:8080", model_call=None)
     if len(entries) < 2:
         return {"status":"INSUFFICIENT_GROUNDED_LIBRARY_CANDIDATES",
                 "publication_level":"QUARANTINE_ONLY"}
+    # Use short aliases for hash-sized IDs; the model chooses the pair,
+    # while the stored 64-character source IDs remain exact and unmodified.
+    aliases = {(r["candidate_id"] if len(r["candidate_id"]) <= 16 else
+                "C" + str(i+1)): r["candidate_id"]
+               for i,r in enumerate(entries)}
+    if len(aliases) != len(entries):
+        raise ValueError("AMBIGUOUS_CANDIDATE_ALIASES")
     catalog = [
-        {"candidate_id":r["candidate_id"],
+        {"candidate_id":alias,
          "concept":str(r["interpretation_candidate"].get("concept",""))[:120],
          "definition_candidate":r["interpretation_candidate"]["definition"][:700],
          "sources": [{"page_id":p["page_id"],"revision_id":p["revision_id"]}
                      for p in r["sources"]]}
-        for r in entries]
+        for alias,r in zip(aliases,entries)]
     if model_call is None:
         model_call = lambda messages, tokens: fixed_json_client(
             endpoint, messages, max_tokens=tokens)
@@ -295,18 +302,20 @@ def from_library(ledger_path, endpoint="http://127.0.0.1:8080", model_call=None)
     try:
         if not isinstance(specimens,list) or len(specimens) != 2:
             raise ValueError("NEED_EXACTLY_TWO_AUTONOMOUS_EXAMPLES")
-        ids = {r["candidate_id"] for r in entries}
         if len(set(x.get("concept_id") for x in specimens if isinstance(x,dict)))!=2:
             raise ValueError("DUPLICATE_MODEL_SELECTION")
-        if any(not isinstance(x,dict) or x.get("concept_id") not in ids
+        if any(not isinstance(x,dict) or x.get("concept_id") not in aliases
                for x in specimens):
             raise ValueError("UNSUPPORTED_LIBRARY_CANDIDATE_ID")
-        result = analyze(specimens, proposed_axioms=proposed)
+        translated=[{**x, "concept_id":aliases[x["concept_id"]]}
+                    for x in specimens]
+        result = analyze(translated, proposed_axioms=proposed)
     except (ValueError,TypeError,KeyError) as ex:
         report["status"]="INVALID_MODEL_SPECIMENS"
         report["error_type"]=type(ex).__name__
         return report
-    report["selected_candidate_ids"]=[x["concept_id"] for x in specimens]
+    report["selected_aliases"]=[x["concept_id"] for x in specimens]
+    report["selected_candidate_ids"]=[aliases[x["concept_id"]] for x in specimens]
     report["analysis"]=result
     # Input data and conceptual interpretation were produced by the LLM.
     report["status"]="STRUCTURAL_CHECKS_PASSED_SEMANTICS_UNVERIFIED"
