@@ -182,7 +182,7 @@ class PersistentIndexTests(unittest.TestCase):
     def test_index_rejects_duplicated_skill_family(self):
         s=synthetic_state()
         idx=synthetic_index(s)
-        idx["verified_candidates"][0]["family_id"]=idx["verified_candidates"][1]["family_id"]
+        idx["verified_candidates"][0]=copy.deepcopy(idx["verified_candidates"][1])
         with self.assertRaisesRegex(ValueError,"INDEX_UNKNOWN_OR_DUPLICATE_FAMILY"):
             hub.verify_persisted_index(idx,s,registry())
 
