@@ -1,6 +1,7 @@
 name: Omega Python SFT01 - real 135M CPU LoRA and untouched repair holdout
 
 # One preregistered experiment; a green CI alone is not a scientific gain.
+# Retry after syntax-only data guard fix before the first model call; frozen datasets unchanged.
 on:
   pull_request:
     paths:
