@@ -1,0 +1,26 @@
+{
+  "schema": "OMEGA_FASTLANE_VERIFIED_FACTORY_MANIFEST_01",
+  "date": "2026-11-22",
+  "source_git_run": "https://github.com/Abrasax63/Omega-pub/actions/runs/45076479518",
+  "source_artifact": "https://github.com/Abrasax63/Omega-pub/actions/runs/45076479518/artifacts/14775182607",
+  "factory_source_commit": "8cc8d75f0985747b87fbbcc1989a8d816f9358b6",
+  "original_train_git_blob_sha1": "e1985c93b9fb362eef80604d4f1c09a6ecb8f1d6",
+  "candidate_dataset_sha256": "bce405cb1cfbd5b5a5737e74b6a87e2b62087b0048869cddc42d4f79b0a91610",
+  "eligible_training_only_examples": 77,
+  "training_source_families": 20,
+  "original_source_families_reused": true,
+  "new_program_families_created": false,
+  "rejections": {
+    "NO_ADDITIONAL_FAILURE": 4,
+    "NO_VISIBLE_SEMANTIC_DIFFERENCE": 4
+  },
+  "software_tests_successful": 10,
+  "model_calls": 0,
+  "weight_training_steps": 0,
+  "candidate_targets_generated_by_model": 0,
+  "independent_new_holdout_created": false,
+  "previous_holdouts_reused_as_fresh": false,
+  "training_automatic_enabled": false,
+  "scientific_status": "VALIDATED_SYNTHETIC_TRAINING_DATA_ONLY",
+  "recommendation": "Use separate preregistered novel functional families and independent evaluation before any new training claim."
+}
