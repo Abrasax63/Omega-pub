@@ -154,11 +154,11 @@ FORBIDDEN_AST = (ast.Import,ast.ImportFrom,ast.ClassDef,ast.AsyncFunctionDef,
                  ast.Await,ast.NamedExpr)
 BUILTIN_CALLS = frozenset((
     "len","range","enumerate","str","int","list","dict","set",
-    "tuple","min","max","sum","abs","bool","ord","chr",
+    "tuple","min","max","sum","abs","bool","ord","chr","reversed",
 ))
 METHODS = frozenset((
     "append","lower","upper","casefold","join","split","replace",
-    "startswith","endswith","isdigit","isalpha","isalnum","strip","pop","count","insert",
+    "startswith","endswith","isdigit","isalpha","isalnum","isupper","islower","strip","pop","count","insert",
 ))
 
 
