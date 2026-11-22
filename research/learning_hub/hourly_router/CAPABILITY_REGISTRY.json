@@ -1,0 +1,194 @@
+{
+  "schema": "OMEGA_HOURLY_CAPABILITY_ROUTER_01",
+  "evaluated_utc": "2026-11-22",
+  "repository": "Abrasax63/Omega-pub",
+  "integration_scope": "HOURLY_ASSISTANT_DECISION_AID_ONLY",
+  "main_modified": false,
+  "auto_merge": false,
+  "auto_train": false,
+  "auto_promote_science": false,
+  "automatic_model_execution": false,
+  "isolation": "Read/check distinct PR head SHAs; execute only in authorized ephemeral worktrees, not from main",
+  "mandatory_every_trigger": "Look up registry status and read applicable validated capability; use only if needed for a falsifiable planned cycle; record considered/selected/skipped and why. Do not force irrelevant tool use.",
+  "capabilities": [
+    {
+      "id": "learning_hub_verified_index",
+      "kind": "skill_memory",
+      "pr": 235,
+      "ref": "1a8a943362a9dd2fb196f01998ee46670e96329e",
+      "code_path": "research/learning_hub/hub.py",
+      "evidence_run": 45071353780,
+      "measured": "60/60 offline tests; 2 code samples quarantined",
+      "scientific_limit": "Not a continuous train loop, not a model skill certificate",
+      "level": "VERIFIED_SOFTWARE_ONLY",
+      "application": "Read-only catalogue and integrity checking"
+    },
+    {
+      "id": "python_lora_syntax_pilot",
+      "kind": "syntactic_python_repair",
+      "pr": 236,
+      "ref": "17928d2ee43f12d329be99c9a6822435b5687732",
+      "code_path": "research/learning_hub/sft01/train_lora.py",
+      "evidence_run": 45073297901,
+      "measured": "124 real training steps; heldout synthetic syntax repair 0/12 to 11/12",
+      "scientific_limit": "Model only 135M, 12 tasks; semantic transfer 0/12; no active model service and no automatic retraining",
+      "level": "EXPERIMENTAL_ONLY",
+      "application": "Relevant comparison or optional sandbox pilot; no neural priority in unrelated problems"
+    },
+    {
+      "id": "symbolic_semantic_one_edit",
+      "kind": "local_semantic_python_repair",
+      "pr": 237,
+      "ref": "74951f3811f611d16cf00109f65fcce754200d35",
+      "code_path": "research/learning_hub/semantic04/core.py",
+      "evidence_run": 45074827572,
+      "measured": "11/12 on new semantic-only toy bugs; base model 0/12, LoRA 0/12",
+      "scientific_limit": "Only bounded local edits with two public cases; tests now consumed; no general Python correctness",
+      "level": "VERIFIED_NARROW_COMPARISON",
+      "application": "Prefer proposing a narrow candidate with local public tests over assuming LoRA handles logic"
+    },
+    {
+      "id": "fastlane_synthetic_qa",
+      "kind": "train_only_semantic_data",
+      "pr": 238,
+      "ref": "16a0c2756f6114e67ec33eaa41c70c2339520155",
+      "code_path": "research/learning_hub/fastlane/fastlane.py",
+      "evidence_run": 45076652556,
+      "measured": "77 synthetic corrections on 20 previously trained families, no model calls",
+      "scientific_limit": "Data production only; not new functional families nor demonstrated learning; never train/promote automatically",
+      "level": "VERIFIED_SOFTWARE_ONLY",
+      "application": "Training-data QA when novel provenance and evaluation planned"
+    },
+    {
+      "id": "existing_provenance_lab",
+      "kind": "scientific_provenance",
+      "pr": 81,
+      "ref": "work/omega-provenance-lab",
+      "code_path": "09_INFRASTRUCTURE_AGENTIQUE/provenance_lab.py",
+      "evidence_run": null,
+      "measured": "Existing hourly target, must inspect latest journal and verify exact file path/ref before use",
+      "scientific_limit": "Capabilities/outcomes are not established by this router",
+      "level": "EXTERNAL_EXISTING_WORKFLOW",
+      "application": "Keep existing authorized branch workflow and tests"
+    },
+    {
+      "id": "existing_math_pilot",
+      "kind": "mathematics",
+      "pr": 82,
+      "ref": "work/omega-math-brick-pilot-2026-11-14",
+      "code_path": "research/bricks/OBS-V19-LPLUS1-AUDIT_2026-11-14.md",
+      "evidence_run": null,
+      "measured": "Existing hourly target, check SHA and original mathematical assumptions",
+      "scientific_limit": "Neither Python SFT nor one-edit demo automatically proves math",
+      "level": "EXTERNAL_EXISTING_WORKFLOW",
+      "application": "Keep existing authorized branch workflow and exact calculations"
+    },
+    {
+      "id": "existing_omega100",
+      "kind": "omega100",
+      "pr": null,
+      "ref": "experiment/omega-100-2026-11-18",
+      "code_path": "research/omega-100/PROGRAMME.md",
+      "evidence_run": null,
+      "measured": "Existing hourly target, check first missing numbered experiment and last SHA",
+      "scientific_limit": "Router must not overwrite numbering or invent results",
+      "level": "EXTERNAL_EXISTING_WORKFLOW",
+      "application": "Preserve existing numbered program and focus budget"
+    }
+  ],
+  "route_rules": [
+    {
+      "priority": 1,
+      "task_kind": "mathematical_proof_or_counterexample",
+      "preferred": [
+        "existing_math_pilot"
+      ],
+      "reject": [
+        "python_lora_syntax_pilot",
+        "symbolic_semantic_one_edit"
+      ],
+      "reason": "Exact mathematical proof requires its own proof contract"
+    },
+    {
+      "priority": 2,
+      "task_kind": "provenance_reconciliation",
+      "preferred": [
+        "existing_provenance_lab"
+      ],
+      "reject": [
+        "python_lora_syntax_pilot"
+      ],
+      "reason": "Trace evidence and independent validation, not SFT"
+    },
+    {
+      "priority": 3,
+      "task_kind": "omega100_iteration",
+      "preferred": [
+        "existing_omega100"
+      ],
+      "reject": [],
+      "reason": "Numerical program continuation on its own authorized branch"
+    },
+    {
+      "priority": 4,
+      "task_kind": "local_python_semantic_bug",
+      "preferred": [
+        "symbolic_semantic_one_edit"
+      ],
+      "reject": [
+        "python_lora_syntax_pilot"
+      ],
+      "reason": "Frozen new-fault benchmark symbolic 11/12 vs LoRA 0/12, candidate still must pass fresh local tests"
+    },
+    {
+      "priority": 5,
+      "task_kind": "python_syntax_repair_pilot",
+      "preferred": [
+        "python_lora_syntax_pilot"
+      ],
+      "reject": [],
+      "reason": "Experimental 11/12 syntactic holdout, not general competence"
+    },
+    {
+      "priority": 6,
+      "task_kind": "new_training_data_qa",
+      "preferred": [
+        "fastlane_synthetic_qa",
+        "learning_hub_verified_index"
+      ],
+      "reject": [],
+      "reason": "Only produce and verify data; existing cohort consumed"
+    },
+    {
+      "priority": 7,
+      "task_kind": "learning_state_integrity",
+      "preferred": [
+        "learning_hub_verified_index"
+      ],
+      "reject": [],
+      "reason": "Integrity and source ledger checks"
+    },
+    {
+      "priority": 99,
+      "task_kind": "other",
+      "preferred": [],
+      "reject": [],
+      "reason": "No validated matching tool; continue existing scientific workflow or abstain"
+    }
+  ],
+  "safe_default": {
+    "inspection_per_hour": true,
+    "mandatory_application_each_hour": false,
+    "enable_new_runs": false,
+    "allow_existing_hourly_schedule_change": false,
+    "require_fresh_reference_sha": true,
+    "require_relevant_test": true,
+    "require_independent_holdout_for_new_learning_claim": true,
+    "run_artifact_is_not_generalization": true,
+    "if_missing_access": "REPORT_NOT_AVAILABLE_AND_CONTINUE_EXISTING_CYCLE",
+    "if_mismatch": "DISABLE_CAPABILITY_AND_LOG_BLOCKER",
+    "if_unknown_kind": "NO_FORCED_PLUGIN_USE",
+    "if_external_branch_write": "ONLY_EXISTING_AUTHORIZED_BRANCH_AND_EXISTING_PROVENANCE_CONSTRAINTS",
+    "new_model_calls": "NO_NEW_PAID_API_AND_NO_AUTOMATIC_LORA_RETRAINING"
+  }
+}
