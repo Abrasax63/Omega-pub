@@ -1,0 +1,143 @@
+name: Omega real self-directed mathematical abstraction - one-shot CPU
+
+# A new experiment needs an explicit new workflow, preregistration and corpus.
+# Only this workflow's creation/change triggers the real CPU experiment.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-abstraction-real-01.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-abstraction-real-01-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prereg-and-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Freeze prereg and run all relevant zero-network tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s 09_INFRASTRUCTURE_AGENTIQUE/prism/OMEGA_ABSTRACTION_REAL_01_PREREG.md
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_math_web_learning_pilot.py' -v
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_incremental_math_library.py' -v
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_concept_abstraction_lab.py' -v
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_real_abstraction_trial.py' -v
+
+  one-shot-real-model:
+    needs: prereg-and-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      SOURCE_URL: https://richardhammack.github.io/BookOfProof/Main.pdf
+      LLAMA_BIN_URL: https://github.com/ggml-org/llama.cpp/releases/download/b12633/llama-b12633-bin-ubuntu-x64.tar.gz
+      MODEL_URL: https://huggingface.co/bartowski/Qwen2.5-3B-Instruct-GGUF/resolve/main/Qwen2.5-3B-Instruct-Q4_K_M.gguf
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Acquire unannotated external source (not a prior Omega test source)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/real01" "$RUNNER_TEMP/runtime"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          curl -fLsS --retry 2 --retry-all-errors --max-time 240 "$SOURCE_URL" \
+            -o "$RUNNER_TEMP/runtime/book.pdf"
+          test "$(head -c 4 "$RUNNER_TEMP/runtime/book.pdf")" = '%PDF'
+          test "$(stat -c %s "$RUNNER_TEMP/runtime/book.pdf")" -gt 100000
+          sha256sum "$RUNNER_TEMP/runtime/book.pdf" | tee "$RUNNER_TEMP/real01/pdf.sha256"
+          pdfinfo "$RUNNER_TEMP/runtime/book.pdf" | grep '^Pages:' | tee "$RUNNER_TEMP/real01/pdfinfo.txt"
+
+      - name: Obtain free local CPU inference engine and pinned-format 3B model
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 2 --retry-all-errors --max-time 300 "$LLAMA_BIN_URL" \
+            -o "$RUNNER_TEMP/runtime/llama.tar.gz"
+          tar -xzf "$RUNNER_TEMP/runtime/llama.tar.gz" -C "$RUNNER_TEMP/runtime"
+          BIN="$(find "$RUNNER_TEMP/runtime" -type f -name llama-server | head -1)"
+          test -n "$BIN"
+          chmod +x "$BIN"
+          echo "LLAMA_SERVER=$BIN" >> "$GITHUB_ENV"
+          curl -fLsS --retry 2 --retry-all-errors --max-time 750 "$MODEL_URL" \
+            -o "$RUNNER_TEMP/runtime/model.gguf"
+          test "$(head -c 4 "$RUNNER_TEMP/runtime/model.gguf")" = 'GGUF'
+          test "$(stat -c %s "$RUNNER_TEMP/runtime/model.gguf")" -gt 1500000000
+          sha256sum "$RUNNER_TEMP/runtime/model.gguf" | tee "$RUNNER_TEMP/real01/model.sha256"
+          printf '%s\n' "$MODEL_URL" > "$RUNNER_TEMP/real01/model-source.txt"
+          "$BIN" --version > "$RUNNER_TEMP/real01/llama-version.txt" 2>&1 || true
+
+      - name: Start exactly one local 3B model (CPU only, no paid API)
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIB="$(dirname "$LLAMA_SERVER")"
+          LD_LIBRARY_PATH="$LIB:${LD_LIBRARY_PATH:-}" "$LLAMA_SERVER" \
+            -m "$RUNNER_TEMP/runtime/model.gguf" \
+            --host 127.0.0.1 --port 8080 -c 6144 -t 2 -ngl 0 \
+            > "$RUNNER_TEMP/real01/llama-server.log" 2>&1 &
+          for i in $(seq 1 100); do
+            if curl -sf --max-time 3 http://127.0.0.1:8080/health > /dev/null; then
+              echo "LOCAL_CPU_MODEL_READY"
+              exit 0
+            fi
+            sleep 2
+          done
+          tail -n 50 "$RUNNER_TEMP/real01/llama-server.log"
+          exit 1
+
+      - name: Self-directed sources, candidate library, abstraction and blind evaluation
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 1250 python 09_INFRASTRUCTURE_AGENTIQUE/prism/real_abstraction_trial.py \
+            --source-pdf "$RUNNER_TEMP/runtime/book.pdf" \
+            --output "$RUNNER_TEMP/real01/outputs" \
+            --server http://127.0.0.1:8080 \
+            2>&1 | tee "$RUNNER_TEMP/real01/summary.log"
+          python - <<'PY'
+          import json, os, pathlib
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])/'real01'/'outputs'
+          data=json.loads((root/'report.json').read_text())
+          assert data['theorems_certified']==0
+          assert data['model_weights_updated'] is False
+          assert data['no_premade_concept_pairs'] is True
+          assert len(data['research'])==3
+          assert all(v['result']['independent_math_verifications']==0
+                     for v in data['research'] if 'result' in v)
+          print('RUN_ARCHIVED; NO_UNVERIFIED_MATH_PROMOTION')
+          PY
+
+      - name: Retain full inspectable report and raw predictions, never model weights/PDF
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-abstraction-real01-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/real01/pdf.sha256
+            ${{ runner.temp }}/real01/pdfinfo.txt
+            ${{ runner.temp }}/real01/model.sha256
+            ${{ runner.temp }}/real01/model-source.txt
+            ${{ runner.temp }}/real01/llama-version.txt
+            ${{ runner.temp }}/real01/summary.log
+            ${{ runner.temp }}/real01/outputs/report.json
+            ${{ runner.temp }}/real01/outputs/sources.json
+            ${{ runner.temp }}/real01/outputs/math_library_candidates.jsonl
+          retention-days: 7
+          if-no-files-found: warn
