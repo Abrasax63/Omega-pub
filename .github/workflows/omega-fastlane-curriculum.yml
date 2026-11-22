@@ -1,0 +1,60 @@
+name: Omega Fast Lane - offline verified semantic exercise factory
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-fastlane-curriculum.yml"
+      - "research/learning_hub/fastlane/**"
+
+permissions:
+  contents: read
+
+jobs:
+  quality-only-no-inference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify source files and run ten factory adversarial regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover \
+            -s research/learning_hub/fastlane -p test_fastlane.py -v
+      - name: Reuse existing model-free validation engine for training-only examples
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/omega-fastlane
+          python research/learning_hub/fastlane/fastlane.py \
+            --output /tmp/omega-fastlane/candidates.json \
+            > /tmp/omega-fastlane/summary.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          o=json.loads(Path('/tmp/omega-fastlane/candidates.json').read_text())
+          assert o['schema']=='OMEGA_FASTLANE_CURRICULUM_01'
+          assert o['examples']>=24 and o['families']>=12
+          assert o['inference_calls']==o['training_updates']==0
+          assert o['model_generated_new_targets']==0
+          assert o['train_only_no_independent_holdout'] is True
+          assert o['gate']['blocked'] is True
+          assert o['gate']['status']=='DATA_READY_FOR_HUMAN_REVIEW_NOT_FOR_AUTO_TRAINING'
+          assert not any(r['family'] in o['families_banned_as_previously_evaluated']
+                         for r in o['training_samples'])
+          print('FAST_LANE_VERIFIED_SYNTHETIC_TRAINING_CANDIDATES',
+                o['examples'],o['families'],'families; no new model training')
+          PY
+      - name: Archive candidate train-only data and its quality report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-fastlane-verified-train-only
+          path: /tmp/omega-fastlane/
+          retention-days: 7
+          if-no-files-found: warn
