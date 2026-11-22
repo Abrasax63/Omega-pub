@@ -40,6 +40,9 @@ jobs:
             -p test_python_mastery_v3.py -v
 
   cpu-learning-experiment:
+    # Dataset frozen and already evaluated on SHA 436df0d8. No more inference.
+    # GitHub PR path filters may match the cumulative PR diff on later commits.
+    if: ${{ github.event.pull_request.head.sha == '436df0d8f542c080cc84443e2971b96fecc41c86' }}
     needs: static-preflight
     runs-on: ubuntu-latest
     timeout-minutes: 34
