@@ -18,6 +18,9 @@ concurrency:
 
 jobs:
   cpu-raw-reader:
+    # One-shot PR experiment: never download the model for unrelated follow-up commits.
+    # A new experiment requires a distinct preregistered protocol / explicit revision.
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.head.sha == '84a751e43ba80fb42cc9baa942aa987df6635830')
     runs-on: ubuntu-latest
     timeout-minutes: 22
     env:
