@@ -67,8 +67,8 @@ def load_train():
             len(row["prompt"])>2000 or len(row["target"])>1500 or
             len(row["verification_cases"])<2):
             raise ValueError("INVALID_TRAIN_EXAMPLE_"+row["id"])
-        if "HOLDOUT" in row["prompt"] or
-           "reference_code_eval_only" in row:
+        if ("HOLDOUT" in row["prompt"] or
+            "reference_code_eval_only" in row):
             raise ValueError("TEST_GOLD_IN_TRAIN")
     return data
 
