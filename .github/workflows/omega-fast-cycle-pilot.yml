@@ -1,0 +1,55 @@
+name: Omega fast-cycle pilot (15 min, read-only)
+
+# The schedule becomes active ONLY if this file exists on the default branch.
+# On this experimental branch, use workflow_dispatch for manual validation.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-fast-cycle-pilot
+  cancel-in-progress: false
+
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify provenance laboratory
+        working-directory: 09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: |
+          python -m unittest -v test_provenance_lab test_provenance_cycle test_provenance_xtrace 2>&1 | tee "$RUNNER_TEMP/provenance-tests.log"
+      - name: Record bounded run evidence
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          data = {
+              "mode": "read_only_regression_pilot",
+              "sha": os.environ["GITHUB_SHA"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "note": "A scheduled trigger is not a new scientific experiment or improvement.",
+          }
+          pathlib.Path(os.environ["RUNNER_TEMP"], "omega-cycle.json").write_text(json.dumps(data, indent=2)+"\n")
+          PY
+      - name: Archive evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-cycle-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/omega-cycle.json
+            ${{ runner.temp }}/provenance-tests.log
+          retention-days: 7
