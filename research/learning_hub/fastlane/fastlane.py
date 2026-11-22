@@ -19,7 +19,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 SFT = ROOT.parent / "sft01"
-LAB = ROOT.parents[2] / "learning_lab"
+LAB = ROOT.parent.parent / "learning_lab"
 sys.path.insert(0, str(SFT))
 sys.path.insert(0, str(LAB))
 from data_guard import load_train
