@@ -151,6 +151,8 @@ def run_queue(state_file, output_dir, *, catalog_file, omega_dir, math_dir,
         state = json.loads(state_file.read_text(encoding="utf-8"))
     elif bootstrap:
         state = {"schema": SCHEMA, "entries": []}
+        # Persist the initial empty ledger even when the first probe blocks.
+        write_json(state_file, state)
     else:
         raise FileNotFoundError("Lost/absent durable state; explicit bootstrap required")
     used = check_state(state, tasks, results_dir)
