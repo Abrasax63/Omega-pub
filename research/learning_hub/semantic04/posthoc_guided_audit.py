@@ -38,8 +38,16 @@ def evaluate(old_report):
         # the candidate generator or to the public selector.
         correct_count=sum(core.grade(x["code"],row["hidden_cases"])
                           ["all_correct"] for x in matches)
-        decision=eg.resolve(row["broken_source"],
-                            row["public_examples"],model_text=model_raw)
+        baseline_decision=eg.resolve(row["broken_source"],
+                                     row["public_examples"])
+        hybrid_decision=eg.resolve(row["broken_source"],
+                                   row["public_examples"],model_text=model_raw)
+        baseline_selected=baseline_decision["selected_code"]
+        hybrid_selected=hybrid_decision["selected_code"]
+        baseline_exact=(baseline_selected is not None and
+                        core.grade(baseline_selected,row["hidden_cases"])["all_correct"])
+        hybrid_exact=(hybrid_selected is not None and
+                      core.grade(hybrid_selected,row["hidden_cases"])["all_correct"])
         record.append({
             "id":row["id"],
             "old_symbolic_exact":old_sym["strict"]["all_correct"],
@@ -49,8 +57,11 @@ def evaluate(old_report):
             "candidate_recall_any_exact_on_consumed_cases":bool(correct_count),
             "new_true_program_candidates_within_public_matching_set":correct_count,
             "unique_public_solution_found":len(matches)==1,
-            "safe_resolution_status":decision["status"],
-            "new_oracle_probe_required":decision["status"]=="NEEDS_ORACLE_RESPONSE",
+            "baseline_safe_resolution_status":baseline_decision["status"],
+            "baseline_selected_exact":baseline_exact,
+            "hybrid_safe_resolution_status":hybrid_decision["status"],
+            "hybrid_selected_exact":hybrid_exact,
+            "new_oracle_probe_required":hybrid_decision["status"]=="NEEDS_ORACLE_RESPONSE",
             "new_model_calls":0,"old_hidden_inputs_not_used_in_selection":True
         })
     score={
@@ -61,11 +72,13 @@ def evaluate(old_report):
         "previous_symbolic_exact":sum(r["old_symbolic_exact"] for r in record),
         "new_candidate_recall_any_exact":sum(
             r["candidate_recall_any_exact_on_consumed_cases"] for r in record),
-        "strictly_selected_unique_correct":sum(
-            r["unique_public_solution_found"] and
-            r["candidate_recall_any_exact_on_consumed_cases"] for r in record),
-        "ambiguous_or_abstained":sum(
-            r["safe_resolution_status"]!="UNIQUE_PUBLIC_CANDIDATE_NEEDS_INDEPENDENT_TEST"
+        "baseline_safe_selected_exact":sum(r["baseline_selected_exact"] for r in record),
+        "hybrid_safe_selected_exact":sum(r["hybrid_selected_exact"] for r in record),
+        "baseline_ambiguous_or_abstained":sum(
+            r["baseline_safe_resolution_status"]!="UNIQUE_PUBLIC_CANDIDATE_NEEDS_INDEPENDENT_TEST"
+            for r in record),
+        "hybrid_ambiguous_or_abstained":sum(
+            r["hybrid_safe_resolution_status"]!="UNIQUE_PUBLIC_CANDIDATE_NEEDS_INDEPENDENT_TEST"
             for r in record),
         "new_oracle_probes_needed":sum(r["new_oracle_probe_required"] for r in record),
         "new_model_calls":0,
