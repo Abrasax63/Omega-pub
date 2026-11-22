@@ -86,13 +86,17 @@ class QueueTests(unittest.TestCase):
                 "autonomous_semantic_comprehension_demonstrated": False,
                 "generated_rule": {"atoms": rule},
                 "frozen_rule_sha256": digest(rule),
+                "novelty": "RECONSTRUCTION_OF_A_KNOWN_SOURCE_MECHANISM_IN_A_RESTRICTED_GRAMMAR",
+                "fixed_rule_matches_known_mechanism": True,
                 "source_anchor": {"git_blob": "a" * 40},
                 "comparison": {"learned_conjunction": {"TP": 3, "FP": 0, "TN": 10, "FN": 0}},
             }
             path.write_text(json.dumps(payload))
             entry = generated_rule_inbox(path)[0]
-            self.assertEqual(entry["status"], "NOT_PROVEN_NEEDS_EXTERNAL_REPLICATION")
+            self.assertEqual(entry["status"], "KNOWN_RECONSTRUCTION_NOT_A_NEW_RESEARCH_TASK")
+            self.assertFalse(entry["can_enter_new_research_queue"])
             self.assertFalse(entry["can_enter_executed_ledger"])
+            self.assertFalse(entry["automatically_delete_historical_source"])
             self.assertEqual(entry["formula"], rule)
             payload["scientific_claims_certified"] = 1
             path.write_text(json.dumps(payload))
@@ -103,6 +107,16 @@ class QueueTests(unittest.TestCase):
             path.write_text(json.dumps(payload))
             with self.assertRaisesRegex(ValueError, "changed"):
                 generated_rule_inbox(path)
+            payload["frozen_rule_sha256"] = digest(["cycle_four_quotient"])
+            path.write_text(json.dumps(payload))
+            with self.assertRaisesRegex(ValueError, "Misclassified"):
+                generated_rule_inbox(path)
+            payload["novelty"] = "NOVELTY_UNDETERMINED_REQUIRES_EXTERNAL_REVIEW"
+            payload["fixed_rule_matches_known_mechanism"] = False
+            path.write_text(json.dumps(payload))
+            candidate = generated_rule_inbox(path)[0]
+            self.assertEqual(candidate["status"], "NOT_PROVEN_NEEDS_EXTERNAL_REPLICATION")
+            self.assertTrue(candidate["can_enter_new_research_queue"])
 
     def test_separate_process_passes_do_not_replay(self):
         with TemporaryDirectory() as td:
