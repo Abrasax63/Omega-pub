@@ -34,6 +34,9 @@ jobs:
             -s research/learning_hub/active_debug01 \
             -p test_active_debug01.py -v
           python -m unittest discover \
+            -s research/learning_hub/active_debug01 \
+            -p test_adaptive_policy.py -v
+          python -m unittest discover \
             -s research/learning_hub/semantic04 \
             -p test_execution_guided.py -v
 
