@@ -53,7 +53,7 @@ class Real03Contracts(unittest.TestCase):
         generic=feedback(task,initial,"G")
         self.assertIn("counterexample witness",witness)
         self.assertIn('["p","q"]',witness)
-        self.assertIn("details",generic)
+        self.assertIn("withheld",generic)
         self.assertNotIn("counterexample witness",generic)
         self.assertIn("No corrected edge set is supplied",witness)
         self.assertIn("No corrected edge set is supplied",generic)
