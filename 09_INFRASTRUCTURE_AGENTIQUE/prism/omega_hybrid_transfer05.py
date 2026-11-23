@@ -167,7 +167,7 @@ def parse_answer(raw, correct):
 def equalize(endpoint, prompts, token_counter=None):
     counter = token_counter or (lambda text: prompt_budget(endpoint,text))
     """Equal-token measured *complete* task prompts, before the LLM call."""
-    count = {a:prompt_budget(endpoint,COMMON_SYSTEM+"\n"+p)
+    count = {a:counter(COMMON_SYSTEM+"\n"+p)
              for a,p in prompts.items()}
     target=max(count.values())
     result=dict(prompts)
@@ -176,8 +176,8 @@ def equalize(endpoint, prompts, token_counter=None):
             if count[arm]>=target:
                 break
             result[arm]+="\nNeutral administrative placeholder."
-            count[arm]=prompt_budget(endpoint,COMMON_SYSTEM+"\n"+result[arm])
-    final={a:prompt_budget(endpoint,COMMON_SYSTEM+"\n"+p)
+            count[arm]=counter(COMMON_SYSTEM+"\n"+result[arm])
+    final={a:counter(COMMON_SYSTEM+"\n"+p)
            for a,p in result.items()}
     comparable=min(final.values())>0 and \
                (max(final.values())-min(final.values()))/min(final.values())<=.05
