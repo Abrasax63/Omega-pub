@@ -21,7 +21,7 @@ class FakeModel:
     def __call__(self,messages,max_tokens):
         self.calls.append(messages)
         prompt=messages[-1]["content"]
-        if "Formulate an actionable procedure" in prompt:
+        if "Infer a general procedure" in prompt:
             raw='{"rule":"For a negative case check xy,yz,xz. For a positive case compare every edge to a complete partition."}'
         else:
             raw='{"holds":false,"failed_axioms":["transitive"],"certificate":{"kind":"missing_transitive_edge","triple":["a","b","c"],"premises":{"xy":true,"yz":true,"xz":false}}}'
