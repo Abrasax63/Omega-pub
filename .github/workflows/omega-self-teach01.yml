@@ -4,7 +4,7 @@ name: Omega Self Teach 01 - one-shot blind A/B and blocked C
 # count as new generalization evidence. CPU only, no paid API or write token.
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened]
     paths:
       - ".github/workflows/omega-self-teach01.yml"
   workflow_dispatch:
