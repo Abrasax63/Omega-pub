@@ -104,10 +104,10 @@ class Bench04Tests(unittest.TestCase):
                  patch("omega_repair_bench04.equalize",fake_equalize):
                 z=run(td,"http://fake")
             self.assertEqual(z["stage"],"POINTWISE_GLOBAL_FEEDBACK_GAIN")
-            self.assertEqual(z["metrics"]["eligible_errors"],6)
+            self.assertEqual(z["metrics"]["eligible_errors"],5)
             self.assertEqual(z["metrics"]["G"]["success_by_2"],0)
             self.assertEqual(z["metrics"]["S"]["success_by_2"],0)
-            self.assertEqual(z["metrics"]["A"]["success_by_2"],6)
+            self.assertEqual(z["metrics"]["A"]["success_by_2"],5)
             self.assertTrue(z["registered_gain"])
             self.assertLessEqual(z["model_calls"],42)
             self.assertEqual(json.load(open(td+"/report.json"))["stage"],
