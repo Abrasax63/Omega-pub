@@ -1,0 +1,166 @@
+{
+  "schema": "OMEGA_SELF_TEACH05_SEALED_V1",
+  "provenance": "SYNTHETIC_INDEPENDENT_ORACLE_FROZEN_BEFORE_MODEL",
+  "tasks": [
+    {
+      "id": "F1",
+      "family": "same_digit_run_start_and_length",
+      "hidden_cases": [
+        {
+          "input": "1a11",
+          "expected": [
+            "1@2:2"
+          ]
+        },
+        {
+          "input": "009",
+          "expected": [
+            "0@0:2"
+          ]
+        },
+        {
+          "input": "a999z9",
+          "expected": [
+            "9@1:3"
+          ]
+        },
+        {
+          "input": "x3x",
+          "expected": []
+        },
+        {
+          "input": "777x77",
+          "expected": [
+            "7@0:3",
+            "7@4:2"
+          ]
+        },
+        {
+          "input": "0000a99",
+          "expected": [
+            "0@0:4",
+            "9@5:2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F2",
+      "family": "consecutive_increasing_lowercase_runs",
+      "hidden_cases": [
+        {
+          "input": "pqrs",
+          "expected": [
+            "0:3"
+          ]
+        },
+        {
+          "input": "aBc",
+          "expected": []
+        },
+        {
+          "input": "abc!def",
+          "expected": [
+            "0:2",
+            "4:6"
+          ]
+        },
+        {
+          "input": "yzza",
+          "expected": [
+            "0:1"
+          ]
+        },
+        {
+          "input": "x",
+          "expected": []
+        },
+        {
+          "input": "ghijxza",
+          "expected": [
+            "0:3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F3",
+      "family": "runs_of_three_punctuation_symbols",
+      "hidden_cases": [
+        {
+          "input": "-..x",
+          "expected": [
+            "2:-.."
+          ]
+        },
+        {
+          "input": "a._b",
+          "expected": [
+            "2:._"
+          ]
+        },
+        {
+          "input": "a",
+          "expected": []
+        },
+        {
+          "input": "__--",
+          "expected": [
+            "3:__--"
+          ]
+        },
+        {
+          "input": "x-_..y",
+          "expected": [
+            "4:-_.."
+          ]
+        },
+        {
+          "input": "---",
+          "expected": [
+            "2:---"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F4",
+      "family": "maximal_alternating_binary_runs",
+      "hidden_cases": [
+        {
+          "input": "01010",
+          "expected": [
+            "0:5:0"
+          ]
+        },
+        {
+          "input": "1a010",
+          "expected": [
+            "2:3:0"
+          ]
+        },
+        {
+          "input": "110101",
+          "expected": [
+            "1:5:1"
+          ]
+        },
+        {
+          "input": "001",
+          "expected": []
+        },
+        {
+          "input": "a0b1",
+          "expected": []
+        },
+        {
+          "input": "101a0101",
+          "expected": [
+            "0:3:1",
+            "4:4:1"
+          ]
+        }
+      ]
+    }
+  ]
+}
