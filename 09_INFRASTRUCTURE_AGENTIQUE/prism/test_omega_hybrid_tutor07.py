@@ -140,6 +140,13 @@ class TeacherTests(unittest.TestCase):
                 text=call[-1]["content"]
                 self.assertNotIn("oracle_witnesses",text)
                 self.assertNotIn('"has_labels":true',text)
+                if "Infer a general procedure" in text:
+                    # Regression for the control contamination discovered by
+                    # post-hoc inspection of the first REAL TUTOR-07 run.
+                    self.assertNotIn("TRAIN_NEG",text)
+                    self.assertNotIn("TRAIN_POS",text)
+                    self.assertNotIn("positive partition",text.lower())
+                    self.assertNotIn("negative 3-edge premise",text.lower())
             self.assertEqual(r["total_cost_training_included"]["D"]["calls"],8)
             self.assertEqual(r["total_cost_training_included"]["G"]["calls"],11)
             self.assertEqual(r["total_cost_training_included"]["T"]["calls"],11)
