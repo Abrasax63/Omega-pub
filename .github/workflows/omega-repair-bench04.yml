@@ -6,6 +6,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - ".github/workflows/omega-repair-bench04.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_repair_bench04.py"
 
 permissions:
   contents: read
