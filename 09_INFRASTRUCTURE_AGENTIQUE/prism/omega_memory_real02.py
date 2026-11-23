@@ -211,7 +211,7 @@ def memory_phase(root,endpoint):
         question=("Classify this finite relation as '"+target+"'. Return exactly "
             "a JSON object with boolean 'holds' and array 'failed_axioms' "
             "containing all required defining axioms that fail. Abstain if "
-            "uncertain using {\\"abstain\\":true}. Nodes: "
+            "uncertain? You may instead return JSON with abstain set true. Nodes: "
             +canonical(NODES)+"; edges: "+canonical(task["edges"]))
         contexts={"D":"No educational note is available.",
                   "M":"Verified formal memory note: "+canonical(core),
