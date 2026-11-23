@@ -1,0 +1,70 @@
+{
+  "schema": "OMEGA_SELF_TEACH02_EVAL_PUBLIC_V1",
+  "evaluation": [
+    {
+      "id": "X1",
+      "family": "alphabetic_runs_to_lowercase",
+      "goal": "Extract maximal consecutive ASCII letter runs (A-Z or a-z), lowercase each entire run; ignore all digits and punctuation, which break runs.",
+      "public_examples": [
+        {
+          "input": "Hi!THERE2a",
+          "expected": [
+            "hi",
+            "there",
+            "a"
+          ]
+        },
+        {
+          "input": "4Go#NOW",
+          "expected": [
+            "go",
+            "now"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "X2",
+      "family": "sharp_run_lengths",
+      "goal": "For each maximal contiguous block of '#' characters, return the block's character count as a string, in encounter order. Other characters break blocks.",
+      "public_examples": [
+        {
+          "input": "a##b#",
+          "expected": [
+            "2",
+            "1"
+          ]
+        },
+        {
+          "input": "###x##",
+          "expected": [
+            "3",
+            "2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "X3",
+      "family": "upper_letter_run_lengths",
+      "goal": "For each maximal contiguous block of ASCII uppercase letters A-Z, return a string 'BLOCK:length', preserving the block itself. Lowercase letters and all other characters are separators.",
+      "public_examples": [
+        {
+          "input": "ABcD##EF",
+          "expected": [
+            "AB:2",
+            "D:1",
+            "EF:2"
+          ]
+        },
+        {
+          "input": "AbcZZZ",
+          "expected": [
+            "A:1",
+            "ZZZ:3"
+          ]
+        }
+      ]
+    }
+  ]
+}
