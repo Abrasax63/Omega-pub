@@ -70,7 +70,7 @@ jobs:
           test -n "$BIN"
           chmod +x "$BIN"
           echo "LLAMA_SERVER=$BIN" >> "$GITHUB_ENV"
-          curl -fLsS --retry 2 --retry-all-errors --max-time 750 "$MODEL_URL" -o "$RUNNER_TEMP/real03/model.gguf"
+          curl --http1.1 -fLsS --retry 5 --retry-delay 3 --retry-all-errors --max-time 750 "$MODEL_URL" -o "$RUNNER_TEMP/real03/model.gguf"
           test "$(head -c 4 "$RUNNER_TEMP/real03/model.gguf")" = 'GGUF'
           echo "$MODEL_SHA  $RUNNER_TEMP/real03/model.gguf" | sha256sum -c -
           sha256sum "$RUNNER_TEMP/real03/model.gguf" | tee real03_out/model.sha256
