@@ -10,7 +10,12 @@ import unittest
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(HERE))
 import runner
-import score
+# self_teach01/format_audit imports its own 'score' earlier in sys.modules;
+# load v2's score module by unique name to avoid a cross-version collision.
+import importlib.util
+spec=importlib.util.spec_from_file_location("omega_self_teach02_score", HERE/"score.py")
+score=importlib.util.module_from_spec(spec)
+spec.loader.exec_module(score)
 
 DIGITS="""def transform(s):
     out = []
