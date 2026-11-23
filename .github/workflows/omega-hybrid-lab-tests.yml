@@ -1,0 +1,44 @@
+name: Omega hybrid learning gate - offline regression
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-hybrid-lab-tests.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_lab.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_lab.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/OMEGA_HYBRID_LAB_01_2026-11-23.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-evidence-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate syntax without installing or calling an LLM
+        run: |
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_lab.py
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_lab.py
+      - name: Run all offline evidence and anti-regression tests
+        run: |
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_omega_hybrid_lab.py' -v
+      - name: Keep empirical status explicitly unclaimed
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          p = Path("09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_lab.py")
+          module = ast.parse(p.read_text())
+          names = {n.name for n in module.body if isinstance(n, ast.FunctionDef)}
+          assert {"source_gate","bounded_gate","evaluate_holdout",
+                  "select_exercise","next_action","inspect_ledger"} <= names
+          print("HYBRID_GATES_PRESENT; NO_LLM_EXECUTED; NO_SCIENTIFIC_GAIN_CLAIMED")
+          PY
