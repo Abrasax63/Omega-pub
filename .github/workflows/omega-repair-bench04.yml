@@ -1,12 +1,11 @@
 name: Omega BENCH-04 - self-repair policy comparison CPU
 
 # One preregistered evaluation, not scheduled, not merged into main.
+# Disabled after the frozen one-shot scientific evaluation of 2026-11-23.
+# Manual-only control prevents rerunning the same six holdout questions on PR edits.
+# To evaluate a NEW cohort, create a new preregistration and separate workflow.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - ".github/workflows/omega-repair-bench04.yml"
-      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_repair_bench04.py"
+  workflow_dispatch:
 
 permissions:
   contents: read
