@@ -130,7 +130,7 @@ class Contract(unittest.TestCase):
             self.assertNotIn('"hidden_cases"', prompt)
             self.assertNotIn('"holdout"', prompt)
         scored = score.score_report(r)
-        self.assertEqual(scored["A"]["tests_exact"], 0)
+        self.assertEqual(scored["A"]["tests_exact"], 2)  # Two sealed cases correctly return []
         self.assertEqual(scored["B"]["tests_exact"], 15)
         self.assertEqual(scored["B"]["fully_correct"], 3)
         self.assertEqual(scored["status"], "EXPLORATORY_MEMORY_GAIN_NOT_GENERALIZATION")
