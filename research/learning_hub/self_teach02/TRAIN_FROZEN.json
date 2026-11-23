@@ -1,0 +1,192 @@
+{
+  "schema": "OMEGA_SELF_TEACH02_TRAIN_V1",
+  "provenance": "DESIGNER_CURATED_SYNTHETIC",
+  "train": [
+    {
+      "id": "T1",
+      "family": "maximal_digit_segments",
+      "goal": "Extract every maximal contiguous run of ASCII decimal digits 0-9; return a list of the substrings in original order. Any nondigit breaks a run.",
+      "public_examples": [
+        {
+          "input": "a12!3",
+          "expected": [
+            "12",
+            "3"
+          ]
+        },
+        {
+          "input": "7x80y",
+          "expected": [
+            "7",
+            "80"
+          ]
+        },
+        {
+          "input": "abc",
+          "expected": []
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": "1-2-3",
+          "expected": [
+            "1",
+            "2",
+            "3"
+          ]
+        }
+      ],
+      "development_cases": [
+        {
+          "input": "a001b9",
+          "expected": [
+            "001",
+            "9"
+          ]
+        },
+        {
+          "input": "!!",
+          "expected": []
+        },
+        {
+          "input": "12",
+          "expected": [
+            "12"
+          ]
+        },
+        {
+          "input": "a3b45x6",
+          "expected": [
+            "3",
+            "45",
+            "6"
+          ]
+        },
+        {
+          "input": "0x0",
+          "expected": [
+            "0",
+            "0"
+          ]
+        },
+        {
+          "input": "9999a",
+          "expected": [
+            "9999"
+          ]
+        },
+        {
+          "input": "7 a88b",
+          "expected": [
+            "7",
+            "88"
+          ]
+        },
+        {
+          "input": "9x03?2",
+          "expected": [
+            "9",
+            "03",
+            "2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "family": "whitespace_token_reversal",
+      "goal": "Split the input on one or more ordinary space characters; ignore empty fields and return each nonempty field reversed. Preserve the order of fields.",
+      "public_examples": [
+        {
+          "input": "ab  cd",
+          "expected": [
+            "ba",
+            "dc"
+          ]
+        },
+        {
+          "input": " A b ",
+          "expected": [
+            "A",
+            "b"
+          ]
+        },
+        {
+          "input": "abc",
+          "expected": [
+            "cba"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": "x y z",
+          "expected": [
+            "x",
+            "y",
+            "z"
+          ]
+        }
+      ],
+      "development_cases": [
+        {
+          "input": "a  bb",
+          "expected": [
+            "a",
+            "bb"
+          ]
+        },
+        {
+          "input": "  ",
+          "expected": []
+        },
+        {
+          "input": "ab",
+          "expected": [
+            "ba"
+          ]
+        },
+        {
+          "input": "! aB?",
+          "expected": [
+            "!",
+            "?Ba"
+          ]
+        },
+        {
+          "input": " one  two ",
+          "expected": [
+            "eno",
+            "owt"
+          ]
+        },
+        {
+          "input": "a  c  d",
+          "expected": [
+            "a",
+            "c",
+            "d"
+          ]
+        },
+        {
+          "input": "abc  DEF",
+          "expected": [
+            "cba",
+            "FED"
+          ]
+        },
+        {
+          "input": "0 11",
+          "expected": [
+            "0",
+            "11"
+          ]
+        }
+      ]
+    }
+  ]
+}
