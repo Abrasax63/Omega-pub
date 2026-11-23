@@ -1,0 +1,97 @@
+name: Omega Self Teach 05 - paired isolated feedback
+
+# One real trial only. The frozen 24-case holdout becomes consumed.
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - ".github/workflows/omega-self-teach05.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-self-teach05-first-blind
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Frozen data, batch failure control and mock comparisons
+        run: |
+          set -euo pipefail
+          test -s research/learning_hub/self_teach05/PREREG.md
+          python -m unittest discover -s research/learning_hub/self_teach05 -p test_self_teach05.py -v
+
+  first-real-cpu-blind:
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      LLAMA_BIN_URL: https://github.com/ggml-org/llama.cpp/releases/download/b12633/llama-b12633-bin-ubuntu-x64.tar.gz
+      MODEL_URL: https://huggingface.co/bartowski/Qwen2.5-3B-Instruct-GGUF/resolve/main/Qwen2.5-3B-Instruct-Q4_K_M.gguf
+      MODEL_SHA256: 9c9f56a391a3abbd5b89d0245bf6106081bcc3173119d4229235dd9d23253f94
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Obtain pinned free CPU runtime and existing local model
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/self05/runtime" research/learning_hub/self_teach05/results
+          curl -fLsS --retry 2 --max-time 300 "$LLAMA_BIN_URL" -o "$RUNNER_TEMP/self05/runtime/llama.tar.gz"
+          tar -xzf "$RUNNER_TEMP/self05/runtime/llama.tar.gz" -C "$RUNNER_TEMP/self05/runtime"
+          BIN="$(find "$RUNNER_TEMP/self05/runtime" -type f -name llama-server | head -1)"
+          test -n "$BIN"
+          chmod +x "$BIN"
+          echo "LLAMA_SERVER=$BIN" >> "$GITHUB_ENV"
+          curl -fLsS --retry 2 --max-time 750 "$MODEL_URL" -o "$RUNNER_TEMP/self05/runtime/model.gguf"
+          test "$(head -c 4 "$RUNNER_TEMP/self05/runtime/model.gguf")" = GGUF
+          echo "$MODEL_SHA256  $RUNNER_TEMP/self05/runtime/model.gguf" | sha256sum -c -
+          sha256sum "$RUNNER_TEMP/self05/runtime/model.gguf" > research/learning_hub/self_teach05/results/model.sha256
+      - name: Start local inference on loopback CPU only
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIB="$(dirname "$LLAMA_SERVER")"
+          LD_LIBRARY_PATH="$LIB" "$LLAMA_SERVER" -m "$RUNNER_TEMP/self05/runtime/model.gguf" --host 127.0.0.1 --port 8080 -c 6144 -t 2 -ngl 0 > research/learning_hub/self_teach05/results/server.log 2>&1 &
+          for i in $(seq 1 100); do
+            if curl -sf --max-time 2 http://127.0.0.1:8080/health >/dev/null; then echo MODEL_READY; exit 0; fi
+            sleep 2
+          done
+          tail -n 30 research/learning_hub/self_teach05/results/server.log
+          exit 1
+      - name: One paired generation with heldout cases inaccessible to generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 1850 python -u research/learning_hub/self_teach05/runner.py --server http://127.0.0.1:8080 --output research/learning_hub/self_teach05/results/raw.json | tee research/learning_hub/self_teach05/results/generation.log
+          test -s research/learning_hub/self_teach05/results/raw.json
+          sha256sum research/learning_hub/self_teach05/results/raw.json > research/learning_hub/self_teach05/results/raw.sha256
+      - name: Score 24 hidden cases once after raw is recorded
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u research/learning_hub/self_teach05/score.py --raw research/learning_hub/self_teach05/results/raw.json --output research/learning_hub/self_teach05/results/score.json | tee research/learning_hub/self_teach05/results/score.log
+          test -s research/learning_hub/self_teach05/results/score.json
+          sha256sum research/learning_hub/self_teach05/results/score.json > research/learning_hub/self_teach05/results/score.sha256
+      - name: Preserve unmodified model outputs, scores and hashes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-self-teach05-first-run
+          path: research/learning_hub/self_teach05/results/
+          retention-days: 14
+          if-no-files-found: warn

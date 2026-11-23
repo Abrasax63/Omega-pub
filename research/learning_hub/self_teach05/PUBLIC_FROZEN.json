@@ -1,0 +1,269 @@
+{
+  "schema": "OMEGA_SELF_TEACH05_PUBLIC_V1",
+  "provenance": "DEVELOPER_CREATED_SYNTHETIC_NOT_SELF_DISCOVERY",
+  "tasks": [
+    {
+      "id": "F1",
+      "family": "same_digit_run_start_and_length",
+      "goal": "Scan left to right. Find maximal contiguous runs of the SAME ASCII digit 0-9. Ignore runs shorter than 2. Return for each qualifying run the digit followed by '@' then its zero-based absolute start index, ':' and the run length. Nondigits break runs. Return a list of strings.",
+      "public_examples": [
+        {
+          "input": "a11x222",
+          "expected": [
+            "1@1:2",
+            "2@4:3"
+          ]
+        },
+        {
+          "input": "004a",
+          "expected": [
+            "0@0:2"
+          ]
+        }
+      ],
+      "development_cases": [
+        {
+          "input": "111",
+          "expected": [
+            "1@0:3"
+          ]
+        },
+        {
+          "input": "a33b",
+          "expected": [
+            "3@1:2"
+          ]
+        },
+        {
+          "input": "909",
+          "expected": []
+        },
+        {
+          "input": "..",
+          "expected": []
+        },
+        {
+          "input": "8#88",
+          "expected": [
+            "8@2:2"
+          ]
+        },
+        {
+          "input": "0077",
+          "expected": [
+            "0@0:2",
+            "7@2:2"
+          ]
+        },
+        {
+          "input": "a000z",
+          "expected": [
+            "0@1:3"
+          ]
+        },
+        {
+          "input": "a4bb55",
+          "expected": [
+            "5@4:2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F2",
+      "family": "consecutive_increasing_lowercase_runs",
+      "goal": "Scan left to right for maximal contiguous runs of ASCII lowercase letters a-z with each next letter exactly one alphabet position after the previous one (e.g. b then c). Any other character or non-increasing/non-consecutive lowercase letter ends the current run, and the current lowercase character starts a new run. For each run of length at least 2 return its zero-based start index, ':' and inclusive last index as a string. Do not wrap z to a.",
+      "public_examples": [
+        {
+          "input": "abcXde",
+          "expected": [
+            "0:2",
+            "4:5"
+          ]
+        },
+        {
+          "input": "bcd",
+          "expected": [
+            "0:2"
+          ]
+        }
+      ],
+      "development_cases": [
+        {
+          "input": "ab",
+          "expected": [
+            "0:1"
+          ]
+        },
+        {
+          "input": "abcz",
+          "expected": [
+            "0:2"
+          ]
+        },
+        {
+          "input": "xyz",
+          "expected": [
+            "0:2"
+          ]
+        },
+        {
+          "input": "zab",
+          "expected": [
+            "1:2"
+          ]
+        },
+        {
+          "input": "abx",
+          "expected": [
+            "0:1"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": "aaaa",
+          "expected": []
+        },
+        {
+          "input": "xxxy",
+          "expected": [
+            "2:3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F3",
+      "family": "runs_of_three_punctuation_symbols",
+      "goal": "Scan for maximal contiguous runs using only the three characters '-', '_' and '.'. Every other character breaks a run. For a run of length at least 2 return the zero-based absolute index of its LAST character, followed by ':', then the full original run substring. Preserve order. A run reaching the final input character must be included.",
+      "public_examples": [
+        {
+          "input": "a--_b",
+          "expected": [
+            "3:--_"
+          ]
+        },
+        {
+          "input": "..",
+          "expected": [
+            "1:.."
+          ]
+        }
+      ],
+      "development_cases": [
+        {
+          "input": "-_",
+          "expected": [
+            "1:-_"
+          ]
+        },
+        {
+          "input": "ab",
+          "expected": []
+        },
+        {
+          "input": "x...y",
+          "expected": [
+            "3:..."
+          ]
+        },
+        {
+          "input": "-",
+          "expected": []
+        },
+        {
+          "input": "__@..",
+          "expected": [
+            "1:__",
+            "4:.."
+          ]
+        },
+        {
+          "input": "...",
+          "expected": [
+            "2:..."
+          ]
+        },
+        {
+          "input": ".x-",
+          "expected": []
+        },
+        {
+          "input": "-_.x",
+          "expected": [
+            "2:-_."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F4",
+      "family": "maximal_alternating_binary_runs",
+      "goal": "Scan the input left to right. A run is a maximal contiguous sequence made only of '0' and '1' such that consecutive characters are different. On a repeated digit, end the current run and start a new run at that repeated digit; on any nondigit, end the current run. For each run length at least 3, append a string 'start:length:lastdigit' using its zero-based absolute start index, decimal run length and final digit. No overlap of runs.",
+      "public_examples": [
+        {
+          "input": "0100",
+          "expected": [
+            "0:3:0"
+          ]
+        },
+        {
+          "input": "101a01",
+          "expected": [
+            "0:3:1"
+          ]
+        }
+      ],
+      "development_cases": [
+        {
+          "input": "0101",
+          "expected": [
+            "0:4:1"
+          ]
+        },
+        {
+          "input": "111",
+          "expected": []
+        },
+        {
+          "input": "010",
+          "expected": [
+            "0:3:0"
+          ]
+        },
+        {
+          "input": "10101",
+          "expected": [
+            "0:5:1"
+          ]
+        },
+        {
+          "input": "10a101",
+          "expected": [
+            "3:3:1"
+          ]
+        },
+        {
+          "input": "0",
+          "expected": []
+        },
+        {
+          "input": "00101",
+          "expected": [
+            "1:4:1"
+          ]
+        },
+        {
+          "input": "1010a010",
+          "expected": [
+            "0:4:0",
+            "5:3:0"
+          ]
+        }
+      ]
+    }
+  ]
+}
