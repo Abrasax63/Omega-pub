@@ -14,6 +14,8 @@ on:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_schema_retry.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_schema_real01.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_schema_real01.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_real02_forensic.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/OMEGA_HYBRID_FORENSIC_01_2026-11-23.md"
       - ".github/workflows/omega-hybrid-schema-real01.yml"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/OMEGA_HYBRID_LAB_01_2026-11-23.md"
   workflow_dispatch:
@@ -42,6 +44,7 @@ jobs:
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_schema_retry.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_schema_real01.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_schema_real01.py
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_real02_forensic.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_lab.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_real02_bridge.py
       - name: Run all offline evidence and anti-regression tests
