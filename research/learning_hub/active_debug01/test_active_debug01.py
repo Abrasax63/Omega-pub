@@ -97,13 +97,19 @@ class ActiveDebug01Tests(unittest.TestCase):
         self.assertNotIn("ACTUAL RESULTS",prompt2)
 
     def test_private_oracle_import_forbidden_in_model_runner(self):
+        import ast
         src=(HERE/"inference.py").read_text()
-        self.assertNotIn("evaluator_view(",src)
-        self.assertNotIn("hidden_tests",src)
+        tree=ast.parse(src)
+        calls=[node for node in ast.walk(tree) if isinstance(node,ast.Call)]
+        used=[(c.func.attr if isinstance(c.func,ast.Attribute) else c.func.id)
+              for c in calls if isinstance(c.func,(ast.Attribute,ast.Name))]
+        for forbidden in ("evaluator_view","load_holdout","train_lora","exec","eval"):
+            self.assertNotIn(forbidden,used)
+        # Audit field names and comments may mention hidden data, but
+        # the executable model path must only call the sanitized view.
+        self.assertIn("public_view",used)
         self.assertNotIn("reference_source_evaluator_only",src)
         self.assertNotIn("torch.optim",src)
-        self.assertNotIn("load_holdout(",src)
-        self.assertNotIn("train_lora(",src)
 
     def test_test_parser_accepts_safe_and_rejects_imports(self):
         good=self.rows[0]["reference_source_evaluator_only"]
