@@ -9,6 +9,11 @@ import time
 
 HERE=Path(__file__).resolve().parent
 import importlib.util
+# Reusable bounded diagnostic fallback; advisory and disabled unless explicitly selected.
+fb_spec=importlib.util.spec_from_file_location(
+    "omega_conditional_fallback",HERE/"conditional_fallback.py")
+fallback=importlib.util.module_from_spec(fb_spec)
+fb_spec.loader.exec_module(fallback)
 spec=importlib.util.spec_from_file_location("omega_self04_runner",HERE.parent/"self_teach04"/"runner.py")
 old=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(old)
@@ -41,7 +46,7 @@ def public():
     return tasks
 
 def grade_dev(code,cases,mode):
-    if mode not in ("batch","isolated"): raise ValueError("BAD_MODE")
+    if mode not in ("batch","isolated","conditional"): raise ValueError("BAD_MODE")
     start=time.monotonic()
     if code is None:
         obs=[{"error":"NO_CODE"} for _ in cases]
@@ -49,6 +54,11 @@ def grade_dev(code,cases,mode):
     elif mode=="batch":
         obs=SAFE.execute_student(code,[r["input"] for r in cases])
         workers=1
+    elif mode=="conditional":
+        diagnostic=fallback.evaluate(
+            SAFE.execute_student,code,[r["input"] for r in cases])
+        obs=diagnostic["observations"]
+        workers=diagnostic["worker_calls"]
     else:
         obs=[SAFE.execute_student(code,[r["input"]])[0] for r in cases]
         workers=len(cases)
