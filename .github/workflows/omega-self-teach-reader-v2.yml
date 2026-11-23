@@ -1,0 +1,32 @@
+name: Omega Self Teach reader V2 - offline regression only
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-self-teach-reader-v2.yml"
+      - "research/learning_hub/self_teach01/reader_v2.py"
+      - "research/learning_hub/self_teach01/test_reader_v2.py"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-format-reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify safe parser and original frozen offline tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s research/learning_hub/self_teach01 \
+            -p test_reader_v2.py -v
+          python -m unittest discover -s research/learning_hub/self_teach01 \
+            -p test_self_teach01.py -v
+          echo "ONLY_READER_TESTED; NO_MODEL_RUN; NO_NEW_LEARNING_CLAIM"
