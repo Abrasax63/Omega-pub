@@ -1,0 +1,66 @@
+name: Omega Self Teach 01 - retrospective format diagnosis, no model
+
+# Forensic investigation of an ALREADY CONSUMED test set. Do not interpret
+# post-hoc parsing changes as new or causal improvements in Omega.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-self-teach-format-audit.yml"
+      - "research/learning_hub/self_teach01/format_audit.py"
+      - "research/learning_hub/self_teach01/test_format_audit.py"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  posthoc-format-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test normalization and disallowed-code guards without models
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s research/learning_hub/self_teach01 -p test_format_audit.py -v
+      - name: Download original raw artifact from completed GitHub run (read only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/self-teach-format/source" "$RUNNER_TEMP/self-teach-format/results"
+          gh run download 45118652661 \
+            --name omega-self-teach01-45118652661 \
+            --dir "$RUNNER_TEMP/self-teach-format/source"
+          echo "7e7088093f4401ab13a6338fe21297bf046c8ef2de535619d3ec5e393edbfa9d  $RUNNER_TEMP/self-teach-format/source/raw.json" | sha256sum -c -
+          echo "cd5f9a3678995c68b7e45300908ceaceb24741af50896a3f520d5153fc99c99a  $RUNNER_TEMP/self-teach-format/source/score.json" | sha256sum -c -
+      - name: Compare original strict score with post-hoc formatting only
+        run: |
+          set -euo pipefail
+          python research/learning_hub/self_teach01/format_audit.py \
+            --raw "$RUNNER_TEMP/self-teach-format/source/raw.json" \
+            --original-score "$RUNNER_TEMP/self-teach-format/source/score.json" \
+            --output "$RUNNER_TEMP/self-teach-format/results/posthoc.json"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"self-teach-format/results/posthoc.json"
+          x=json.loads(p.read_text())
+          assert x["status"]=="RETROSPECTIVE_ON_CONSUMED_TEST_SET"
+          assert x["new_llm_calls"]==x["new_gradients"]==0
+          assert not x["new_learning_or_generalization_demonstrated"]
+          assert x["original_strict"]=={"A":0,"B":0}
+          print("POSTHOC_ONLY_NO_NEW_GENERALIZATION",x["forensic_format_normalization"]["A"]["posthoc_exact"],x["forensic_format_normalization"]["B"]["posthoc_exact"])
+          PY
+      - name: Archive audit only (no hidden gold or model weights)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-self-teach01-posthoc-format-${{ github.run_id }}
+          path: ${{ runner.temp }}/self-teach-format/results/posthoc.json
+          retention-days: 14
+          if-no-files-found: warn
