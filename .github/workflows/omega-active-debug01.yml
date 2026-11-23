@@ -1,0 +1,148 @@
+name: Omega Active Debug01 - code model vs executed feedback and symbolics
+
+# Exactly one first fresh benchmark. Do NOT present reruns as new holdouts.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-active-debug01.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-active-debug01-one-new-cohort
+  cancel-in-progress: false
+
+jobs:
+  prereg-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check preregistered six novel families and AST sandbox controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s research/learning_hub/active_debug01/PREREG.md
+          python -m unittest discover \
+            -s research/learning_hub/active_debug01 \
+            -p test_active_debug01.py -v
+          python -m unittest discover \
+            -s research/learning_hub/semantic04 \
+            -p test_execution_guided.py -v
+
+  real-coder3b-cpu-test:
+    needs: prereg-qa
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    env:
+      LLAMA_BIN_URL: https://github.com/ggml-org/llama.cpp/releases/download/b12633/llama-b12633-bin-ubuntu-x64.tar.gz
+      MODEL_URL: https://huggingface.co/bartowski/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/Qwen2.5-Coder-3B-Instruct-Q4_K_M.gguf
+      MODEL_SHA256: 3da3afe6cf5c674ac195803ea0dd6fee7e1c228c2105c1ce8c66890d1d4ab460
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Download pinned free CPU llama runtime and pinned 3B code model
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/omega-active01/runtime" "$RUNNER_TEMP/omega-active01/output"
+          curl -fLsS --retry 2 --retry-all-errors --max-time 300 \
+            "$LLAMA_BIN_URL" -o "$RUNNER_TEMP/omega-active01/runtime/llama.tar.gz"
+          tar -xzf "$RUNNER_TEMP/omega-active01/runtime/llama.tar.gz" \
+            -C "$RUNNER_TEMP/omega-active01/runtime"
+          BIN="$(find "$RUNNER_TEMP/omega-active01/runtime" -type f -name llama-server | head -1)"
+          test -n "$BIN"
+          chmod +x "$BIN"
+          echo "LLAMA_SERVER=$BIN" >> "$GITHUB_ENV"
+          curl -fLsS --retry 2 --retry-all-errors --max-time 750 \
+            "$MODEL_URL" -o "$RUNNER_TEMP/omega-active01/runtime/model.gguf"
+          test "$(head -c 4 "$RUNNER_TEMP/omega-active01/runtime/model.gguf")" = 'GGUF'
+          echo "$MODEL_SHA256  $RUNNER_TEMP/omega-active01/runtime/model.gguf" | sha256sum -c -
+          sha256sum "$RUNNER_TEMP/omega-active01/runtime/model.gguf" \
+            > "$RUNNER_TEMP/omega-active01/output/model.sha256"
+
+      - name: Start CPU code-specialized Qwen server on loopback only
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIB="$(dirname "$LLAMA_SERVER")"
+          LD_LIBRARY_PATH="$LIB:${LD_LIBRARY_PATH:-}" "$LLAMA_SERVER" \
+            -m "$RUNNER_TEMP/omega-active01/runtime/model.gguf" \
+            --host 127.0.0.1 --port 8080 -c 4096 -t 2 -ngl 0 \
+            > "$RUNNER_TEMP/omega-active01/output/server.log" 2>&1 &
+          for i in $(seq 1 100); do
+            if curl --max-time 2 -sf http://127.0.0.1:8080/health > /dev/null; then
+              echo "LOCAL_CODER3B_READY"
+              exit 0
+            fi
+            sleep 2
+          done
+          tail -n 40 "$RUNNER_TEMP/omega-active01/output/server.log"
+          exit 1
+
+      - name: First run 18 total model requests; direct vs feedback share first draft
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 2300 python -u research/learning_hub/active_debug01/inference.py \
+            --server http://127.0.0.1:8080 \
+            --output "$RUNNER_TEMP/omega-active01/output" \
+            2>&1 | tee "$RUNNER_TEMP/omega-active01/output/inference.log"
+          python - <<'PY'
+          from pathlib import Path
+          import json,os
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'omega-active01/output/inference.json').read_text())
+          assert r['status']=='GENERATION_AND_PUBLIC_SELECTION_COMPLETE_NO_HIDDEN_SCORING'
+          assert len(r['calls'])==18
+          assert len(r['tasks'])==6
+          assert r['max_model_calls']==18
+          assert r['model_weights_modified'] is False
+          assert r['hidden_tests_sent_to_model'] is False
+          print('EIGHTEEN_MODEL_CALLS_COMPLETE_NO_HIDDEN_GRADING_YET')
+          PY
+
+      - name: Only NOW score five independent hidden cases per task and arm
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u research/learning_hub/active_debug01/grade.py \
+            --inference "$RUNNER_TEMP/omega-active01/output/inference.json" \
+            --output "$RUNNER_TEMP/omega-active01/output/grade.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'omega-active01/output/grade.json').read_text())
+          assert r['status']=='EVALUATED_EXPLORATORY_FROZEN_BENCHMARK_CONSUMED'
+          assert r['frozen_new_family_count']==6
+          assert r['cost']['physical_model_calls']==18
+          assert r['no_model_weight_training'] is True
+          assert r['hidden_tests_used_to_select_correction'] is False
+          assert all(v['tasks_total']==6 and v['cases_total']==30
+                     for v in r['scores'].values())
+          print('ACTIVE_DEBUG01_NO_FABRICATED_LEARNING_CLAIM')
+          PY
+
+      - name: Preserve original output, raw code, score, code model SHA and trace
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-active-debug01-raw-real-model
+          path: |
+            ${{ runner.temp }}/omega-active01/output/inference.json
+            ${{ runner.temp }}/omega-active01/output/grade.json
+            ${{ runner.temp }}/omega-active01/output/model.sha256
+            ${{ runner.temp }}/omega-active01/output/inference.log
+            ${{ runner.temp }}/omega-active01/output/server.log
+          retention-days: 14
+          if-no-files-found: warn
