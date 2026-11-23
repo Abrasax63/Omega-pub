@@ -271,11 +271,12 @@ def teacher_feedback(task,raw,arm):
 
 def lesson_prompt(transcript):
     return ("Review ONLY your two previous training attempts and the external "
-            "feedback below. Formulate an actionable procedure for deciding "
-            "equivalence relations on NEW vertex labels, using both a complete "
-            "positive partition and a negative 3-edge premise test. "
+            "feedback below. Infer a general procedure for verifying a finite "
+            "relation on NEW vertex labels, based on what you actually learned. "
+            "Do not assume either attempted answer was correct. Do not invent "
+            "feedback, tests or source truths. "
             "Produce JSON with exactly a 'rule' string of at most 500 characters, "
-            "or {\"abstain\":true}. Never copy or rely on training vertex names.\n"+
+            "or {\"abstain\":true}. Do not use training vertex names.\n"+
             canonical(transcript))
 
 
@@ -349,7 +350,10 @@ def run(root,endpoint,client=None,token_counter=None):
                     "feedback":feedback,
                     "training_grade":score_raw(result["raw"],tuple(task["nodes"]),
                           frozenset(map(tuple,task["edges"])))})
-                history.append({"question":task,"attempt":result["raw"],
+                # Do not reveal truth-labeled IDs TRAIN_POS/TRAIN_NEG to the
+                # rule generator in either arm; preserve IDs only in the audit.
+                visible={"nodes":task["nodes"],"edges":task["edges"]}
+                history.append({"question":visible,"attempt":result["raw"],
                                 "feedback":feedback})
                 report["train_calls"]+=1
                 save(root,"report.json",report)
