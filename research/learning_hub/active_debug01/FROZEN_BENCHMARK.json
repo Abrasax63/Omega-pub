@@ -1,0 +1,381 @@
+{
+  "schema": "OMEGA_ACTIVE_DEBUG01_FROZEN",
+  "date": "2026-11-23",
+  "variant": "6_SYNTHETIC_FAMILIES_2PUBLIC_5HIDDEN",
+  "model": "Qwen2.5-Coder-3B-Instruct-Q4_K_M",
+  "goal": "Compare same-model direct self-review versus execution feedback on unfamiliar logic bug families, plus symbolic and guarded hybrid",
+  "source_pr": 237,
+  "source_prior_benchmark_run": 45074827572,
+  "prior_holdouts_not_loaded": true,
+  "source_reference_not_sent_to_model": true,
+  "model_weights_modified": false,
+  "created_before_model_inference": true,
+  "families": [
+    "palindrome_csv",
+    "opening_parentheses_depth",
+    "hex_pair_values",
+    "alternating_word_case",
+    "balanced_bracket_prefix",
+    "alternating_digit_checksum"
+  ],
+  "tasks": [
+    {
+      "id": "AD01-palindrome_csv",
+      "family": "palindrome_csv",
+      "source_kind": "CURATED_NEW_SYNTHETIC_NEVER_TRAINED",
+      "broken_source": "def transform(s):\n    out = []\n    for word in s.split(','):\n        if word and word.lower() == word[::-1]:\n            out.append(word.lower())\n    return out\n",
+      "reference_source_evaluator_only": "def transform(s):\n    out = []\n    for word in s.split(','):\n        if word and word.lower() == word[::-1].lower():\n            out.append(word.lower())\n    return out\n",
+      "goal": "Return lowercase nonempty comma-separated tokens that read the same forwards and backwards, case-insensitive.",
+      "public_examples": [
+        {
+          "input": "Abba,cat,Level",
+          "output": [
+            "abba",
+            "level"
+          ]
+        },
+        {
+          "input": "Xy,yY,radar",
+          "output": [
+            "yy",
+            "radar"
+          ]
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "A,aa,Aa",
+          "output": [
+            "a",
+            "aa",
+            "aa"
+          ]
+        },
+        {
+          "input": "madam,Book,noon",
+          "output": [
+            "madam",
+            "noon"
+          ]
+        },
+        {
+          "input": "",
+          "output": []
+        },
+        {
+          "input": ",,",
+          "output": []
+        },
+        {
+          "input": "RaceCar,Elle,hello",
+          "output": [
+            "racecar",
+            "elle"
+          ]
+        }
+      ],
+      "model_prompt": "TASK=PYTHON_REPAIR\nGoal: Return lowercase nonempty comma-separated tokens that read the same forwards and backwards, case-insensitive.\nThe given function is valid Python but has a logic bug.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for word in s.split(','):\n        if word and word.lower() == word[::-1]:\n            out.append(word.lower())\n    return out\n\nPUBLIC INPUT/OUTPUT EXAMPLES:\n[{\"input\":\"Abba,cat,Level\",\"output\":[\"abba\",\"level\"]},{\"input\":\"Xy,yY,radar\",\"output\":[\"yy\",\"radar\"]}]\nReturn ONLY the full corrected def transform(s) Python function. No Markdown.",
+      "hidden_expected_never_sent_to_model": true
+    },
+    {
+      "id": "AD01-opening_parentheses_depth",
+      "family": "opening_parentheses_depth",
+      "source_kind": "CURATED_NEW_SYNTHETIC_NEVER_TRAINED",
+      "broken_source": "def transform(s):\n    out = []\n    depth = 0\n    for c in s:\n        if c == '(':\n            out.append(str(depth))\n            depth += 1\n        elif c == ')':\n            depth = max(0, depth - 1)\n    return out\n",
+      "reference_source_evaluator_only": "def transform(s):\n    out = []\n    depth = 0\n    for c in s:\n        if c == '(':\n            depth += 1\n            out.append(str(depth))\n        elif c == ')':\n            depth = max(0, depth - 1)\n    return out\n",
+      "goal": "Return the 1-based current nesting depth as a string each time an opening parenthesis is encountered; closing parenthesis decreases depth down to zero; ignore other characters.",
+      "public_examples": [
+        {
+          "input": "(()())",
+          "output": [
+            "1",
+            "2",
+            "2"
+          ]
+        },
+        {
+          "input": "a(b)(())",
+          "output": [
+            "1",
+            "1",
+            "2"
+          ]
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "((()))",
+          "output": [
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        {
+          "input": "()()",
+          "output": [
+            "1",
+            "1"
+          ]
+        },
+        {
+          "input": "x(y(z))",
+          "output": [
+            "1",
+            "2"
+          ]
+        },
+        {
+          "input": "",
+          "output": []
+        },
+        {
+          "input": ")((a)",
+          "output": [
+            "1",
+            "2"
+          ]
+        }
+      ],
+      "model_prompt": "TASK=PYTHON_REPAIR\nGoal: Return the 1-based current nesting depth as a string each time an opening parenthesis is encountered; closing parenthesis decreases depth down to zero; ignore other characters.\nThe given function is valid Python but has a logic bug.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    depth = 0\n    for c in s:\n        if c == '(':\n            out.append(str(depth))\n            depth += 1\n        elif c == ')':\n            depth = max(0, depth - 1)\n    return out\n\nPUBLIC INPUT/OUTPUT EXAMPLES:\n[{\"input\":\"(()())\",\"output\":[\"1\",\"2\",\"2\"]},{\"input\":\"a(b)(())\",\"output\":[\"1\",\"1\",\"2\"]}]\nReturn ONLY the full corrected def transform(s) Python function. No Markdown.",
+      "hidden_expected_never_sent_to_model": true
+    },
+    {
+      "id": "AD01-hex_pair_values",
+      "family": "hex_pair_values",
+      "source_kind": "CURATED_NEW_SYNTHETIC_NEVER_TRAINED",
+      "broken_source": "def transform(s):\n    out = []\n    for i in range(0, len(s) - 1, 2):\n        pair = s[i:i+2]\n        out.append(str(int(pair, 10)))\n    return out\n",
+      "reference_source_evaluator_only": "def transform(s):\n    out = []\n    for i in range(0, len(s) - 1, 2):\n        pair = s[i:i+2]\n        out.append(str(int(pair, 16)))\n    return out\n",
+      "goal": "Read each consecutive complete pair of hexadecimal digits (0-9, a-f, A-F) and return the pair's decimal value as a string. Ignore a trailing unpaired digit.",
+      "public_examples": [
+        {
+          "input": "1fa0",
+          "output": [
+            "31",
+            "160"
+          ]
+        },
+        {
+          "input": "0A0f4",
+          "output": [
+            "10",
+            "15"
+          ]
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "FF00",
+          "output": [
+            "255",
+            "0"
+          ]
+        },
+        {
+          "input": "abcdef",
+          "output": [
+            "171",
+            "205",
+            "239"
+          ]
+        },
+        {
+          "input": "a0",
+          "output": [
+            "160"
+          ]
+        },
+        {
+          "input": "1",
+          "output": []
+        },
+        {
+          "input": "20eF",
+          "output": [
+            "32",
+            "239"
+          ]
+        }
+      ],
+      "model_prompt": "TASK=PYTHON_REPAIR\nGoal: Read each consecutive complete pair of hexadecimal digits (0-9, a-f, A-F) and return the pair's decimal value as a string. Ignore a trailing unpaired digit.\nThe given function is valid Python but has a logic bug.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for i in range(0, len(s) - 1, 2):\n        pair = s[i:i+2]\n        out.append(str(int(pair, 10)))\n    return out\n\nPUBLIC INPUT/OUTPUT EXAMPLES:\n[{\"input\":\"1fa0\",\"output\":[\"31\",\"160\"]},{\"input\":\"0A0f4\",\"output\":[\"10\",\"15\"]}]\nReturn ONLY the full corrected def transform(s) Python function. No Markdown.",
+      "hidden_expected_never_sent_to_model": true
+    },
+    {
+      "id": "AD01-alternating_word_case",
+      "family": "alternating_word_case",
+      "source_kind": "CURATED_NEW_SYNTHETIC_NEVER_TRAINED",
+      "broken_source": "def transform(s):\n    out = []\n    for i, word in enumerate(s.split()):\n        if len(word) % 2 == 0:\n            out.append(word.lower())\n        else:\n            out.append(word.upper())\n    return out\n",
+      "reference_source_evaluator_only": "def transform(s):\n    out = []\n    for i, word in enumerate(s.split()):\n        if i % 2 == 0:\n            out.append(word.lower())\n        else:\n            out.append(word.upper())\n    return out\n",
+      "goal": "Split a string into whitespace-separated nonempty words. Return words at even 0-based positions in lowercase, words at odd positions in uppercase.",
+      "public_examples": [
+        {
+          "input": "One tWo THREE four",
+          "output": [
+            "one",
+            "TWO",
+            "three",
+            "FOUR"
+          ]
+        },
+        {
+          "input": "aa BBB c dd",
+          "output": [
+            "aa",
+            "BBB",
+            "c",
+            "DD"
+          ]
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "A bb ccc dddd",
+          "output": [
+            "a",
+            "BB",
+            "ccc",
+            "DDDD"
+          ]
+        },
+        {
+          "input": "abc",
+          "output": [
+            "abc"
+          ]
+        },
+        {
+          "input": "  Cat  DOG ",
+          "output": [
+            "cat",
+            "DOG"
+          ]
+        },
+        {
+          "input": "",
+          "output": []
+        },
+        {
+          "input": "xy z",
+          "output": [
+            "xy",
+            "Z"
+          ]
+        }
+      ],
+      "model_prompt": "TASK=PYTHON_REPAIR\nGoal: Split a string into whitespace-separated nonempty words. Return words at even 0-based positions in lowercase, words at odd positions in uppercase.\nThe given function is valid Python but has a logic bug.\nBROKEN SOURCE:\ndef transform(s):\n    out = []\n    for i, word in enumerate(s.split()):\n        if len(word) % 2 == 0:\n            out.append(word.lower())\n        else:\n            out.append(word.upper())\n    return out\n\nPUBLIC INPUT/OUTPUT EXAMPLES:\n[{\"input\":\"One tWo THREE four\",\"output\":[\"one\",\"TWO\",\"three\",\"FOUR\"]},{\"input\":\"aa BBB c dd\",\"output\":[\"aa\",\"BBB\",\"c\",\"DD\"]}]\nReturn ONLY the full corrected def transform(s) Python function. No Markdown.",
+      "hidden_expected_never_sent_to_model": true
+    },
+    {
+      "id": "AD01-balanced_bracket_prefix",
+      "family": "balanced_bracket_prefix",
+      "source_kind": "CURATED_NEW_SYNTHETIC_NEVER_TRAINED",
+      "broken_source": "def transform(s):\n    depth = 0\n    for c in s:\n        if c == '(':\n            depth += 1\n        elif c == ')':\n            depth -= 1\n    if depth == 0:\n        return ['OK']\n    return ['BAD']\n",
+      "reference_source_evaluator_only": "def transform(s):\n    depth = 0\n    for c in s:\n        if c == '(':\n            depth += 1\n        elif c == ')':\n            depth -= 1\n            if depth < 0:\n                return ['BAD']\n    if depth == 0:\n        return ['OK']\n    return ['BAD']\n",
+      "goal": "Return ['OK'] only if all parentheses are balanced and every prefix has at least as many opening as closing brackets; ignore other characters. Otherwise return ['BAD'].",
+      "public_examples": [
+        {
+          "input": ")(",
+          "output": [
+            "BAD"
+          ]
+        },
+        {
+          "input": "(()())",
+          "output": [
+            "OK"
+          ]
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "()()",
+          "output": [
+            "OK"
+          ]
+        },
+        {
+          "input": "((())",
+          "output": [
+            "BAD"
+          ]
+        },
+        {
+          "input": "(()))(",
+          "output": [
+            "BAD"
+          ]
+        },
+        {
+          "input": "",
+          "output": [
+            "OK"
+          ]
+        },
+        {
+          "input": "a(b)c",
+          "output": [
+            "OK"
+          ]
+        }
+      ],
+      "model_prompt": "TASK=PYTHON_REPAIR\nGoal: Return ['OK'] only if all parentheses are balanced and every prefix has at least as many opening as closing brackets; ignore other characters. Otherwise return ['BAD'].\nThe given function is valid Python but has a logic bug.\nBROKEN SOURCE:\ndef transform(s):\n    depth = 0\n    for c in s:\n        if c == '(':\n            depth += 1\n        elif c == ')':\n            depth -= 1\n    if depth == 0:\n        return ['OK']\n    return ['BAD']\n\nPUBLIC INPUT/OUTPUT EXAMPLES:\n[{\"input\":\")(\",\"output\":[\"BAD\"]},{\"input\":\"(()())\",\"output\":[\"OK\"]}]\nReturn ONLY the full corrected def transform(s) Python function. No Markdown.",
+      "hidden_expected_never_sent_to_model": true
+    },
+    {
+      "id": "AD01-alternating_digit_checksum",
+      "family": "alternating_digit_checksum",
+      "source_kind": "CURATED_NEW_SYNTHETIC_NEVER_TRAINED",
+      "broken_source": "def transform(s):\n    total = 0\n    sign = 1\n    for c in s:\n        if c.isdigit():\n            total += sign * int(c)\n        sign = -sign\n    return [str(total)]\n",
+      "reference_source_evaluator_only": "def transform(s):\n    total = 0\n    sign = 1\n    for c in s:\n        if c.isdigit():\n            total += sign * int(c)\n            sign = -sign\n    return [str(total)]\n",
+      "goal": "Ignore all non-digit characters. Add the first digit, subtract the next digit, add the next, and so on. Return one string with the final signed integer.",
+      "public_examples": [
+        {
+          "input": "1a2",
+          "output": [
+            "-1"
+          ]
+        },
+        {
+          "input": "a9b2",
+          "output": [
+            "7"
+          ]
+        }
+      ],
+      "hidden_tests": [
+        {
+          "input": "4-3-2",
+          "output": [
+            "3"
+          ]
+        },
+        {
+          "input": "12",
+          "output": [
+            "-1"
+          ]
+        },
+        {
+          "input": "a0b0c9",
+          "output": [
+            "9"
+          ]
+        },
+        {
+          "input": "xyz",
+          "output": [
+            "0"
+          ]
+        },
+        {
+          "input": "8x7y1",
+          "output": [
+            "2"
+          ]
+        }
+      ],
+      "model_prompt": "TASK=PYTHON_REPAIR\nGoal: Ignore all non-digit characters. Add the first digit, subtract the next digit, add the next, and so on. Return one string with the final signed integer.\nThe given function is valid Python but has a logic bug.\nBROKEN SOURCE:\ndef transform(s):\n    total = 0\n    sign = 1\n    for c in s:\n        if c.isdigit():\n            total += sign * int(c)\n        sign = -sign\n    return [str(total)]\n\nPUBLIC INPUT/OUTPUT EXAMPLES:\n[{\"input\":\"1a2\",\"output\":[\"-1\"]},{\"input\":\"a9b2\",\"output\":[\"7\"]}]\nReturn ONLY the full corrected def transform(s) Python function. No Markdown.",
+      "hidden_expected_never_sent_to_model": true
+    }
+  ]
+}
