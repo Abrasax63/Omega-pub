@@ -38,6 +38,11 @@ jobs:
             -p test_execution_guided.py -v
 
   real-coder3b-cpu-test:
+    # The first real-model run was already launched on frozen commit
+    # 676b8e01067c7d131967ae1122f95a040dadee42 (run #45117873741).
+    # Later PR updates must NOT download the 2GB model and rescore the
+    # same now-consumed cohort as though it were a new independent test.
+    if: false
     needs: prereg-qa
     runs-on: ubuntu-latest
     timeout-minutes: 48
