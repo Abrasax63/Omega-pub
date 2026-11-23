@@ -116,9 +116,9 @@ class WebLearningPilotTests(unittest.TestCase):
             Path(__file__).resolve().parents[2]
             / ".github/workflows/omega-math-web-learning-pilot.yml"
         ).read_text(encoding="utf-8")
-        marker = "          python - <<'PY'\\n"
+        marker = "          python - <<'PY'\n"
         start = workflow.index(marker) + len(marker)
-        end = workflow.index("          PY\\n", start)
+        end = workflow.index("          PY\n", start)
         validator = textwrap.dedent(workflow[start:end])
 
         with TemporaryDirectory() as td:
@@ -144,7 +144,7 @@ class WebLearningPilotTests(unittest.TestCase):
                     )
                     self.assertEqual(
                         completed.returncode == 0, expected_success,
-                        f"{label}: {completed.stdout}\\n{completed.stderr}",
+                        f"{label}: {completed.stdout}\n{completed.stderr}",
                     )
 
 if __name__=="__main__":
