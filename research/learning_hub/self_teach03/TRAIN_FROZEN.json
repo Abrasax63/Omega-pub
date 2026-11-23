@@ -1,0 +1,236 @@
+{
+  "schema": "OMEGA_SELF_TEACH03_TRAIN_V1",
+  "provenance": "AUTHOR_GENERATED_SYNTHETIC_NOT_OMEGA_DISCOVERY",
+  "train": [
+    {
+      "id": "L1",
+      "family": "alternating_ascii_letter_case_ignoring_separators",
+      "goal": "Walk left to right. For ASCII letters only (A-Z,a-z), count the encountered letters starting at 0. Return one character per letter: lowercase at even letter-count positions, uppercase at odd letter-count positions. Ignore every non-ASCII-letter character without incrementing the letter counter.",
+      "public_examples": [
+        {
+          "input": "a!bC?",
+          "expected": [
+            "a",
+            "B",
+            "c"
+          ]
+        },
+        {
+          "input": "ABC",
+          "expected": [
+            "a",
+            "B",
+            "c"
+          ]
+        },
+        {
+          "input": "7Ab-3Cd",
+          "expected": [
+            "a",
+            "B",
+            "c",
+            "D"
+          ]
+        },
+        {
+          "input": "a",
+          "expected": [
+            "a"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        }
+      ],
+      "development_cases": [
+        {
+          "input": "a1b",
+          "expected": [
+            "a",
+            "B"
+          ]
+        },
+        {
+          "input": "A!b?C",
+          "expected": [
+            "a",
+            "B",
+            "c"
+          ]
+        },
+        {
+          "input": "-",
+          "expected": []
+        },
+        {
+          "input": "aBcDEf",
+          "expected": [
+            "a",
+            "B",
+            "c",
+            "D",
+            "e",
+            "F"
+          ]
+        },
+        {
+          "input": "1x2Y3z",
+          "expected": [
+            "x",
+            "Y",
+            "z"
+          ]
+        },
+        {
+          "input": "aaAAa",
+          "expected": [
+            "a",
+            "A",
+            "a",
+            "A",
+            "a"
+          ]
+        },
+        {
+          "input": "z Z z",
+          "expected": [
+            "z",
+            "Z",
+            "z"
+          ]
+        },
+        {
+          "input": "__AB__",
+          "expected": [
+            "a",
+            "B"
+          ]
+        },
+        {
+          "input": "e1f2g3h",
+          "expected": [
+            "e",
+            "F",
+            "g",
+            "H"
+          ]
+        },
+        {
+          "input": "XYZ!pQ",
+          "expected": [
+            "x",
+            "Y",
+            "z",
+            "P",
+            "q"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "L2",
+      "family": "nonoverlap_pair_substrings",
+      "goal": "Read the input from left to right in nonoverlapping groups of exactly 2 characters. Return each complete pair as a string, preserving punctuation and case. Discard the final character if it has no partner.",
+      "public_examples": [
+        {
+          "input": "abcd",
+          "expected": [
+            "ab",
+            "cd"
+          ]
+        },
+        {
+          "input": "abc",
+          "expected": [
+            "ab"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": "A!B?",
+          "expected": [
+            "A!",
+            "B?"
+          ]
+        },
+        {
+          "input": "1",
+          "expected": []
+        }
+      ],
+      "development_cases": [
+        {
+          "input": "aabbcc",
+          "expected": [
+            "aa",
+            "bb",
+            "cc"
+          ]
+        },
+        {
+          "input": "!",
+          "expected": []
+        },
+        {
+          "input": "A1?2",
+          "expected": [
+            "A1",
+            "?2"
+          ]
+        },
+        {
+          "input": "12345",
+          "expected": [
+            "12",
+            "34"
+          ]
+        },
+        {
+          "input": "ab ab",
+          "expected": [
+            "ab",
+            " a"
+          ]
+        },
+        {
+          "input": "xyZ",
+          "expected": [
+            "xy"
+          ]
+        },
+        {
+          "input": "12345678",
+          "expected": [
+            "12",
+            "34",
+            "56",
+            "78"
+          ]
+        },
+        {
+          "input": " a ",
+          "expected": [
+            " a"
+          ]
+        },
+        {
+          "input": "AA00",
+          "expected": [
+            "AA",
+            "00"
+          ]
+        },
+        {
+          "input": "a.b",
+          "expected": [
+            "a."
+          ]
+        }
+      ]
+    }
+  ]
+}
