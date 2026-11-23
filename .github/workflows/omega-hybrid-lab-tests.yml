@@ -25,6 +25,8 @@ on:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_procedure06.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_procedure06.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/OMEGA_HYBRID_PROCEDURE06_PREREG_2026-11-23.md"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_procedure06_real.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/OMEGA_HYBRID_PROCEDURE06_RESULTS_2026-11-23.md"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_procedure06_audit.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_procedure06_audit.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_transfer05_audit.py"
@@ -64,6 +66,7 @@ jobs:
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_procedure06.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_procedure06_audit.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_procedure06_audit.py
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_procedure06_real.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_transfer05_audit.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_transfer05_audit.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_lab.py
