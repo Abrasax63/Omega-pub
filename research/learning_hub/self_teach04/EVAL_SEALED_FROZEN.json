@@ -1,0 +1,130 @@
+{
+  "schema": "OMEGA_SELF_TEACH04_EVAL_SEALED_V1",
+  "holdout": [
+    {
+      "id": "Q1",
+      "family": "uppercase_spans_start_and_length",
+      "hidden_cases": [
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": "aA",
+          "expected": [
+            "1:1"
+          ]
+        },
+        {
+          "input": "ABcDE",
+          "expected": [
+            "0:2",
+            "3:2"
+          ]
+        },
+        {
+          "input": "ABCDEF",
+          "expected": [
+            "0:6"
+          ]
+        },
+        {
+          "input": "aBBbC",
+          "expected": [
+            "1:2",
+            "4:1"
+          ]
+        },
+        {
+          "input": "XY_zZQ",
+          "expected": [
+            "0:2",
+            "4:2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q2",
+      "family": "vowel_spans_minimum_two_preserve_case",
+      "hidden_cases": [
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": "a",
+          "expected": []
+        },
+        {
+          "input": "bbEExoo",
+          "expected": [
+            "EE",
+            "oo"
+          ]
+        },
+        {
+          "input": "aEiOxyz",
+          "expected": [
+            "aEiO"
+          ]
+        },
+        {
+          "input": "BbcD",
+          "expected": []
+        },
+        {
+          "input": "OUpAEi",
+          "expected": [
+            "OU",
+            "AEi"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q3",
+      "family": "hash_at_spans_end_and_length",
+      "hidden_cases": [
+        {
+          "input": "",
+          "expected": []
+        },
+        {
+          "input": "###",
+          "expected": [
+            "2:3"
+          ]
+        },
+        {
+          "input": "a@#b",
+          "expected": [
+            "2:2"
+          ]
+        },
+        {
+          "input": "##a@b###",
+          "expected": [
+            "1:2",
+            "3:1",
+            "7:3"
+          ]
+        },
+        {
+          "input": "@x@y",
+          "expected": [
+            "0:1",
+            "2:1"
+          ]
+        },
+        {
+          "input": "#@@?@",
+          "expected": [
+            "2:3",
+            "4:1"
+          ]
+        }
+      ]
+    }
+  ]
+}

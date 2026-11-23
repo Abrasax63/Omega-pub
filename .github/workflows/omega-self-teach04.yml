@@ -1,0 +1,137 @@
+name: Omega Self Teach 04 - blind 18-case ledger and repair experiment
+
+# One new preregistered independent run-segmentation cohort. No automatic synchronize replay of held-out
+# questions after first real scoring. Do not promote CI green as new learning.
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - ".github/workflows/omega-self-teach04.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-self-teach04-first-blind
+  cancel-in-progress: false
+
+jobs:
+  offline-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate frozen cohorts, full trace, AST, failure selection and no hidden imports
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s research/learning_hub/self_teach04/PREREG.md
+          python -m unittest discover -s research/learning_hub/self_teach04 \
+            -p test_self_teach04.py -v
+
+  one-real-cpu-blind-trial:
+    needs: offline-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 42
+    env:
+      LLAMA_BIN_URL: https://github.com/ggml-org/llama.cpp/releases/download/b12633/llama-b12633-bin-ubuntu-x64.tar.gz
+      MODEL_URL: https://huggingface.co/bartowski/Qwen2.5-3B-Instruct-GGUF/resolve/main/Qwen2.5-3B-Instruct-Q4_K_M.gguf
+      MODEL_SHA256: 9c9f56a391a3abbd5b89d0245bf6106081bcc3173119d4229235dd9d23253f94
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Download already audited free CPU runtime and pinned local Qwen3B
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/self-teach04/runtime" "$RUNNER_TEMP/self-teach04/output"
+          curl -fLsS --retry 2 --retry-all-errors --max-time 300 \
+            "$LLAMA_BIN_URL" -o "$RUNNER_TEMP/self-teach04/runtime/llama.tar.gz"
+          tar -xzf "$RUNNER_TEMP/self-teach04/runtime/llama.tar.gz" \
+            -C "$RUNNER_TEMP/self-teach04/runtime"
+          BIN="$(find "$RUNNER_TEMP/self-teach04/runtime" -type f -name llama-server | head -1)"
+          test -n "$BIN"
+          chmod +x "$BIN"
+          echo "LLAMA_SERVER=$BIN" >> "$GITHUB_ENV"
+          curl -fLsS --retry 2 --retry-all-errors --max-time 750 \
+            "$MODEL_URL" -o "$RUNNER_TEMP/self-teach04/runtime/model.gguf"
+          test "$(head -c 4 "$RUNNER_TEMP/self-teach04/runtime/model.gguf")" = 'GGUF'
+          echo "$MODEL_SHA256  $RUNNER_TEMP/self-teach04/runtime/model.gguf" | sha256sum -c -
+          sha256sum "$RUNNER_TEMP/self-teach04/runtime/model.gguf" \
+            > "$RUNNER_TEMP/self-teach04/output/model.sha256"
+      - name: Serve the local model over localhost only; do not expose API publicly
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIB="$(dirname "$LLAMA_SERVER")"
+          LD_LIBRARY_PATH="$LIB:${LD_LIBRARY_PATH:-}" "$LLAMA_SERVER" \
+            -m "$RUNNER_TEMP/self-teach04/runtime/model.gguf" \
+            --host 127.0.0.1 --port 8080 -c 6144 -t 2 -ngl 0 \
+            > "$RUNNER_TEMP/self-teach04/output/server.log" 2>&1 &
+          for i in $(seq 1 100); do
+            if curl --max-time 2 -sf http://127.0.0.1:8080/health > /dev/null; then
+              echo "CPU_MODEL_READY"
+              exit 0
+            fi
+            sleep 2
+          done
+          tail -n 40 "$RUNNER_TEMP/self-teach04/output/server.log"
+          exit 1
+      - name: Generate guarded practice and A/P/B, without opening any hidden test
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 1700 python -u research/learning_hub/self_teach04/runner.py \
+            --server http://127.0.0.1:8080 \
+            --output "$RUNNER_TEMP/self-teach04/output/raw.json" \
+            | tee "$RUNNER_TEMP/self-teach04/output/generation.log"
+          test -s "$RUNNER_TEMP/self-teach04/output/raw.json"
+          sha256sum "$RUNNER_TEMP/self-teach04/output/raw.json" \
+            > "$RUNNER_TEMP/self-teach04/output/raw.sha256"
+      - name: Grade the NEW frozen 18-case cohort only after raw output is saved
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u research/learning_hub/self_teach04/score.py \
+            --raw "$RUNNER_TEMP/self-teach04/output/raw.json" \
+            --output "$RUNNER_TEMP/self-teach04/output/score.json" \
+            | tee "$RUNNER_TEMP/self-teach04/output/score.log"
+          python - <<'PY'
+          import json,os,pathlib
+          r=pathlib.Path(os.environ["RUNNER_TEMP"])/"self-teach04/output"
+          result=json.loads((r/"score.json").read_text())
+          assert result['A']['total']==result['P']['total']==result['B']['total']==18
+          assert result['C']['status']=='TRAINING_NOT_AUTHORIZED'
+          assert result['new_blind_holdout_now_consumed']
+          assert not result['causal_generalization_proven']
+          if not result['training']['memory_admitted']:
+            assert result['P']['exact']==result['B']['exact']
+            assert result['B_actual_model_calls']==0
+          print('SELF_TEACH04_GOLD_CONSUMED',result['status'])
+          PY
+          sha256sum "$RUNNER_TEMP/self-teach04/output/score.json" \
+            > "$RUNNER_TEMP/self-teach04/output/score.sha256"
+      - name: Archive immutable raw training trials, logs and blind scoring
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-self-teach04-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/self-teach04/output/raw.json
+            ${{ runner.temp }}/self-teach04/output/raw.sha256
+            ${{ runner.temp }}/self-teach04/output/score.json
+            ${{ runner.temp }}/self-teach04/output/score.sha256
+            ${{ runner.temp }}/self-teach04/output/model.sha256
+            ${{ runner.temp }}/self-teach04/output/generation.log
+            ${{ runner.temp }}/self-teach04/output/score.log
+          retention-days: 14
+          if-no-files-found: warn
