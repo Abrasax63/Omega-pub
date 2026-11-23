@@ -120,6 +120,7 @@ jobs:
               assert r["manual_semantic_structures_supplied"]==0
               assert r["same_model_same_question_same_output_token_cap"]
               assert len(r["retrieval"]["sources"]) <= 2
+              assert r["mathematical_proofs_certified"] == 0
               assert not r["direct_guard"].get("theorem_certified", False)
               assert not r["web_guard"].get("theorem_certified", False)
           else:
