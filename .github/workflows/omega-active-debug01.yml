@@ -1,6 +1,7 @@
 name: Omega Active Debug01 - code model vs executed feedback and symbolics
 
 # Exactly one first fresh benchmark. Do NOT present reruns as new holdouts.
+# Technical preflight test fix before the first model call; all benchmark data and prompts remain frozen.
 on:
   pull_request:
     paths:
