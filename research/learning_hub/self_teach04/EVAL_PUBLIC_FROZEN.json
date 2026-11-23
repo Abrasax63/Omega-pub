@@ -1,0 +1,64 @@
+{
+  "schema": "OMEGA_SELF_TEACH04_EVAL_PUBLIC_V1",
+  "evaluation": [
+    {
+      "id": "Q1",
+      "family": "uppercase_spans_start_and_length",
+      "goal": "Find every maximal contiguous run of uppercase ASCII letters A-Z. Return one string per run in left-to-right order formatted as zero-based starting absolute index, colon, and run length. All other characters break a run. Include the run at end of input.",
+      "public_examples": [
+        {
+          "input": "AabBCd",
+          "expected": [
+            "0:1",
+            "3:2"
+          ]
+        },
+        {
+          "input": "ABC",
+          "expected": [
+            "0:3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q2",
+      "family": "vowel_spans_minimum_two_preserve_case",
+      "goal": "Find every maximal contiguous run made only of vowels A,E,I,O,U and a,e,i,o,u. Keep only runs of length at least 2. Return each original substring with its case unchanged. Consonants, digits, punctuation and spaces break runs. Include the final run.",
+      "public_examples": [
+        {
+          "input": "bAEioX",
+          "expected": [
+            "AEio"
+          ]
+        },
+        {
+          "input": "aei",
+          "expected": [
+            "aei"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q3",
+      "family": "hash_at_spans_end_and_length",
+      "goal": "Find each maximal contiguous run of characters that are either '#' or '@'. Return one string per run formatted as the run's zero-based absolute final index, colon, and its length in characters. Any other character breaks a run. Include a run ending at the input's last character.",
+      "public_examples": [
+        {
+          "input": "#@a@@",
+          "expected": [
+            "1:2",
+            "4:2"
+          ]
+        },
+        {
+          "input": "x#",
+          "expected": [
+            "1:1"
+          ]
+        }
+      ]
+    }
+  ]
+}
