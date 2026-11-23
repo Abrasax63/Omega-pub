@@ -53,3 +53,14 @@ Un gain ponctuel sur quatre tâches NE démontre ni supériorité statistique, n
 ## Frontière d'exécution
 
 Ce commit est le protocole seulement : ne contient ni nouvel exécuteur, ni appel LLM, ni workflow et ne modifie pas `main`. **Ne pas exécuter REAL-02** avant un second gel explicite des données, des prompts/evaluateurs et de leurs empreintes. Aucun contournement du garde de citation ni promotion de candidat. Tout amendement après run relève d'une nouvelle cohorte.
+
+
+## Amendement pré-exécution A (2026-11-23, avant tout appel REAL-02)
+
+Source figée : Oscar Levin, *Discrete Mathematics: An Open Introduction*, quatrième édition, source PreTeXt public CC BY-NC-SA 4.0 : `https://github.com/oscarlevin/discrete-book/blob/1a2005c6797bec10289f09e706f81c6c4b809a52/source/sec_gt-relations.ptx`. Commit amont `1a2005c6797bec10289f09e706f81c6c4b809a52`, Git blob SHA-1 `75bebda318694bb4712d60380b0e183e77f1e757`. Le contrôle de l'objet Git exact est effectué **avant** extraction ; le SHA-256 du fichier et de la graine est ensuite enregistré, sans accepter une version flottante. Le passage non annoté est déterministement formé des **sept premiers enfants XML directs** de `subsec_equivalence-relations` (texte `itertext`, espaces normalisés), sans solutions, exercices, prompts ni réponses ajoutés. Source de référence lisible : https://discrete.openmathbooks.org/dmoi4/sec_gt-relations.html .
+
+La cohorte aveugle est déterministe depuis `OMEGA-LIBRARY-MEMORY-REAL-02-HOLDOUT` : classement des 512 relations sur trois sommets par SHA-256 du sel suivi du masque, premières deux satisfaisant la signature mathématique autonome proposée et premières deux ne la satisfaisant pas, puis permutation par graine fixée 9204. Ces quatre masques ne sont jamais présentés au modèle avant le gel de l'acquisition, et la vérité est calculée par `check_axioms`. L'exemple du manuel (relations sur les entiers) n'est pas une relation sur les trois sommets choisis ; ne pas choisir manuellement des questions favorables.
+
+Réduction explicite de portée : **fidélité formelle bornée** uniquement. Le modèle doit produire, en plus de la fiche brute, `formal_axioms`, `positive_edges` et `negative_edges` sur a,b,c sans exemples fournis. On vérifie EXACTEMENT la signature du concept (parmi les huit propriétés et les classes équivalence/préordre/ordre partiel), les deux exemples par oracle et la citation exacte. La définition libre en prose et les hypothèses ne sont PAS entièrement certifiées ; elles restent en quarantaine. Tout gain ultérieur mesurera la réutilisation de la **représentation formelle contrôlée**, jamais la compréhension générale de la prose. Le critère de gain D/M/N, le contrôle négatif et la tolérance ±5 % ne changent pas. Si la représentation bornée échoue, le test de mémoire est bloqué et l'échec doit rester visible.
+
+Ce gel ne décrit PAS un résultat exécuté. Il est ajouté avant le workflow et avant les appels au modèle.
