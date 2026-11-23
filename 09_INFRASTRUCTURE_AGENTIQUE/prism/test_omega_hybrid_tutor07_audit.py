@@ -11,7 +11,7 @@ import omega_hybrid_tutor07_audit as a
 class FakeModel:
     def __call__(self,messages,limit):
         prompt=messages[-1]["content"]
-        if "Formulate an actionable procedure" in prompt:
+        if "Infer a general procedure" in prompt:
             raw='{"rule":"Check every directed premise and every missing edge; for a positive claim match a complete partition."}'
         else:
             raw='{"holds":false,"failed_axioms":["transitive"],"certificate":{"kind":"missing_transitive_edge","triple":["a","b","c"],"premises":{"xy":true,"yz":true,"xz":false}}}'
