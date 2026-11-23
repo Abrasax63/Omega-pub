@@ -147,7 +147,8 @@ def equalize(endpoint, prompts):
         for _ in range(MAX_REPAIR_PAD):
             if count_tokens(endpoint, out[arm]) >= wanted:
                 break
-            out[arm] += FILLER
+            out[arm] = out[arm].replace(" Repair your own relation once.",
+                         FILLER + " Repair your own relation once.", 1)
     counts = {k:count_tokens(endpoint,v) for k,v in out.items()}
     comparable = (min(counts.values()) > 0
                   and (max(counts.values())-min(counts.values()))
