@@ -1,0 +1,169 @@
+{
+  "schema": "OMEGA_SELF_TEACH_TRAIN_01",
+  "provenance": "DESIGNER_SYNTHETIC_NOT_SELF_DISCOVERED",
+  "train": [
+    {
+      "id": "S1",
+      "family": "semicolon_field_lengths",
+      "goal": "Split a string at semicolons; ignore empty fields; return each nonempty field followed by ':' and its character length. Preserve spaces and case.",
+      "public_examples": [
+        {
+          "input": "a;bb;;c",
+          "expected": [
+            "a:1",
+            "bb:2",
+            "c:1"
+          ]
+        },
+        {
+          "input": ";A;",
+          "expected": [
+            "A:1"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        }
+      ],
+      "development_cases": [
+        {
+          "input": "ab; c",
+          "expected": [
+            "ab:2",
+            " c:2"
+          ]
+        },
+        {
+          "input": "a;bc;def",
+          "expected": [
+            "a:1",
+            "bc:2",
+            "def:3"
+          ]
+        },
+        {
+          "input": ";abc;",
+          "expected": [
+            "abc:3"
+          ]
+        },
+        {
+          "input": "x;;yy",
+          "expected": [
+            "x:1",
+            "yy:2"
+          ]
+        },
+        {
+          "input": "no",
+          "expected": [
+            "no:2"
+          ]
+        },
+        {
+          "input": "A;1;??",
+          "expected": [
+            "A:1",
+            "1:1",
+            "??:2"
+          ]
+        },
+        {
+          "input": ";;",
+          "expected": []
+        },
+        {
+          "input": "a;b",
+          "expected": [
+            "a:1",
+            "b:1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "family": "adjacent_case_comparison",
+      "goal": "For each adjacent pair of characters in a string, return 'same' if the two characters are equal ignoring case, otherwise 'different'. Return [] for length < 2.",
+      "public_examples": [
+        {
+          "input": "aAb",
+          "expected": [
+            "same",
+            "different"
+          ]
+        },
+        {
+          "input": "AAA",
+          "expected": [
+            "same",
+            "same"
+          ]
+        },
+        {
+          "input": "",
+          "expected": []
+        }
+      ],
+      "development_cases": [
+        {
+          "input": "BbCc",
+          "expected": [
+            "same",
+            "different",
+            "same"
+          ]
+        },
+        {
+          "input": "abc",
+          "expected": [
+            "different",
+            "different"
+          ]
+        },
+        {
+          "input": "!aA",
+          "expected": [
+            "different",
+            "same"
+          ]
+        },
+        {
+          "input": "aAaa",
+          "expected": [
+            "same",
+            "same",
+            "same"
+          ]
+        },
+        {
+          "input": "1a1",
+          "expected": [
+            "different",
+            "different"
+          ]
+        },
+        {
+          "input": "Bbb",
+          "expected": [
+            "same",
+            "same"
+          ]
+        },
+        {
+          "input": "abBA",
+          "expected": [
+            "different",
+            "same",
+            "different"
+          ]
+        },
+        {
+          "input": "A",
+          "expected": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "OMEGA_SELF_TEACH_EVAL_PUBLIC_01",
+  "evaluation": [
+    {
+      "id": "H1",
+      "family": "palindrome_windows",
+      "goal": "Return every consecutive 3-character substring that is a palindrome, in original order; overlapping windows count.",
+      "public_examples": [
+        {
+          "input": "ababa",
+          "expected": [
+            "aba",
+            "bab",
+            "aba"
+          ]
+        },
+        {
+          "input": "abca",
+          "expected": []
+        }
+      ]
+    },
+    {
+      "id": "H2",
+      "family": "cumulative_digit_sum",
+      "goal": "Scan the string from left to right; for each decimal digit append the cumulative sum of all digits seen so far as a string. Ignore nondigits.",
+      "public_examples": [
+        {
+          "input": "1a2",
+          "expected": [
+            "1",
+            "3"
+          ]
+        },
+        {
+          "input": "03x4",
+          "expected": [
+            "0",
+            "3",
+            "7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "H3",
+      "family": "balanced_parenthesis_prefixes",
+      "goal": "For a string containing only '(' and ')', return the 1-based end indices (as strings) of prefixes whose parentheses are balanced and never went negative. Ignore prefixes after the first unmatched ')'.",
+      "public_examples": [
+        {
+          "input": "()()",
+          "expected": [
+            "2",
+            "4"
+          ]
+        },
+        {
+          "input": "(())",
+          "expected": [
+            "4"
+          ]
+        }
+      ]
+    }
+  ]
+}
