@@ -1,0 +1,137 @@
+name: Omega BENCH-04 - self-repair policy comparison CPU
+
+# One preregistered evaluation, not scheduled, not merged into main.
+# Disabled after the frozen one-shot scientific evaluation of 2026-11-23.
+# Manual-only control prevents rerunning the same six holdout questions on PR edits.
+# To evaluate a NEW cohort, create a new preregistration and separate workflow.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-repair-bench04
+  cancel-in-progress: false
+
+jobs:
+  frozen-protocol-and-offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify frozen cohort, oracle and exhaustive baseline, no LLM
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s 09_INFRASTRUCTURE_AGENTIQUE/prism/OMEGA_REPAIR_BENCH04_PREREG_2026-11-23.md
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_repair_bench04.py
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_omega_repair_bench04.py' -v
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_concept_abstraction_lab.py' -v
+
+  cpu-six-tasks-three-feedback-policies:
+    needs: frozen-protocol-and-offline-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SRC_URL: https://raw.githubusercontent.com/oscarlevin/discrete-book/1a2005c6797bec10289f09e706f81c6c4b809a52/source/sec_gt-relations.ptx
+      SRC_BLOB: 75bebda318694bb4712d60380b0e183e77f1e757
+      LLAMA_URL: https://github.com/ggml-org/llama.cpp/releases/download/b12633/llama-b12633-bin-ubuntu-x64.tar.gz
+      MODEL_SHA: 9c9f56a391a3abbd5b89d0245bf6106081bcc3173119d4229235dd9d23253f94
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify external mathematics source against fixed Git blob
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p bench04_out "$RUNNER_TEMP/bench04"
+          curl -fLsS --retry 2 --retry-all-errors --max-time 240 "$SRC_URL" \
+            -o "$RUNNER_TEMP/bench04/relations.ptx"
+          test "$(git hash-object "$RUNNER_TEMP/bench04/relations.ptx")" = "$SRC_BLOB"
+          sha256sum "$RUNNER_TEMP/bench04/relations.ptx" | tee bench04_out/source.sha256
+      - name: Retrieve same SHA-checked Qwen GGUF as REAL-03 via chunked HF download
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 2 --retry-all-errors --max-time 300 "$LLAMA_URL" \
+            -o "$RUNNER_TEMP/bench04/llama.tar.gz"
+          tar -xzf "$RUNNER_TEMP/bench04/llama.tar.gz" -C "$RUNNER_TEMP/bench04"
+          BIN="$(find "$RUNNER_TEMP/bench04" -type f -name llama-server | head -1)"
+          test -n "$BIN"
+          chmod +x "$BIN"
+          echo "LLAMA_SERVER=$BIN" >> "$GITHUB_ENV"
+          python -m pip install --disable-pip-version-check -q "huggingface_hub>=0.36,<2" "hf_xet>=1.3"
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from huggingface_hub import hf_hub_download
+          dest=Path(os.environ["RUNNER_TEMP"])/"bench04"
+          model=hf_hub_download(
+             repo_id="bartowski/Qwen2.5-3B-Instruct-GGUF",
+             filename="Qwen2.5-3B-Instruct-Q4_K_M.gguf",
+             local_dir=str(dest),token=False)
+          Path(model).replace(dest/"model.gguf")
+          PY
+          test "$(head -c 4 "$RUNNER_TEMP/bench04/model.gguf")" = 'GGUF'
+          echo "$MODEL_SHA  $RUNNER_TEMP/bench04/model.gguf" | sha256sum -c -
+          sha256sum "$RUNNER_TEMP/bench04/model.gguf" | tee bench04_out/model.sha256
+          "$BIN" --version > bench04_out/llama-version.txt 2>&1 || true
+      - name: Start local only CPU llama server with no paid keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIB="$(dirname "$LLAMA_SERVER")"
+          LD_LIBRARY_PATH="$LIB" "$LLAMA_SERVER" \
+            -m "$RUNNER_TEMP/bench04/model.gguf" \
+            --host 127.0.0.1 --port 8080 -c 6144 -t 2 -ngl 0 \
+            > bench04_out/llama-server.log 2>&1 &
+          for i in $(seq 1 100); do
+            if curl -sf --max-time 3 http://127.0.0.1:8080/health >/dev/null; then
+              echo LOCAL_CPU_MODEL_READY
+              exit 0
+            fi
+            sleep 2
+          done
+          tail -n 70 bench04_out/llama-server.log
+          exit 1
+      - name: Run frozen 6 problem, 3 policy comparison (up to 42 LLM calls)
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 2000 python 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_repair_bench04.py \
+            --output bench04_out --server http://127.0.0.1:8080 \
+            2>&1 | tee bench04_out/run.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('bench04_out/report.json').read_text())
+          assert r['api_paid_calls']==0 and r['model_weights_updated'] is False
+          assert r['certified_theorems']==0 and r['model_calls']<=42
+          assert len(r['tasks'])==6 and all(t['initial'] for t in r['tasks'])
+          assert r['stage'] in ('INDETERMINATE',
+                                'POINTWISE_GLOBAL_FEEDBACK_GAIN',
+                                'REGISTERED_GAIN_NOT_OBSERVED')
+          print("BENCH04_PRE_REGISTERED_VERDICT",r['stage'],r['metrics'])
+          PY
+      - name: Archive raw prompts, responses, witnesses, budgets, model and source hashes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-repair-bench04-one-shot
+          path: |
+            bench04_out/*.json
+            bench04_out/*.log
+            bench04_out/*.sha256
+            bench04_out/*.txt
+          if-no-files-found: warn
+          retention-days: 7
