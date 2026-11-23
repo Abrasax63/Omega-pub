@@ -1,0 +1,124 @@
+name: Omega PROCEDURE-06 - one-shot CPU certificate trial
+
+# One run on creation of THIS file only. No recurring schedule or replay.
+on:
+  push:
+    branches:
+      - experiment/omega-hybrid-learning-gates-2026-11-23
+    paths:
+      - .github/workflows/omega-hybrid-procedure06-once.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-hybrid-procedure06-once
+  cancel-in-progress: false
+
+jobs:
+  preregistered-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Confirm frozen protocol before model call
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s 09_INFRASTRUCTURE_AGENTIQUE/prism/OMEGA_HYBRID_PROCEDURE06_PREREG_2026-11-23.md
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_procedure06.py
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_omega_hybrid_procedure06.py' -v
+          PYTHONPATH=09_INFRASTRUCTURE_AGENTIQUE/prism python - <<'PY'
+          from hashlib import sha256
+          from incremental_math_library import canonical
+          from omega_hybrid_procedure06 import make_manifest
+          model,oracle=make_manifest()
+          assert len(model["questions"]) == len(oracle["answers"]) == 8
+          assert sum(x["holds"] for x in oracle["answers"]) == 4
+          print("FROZEN_QUESTIONS_SHA256",sha256(canonical(model).encode()).hexdigest())
+          print("FROZEN_ORACLE_SHA256",sha256(canonical(oracle).encode()).hexdigest())
+          print("NOT_AN_LLM_LEARNING_CLAIM")
+          PY
+
+  qwen3b-certificate-experiment:
+    needs: preregistered-offline
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      LLAMA_URL: https://github.com/ggml-org/llama.cpp/releases/download/b12633/llama-b12633-bin-ubuntu-x64.tar.gz
+      MODEL_URL: https://huggingface.co/bartowski/Qwen2.5-3B-Instruct-GGUF/resolve/main/Qwen2.5-3B-Instruct-Q4_K_M.gguf
+      MODEL_SHA: 9c9f56a391a3abbd5b89d0245bf6106081bcc3173119d4229235dd9d23253f94
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Obtain pinned free local engine and Qwen3B weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p procedure06_out "$RUNNER_TEMP/procedure06"
+          curl -fLsS --retry 2 --retry-all-errors --max-time 300 "$LLAMA_URL" -o "$RUNNER_TEMP/procedure06/llama.tar.gz"
+          tar -xzf "$RUNNER_TEMP/procedure06/llama.tar.gz" -C "$RUNNER_TEMP/procedure06"
+          BIN="$(find "$RUNNER_TEMP/procedure06" -type f -name llama-server | head -1)"
+          test -n "$BIN"
+          chmod +x "$BIN"
+          echo "LLAMA_SERVER=$BIN" >> "$GITHUB_ENV"
+          curl -fLsS --retry 2 --retry-all-errors --max-time 750 "$MODEL_URL" -o "$RUNNER_TEMP/procedure06/model.gguf"
+          test "$(head -c 4 "$RUNNER_TEMP/procedure06/model.gguf")" = "GGUF"
+          echo "$MODEL_SHA  $RUNNER_TEMP/procedure06/model.gguf" | sha256sum -c -
+          sha256sum "$RUNNER_TEMP/procedure06/model.gguf" > procedure06_out/model.sha256
+          "$BIN" --version > procedure06_out/llama-version.txt 2>&1 || true
+      - name: Serve a single Qwen model on local CPU, no external API
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIB="$(dirname "$LLAMA_SERVER")"
+          LD_LIBRARY_PATH="$LIB" "$LLAMA_SERVER" \
+            -m "$RUNNER_TEMP/procedure06/model.gguf" \
+            --host 127.0.0.1 --port 8080 -c 4096 -t 2 -ngl 0 \
+            > procedure06_out/server.log 2>&1 &
+          for i in $(seq 1 100); do
+            if curl -sf --max-time 3 http://127.0.0.1:8080/health >/dev/null; then
+              echo CPU_MODEL_READY
+              exit 0
+            fi
+            sleep 2
+          done
+          tail -n 50 procedure06_out/server.log
+          exit 1
+      - name: One comparison of eight cases and three arms
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 1300 python 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_procedure06.py \
+            --output procedure06_out --server http://127.0.0.1:8080 \
+            2>&1 | tee procedure06_out/summary.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path("procedure06_out/report.json").read_text())
+          assert r["model_weights_updated"] is False
+          assert r["paid_model_calls"]==0 and r["scientific_skills_certified"]==0
+          assert r["model_calls"]==24
+          assert r["status"] in ("POINTWISE_PROCEDURE_GAIN_OBSERVED",
+                                 "PRE_REGISTERED_GAIN_NOT_OBSERVED",
+                                 "INDETERMINATE_BUDGET")
+          print("PREREGISTERED_PROCEDURE_VERDICT",r["status"])
+          print("NO_WEIGHT_LEARNING_OR_GENERAL_CAPABILITY_CERTIFIED")
+          PY
+      - name: Archive answers, independent oracle, exact prompts and raw generations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-hybrid-procedure06-one-shot
+          path: procedure06_out/
+          retention-days: 7
+          if-no-files-found: warn
