@@ -1,0 +1,65 @@
+{
+  "schema": "OMEGA_SELF_TEACH03_EVAL_PUBLIC_V1",
+  "evaluation": [
+    {
+      "id": "Q1",
+      "family": "every_third_ascii_letter_global_offset",
+      "goal": "Scan the input. Count only ASCII letters A-Z and a-z, starting from 1. For every third ASCII letter encountered, append a string consisting of its zero-based absolute input index, a colon, and the lowercase form of that letter. Ignore all other characters without counting them.",
+      "public_examples": [
+        {
+          "input": "a!bC",
+          "expected": [
+            "3:c"
+          ]
+        },
+        {
+          "input": "XY3z---a",
+          "expected": [
+            "3:z"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q2",
+      "family": "every_second_ascii_digit_position",
+      "goal": "Scan the full input. Count only ASCII digits 0-9, starting from 1. For each even-numbered digit encountered, append its zero-based absolute input index followed by ':' and the digit itself. Ignore nondigits while counting digits.",
+      "public_examples": [
+        {
+          "input": "a1b2x3",
+          "expected": [
+            "3:2"
+          ]
+        },
+        {
+          "input": "0!1!2!3",
+          "expected": [
+            "2:1",
+            "6:3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q3",
+      "family": "preceding_character_at_exclamation",
+      "goal": "Scan the input from left to right. For every '!' at index i > 0, append the single character immediately preceding that exclamation mark. If '!' is at index 0, emit nothing. Preserve duplicates and all character types.",
+      "public_examples": [
+        {
+          "input": "a!!b!",
+          "expected": [
+            "a",
+            "!",
+            "b"
+          ]
+        },
+        {
+          "input": "!x!",
+          "expected": [
+            "x"
+          ]
+        }
+      ]
+    }
+  ]
+}
