@@ -6,7 +6,6 @@ on:
     types: [opened]
     paths:
       - ".github/workflows/omega-self-teach05.yml"
-      - "research/learning_hub/self_teach05/runner.py"
 
 permissions:
   contents: read
@@ -33,6 +32,11 @@ jobs:
           python -m unittest discover -s research/learning_hub/self_teach05 -p test_self_teach05.py -v
 
   first-real-cpu-blind:
+    # SEALED COHORT CONSUMED on run 45258863634. Never regenerate this
+    # blinded evaluation for a new PR, regardless of path filters.
+    # This guard applies to future runs; an already-started run cannot
+    # be cancelled using the available repository action permissions.
+    if: ${{ false }}
     needs: offline-contract
     runs-on: ubuntu-latest
     timeout-minutes: 45

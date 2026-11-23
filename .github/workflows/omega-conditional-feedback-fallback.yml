@@ -1,0 +1,26 @@
+name: Omega conditional feedback fallback - offline contract only
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "research/learning_hub/self_teach05/conditional_fallback.py"
+      - "research/learning_hub/self_teach05/runner.py"
+      - "research/learning_hub/self_teach05/test_conditional_fallback.py"
+      - ".github/workflows/omega-conditional-feedback-fallback.yml"
+permissions:
+  contents: read
+jobs:
+  offline-regression-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test bounded fallback and unchanged old policies, no model and no holdout
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s research/learning_hub/self_teach05 -p test_conditional_fallback.py -v
