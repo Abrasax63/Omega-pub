@@ -26,7 +26,7 @@ ARMS = ("D", "G", "W")
 SEED = "omega-transfer05-predeclared-finite-relations-v1"
 MODEL_SHA = "9c9f56a391a3abbd5b89d0245bf6106081bcc3173119d4229235dd9d23253f94"
 SOURCE_RUN = 45274034725
-MAX_COMPLETION = 160
+MAX_COMPLETION = 260
 COMMON_SYSTEM = ("You classify finite relations exactly. "
                  "Return one JSON object only, without explanation.")
 # Previously exposed *actual* Qwen failure: not an unseen test.
@@ -111,8 +111,8 @@ def training_prompt(arm):
             +canonical(ERROR_EDGES)+". External feedback: "+feedback+
             " Formulate one transferable, general verification rule for "
             "checking unfamiliar finite relations. "
-            "Return JSON exactly {\\\"rule\\\":\\\"text\\\"}, or "
-            "{\\\"abstain\\\":true} if uncertain. "
+            "Return JSON containing only a string field named rule, or one "
+            "boolean field named abstain if uncertain. "
             "Do not give any new candidate graph; do not use any future test.")
 
 
@@ -136,9 +136,9 @@ def task_prompt(task, lesson):
             "equivalence relation. Universe: "+canonical(task["nodes"])+
             "; edges: "+canonical(task["edges"])+
             ". Check reflexivity, symmetry and transitivity over ALL four "
-            "vertices. Return JSON exactly with boolean holds and array "
-            "failed_axioms containing every violated property from "
-            "[reflexive,symmetric,transitive], or {\\\"abstain\\\":true}. "
+            "vertices. Return one JSON object with boolean holds and array "
+            "failed_axioms listing all violated properties, or with boolean "
+            "abstain true. "
             "No explanations, no other fields.")
 
 
@@ -164,7 +164,8 @@ def parse_answer(raw, correct):
             "full_axioms_correct":full_ok,"model_answer":d}
 
 
-def equalize(endpoint, prompts):
+def equalize(endpoint, prompts, token_counter=None):
+    counter = token_counter or (lambda text: prompt_budget(endpoint,text))
     """Equal-token measured *complete* task prompts, before the LLM call."""
     count = {a:prompt_budget(endpoint,COMMON_SYSTEM+"\n"+p)
              for a,p in prompts.items()}
@@ -201,7 +202,7 @@ def save(root, name, payload):
                     encoding="utf-8")
 
 
-def run(root, endpoint, injected_client=None):
+def run(root, endpoint, injected_client=None, token_counter=None):
     """One frozen A/B/C comparison. No training checkpoints, no Web search."""
     model_inputs, oracle_only=make_manifest()
     client = injected_client if injected_client is not None else RealClient(endpoint)
@@ -237,7 +238,7 @@ def run(root, endpoint, injected_client=None):
         all_comp=True
         for i,task in enumerate(tasks):
             prompts={a:task_prompt(task,lessons[a]) for a in ARMS}
-            prompts,approx_tokens,balanced=equalize(endpoint,prompts)
+            prompts,approx_tokens,balanced=equalize(endpoint,prompts,token_counter)
             all_comp=all_comp and balanced
             t={"id":task["id"],"question_sha256":sha256(canonical(task).encode()).hexdigest(),
                "order":list(orders[i%len(orders)]),
