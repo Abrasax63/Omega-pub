@@ -8,8 +8,10 @@ import sys
 import time
 
 HERE=Path(__file__).resolve().parent
-sys.path.insert(0,str(HERE.parent/"self_teach04"))
-import runner as old
+import importlib.util
+spec=importlib.util.spec_from_file_location("omega_self04_runner",HERE.parent/"self_teach04"/"runner.py")
+old=importlib.util.module_from_spec(spec)
+spec.loader.exec_module(old)
 SAFE=old.SAFE
 PINS={"PUBLIC_FROZEN.json":"5c9045fd723bbe5cfb6f175a516bef41f49467f3",
       "SEALED_FROZEN.json":"ff9e0cbae6fe5cc9a28d62ffed019ec22a2a3646"}

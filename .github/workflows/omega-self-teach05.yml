@@ -6,6 +6,7 @@ on:
     types: [opened]
     paths:
       - ".github/workflows/omega-self-teach05.yml"
+      - "research/learning_hub/self_teach05/runner.py"
 
 permissions:
   contents: read
