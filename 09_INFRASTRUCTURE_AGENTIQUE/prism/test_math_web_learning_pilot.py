@@ -90,5 +90,62 @@ class WebLearningPilotTests(unittest.TestCase):
         self.assertFalse(inspect_claim("bad json","a page",[])["json_valid"])
 
 
+
+    def test_archived_real_run_requires_explicit_zero_certified_proofs(self):
+        # Source: GitHub Actions run 45056407124 / artifact 14767687653.
+        # SHA256 of archived result.json:
+        # c9996b120ea48c1577130ffdc9e5e412c3ef2f97176f223cfe4414b16fe4de27
+        # Only the fields read by the CI validator are projected here.
+        import os
+        import subprocess
+        import sys
+        import textwrap
+
+        observed = {
+            "status": "REAL_WEB_AUGMENTED_INFERENCE_COMPLETED_AWAITING_BLIND_SEMANTIC_REVIEW",
+            "scientific_discoveries": 0,
+            "mathematical_proofs_certified": 0,
+            "manually_curated_search_terms": 0,
+            "manual_semantic_structures_supplied": 0,
+            "same_model_same_question_same_output_token_cap": True,
+            "retrieval": {"sources": [{"page_id": 44533982}, {"page_id": 10606}]},
+            "direct_guard": {"json_valid": False},
+            "web_guard": {"json_valid": False},
+        }
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/omega-math-web-learning-pilot.yml"
+        ).read_text(encoding="utf-8")
+        marker = "          python - <<'PY'\\n"
+        start = workflow.index(marker) + len(marker)
+        end = workflow.index("          PY\\n", start)
+        validator = textwrap.dedent(workflow[start:end])
+
+        with TemporaryDirectory() as td:
+            target = Path(td) / "weblearn/result.json"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            for label, certified, expected_success in (
+                ("archived_real", 0, True),
+                ("missing_proof_count", None, False),
+                ("false_certification", 1, False),
+            ):
+                with self.subTest(case=label):
+                    candidate = dict(observed)
+                    if certified is None:
+                        candidate.pop("mathematical_proofs_certified")
+                    else:
+                        candidate["mathematical_proofs_certified"] = certified
+                    target.write_text(json.dumps(candidate), encoding="utf-8")
+                    completed = subprocess.run(
+                        [sys.executable, "-c", validator],
+                        env={**os.environ, "RUNNER_TEMP": td},
+                        capture_output=True, text=True, timeout=10,
+                        check=False,
+                    )
+                    self.assertEqual(
+                        completed.returncode == 0, expected_success,
+                        f"{label}: {completed.stdout}\\n{completed.stderr}",
+                    )
+
 if __name__=="__main__":
     unittest.main()
