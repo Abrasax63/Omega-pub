@@ -44,20 +44,20 @@ CARD_SUFFIX = (
 )
 
 def source_seed(data):
-    git_blob = b"blob "+str(len(data)).encode()+b"\\x00"+data
+    git_blob = b"blob "+str(len(data)).encode()+b"\x00"+data
     if sha1(git_blob).hexdigest()!=UPSTREAM_BLOB:
         raise ValueError("UPSTREAM_SOURCE_BLOB_CHANGED")
     root=ET.fromstring(data)
     key="{http://www.w3.org/XML/1998/namespace}id"
     section=next((x for x in root.iter() if x.get(key)==SECTION),None)
     if section is None: raise ValueError("SOURCE_SECTION_MISSING")
-    seed="\\n".join(" ".join("".join(x.itertext()).split()) for x in list(section)[:7])
+    seed="\n".join(" ".join("".join(x.itertext()).split()) for x in list(section)[:7])
     if not 200<=len(seed)<=8000: raise ValueError("SOURCE_LENGTH_OUT_OF_BOUNDS")
     return seed
 
 def concept_name(value):
     if not isinstance(value,str): return None
-    s=re.sub(r"\\s+"," ",value.casefold().replace("-"," ").strip())
+    s=re.sub(r"\s+"," ",value.casefold().replace("-"," ").strip())
     if s=="equivalence relations" or s=="equivalence": s="equivalence relation"
     if s in ("partial ordering","partial order relation"): s="partial order"
     return s if s in TARGETS else None
@@ -119,7 +119,7 @@ def parse_answer(raw,sig):
 
 def save_report(directory,report):
     (directory/"report.json").write_text(json.dumps(report,indent=2,
-                          ensure_ascii=False)+"\\n")
+                          ensure_ascii=False)+"\n")
 
 def acquire_phase(root,source_file,endpoint):
     root.mkdir(parents=True,exist_ok=True)
@@ -172,7 +172,7 @@ def equalize_contexts(endpoint,contexts):
         # deterministic neutral filler; never contains relation vocabulary
         for i in range(300):
             if prompt_budget(endpoint,body)>=size:break
-            body+="\\nUnrelated administrative placeholder."
+            body+="\nUnrelated administrative placeholder."
         padded[arm]=body
     actual={k:prompt_budget(endpoint,v) for k,v in padded.items()}
     if max(actual.values())-min(actual.values())>3:
@@ -211,7 +211,7 @@ def memory_phase(root,endpoint):
         question=("Classify this finite relation as '"+target+"'. Return exactly "
             "a JSON object with boolean 'holds' and array 'failed_axioms' "
             "containing all required defining axioms that fail. Abstain if "
-            "uncertain using {\\\"abstain\\\":true}. Nodes: "
+            "uncertain using {\\"abstain\\":true}. Nodes: "
             +canonical(NODES)+"; edges: "+canonical(task["edges"]))
         contexts={"D":"No educational note is available.",
                   "M":"Verified formal memory note: "+canonical(core),
@@ -226,8 +226,8 @@ def memory_phase(root,endpoint):
              "padded_context_tokens":budgets,"arms":{}}
         for arm in order:
             messages=[{"role":"system","content":"You are a finite relation reader."},
-                 {"role":"user","content":"[UNTRUSTED MEMORY]\\n"+contexts[arm]
-                 +"\\n[END MEMORY]\\n"+question}]
+                 {"role":"user","content":"[UNTRUSTED MEMORY]\n"+contexts[arm]
+                 +"\n[END MEMORY]\n"+question}]
             result=model(messages,260)
             prediction=parse_answer(result["text"],sig)
             row["arms"][arm]={"raw":result["text"],"parsed":prediction,
