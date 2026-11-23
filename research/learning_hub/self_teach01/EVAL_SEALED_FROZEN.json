@@ -1,0 +1,125 @@
+{
+  "schema": "OMEGA_SELF_TEACH_EVAL_SEALED_01",
+  "holdout": [
+    {
+      "id": "H1",
+      "family": "palindrome_windows",
+      "hidden_cases": [
+        {
+          "input": "aabaa",
+          "expected": [
+            "aba"
+          ]
+        },
+        {
+          "input": "aabbaa",
+          "expected": []
+        },
+        {
+          "input": "xyzzyx",
+          "expected": []
+        },
+        {
+          "input": "abaca",
+          "expected": [
+            "aba",
+            "aca"
+          ]
+        },
+        {
+          "input": "aaaaa",
+          "expected": [
+            "aaa",
+            "aaa",
+            "aaa"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "H2",
+      "family": "cumulative_digit_sum",
+      "hidden_cases": [
+        {
+          "input": "a3b5",
+          "expected": [
+            "3",
+            "8"
+          ]
+        },
+        {
+          "input": "000",
+          "expected": [
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "input": "987",
+          "expected": [
+            "9",
+            "17",
+            "24"
+          ]
+        },
+        {
+          "input": "1x1x1",
+          "expected": [
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        {
+          "input": "42z4",
+          "expected": [
+            "4",
+            "6",
+            "10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "H3",
+      "family": "balanced_parenthesis_prefixes",
+      "hidden_cases": [
+        {
+          "input": "(()())",
+          "expected": [
+            "6"
+          ]
+        },
+        {
+          "input": "()(()())",
+          "expected": [
+            "2",
+            "8"
+          ]
+        },
+        {
+          "input": "((()))",
+          "expected": [
+            "6"
+          ]
+        },
+        {
+          "input": "(())()",
+          "expected": [
+            "4",
+            "6"
+          ]
+        },
+        {
+          "input": "()()()",
+          "expected": [
+            "2",
+            "4",
+            "6"
+          ]
+        }
+      ]
+    }
+  ]
+}
