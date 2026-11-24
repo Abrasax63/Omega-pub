@@ -49,7 +49,7 @@ class ExactSensorTests(unittest.TestCase):
 
     def test_duplicate_edge_rejected_instead_of_deduplicated(self):
         with self.assertRaisesRegex(ValueError,"DUPLICATE_DIRECTED_EDGE"):
-            validate_relation(["a"],[["a","a"],["a","a"]])
+            validate_relation(["a","b"],[["a","a"],["a","a"]])
 
     def test_outside_node_is_not_inferred(self):
         with self.assertRaisesRegex(ValueError,"EDGE_ENDPOINT_OUTSIDE_UNIVERSE"):
