@@ -1,0 +1,177 @@
+name: EQUIV-DIAG01 read-only four-checkpoint diagnostic
+on:
+  push:
+    branches: [experiment/omega-equiv-diagnostic-2026-11-24]
+    paths: ['.github/workflows/foundations01-equiv-diag01.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: equiv-diag01-fixed
+  cancel-in-progress: false
+env:
+  DIR: research/learning_hub/foundations01
+jobs:
+  freeze:
+    if: github.event.before == '34b9146053d0a3aae33a767a65e8f7b0e5ee7c5d' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test full CLI on independent fixture
+        run: |
+          node "$DIR/equiv_diag01.cjs" selftest
+          node "$DIR/equiv_diag01.cjs" freeze 24681357 /tmp/fixture
+          node - <<'JS'
+          const fs=require('fs');
+          const qs=JSON.parse(fs.readFileSync('/tmp/fixture/questions.json'));
+          const labels=JSON.parse(fs.readFileSync('/tmp/fixture/labels.json'));
+          const h=new Map(qs.map(x=>[x.id,x.prompt_sha256]));
+          const rows=labels.map(l=>({id:l.id,prompt_sha256:h.get(l.id),raw:typeof l.truth==='string'?l.truth:JSON.stringify(l.truth)}));
+          fs.writeFileSync('/tmp/fixture-pred.json',JSON.stringify(rows));
+          rows[0].prompt_sha256='invalid';
+          fs.writeFileSync('/tmp/fixture-invalid.json',JSON.stringify(rows));
+          JS
+          node "$DIR/equiv_diag01.cjs" score /tmp/fixture /tmp/fixture-pred.json >/tmp/fixture-result.json
+          node -e 'if (!Object.values(require("/tmp/fixture-result.json").groups).every(x=>x.pass)) process.exit(1)'
+          if node "$DIR/equiv_diag01.cjs" score /tmp/fixture /tmp/fixture-invalid.json; then exit 1; fi
+          python -m py_compile "$DIR/equiv_diag01_infer.py"
+      - name: Freeze prospective diagnostic
+        run: |
+          node "$DIR/equiv_diag01.cjs" freeze 318079423 /tmp/frozen
+          mkdir /tmp/q /tmp/l
+          cp /tmp/frozen/questions.json /tmp/q/
+          cp /tmp/frozen/{labels.json,manifest.json} /tmp/l/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diag-questions
+          path: /tmp/q/
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diag-labels
+          path: /tmp/l/
+          retention-days: 7
+  infer:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arm: base
+            artifact: 0
+            digest: none
+          - arm: ordinary
+            artifact: 14963394944
+            digest: d6534c4b4bfe82b91de8480765ee54f6085ccc71f87af39053d7e963ac7bf1c3
+          - arm: contrast
+            artifact: 14965102724
+            digest: c698b2216021a72bb85549a4468eee59f32164e87ae66a8f97c93f60d38cb8a8
+          - arm: process
+            artifact: 14965831946
+            digest: 8b942feb526538a7f1077483879614c0ca1abc6ea0ac618a06b6bb9f209d6ee7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: diag-questions
+          path: /tmp/questions
+      - name: Retrieve and verify original adapter archive
+        if: matrix.arm != 'base'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT: ${{ matrix.artifact }}
+          DIGEST: ${{ matrix.digest }}
+        run: |
+          curl --fail --silent --show-error --location -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT/zip" -o /tmp/adapter.zip
+          printf '%s  %s\n' "$DIGEST" /tmp/adapter.zip | sha256sum --check
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          root=Path('/tmp/original').resolve()
+          root.mkdir()
+          with ZipFile('/tmp/adapter.zip') as z:
+              for n in z.namelist():
+                  if not (root/n).resolve().is_relative_to(root): raise ValueError('unsafe archive')
+              z.extractall(root)
+          assert (root/'manifest.json').is_file()
+          assert (root/'adapter'/'adapter_model.safetensors').is_file()
+          PY
+      - name: Install pinned inference dependencies
+        run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 huggingface_hub==0.30.2 safetensors==0.5.3
+      - name: Run frozen model with no gradient
+        env:
+          ARM: ${{ matrix.arm }}
+        run: |
+          if [ "$ARM" = base ]; then
+            python -u "$DIR/equiv_diag01_infer.py" infer /tmp/questions/questions.json /tmp/result "$ARM"
+          else
+            python -u "$DIR/equiv_diag01_infer.py" infer /tmp/questions/questions.json /tmp/result "$ARM" --adapter /tmp/original
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diag-predictions-${{ matrix.arm }}
+          path: /tmp/result/
+          retention-days: 7
+  score:
+    needs: [freeze, infer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: diag-questions
+          path: /tmp/frozen
+      - uses: actions/download-artifact@v4
+        with:
+          name: diag-labels
+          path: /tmp/frozen
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: diag-predictions-*
+          path: /tmp/predictions
+      - name: Score all four arms; fail closed
+        run: |
+          mkdir /tmp/scores
+          for arm in base ordinary contrast process; do
+            p="/tmp/predictions/diag-predictions-$arm/predictions.json"
+            node "$DIR/equiv_diag01.cjs" score /tmp/frozen "$p" >"/tmp/scores/$arm-strict.json"
+            python "$DIR/equiv_diag01_infer.py" extra /tmp/frozen "$p" >"/tmp/scores/$arm-extra.json"
+            cat "/tmp/scores/$arm-strict.json" "/tmp/scores/$arm-extra.json"
+          done
+          python - <<'PY'
+          import json, pathlib, hashlib
+          q=hashlib.sha256(pathlib.Path('/tmp/frozen/questions.json').read_bytes()).hexdigest()
+          for arm in ('base','ordinary','contrast','process'):
+              p=pathlib.Path('/tmp/predictions')/('diag-predictions-'+arm)/'inference-manifest.json'
+              m=json.loads(p.read_text())
+              assert m['arm']==arm and m['question_sha256']==q and m['rows']==448 and m['weights_frozen'] and m['training_updates']==0
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diag-scores
+          path: /tmp/scores/
+          retention-days: 7
