@@ -1,0 +1,16 @@
+{
+  "reference": {
+    "correct": 2,
+    "false": 0,
+    "abstentions": 6,
+    "missed": 8,
+    "median_ns": 5137.0
+  },
+  "candidate": {
+    "correct": 8,
+    "false": 0,
+    "abstentions": 6,
+    "missed": 2,
+    "median_ns": 16465.0
+  }
+}

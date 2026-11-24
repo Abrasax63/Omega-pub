@@ -1,0 +1,18 @@
+[
+  "Depuis l’état deux, effectue cinq transitions.",
+  "Depuis l’état 5, effectue zéro transitions.",
+  "Effectue huit transitions à partir de l’état 4.",
+  "Effectue deux transitions à partir de l’état un.",
+  "Depuis l’état zéro, effectue 8 transitions.",
+  "Effectue 10 transitions à partir de l’état trois.",
+  "En partant de 3, où arrive-t-on après sept étapes ?",
+  "Quel état obtient-on après zéro pas en partant de 4 ?",
+  "Au départ du troisième sommet, avance d'un pas.",
+  "Répète deux fois la transformation sur le sommet 0.",
+  "Depuis l’état 1 ou 3, effectue deux transitions.",
+  "Effectue 2 ou 4 transitions à partir de l’état 0.",
+  "Depuis l’état 9, effectue 1 transitions.",
+  "Depuis l’état 3, effectue 101 transitions.",
+  "Depuis l’état 2, effectue quelques transitions.",
+  "Depuis l’état 4, effectue 2 transitions. Ou bien trois ?"
+]
