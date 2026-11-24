@@ -1,0 +1,36 @@
+name: FOUNDATIONS01 EQUIV PILOT01 corpus preparation only
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-equiv-pilot-freeze.yml','research/learning_hub/foundations01/equiv_pilot_freeze.py']
+permissions:
+  contents: read
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install networkx==3.4.2
+      - run: python -u research/learning_hub/foundations01/equiv_pilot_freeze.py /tmp/equiv-pilot
+      - uses: actions/upload-artifact@v4
+        with:
+          name: equiv-pilot-train-dev
+          path: |
+            /tmp/equiv-pilot/train.json
+            /tmp/equiv-pilot/dev.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: equiv-pilot-reserved-questions
+          path: |
+            /tmp/equiv-pilot/questions.json
+            /tmp/equiv-pilot/manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: equiv-pilot-reserved-labels
+          path: /tmp/equiv-pilot/labels.json
