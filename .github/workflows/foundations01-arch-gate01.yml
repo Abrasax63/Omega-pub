@@ -1,0 +1,43 @@
+name: FOUNDATIONS01 ARCH GATE01 learned switching
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-arch-gate01.yml','research/learning_hub/foundations01/arch_gate01.py']
+permissions:
+  contents: read
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -u research/learning_hub/foundations01/arch_gate01.py train --out /tmp/gate01.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gate01-checkpoint
+          path: /tmp/gate01.json
+  evaluate:
+    needs: train
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: gate01-checkpoint
+          path: /tmp/gate
+      - run: python -u research/learning_hub/foundations01/arch_gate01.py evaluate --checkpoint /tmp/gate/gate01.json --out /tmp/gate01-results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gate01-results
+          path: /tmp/gate01-results.json
