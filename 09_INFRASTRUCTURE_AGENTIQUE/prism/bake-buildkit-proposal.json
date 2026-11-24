@@ -1,0 +1,39 @@
+{
+  "proposal": {
+    "target": [
+      "cp",
+      "-av"
+    ],
+    "failure_counts": [
+      {
+        "prefix": [
+          "cp",
+          "-av"
+        ],
+        "false_confirmations": 0,
+        "missed_confirmations": 1
+      }
+    ],
+    "rules": [
+      {
+        "argv_prefix": [
+          "cp",
+          "-av"
+        ],
+        "verdict": "copie"
+      }
+    ],
+    "training_fingerprints": [
+      "3dca9f1953ae7f94961465f3e9e20ac8d60127fb6c553714872c6e913ca1e841"
+    ],
+    "baseline_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "training_evidence": [
+    {
+      "source": "synthetic-builder-training",
+      "truth_source": "fixture construction",
+      "output": "out/fixture",
+      "sha256": "7538d8fde6dc4a1eac6c217ce67f1bc7ab933116731115a1f8043515dc3d5670"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "results": {
+    "amd64": {
+      "verdicts": [
+        true,
+        true
+      ],
+      "swapped": [
+        true,
+        false
+      ],
+      "subject": "95a6f01d415a161fd5bfe25e20a51743375f1a21690840247db5c817679639f7",
+      "cp_xtrace": 0
+    },
+    "arm64": {
+      "verdicts": [
+        true,
+        true
+      ],
+      "swapped": [
+        true,
+        false
+      ],
+      "subject": "8cd877470bb4443c75c77ea31ab51e8080036324ce4a81ad45b56450dc5f1ef2",
+      "cp_xtrace": 0
+    }
+  },
+  "elapsed_ns": 5727319
+}
