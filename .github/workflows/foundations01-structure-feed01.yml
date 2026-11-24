@@ -1,0 +1,22 @@
+name: FOUNDATIONS01 STRUCTURE FEED01 exact contracts
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-structure-feed01.yml','research/learning_hub/foundations01/structure_contracts.py','research/learning_hub/foundations01/test_structure_contracts.py']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: |
+          cd research/learning_hub/foundations01
+          sha256sum structure_contracts.py test_structure_contracts.py
+          python -m unittest -v test_structure_contracts
