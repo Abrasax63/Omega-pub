@@ -1,0 +1,25 @@
+name: FOUNDATIONS01 teacher integration
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-teacher.yml','research/learning_hub/foundations01/**']
+permissions:
+  contents: read
+jobs:
+  exact-teacher:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: e68db2c2ca3f14d113fc15f431fac04d5ee7cb30
+          path: sensor-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exhaustive integration
+        env:
+          PYTHONPATH: ${{ github.workspace }}/sensor-source/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest discover -s research/learning_hub/foundations01 -p test_teacher.py -v
