@@ -1,0 +1,310 @@
+{
+  "results": {
+    "11": {
+      "0": {
+        "direct": {
+          "median_ns": 1129025,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "orbit": {
+          "median_ns": 952498,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "ablated": {
+          "median_ns": 1121884,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "verified": {
+          "median_ns": 1503290,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 480
+        }
+      },
+      "25": {
+        "direct": {
+          "median_ns": 1232120,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "orbit": {
+          "median_ns": 940500,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "ablated": {
+          "median_ns": 1159331,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "verified": {
+          "median_ns": 1298891,
+          "errors": 0,
+          "calls": 360,
+          "hits": 120,
+          "verifications": 360
+        }
+      },
+      "50": {
+        "direct": {
+          "median_ns": 1092560,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "orbit": {
+          "median_ns": 921041,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "ablated": {
+          "median_ns": 1093080,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "verified": {
+          "median_ns": 1091218,
+          "errors": 0,
+          "calls": 240,
+          "hits": 240,
+          "verifications": 240
+        }
+      },
+      "75": {
+        "direct": {
+          "median_ns": 1127733,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "orbit": {
+          "median_ns": 924676,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "ablated": {
+          "median_ns": 1124739,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "verified": {
+          "median_ns": 895752,
+          "errors": 0,
+          "calls": 120,
+          "hits": 360,
+          "verifications": 120
+        }
+      },
+      "95": {
+        "direct": {
+          "median_ns": 1144609,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "orbit": {
+          "median_ns": 927821,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "ablated": {
+          "median_ns": 1149306,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "verified": {
+          "median_ns": 724904,
+          "errors": 0,
+          "calls": 24,
+          "hits": 456,
+          "verifications": 24
+        }
+      }
+    },
+    "31": {
+      "0": {
+        "direct": {
+          "median_ns": 1677823,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "orbit": {
+          "median_ns": 1488478,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "ablated": {
+          "median_ns": 1711064,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "verified": {
+          "median_ns": 2128063,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 480
+        }
+      },
+      "25": {
+        "direct": {
+          "median_ns": 1701810,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "orbit": {
+          "median_ns": 1479554,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "ablated": {
+          "median_ns": 1691705,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "verified": {
+          "median_ns": 1936455,
+          "errors": 0,
+          "calls": 360,
+          "hits": 120,
+          "verifications": 360
+        }
+      },
+      "50": {
+        "direct": {
+          "median_ns": 1732707,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "orbit": {
+          "median_ns": 1484491,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "ablated": {
+          "median_ns": 1800789,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "verified": {
+          "median_ns": 1708230,
+          "errors": 0,
+          "calls": 240,
+          "hits": 240,
+          "verifications": 240
+        }
+      },
+      "75": {
+        "direct": {
+          "median_ns": 1733528,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "orbit": {
+          "median_ns": 1486845,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "ablated": {
+          "median_ns": 1708770,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "verified": {
+          "median_ns": 1475538,
+          "errors": 0,
+          "calls": 120,
+          "hits": 360,
+          "verifications": 120
+        }
+      },
+      "95": {
+        "direct": {
+          "median_ns": 1749572,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "orbit": {
+          "median_ns": 1499965,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "ablated": {
+          "median_ns": 1771485,
+          "errors": 0,
+          "calls": 480,
+          "hits": 0,
+          "verifications": 0
+        },
+        "verified": {
+          "median_ns": 1321816,
+          "errors": 0,
+          "calls": 24,
+          "hits": 456,
+          "verifications": 24
+        }
+      }
+    }
+  },
+  "adverse_checks": 4,
+  "elapsed_ns": 311006403
+}
