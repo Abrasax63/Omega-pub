@@ -1,0 +1,200 @@
+name: FOUNDATIONS01 MEMBERSHIP SFT01 elementary learning
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-membership-sft.yml']
+permissions:
+  contents: read
+concurrency:
+  group: foundations01-membership-sft-pilot01
+  cancel-in-progress: false
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      train_sha: ${{ steps.freeze.outputs.train_sha }}
+      eval_sha: ${{ steps.freeze.outputs.eval_sha }}
+      questions_sha: ${{ steps.freeze.outputs.questions_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require first introduction
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/foundations01-membership-sft.yml 2>/dev/null; then exit 1; fi
+      - uses: actions/checkout@v4
+        with:
+          ref: e68db2c2ca3f14d113fc15f431fac04d5ee7cb30
+          path: sensor-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exact teacher regression
+        env:
+          PYTHONPATH: ${{ github.workspace }}/sensor-source/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest discover -s research/learning_hub/foundations01 -p 'test_*.py' -v
+      - name: Freeze three independent artifacts
+        id: freeze
+        env:
+          PYTHONPATH: ${{ github.workspace }}/sensor-source/09_INFRASTRUCTURE_AGENTIQUE/prism:${{ github.workspace }}/research/learning_hub/foundations01
+        run: |
+          python - <<'PY'
+          import os,json,secrets
+          from pathlib import Path
+          from membership_curriculum import create,validate
+          from membership_sft_contract import sha
+          root=Path('/tmp/membership-freeze')
+          root.mkdir()
+          seed=secrets.randbits(64)
+          for kind,s in [('train',20261129),('eval',seed)]:
+              rows=create(s,kind)
+              validate(rows,kind)
+              for r in rows:
+                  p=r['packet']; x,y=p['triple'][:2]
+                  assert r['label']==([x,y] in p['edges'])
+              (root/(kind+'.json')).write_text(json.dumps(rows,sort_keys=True,separators=(',',':')))
+              if kind=='eval':
+                  (root/'questions.json').write_text(json.dumps([{'id':r['id'],'packet':r['packet']} for r in rows],sort_keys=True,separators=(',',':')))
+          manifest={'train_seed':20261129,'eval_seed':seed,**{k+'_sha':sha(root/(k+'.json')) for k in ('train','eval','questions')}}
+          (root/'freeze_manifest.json').write_text(json.dumps(manifest,indent=2))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              for k in ('train','eval','questions'): f.write(k+'_sha='+manifest[k+'_sha']+'\n')
+          print(json.dumps(manifest))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: membership-sft-train-only
+          path: /tmp/membership-freeze/train.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: membership-sft-questions-only
+          path: /tmp/membership-freeze/questions.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: membership-sft-sealed-labels
+          path: |
+            /tmp/membership-freeze/eval.json
+            /tmp/membership-freeze/freeze_manifest.json
+  train:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: membership-sft-train-only
+          path: /tmp/membership-train-data
+      - name: Install pinned CPU stack
+        run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 safetensors==0.5.3 huggingface_hub==0.30.2
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: Perform 256 optimizer updates
+        env:
+          TRAIN_SHA: ${{ needs.freeze.outputs.train_sha }}
+        run: python -u research/learning_hub/foundations01/membership_sft_train.py --train /tmp/membership-train-data/train.json --sha "$TRAIN_SHA" --out /tmp/membership-weights
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: membership-sft-weights
+          path: /tmp/membership-weights
+          if-no-files-found: warn
+  infer:
+    needs: [freeze,train]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: membership-sft-weights
+          path: /tmp/membership-weights
+      - uses: actions/download-artifact@v4
+        with:
+          name: membership-sft-questions-only
+          path: /tmp/membership-questions
+      - name: Install pinned CPU stack
+        run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 safetensors==0.5.3 huggingface_hub==0.30.2
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: Freeze predictions with no labels
+        env:
+          QUESTIONS_SHA: ${{ needs.freeze.outputs.questions_sha }}
+        run: python -u research/learning_hub/foundations01/membership_sft_infer.py --questions /tmp/membership-questions/questions.json --sha "$QUESTIONS_SHA" --training /tmp/membership-weights --out /tmp/membership-predictions.jsonl
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: membership-sft-predictions
+          path: /tmp/membership-predictions.jsonl
+          if-no-files-found: warn
+  score:
+    needs: [freeze,infer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: membership-sft-predictions
+          path: /tmp/membership-predictions
+      - uses: actions/download-artifact@v4
+        with:
+          name: membership-sft-sealed-labels
+          path: /tmp/membership-labels
+      - name: Compare after predictions frozen
+        env:
+          PYTHONPATH: ${{ github.workspace }}/research/learning_hub/foundations01
+          EVAL_SHA: ${{ needs.freeze.outputs.eval_sha }}
+        run: |
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          from membership_sft_contract import read_frozen,score_pair,sha
+          rows=read_frozen('/tmp/membership-labels/eval.json',os.environ['EVAL_SHA'],'eval')
+          path=Path('/tmp/membership-predictions/atomic-predictions.jsonl')
+          report=score_pair(rows,[json.loads(s) for s in path.read_text().splitlines()])
+          report.update(eval_sha256=os.environ['EVAL_SHA'],predictions_sha256=sha(path))
+          Path('/tmp/membership-score.json').write_text(json.dumps(report,indent=2))
+          print(report['status'],json.dumps(report['comparisons']))
+          for a,views in report['scores'].items():
+              for v,s in views.items(): print(a,v,s['groups']['all'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: membership-sft-score
+          path: /tmp/membership-score.json
