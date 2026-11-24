@@ -1,0 +1,168 @@
+name: FOUNDATIONS01 EQUIV REAL01 authorized one-seed pilot
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-equiv-real01.yml']
+permissions:
+  contents: read
+concurrency:
+  group: foundations01-equiv-real01
+  cancel-in-progress: false
+jobs:
+  freeze:
+    if: github.event.before == '5dea2ea48c6b767f5c5937df1faaa803d8d00e5d' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install networkx==3.4.2
+      - run: |
+          python -u research/learning_hub/foundations01/equiv_process01.py freeze /tmp/frozen
+          mkdir /tmp/train /tmp/questions /tmp/labels
+          cp /tmp/frozen/{train.json,dev.json,traces.json,process-manifest.json} /tmp/train/
+          cp /tmp/frozen/{questions.json,retention-questions.json} /tmp/questions/
+          cp /tmp/frozen/{labels.json,retention-labels.json} /tmp/labels/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: real-train-input
+          path: /tmp/train/
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: real-questions
+          path: /tmp/questions/
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: real-labels
+          path: /tmp/labels/
+          retention-days: 1
+  train:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [ordinary, contrast, process]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: real-train-input
+          path: /tmp/train
+      - run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 huggingface_hub==0.30.2 safetensors==0.5.3
+      - run: python -u research/learning_hub/foundations01/equiv_real01.py train /tmp/train /tmp/trained ${{ matrix.arm }} EXPLICIT_USER_GO
+      - uses: actions/upload-artifact@v4
+        with:
+          name: real-adapter-${{ matrix.arm }}
+          path: /tmp/trained/
+          retention-days: 1
+  baseline:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: real-questions
+          path: /tmp/questions
+      - run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 huggingface_hub==0.30.2 safetensors==0.5.3
+      - run: python -u research/learning_hub/foundations01/equiv_real01.py infer /tmp/questions /tmp/base.json base
+      - uses: actions/upload-artifact@v4
+        with:
+          name: real-predictions-base
+          path: /tmp/base.json
+          retention-days: 1
+  infer:
+    needs: [freeze, train]
+    if: ${{ !cancelled() && needs.freeze.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [ordinary, contrast, process]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: real-questions
+          path: /tmp/questions
+      - uses: actions/download-artifact@v4
+        with:
+          name: real-adapter-${{ matrix.arm }}
+          path: /tmp/trained
+      - run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 huggingface_hub==0.30.2 safetensors==0.5.3
+      - run: python -u research/learning_hub/foundations01/equiv_real01.py infer /tmp/questions /tmp/${{ matrix.arm }}.json ${{ matrix.arm }} /tmp/trained
+      - uses: actions/upload-artifact@v4
+        with:
+          name: real-predictions-${{ matrix.arm }}
+          path: /tmp/${{ matrix.arm }}.json
+          retention-days: 1
+  score:
+    needs: [freeze, train, baseline, infer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: real-labels
+          path: /tmp/labels
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: real-predictions-*
+          path: /tmp/predictions
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: real-adapter-*
+          path: /tmp/adapters
+      - run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          ms=[json.loads((Path('/tmp/adapters')/('real-adapter-'+a)/'manifest.json').read_text()) for a in ('ordinary','contrast','process')]
+          assert all(m['kind']=='real' and m['updates']==192 and m['base_frozen'] for m in ms)
+          assert len({(m['exposure_sha256'],m['input_tokens'],m['padded_tokens'],m['updates'],m['revision']) for m in ms})==1
+          print('MATCHED_EXPOSURES',ms[0]['exposure_sha256'],ms[0]['input_tokens'],ms[0]['padded_tokens'],flush=True)
+          PY
+          python -u research/learning_hub/foundations01/equiv_real01.py score /tmp/labels /tmp/result.json /tmp/predictions/base.json /tmp/predictions/ordinary.json /tmp/predictions/contrast.json /tmp/predictions/process.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: real-pilot-result
+          path: /tmp/result.json
+          retention-days: 1
