@@ -10,7 +10,7 @@ def create(seed,kind):
     if kind not in ("train","eval"):
         raise ValueError("KIND")
     rng=random.Random(seed)
-    sizes,per=((3,4),8) if kind=="train" else ((5,6),4)
+    sizes,per=((4,),16) if kind=="train" else ((5,6),4)
     rows=[]
     used=set()
     for n in sizes:
@@ -46,8 +46,8 @@ def create(seed,kind):
 def validate(rows,kind):
     if kind not in ("train","eval"):
         raise ValueError("KIND")
-    sizes,per=((3,4),8) if kind=="train" else ((5,6),4)
-    if len(rows)!=16*per or len({r["id"] for r in rows})!=len(rows):
+    sizes,per=((4,),16) if kind=="train" else ((5,6),4)
+    if len(rows)!=8*len(sizes)*per or len({r["id"] for r in rows})!=len(rows):
         raise ValueError("COUNT")
     families={}
     keys=set()
