@@ -1,0 +1,13 @@
+{
+  "rows": 16,
+  "correct": 16,
+  "errors": 0,
+  "disabled": 1,
+  "invalid": 1,
+  "nonbijection": 1,
+  "median_ns": [
+    9284.0,
+    79014.5
+  ],
+  "elapsed_ns": 21804347
+}
