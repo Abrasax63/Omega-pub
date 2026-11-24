@@ -1,0 +1,158 @@
+[
+  {
+    "question": "Depuis l’état six, effectue deux transitions.",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Effectue trois transitions à partir de l’état 7.",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "En partant de 10, où arrive-t-on après une étape ?",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Quel état obtient-on après zéro pas en partant de neuf ?",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Effectue cinq transitions à partir de l’état quatre.",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Depuis l’état 0, effectue 2 transitions.",
+    "mapping": [
+      1,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "En partant de 2, où arrive-t-on après 6 étapes ?",
+    "mapping": [
+      1,
+      2,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Depuis l’état 7, effectue une transition.",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Effectue 101 transitions à partir de l’état 0.",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Depuis l’état six, effectue zéro transition.",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      99
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Effectue une transition à partir de l’état 6 ou 7.",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "En partant de 7, où arrive-t-on après 4 étapes ?",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0
+    ],
+    "fault": "offline"
+  }
+]
