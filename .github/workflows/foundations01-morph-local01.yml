@@ -1,0 +1,23 @@
+name: FOUNDATIONS01 MORPH LOCAL01 cache-aware expansion
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-morph-local01.yml','research/learning_hub/foundations01/morph_local01.py']
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -u research/learning_hub/foundations01/morph_local01.py /tmp/morph-local01.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: morph-local01-results
+          path: /tmp/morph-local01.json
