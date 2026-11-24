@@ -2,7 +2,7 @@ name: FOUNDATIONS01 INTERACT02 adaptive hypothesis expansion
 on:
   push:
     branches: [experiment/omega-foundations-selfplay-2026-11-24]
-    paths: ['.github/workflows/foundations01-interact02.yml']
+    paths: ['.github/workflows/foundations01-interact02.yml','research/learning_hub/foundations01/interact02.py']
 permissions:
   contents: read
 jobs:

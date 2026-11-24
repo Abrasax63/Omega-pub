@@ -94,7 +94,7 @@ def main(path):
             s["refuted"]+=int(r["status"]=="REFUTED");s["queries"]+=r["queries"]
             s["degree_"+str(r["degree"])]+=1
             records.append(dict(arm=arm,teacher_degree=degree,index=idx,truth=t,exact=exact,rollout_exact=roll,mismatches=wrong,**r))
-    totals={a:dict(sum(by.values(),Counter())) for a,by in stats.items()}
+    totals={a:{k:sum(c[k] for c in by.values()) for k in sorted(set().union(*(set(c) for c in by.values())))} for a,by in stats.items()}
     a,f=totals["adaptive"],totals["fixed3"]
     savings=1-a["queries"]/f["queries"]
     passed=a["exact"]>=f["exact"] and a["wrong_candidate"]<=f["wrong_candidate"] and savings>=.20
