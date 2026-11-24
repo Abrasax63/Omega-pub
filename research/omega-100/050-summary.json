@@ -1,0 +1,47 @@
+{
+  "training_duplicates": 96,
+  "training_ns": 93591,
+  "arms": {
+    "direct": {
+      "rows": 1204,
+      "errors": 0,
+      "solver_calls": 1202,
+      "cache_hits": 0,
+      "unavailable": 1,
+      "invalid": 1,
+      "median_local_ns": 5308827,
+      "median_wall_ns": 91471119
+    },
+    "binary": {
+      "rows": 1204,
+      "errors": 0,
+      "solver_calls": 1202,
+      "cache_hits": 0,
+      "unavailable": 1,
+      "invalid": 1,
+      "median_local_ns": 9165050,
+      "median_wall_ns": 89613569
+    },
+    "ablated": {
+      "rows": 1204,
+      "errors": 0,
+      "solver_calls": 1202,
+      "cache_hits": 0,
+      "unavailable": 1,
+      "invalid": 1,
+      "median_local_ns": 5175976,
+      "median_wall_ns": 83379325
+    },
+    "retained": {
+      "rows": 1204,
+      "errors": 0,
+      "solver_calls": 301,
+      "cache_hits": 901,
+      "unavailable": 1,
+      "invalid": 1,
+      "median_local_ns": 4617282,
+      "median_wall_ns": 84434503
+    }
+  },
+  "elapsed_ns": 1848289836
+}
