@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "intent": "Assistant-authored, source-grounded, falsifiable research drafts; do not confuse structure proposals with demonstrated comprehension or certified theorems.",
+  "proposals": [
+    {
+      "id": "OMEGA-HYP-SEM42-SPAN-ROUTING",
+      "status": "PROPOSED_UNVERIFIED",
+      "source_root": "omega100",
+      "source": {
+        "path": "research/omega-100/042.md",
+        "git_blob": "b0a4dbdbcdb3f1057bfcf1102ebb4e952d587dbe",
+        "quote": "Prochain essai : comparer un routeur lexical qui reconnaît des nombres écrits en lettres à un modèle qui doit citer les fragments justifiant les deux champs."
+      },
+      "question": "Une contrainte de justification par fragments textuels améliore-t-elle le routage mathématique sans accroître les fausses interprétations ?",
+      "thesis": "Dans des requêtes inédites, un routeur qui cite exactement ses deux fragments source et s'abstient en cas d'ambiguïté peut récupérer des paraphrases nouvelles avec moins de fausses routes que le modèle 3B sans citations.",
+      "representations": [
+        {
+          "name": "structure des slots",
+          "mapping": "Segmenter les nombres en lettres ou chiffres, puis proposer une paire (état initial, horizon) avec positions sources explicites.",
+          "preserved": "La paire renvoie aux deux emplacements lexicaux réellement présents dans la question.",
+          "breaks_on": "Ambiguïté, nombres multiples non attribués, ellipse et négations non résolues."
+        },
+        {
+          "name": "graphe de justifications",
+          "mapping": "Conserver des nœuds de fragments et des arêtes candidate-vers-champ; représenter plusieurs routages possibles au lieu d'en sélectionner un silencieusement.",
+          "preserved": "Chaque décision conserve ses deux justifications littérales; toute concurrence visible mène à une abstention.",
+          "breaks_on": "Inférence de champs implicites ou interprétation sans correspondance textuelle."
+        }
+      ],
+      "test": {
+        "premises": "La paire départ/horizon est annotée indépendamment et les demandes ambiguës sont distinguées avant toute inférence; les corrigés restent cachés.",
+        "baseline": "Routeur lexical fixe et secours 3B de l'expérience 042, exécutés sur les mêmes nouvelles requêtes.",
+        "prediction": "Zéro fausse route et meilleure couverture que le routeur fixe, avec abstention correcte sur les demandes ambiguës.",
+        "counterexample": "Une phrase comportant deux horizons possibles et une négation ou deux nombres du même type fait choisir une paire incorrecte malgré les citations.",
+        "independent_evidence": "Nouveau lot indépendant, paraphrases rédigées sans voir les sorties du modèle, annotations revues hors modèle; pas de réutilisation du holdout 042.",
+        "metrics": "Routes exactes / claires, fausses routes / toutes, abstentions correctes / ambiguës, coûts en secondes et tokens.",
+        "failure_criteria": "Rejeter si une seule fausse route, si une abstention ambiguë est manquée, ou si couverture/cout ne dépasse pas la référence sous budget égal.",
+        "budget": "Pilote d'au plus 24 questions nouvelles, deux bras et une seule instance 3B sans API payante, seuils figés avant lecture.",
+        "counterfactual_prediction": "Si deux horizons concurrents sont ajoutés à la même requête, les deux représentations doivent signaler l'ambiguïté et s'abstenir, sans sélectionner arbitrairement l'un des nombres.",
+        "cross_representation_invariant": "Pour toute requête retenue, la paire (état,horizon) extraite des slots doit être exactement celle justifiée par les deux arêtes du graphe; sinon abstention et trace de divergence."
+      },
+      "limitations": "Proposition non exécutée; une citation textuelle correcte n'établit pas l'intention de l'utilisateur ni une compréhension sémantique générale."
+    },
+    {
+      "id": "OMEGA-HYP-V19-SURVIVAL-SWITCH",
+      "status": "PROPOSED_UNVERIFIED",
+      "source_root": "math",
+      "source": {
+        "path": "research/bricks/OBS-V19-SIGNED-CORE_2026-11-19.md",
+        "git_blob": "1fdff7076cb769765193b0955bf1863e2b54aaae",
+        "quote": "La réserve principale réfute une amélioration générale de coût pour ce candidat tel quel."
+      },
+      "question": "Quand changer de représentation entre quotient non signé et cycle signé améliore-t-il le coût sans perdre l'oracle exact ?",
+      "thesis": "Une politique préenregistrée qui choisit entre filtre non signé et noyau signé selon une estimation du taux de survivants pourrait réduire le temps médian sur des familles nouvelles, sans modifier les verdicts.",
+      "representations": [
+        {
+          "name": "graphe quotient non signé",
+          "mapping": "Quotienter les contraintes forcées et regarder si les quatre arêtes peuvent former un cycle avant tout calcul signé.",
+          "preserved": "La connectivité et les cycles sous l'équivalence forcée cohérente.",
+          "breaks_on": "Une parité contradictoire est invisible tant que les signes ne sont pas vérifiés."
+        },
+        {
+          "name": "graphe de contraintes XOR signées",
+          "mapping": "Conserver les potentiels relatifs et les signes sur les arêtes; décider la contradiction minimale après le filtre.",
+          "preserved": "Les contraintes binaires cohérentes et la parité XOR de chaque cycle.",
+          "breaks_on": "La cohérence de départ manque ou le domaine n'est plus celui des quatre relations préenregistrées."
+        }
+      ],
+      "test": {
+        "premises": "Familles V19 avec contraintes forcées cohérentes, quatre relations d'événement et un projecteur exhaustif indépendant comme oracle.",
+        "baseline": "Filtre fixe PR82 puis projections sur survivants, et noyau signé/hybride PR82 sans politique.",
+        "prediction": "Zéro divergence face à l'oracle; réduction nette de temps à budget comparable sur les familles dont le taux de survivants prédit un bénéfice.",
+        "counterexample": "Famille nouvelle où la politique de commutation augmente le temps total malgré un taux de survie proche du seuil préenregistré, ou omet un noyau positif.",
+        "independent_evidence": "Familles finies non utilisées pour fixer le seuil, avec cas positifs et négatifs; comparer résultats et coût à oracle constant.",
+        "metrics": "Taux de survie, faux négatifs/faux positifs, nombre de projections, médiane et distribution des temps par famille.",
+        "failure_criteria": "Ne pas adopter si une seule divergence de verdict, ou si le coût total n'améliore pas la référence sur des familles tenues à l'écart.",
+        "budget": "Au plus 4 familles nouvelles et 30 secondes de calcul par bras sur CPU; seuil choisi avant la réserve.",
+        "counterfactual_prediction": "Si le signe XOR d'une unique arête du cycle pertinent change dans un cas cohérent et minimal, le verdict signé peut changer alors que le quotient non signé conserve la même topologie; l'oracle indépendant doit confirmer le nouveau verdict.",
+        "cross_representation_invariant": "La topologie non signée du quotient et le graphe XOR signé doivent partager les mêmes arêtes projetées; seul le graphe signé porte la parité. Chaque verdict affirmatif doit correspondre au projecteur exhaustif."
+      },
+      "limitations": "Idée dérivée des contrôles signés déjà documentés; originalité non établie; portée limitée aux structures V19 déclarées."
+    }
+  ]
+}

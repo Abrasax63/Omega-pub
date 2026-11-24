@@ -1,0 +1,290 @@
+name: Omega accelerated pilot - existing scientific engines
+
+# The cron activates ONLY if this workflow is explicitly put on the default branch.
+# This draft PR does NOT activate the schedule and does not change ChatGPT tasks.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/omega-fast-cycle-pilot.yml"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_fast_cycle.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_fast_cycle_queue.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/research_reflector.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_research_reflector.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/research_theses_candidates.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/work_inventory.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/research_synthesizer.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_research_synthesizer.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/riemann_reading_cases.json"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/riemann_reading_benchmark.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_riemann_reading_benchmark.py"
+  workflow_dispatch:
+    inputs:
+      bootstrap:
+        type: boolean
+        default: false
+        description: "Explicitly create a fresh state only if no prior state exists"
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: omega-fast-cycle-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout pilot (read-only)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout established provenance engine (PR 81)
+        uses: actions/checkout@v4
+        with:
+          ref: work/omega-provenance-lab
+          path: _sources/provenance
+          persist-credentials: false
+      - name: Checkout established mathematical oracle (PR 82)
+        uses: actions/checkout@v4
+        with:
+          ref: work/omega-math-brick-pilot-2026-11-14
+          path: _sources/math
+          persist-credentials: false
+      - name: Checkout Omega 100 memory
+        uses: actions/checkout@v4
+        with:
+          ref: experiment/omega-100-2026-11-18
+          path: _sources/omega100
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Pilot and original-engine regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_fast_cycle.py -v 2>&1 | tee "$RUNNER_TEMP/omega-pilot-tests.log"
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_fast_cycle_queue.py -v 2>&1 | tee "$RUNNER_TEMP/omega-queue-tests.log"
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_research_reflector.py -v 2>&1 | tee "$RUNNER_TEMP/omega-reflection-tests.log"
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_research_synthesizer.py -v 2>&1 | tee "$RUNNER_TEMP/omega-synthesis-tests.log"
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p test_riemann_reading_benchmark.py -v 2>&1 | tee "$RUNNER_TEMP/omega-riemann-tests.log"
+          (cd _sources/provenance/09_INFRASTRUCTURE_AGENTIQUE/prism &&
+            python -m unittest -v test_provenance_cycle test_provenance_lab) 2>&1 | tee "$RUNNER_TEMP/omega-existing-tests.log"
+      - name: Ground two alternative-structure research theses and audit redundancy safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/research_reflector.py \
+            --proposals 09_INFRASTRUCTURE_AGENTIQUE/prism/research_theses_candidates.json \
+            --work-items 09_INFRASTRUCTURE_AGENTIQUE/prism/work_inventory.json \
+            --provenance _sources/provenance \
+            --math _sources/math \
+            --omega100 _sources/omega100 \
+            --output "$RUNNER_TEMP/omega-fast/reflection.json"
+          python - <<'PY'
+          import json, pathlib, os
+          report = json.loads((pathlib.Path(os.environ["RUNNER_TEMP"]) /
+                               "omega-fast/reflection.json").read_text())
+          assert len(report["grounded_hypothesis_proposals"]) == 2
+          assert report["scientific_claims_certified"] == 0
+          assert report["deduplication"]["safe_to_delete_files"] == []
+          assert report["deduplication"]["safe_to_drop_tests"] == []
+          assert not any(report["action_policy"].values())
+          print("Source anchors, hypotheses and no-deletion guard: PASS")
+          PY
+      - name: Generate structural hypothesis from finite V19 data, test a separate reserve
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 150 python 09_INFRASTRUCTURE_AGENTIQUE/prism/research_synthesizer.py \
+            --math _sources/math \
+            --output "$RUNNER_TEMP/omega-fast/synthesis.json" 2>&1 | tee "$RUNNER_TEMP/omega-synthesis-run.log"
+          python - <<'PY'
+          import json, os, pathlib
+          p = pathlib.Path(os.environ["RUNNER_TEMP"]) / "omega-fast/synthesis.json"
+          r = json.loads(p.read_text())
+          assert r["model_type"].startswith("finite enumerative")
+          assert r["scientific_claims_certified"] == 0
+          assert not r["autonomous_semantic_comprehension_demonstrated"]
+          assert r["relabeling_invariance"]["disagreements"] == 0
+          assert len(r["generated_rule"]["atoms"]) <= 3
+          for name in ("always_negative", "unsigned_quotient_cycle", "learned_conjunction"):
+              assert sum(r["comparison"][name].values()) > 0
+          print("Generated finite structural rule with independently computed reserve: PASS")
+          PY
+      - name: Test source-scoped Riemann reading dependency benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/riemann_reading_benchmark.py \
+            --manifest 09_INFRASTRUCTURE_AGENTIQUE/prism/riemann_reading_cases.json \
+            --omega100 _sources/omega100 \
+            --output "$RUNNER_TEMP/omega-fast/riemann-benchmark.json" 2>&1 | tee "$RUNNER_TEMP/omega-riemann-run.log"
+          python - <<'PY'
+          import json, pathlib, os
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "omega-fast"
+          x = json.loads((root / "riemann-benchmark.json").read_text())
+          assert x["proofs_of_RH_generated"] == 0
+          assert x["scientific_discoveries"] == 0
+          assert x["machine_verified_Lean_proof_rechecked"] is False
+          assert x["chebyshev"]["finite_violations"] == 0
+          assert x["case_count"] == 16
+          assert x["metrics"]["conditions"]["certificates_checked"] > 0
+          print("Riemann reading test completed WITHOUT claiming proof or PDF comprehension")
+          PY
+      - name: Restore durable ledger; never silently restart after a lost artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MANUAL_BOOTSTRAP: ${{ inputs.bootstrap }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/omega-fast"
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            echo "PR test: explicit isolated bootstrap, not a persistent research cycle"
+            echo "true" > "$RUNNER_TEMP/omega-fast/bootstrap.txt"
+            exit 0
+          fi
+          LAST_RUN="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=omega-fast-cycle-ledger-v1&per_page=100" \
+            --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == env.GITHUB_REF_NAME)] | sort_by(.created_at) | last | .workflow_run.id // empty')"
+          if [[ -n "$LAST_RUN" ]]; then
+            gh run download "$LAST_RUN" --repo "$GITHUB_REPOSITORY" \
+              --name omega-fast-cycle-ledger-v1 --dir "$RUNNER_TEMP/omega-fast"
+            test -s "$RUNNER_TEMP/omega-fast/state.json"
+            echo "false" > "$RUNNER_TEMP/omega-fast/bootstrap.txt"
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "$MANUAL_BOOTSTRAP" == "true" ]]; then
+            echo "true" > "$RUNNER_TEMP/omega-fast/bootstrap.txt"
+          else
+            echo "::error::No durable ledger found. Explicit manual bootstrap required; fail closed."
+            exit 1
+          fi
+      - name: Execute up to two preregistered probes from the persistent queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARGS=()
+          if [[ "$(cat "$RUNNER_TEMP/omega-fast/bootstrap.txt")" == "true" ]]; then
+            ARGS+=(--bootstrap)
+          fi
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py \
+            --state "$RUNNER_TEMP/omega-fast/state.json" \
+            --output-dir "$RUNNER_TEMP/omega-fast" \
+            --provenance-dir _sources/provenance \
+            --math-dir _sources/math \
+            --omega-dir _sources/omega100 \
+            --catalog 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json \
+            --ideas-report "$RUNNER_TEMP/omega-fast/reflection.json" \
+            --synthesis-report "$RUNNER_TEMP/omega-fast/synthesis.json" \
+            --max-cycles 2 "${ARGS[@]}" 2>&1 | tee "$RUNNER_TEMP/omega-fast/run.log"
+      - name: Second process resumes from persisted state (PR verification only)
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py \
+            --state "$RUNNER_TEMP/omega-fast/state.json" \
+            --output-dir "$RUNNER_TEMP/omega-fast" \
+            --provenance-dir _sources/provenance \
+            --math-dir _sources/math \
+            --omega-dir _sources/omega100 \
+            --catalog 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json \
+            --ideas-report "$RUNNER_TEMP/omega-fast/reflection.json" \
+            --synthesis-report "$RUNNER_TEMP/omega-fast/synthesis.json" \
+            --max-cycles 2 2>&1 | tee "$RUNNER_TEMP/omega-fast/restart.log"
+          python - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "omega-fast"
+          entries = json.loads((root / "state.json").read_text())["entries"]
+          assert len(entries) == 4, "Two invocations must complete four different probes"
+          assert len({e["id"] for e in entries}) == 4
+          print("Two-invocation anti-replay: PASS")
+          PY
+      - name: Recover archived state from an earlier distinct GitHub run (PR-only gate)
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/omega-fast-crossrun"
+          mkdir -p "$ROOT"
+          # A fixed, independently archived state from prior run 45047307664.
+          gh run download 45047307664 --repo "$GITHUB_REPOSITORY" \
+            --name omega-fast-cycle-ci-45047307664 --dir "$ROOT"
+          test -s "$ROOT/omega-fast/state.json"
+          test -s "$ROOT/omega-fast/results/PROV-COPY-SCOPE-V1.json"
+          python - <<'PY'
+          import json, os, pathlib
+          file = pathlib.Path(os.environ["RUNNER_TEMP"]) / "omega-fast-crossrun/omega-fast/state.json"
+          ids = [x["id"] for x in json.loads(file.read_text())["entries"]]
+          assert ids == ["PROV-COPY-SCOPE-V1", "V19-C5-LEAVES-N8-V1",
+                         "V19-C4-N7-H2-V1", "V19-C5-N8-H3-V1"], ids
+          PY
+          python 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py \
+            --state "$ROOT/omega-fast/state.json" \
+            --output-dir "$ROOT/omega-fast" \
+            --provenance-dir _sources/provenance \
+            --math-dir _sources/math \
+            --omega-dir _sources/omega100 \
+            --catalog 09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_catalog.json \
+            --ideas-report "$RUNNER_TEMP/omega-fast/reflection.json" \
+            --synthesis-report "$RUNNER_TEMP/omega-fast/synthesis.json" \
+            --max-cycles 2 2>&1 | tee "$ROOT/crossrun.log"
+          python - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "omega-fast-crossrun/omega-fast"
+          entries = json.loads((root / "state.json").read_text())["entries"]
+          ids = [x["id"] for x in entries]
+          assert len(ids) == len(set(ids)) == 6, ids
+          assert ids[4:] == ["V19-C4-N8-H4-V1", "V19-C5-N9-H2-V1"], ids
+          print("Cross-GitHub-run restore and no-replay: PASS")
+          PY
+      - name: Save only non-PR durable ledger for future runs
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-fast-cycle-ledger-v1
+          path: |
+            ${{ runner.temp }}/omega-fast/state.json
+            ${{ runner.temp }}/omega-fast/results/
+            ${{ runner.temp }}/omega-fast/run.log
+            ${{ runner.temp }}/omega-fast/reflection.json
+            ${{ runner.temp }}/omega-fast/synthesis.json
+            ${{ runner.temp }}/omega-fast/riemann-benchmark.json
+            ${{ runner.temp }}/omega-fast/restart.log
+            ${{ runner.temp }}/omega-fast/state.json
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Archive PR integration evidence, not a persistent ledger
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-fast-cycle-ci-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/omega-pilot-tests.log
+            ${{ runner.temp }}/omega-queue-tests.log
+            ${{ runner.temp }}/omega-reflection-tests.log
+            ${{ runner.temp }}/omega-synthesis-tests.log
+            ${{ runner.temp }}/omega-synthesis-run.log
+            ${{ runner.temp }}/omega-riemann-tests.log
+            ${{ runner.temp }}/omega-riemann-run.log
+            ${{ runner.temp }}/omega-fast/riemann-benchmark.json
+            ${{ runner.temp }}/omega-fast/synthesis.json
+            ${{ runner.temp }}/omega-fast/reflection.json
+            ${{ runner.temp }}/omega-existing-tests.log
+            ${{ runner.temp }}/omega-fast/results/
+            ${{ runner.temp }}/omega-fast/run.log
+            ${{ runner.temp }}/omega-fast/restart.log
+            ${{ runner.temp }}/omega-fast/state.json
+            ${{ runner.temp }}/omega-fast-crossrun/omega-fast/state.json
+            ${{ runner.temp }}/omega-fast-crossrun/crossrun.log
+          retention-days: 7
+          if-no-files-found: warn

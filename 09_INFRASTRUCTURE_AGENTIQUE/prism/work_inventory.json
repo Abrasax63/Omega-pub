@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "description": "Declared activity contracts, not proof of semantic equivalence. Never delete branches, files, test cases, or research claims on overlap alone.",
+  "work_items": [
+    {
+      "id": "PR81-PROVENANCE-SYNTHESIS",
+      "source": "09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_cycle.py (PR81)",
+      "objective": "Proposer et vérifier des règles de provenance sur traces GitHub sans fausses confirmations",
+      "source_revision": "work/omega-provenance-lab",
+      "scope": "GitHub provenance laboratory",
+      "metric_definition": "TP FP abstentions",
+      "budget": "un cycle borné"
+    },
+    {
+      "id": "FAST-PROV-INTEGRATION",
+      "source": "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle.py (PR230)",
+      "objective": "Vérifier des règles de provenance sur traces GitHub sans fausses confirmations",
+      "source_revision": "experiment/omega-fast-cycle-15min-2026-11-22",
+      "scope": "Synthetic integration probe",
+      "metric_definition": "TP FP abstentions",
+      "budget": "un test fini"
+    },
+    {
+      "id": "PR82-V19-ORACLE",
+      "source": "research/code/audit_v19_shadow_guard.py (PR82)",
+      "objective": "Comparer projecteurs V19 contre un oracle exhaustif sur des systèmes finis",
+      "source_revision": "work/omega-math-brick-pilot-2026-11-14",
+      "scope": "Projector and oracle code",
+      "metric_definition": "exact shadow equality",
+      "budget": "familles V19"
+    },
+    {
+      "id": "FAST-V19-SAMPLING",
+      "source": "09_INFRASTRUCTURE_AGENTIQUE/prism/fast_cycle_queue.py (PR230)",
+      "objective": "Comparer projecteurs V19 contre un oracle exhaustif sur des systèmes finis",
+      "source_revision": "experiment/omega-fast-cycle-15min-2026-11-22",
+      "scope": "Bounded prerecorded samples",
+      "metric_definition": "exact shadow equality",
+      "budget": "24 finite cases"
+    },
+    {
+      "id": "OMEGA100-ROUTING42",
+      "source": "research/omega-100/042.md",
+      "objective": "Routage de requêtes paraphrasées par un modèle de langage et contrôle de fausses routes",
+      "source_revision": "experiment/omega-100-2026-11-18",
+      "scope": "Unseen short input queries 042",
+      "metric_definition": "Correct and false routes",
+      "budget": "8 model calls"
+    },
+    {
+      "id": "PROPOSED-ROUTING-SPANS",
+      "source": "research_theses_candidates.json",
+      "objective": "Routage de requêtes paraphrasées par un modèle de langage avec fragments justifiant les routes",
+      "source_revision": "experiment/omega-fast-cycle-15min-2026-11-22",
+      "scope": "New heldout phrases; unexecuted proposal",
+      "metric_definition": "Correct and false routes",
+      "budget": "24 new questions"
+    }
+  ]
+}
