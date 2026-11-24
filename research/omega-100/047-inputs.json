@@ -1,0 +1,105 @@
+[
+  {
+    "question": "Depuis l’état 2, effectue trois transitions.",
+    "mapping": [
+      1,
+      2,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Effectue six transitions à partir de l’état un.",
+    "mapping": [
+      0,
+      2,
+      1
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Quel état obtient-on après zéro pas en partant de 4 ?",
+    "mapping": [
+      1,
+      2,
+      3,
+      4,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "En partant de zéro, où arrive-t-on après trois étapes ?",
+    "mapping": [
+      1,
+      3,
+      1,
+      4,
+      4
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Depuis l’état 0, effectue zéro transition.",
+    "mapping": [
+      1,
+      7,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Effectue deux transitions à partir de l’état cinq.",
+    "mapping": [
+      1,
+      2,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Depuis l’état zéro, effectue zéro transition.",
+    "mapping": [],
+    "fault": "ok"
+  },
+  {
+    "question": "En partant de zéro, où arrive-t-on après une étape ?",
+    "mapping": [
+      true,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Depuis l’état 1, effectue deux transitions.",
+    "mapping": [
+      1,
+      0
+    ],
+    "fault": "offline"
+  },
+  {
+    "question": "Effectue un transition à partir de l’état zéro.",
+    "mapping": [
+      1,
+      0
+    ],
+    "fault": "wrong-response"
+  },
+  {
+    "question": "Depuis l’état 1 ou 0, effectue deux transitions.",
+    "mapping": [
+      1,
+      0
+    ],
+    "fault": "ok"
+  },
+  {
+    "question": "Depuis l’état 1, effectue deux transitions. Ou trois ?",
+    "mapping": [
+      1,
+      0
+    ],
+    "fault": "ok"
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "reference": {
+    "correct": 6,
+    "false_results": 4,
+    "exceptions": 2,
+    "invalid_calls": 4,
+    "ambiguous_calls": 0,
+    "unavailable": 0,
+    "median_ns": 25198.0
+  },
+  "candidate": {
+    "correct": 12,
+    "false_results": 0,
+    "exceptions": 0,
+    "invalid_calls": 0,
+    "ambiguous_calls": 0,
+    "unavailable": 2,
+    "median_ns": 27741.0
+  },
+  "elapsed_ns": 34067129
+}
