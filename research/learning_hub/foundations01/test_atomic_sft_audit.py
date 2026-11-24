@@ -15,8 +15,15 @@ class SupplementalAuditTests(unittest.TestCase):
         self.assertEqual(r["scores"]["base"]["edges"]["groups"]["all"]["joint"],32)
         self.assertEqual(r["scores"]["base"]["edges"]["macro_motif_joint"],0.125)
         self.assertEqual(r["scores"]["lora"]["same_graph_correct_both_views"],64)
-        self.assertTrue(r["preregistered_signal"])
+        # The positive class was already perfect: strict improvement in both classes is impossible.
+        self.assertFalse(r["preregistered_signal"])
+        self.assertEqual(r["paired"]["edges"]["lora_only"],32)
         self.assertFalse(r["promotion_authorized"])
+    def test_gain_on_both_classes(self):
+        p=self.predictions()
+        for row in p:
+            if row["arm"]=="base": row["raw"]="0000"
+        self.assertTrue(summarize(self.rows,p)["preregistered_signal"])
     def test_missing(self):
         with self.assertRaisesRegex(ValueError,"PREDICTION_COVERAGE"):
             summarize(self.rows,self.predictions()[:-1])
