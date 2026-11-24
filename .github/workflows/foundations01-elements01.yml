@@ -1,0 +1,74 @@
+name: FOUNDATIONS01 ELEMENTS01 frozen elementary diagnostic
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-elements01.yml']
+permissions:
+  contents: read
+concurrency:
+  group: foundations01-elements01-single
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require first introduction only
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/foundations01-elements01.yml 2>/dev/null; then exit 1; fi
+      - uses: actions/checkout@v4
+        with:
+          ref: e68db2c2ca3f14d113fc15f431fac04d5ee7cb30
+          path: sensor-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exact teacher and compact syntax tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}/sensor-source/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest discover -s research/learning_hub/foundations01 -p 'test_*.py' -v
+  diagnostic:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: e68db2c2ca3f14d113fc15f431fac04d5ee7cb30
+          path: sensor-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pinned SFT01 dependencies
+        run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 safetensors==0.5.3 huggingface_hub==0.30.2
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - name: Frozen elementary diagnostic
+        env:
+          PYTHONPATH: ${{ github.workspace }}/sensor-source/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -u research/learning_hub/foundations01/elements01.py --output /tmp/elements01
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: foundations01-elements01-raw
+          path: /tmp/elements01
+          retention-days: 14
+          if-no-files-found: warn
