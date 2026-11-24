@@ -1,0 +1,23 @@
+name: FOUNDATIONS01 MORPH DAG01 evolving dependency graph
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-morph-dag01.yml','research/learning_hub/foundations01/morph_dag01.py']
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -u research/learning_hub/foundations01/morph_dag01.py /tmp/morph-dag01.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: morph-dag01-results
+          path: /tmp/morph-dag01.json
