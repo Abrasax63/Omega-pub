@@ -26,6 +26,8 @@ on:
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_tutor07.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_atom08.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_atom08.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_atom08_audit.py"
+      - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_atom08_audit.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/OMEGA_HYBRID_ATOM08_PREREG_2026-11-24.md"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_tutor07.py"
       - "09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_tutor07_audit.py"
@@ -74,6 +76,8 @@ jobs:
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_tutor07.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_atom08.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_atom08.py
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_atom08_audit.py
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_atom08_audit.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_tutor07.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_tutor07_audit.py
           python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/test_omega_hybrid_tutor07_audit.py
