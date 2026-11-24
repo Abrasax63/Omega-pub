@@ -1,0 +1,23 @@
+name: FOUNDATIONS01 SEMANTIC IR01 guarded tool routing
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-semantic-ir01.yml']
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -u research/learning_hub/foundations01/semantic_ir01_benchmark.py /tmp/semantic-ir01.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: semantic-ir01-results
+          path: /tmp/semantic-ir01.json
