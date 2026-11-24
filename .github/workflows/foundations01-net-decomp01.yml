@@ -1,0 +1,23 @@
+name: FOUNDATIONS01 NET DECOMP01 component and clique counting
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-net-decomp01.yml','research/learning_hub/foundations01/net_decomp01.py']
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -u research/learning_hub/foundations01/net_decomp01.py /tmp/net-decomp01.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: net-decomp01-results
+          path: /tmp/net-decomp01.json
