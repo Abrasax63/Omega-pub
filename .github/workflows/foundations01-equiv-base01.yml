@@ -1,0 +1,87 @@
+name: FOUNDATIONS01 EQUIV BASE01 frozen model diagnostic
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-equiv-base01.yml','research/learning_hub/foundations01/equiv_base01.py']
+permissions:
+  contents: read
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install networkx==3.4.2
+      - run: python -u research/learning_hub/foundations01/equiv_base01.py freeze /tmp/equiv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: equiv-corpus
+          path: |
+            /tmp/equiv/train.json
+            /tmp/equiv/dev.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: equiv-questions
+          path: |
+            /tmp/equiv/questions.json
+            /tmp/equiv/manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: equiv-labels
+          path: /tmp/equiv/labels.json
+  infer:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: equiv-questions
+          path: /tmp/equiv
+      - run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 huggingface_hub==0.30.2 safetensors==0.5.3
+      - run: python -u research/learning_hub/foundations01/equiv_base01.py infer /tmp/equiv/questions.json /tmp/equiv/manifest.json /tmp/predictions.jsonl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: equiv-predictions
+          path: /tmp/predictions.jsonl
+  score:
+    needs: infer
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: equiv-questions
+          path: /tmp/equiv
+      - uses: actions/download-artifact@v4
+        with:
+          name: equiv-labels
+          path: /tmp/equiv
+      - uses: actions/download-artifact@v4
+        with:
+          name: equiv-predictions
+          path: /tmp/equiv
+      - run: python -u research/learning_hub/foundations01/equiv_base01.py score /tmp/equiv/labels.json /tmp/equiv/manifest.json /tmp/equiv/predictions.jsonl /tmp/result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: equiv-baseline-results
+          path: /tmp/result.json
