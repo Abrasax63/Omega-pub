@@ -1,0 +1,26 @@
+name: FOUNDATIONS01 CERTGATE01 finite domain certificate
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-certgate01.yml']
+permissions:
+  contents: read
+jobs:
+  replicate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: |
+          sha256sum research/learning_hub/foundations01/certgate01.py
+          python research/learning_hub/foundations01/certgate01.py /tmp/certgate01.json
+          python -c 'import json; r=json.load(open("/tmp/certgate01.json")); assert r["passed"]; assert len(r["records"])==48; assert all(r["mutation_tests"].values())'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: certgate01-results
+          path: /tmp/certgate01.json
