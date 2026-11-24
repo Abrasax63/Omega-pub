@@ -1,0 +1,37 @@
+name: FOUNDATIONS01 LIBSTRUCT01 historical invariant audit
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-libstruct01.yml']
+permissions:
+  contents: read
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: |
+          cd research/learning_hub/foundations01/libstruct01
+          sha256sum symmetry_audit.py rule90_audit.py
+          python symmetry_audit.py
+          python rule90_audit.py
+          python - <<'PY'
+          import json
+          a=json.load(open('results.json'));b=json.load(open('rule90_results.json'))
+          assert [r['orbits'] for r in a['dynamics']]==[3,15,95]
+          assert all(r['mismatches']==0 for r in a['dynamics'])
+          assert a['graphs']['global_errors']==0 and a['graphs']['local_errors']==8
+          assert a['unsafe_coarse_key']['both_delta_empty']
+          assert a['unsafe_coarse_key']['word_001_A']!=a['unsafe_coarse_key']['word_001_B']
+          assert (b['cases'],b['full'],b['reduced'],b['all_uniform'])==(40,161112,12704,True)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libstruct01-results
+          path: research/learning_hub/foundations01/libstruct01/*results.json
