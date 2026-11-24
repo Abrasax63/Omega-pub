@@ -22,4 +22,4 @@ jobs:
       - name: Exhaustive integration
         env:
           PYTHONPATH: ${{ github.workspace }}/sensor-source/09_INFRASTRUCTURE_AGENTIQUE/prism
-        run: python -m unittest discover -s research/learning_hub/foundations01 -p test_teacher.py -v
+        run: python -m unittest discover -s research/learning_hub/foundations01 -p 'test_*.py' -v
