@@ -1,0 +1,16 @@
+{
+  "reference": {
+    "tp": 4,
+    "fp": 6,
+    "fn": 0,
+    "tn": 2,
+    "median_ns": 15653.0
+  },
+  "candidate": {
+    "tp": 4,
+    "fp": 0,
+    "fn": 0,
+    "tn": 8,
+    "median_ns": 25668.0
+  }
+}
