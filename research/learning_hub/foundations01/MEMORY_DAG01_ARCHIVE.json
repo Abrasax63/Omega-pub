@@ -1,0 +1,1145 @@
+{
+  "archive": {
+    "definitions": {
+      "SM": {
+        "parts": [
+          [
+            "primitive",
+            "S"
+          ],
+          [
+            "primitive",
+            "M"
+          ]
+        ],
+        "origin": "mined",
+        "support": 19
+      },
+      "RS": {
+        "parts": [
+          [
+            "primitive",
+            "R"
+          ],
+          [
+            "primitive",
+            "S"
+          ]
+        ],
+        "origin": "mined",
+        "support": 16
+      },
+      "MR": {
+        "parts": [
+          [
+            "primitive",
+            "M"
+          ],
+          [
+            "primitive",
+            "R"
+          ]
+        ],
+        "origin": "mined",
+        "support": 14
+      },
+      "MS": {
+        "parts": [
+          [
+            "primitive",
+            "M"
+          ],
+          [
+            "primitive",
+            "S"
+          ]
+        ],
+        "origin": "mined",
+        "support": 14
+      },
+      "SR": {
+        "parts": [
+          [
+            "primitive",
+            "S"
+          ],
+          [
+            "primitive",
+            "R"
+          ]
+        ],
+        "origin": "mined",
+        "support": 14
+      },
+      "RSM": {
+        "parts": [
+          [
+            "primitive",
+            "R"
+          ],
+          [
+            "primitive",
+            "S"
+          ],
+          [
+            "primitive",
+            "M"
+          ]
+        ],
+        "origin": "mined",
+        "support": 13
+      },
+      "N1": {
+        "parts": [
+          [
+            "ref",
+            "SM"
+          ],
+          [
+            "ref",
+            "RS"
+          ]
+        ],
+        "origin": "developer_fixture"
+      },
+      "N2": {
+        "parts": [
+          [
+            "ref",
+            "MR"
+          ],
+          [
+            "ref",
+            "MS"
+          ]
+        ],
+        "origin": "developer_fixture"
+      },
+      "N3": {
+        "parts": [
+          [
+            "ref",
+            "SR"
+          ],
+          [
+            "ref",
+            "RSM"
+          ]
+        ],
+        "origin": "developer_fixture"
+      },
+      "N4": {
+        "parts": [
+          [
+            "ref",
+            "N1"
+          ],
+          [
+            "ref",
+            "N2"
+          ]
+        ],
+        "origin": "developer_fixture"
+      },
+      "N5": {
+        "parts": [
+          [
+            "ref",
+            "N4"
+          ],
+          [
+            "ref",
+            "N3"
+          ]
+        ],
+        "origin": "developer_fixture"
+      }
+    },
+    "evidence": [
+      {
+        "p": 11,
+        "target": [
+          0,
+          6,
+          8,
+          10,
+          2,
+          3,
+          5,
+          7,
+          9,
+          1,
+          4
+        ],
+        "word": "RSMRSRS",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          3,
+          10,
+          7,
+          9,
+          0,
+          2,
+          4,
+          6,
+          8,
+          1,
+          5
+        ],
+        "word": "RDSMRSML",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          3,
+          1,
+          0,
+          8,
+          5,
+          6,
+          10,
+          7,
+          4,
+          2,
+          9
+        ],
+        "word": "MRSMMSRSR",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          1,
+          7,
+          3,
+          6,
+          0,
+          2,
+          10,
+          4,
+          9,
+          5,
+          8
+        ],
+        "word": "RRMMMSRSMSR",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          1,
+          0,
+          9,
+          6,
+          3,
+          4,
+          8,
+          5,
+          2,
+          10,
+          7
+        ],
+        "word": "SMRSMM",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          3,
+          2,
+          8,
+          5,
+          6,
+          0,
+          7,
+          4,
+          1,
+          9,
+          10
+        ],
+        "word": "RMSRSMRSM",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          8,
+          1,
+          5,
+          9,
+          2,
+          6,
+          0,
+          3,
+          7,
+          4,
+          10
+        ],
+        "word": "RRSMMRSL",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          10,
+          1,
+          3,
+          7,
+          2,
+          4,
+          8,
+          0,
+          5,
+          9,
+          6
+        ],
+        "word": "SRSMRSMS",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          10,
+          1,
+          3,
+          5,
+          7,
+          0,
+          9,
+          2,
+          4,
+          6,
+          8
+        ],
+        "word": "MRDSLM",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          8,
+          9,
+          5,
+          1,
+          2,
+          4,
+          0,
+          7,
+          3,
+          10,
+          6
+        ],
+        "word": "DDSDRR",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          1,
+          6,
+          3,
+          5,
+          7,
+          9,
+          10,
+          2,
+          4,
+          0,
+          8
+        ],
+        "word": "MSLSMSD",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          1,
+          5,
+          9,
+          2,
+          6,
+          10,
+          3,
+          7,
+          0,
+          4,
+          8
+        ],
+        "word": "MMR",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          2,
+          8,
+          3,
+          9,
+          5,
+          10,
+          4,
+          0,
+          6,
+          1,
+          7
+        ],
+        "word": "DLLSRRRR",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          3,
+          9,
+          4,
+          10,
+          6,
+          5,
+          0,
+          1,
+          7,
+          2,
+          8
+        ],
+        "word": "DLLSMSLD",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          1,
+          4,
+          10,
+          5,
+          0,
+          3,
+          9,
+          7,
+          2,
+          8,
+          6
+        ],
+        "word": "MSRRSRDD",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 11,
+        "target": [
+          7,
+          0,
+          6,
+          1,
+          5,
+          2,
+          8,
+          3,
+          9,
+          4,
+          10
+        ],
+        "word": "DDSRRMR",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          0
+        ],
+        "word": "RM",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          1,
+          9,
+          10,
+          11,
+          12,
+          0,
+          3,
+          8,
+          2,
+          4,
+          5,
+          6,
+          7
+        ],
+        "word": "MSRDDSMSR",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          1,
+          0,
+          3,
+          5,
+          7,
+          9,
+          11,
+          12,
+          2,
+          4,
+          6,
+          8,
+          10
+        ],
+        "word": "SMSL",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          9,
+          0,
+          2,
+          6,
+          10,
+          1,
+          5,
+          11,
+          7,
+          4,
+          8,
+          12,
+          3
+        ],
+        "word": "MLSRSMMRSD",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          12,
+          6,
+          5,
+          8,
+          11,
+          1,
+          4,
+          7,
+          10,
+          2,
+          3,
+          9,
+          0
+        ],
+        "word": "RRSMMRSMRSM",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          10,
+          1,
+          0,
+          5,
+          9,
+          2,
+          4,
+          8,
+          12,
+          3,
+          7,
+          11,
+          6
+        ],
+        "word": "SRSMRSMS",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          5,
+          0,
+          1,
+          2,
+          3,
+          4,
+          6,
+          12
+        ],
+        "word": "RRSMSLDL",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          10,
+          12,
+          1,
+          3,
+          5,
+          8,
+          9,
+          11,
+          7,
+          2,
+          4,
+          6,
+          0
+        ],
+        "word": "RMRSMRSD",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          12,
+          2,
+          3,
+          5,
+          7,
+          9,
+          11,
+          0,
+          8,
+          4,
+          6,
+          1,
+          10
+        ],
+        "word": "LMSMSDR",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          2,
+          3,
+          5,
+          7,
+          9,
+          11,
+          0,
+          1,
+          4,
+          6,
+          8,
+          10,
+          12
+        ],
+        "word": "MSR",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          12,
+          1,
+          10,
+          3,
+          5,
+          7,
+          9,
+          11,
+          0,
+          2,
+          4,
+          6,
+          8
+        ],
+        "word": "LSRSLML",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          9,
+          2,
+          3,
+          10,
+          4,
+          11,
+          5,
+          12,
+          6,
+          1,
+          7,
+          0,
+          8
+        ],
+        "word": "SDRRS",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          3,
+          8,
+          12,
+          7,
+          11,
+          2,
+          6,
+          10,
+          1,
+          5,
+          9,
+          0,
+          4
+        ],
+        "word": "SLSMML",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          8,
+          7,
+          5,
+          10,
+          2,
+          0,
+          12,
+          4,
+          9,
+          1,
+          6,
+          11,
+          3
+        ],
+        "word": "LDDSD",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          6,
+          2,
+          10,
+          0,
+          5,
+          9,
+          11,
+          4,
+          8,
+          12,
+          3,
+          7,
+          1
+        ],
+        "word": "SRMSLMS",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 13,
+        "target": [
+          9,
+          5,
+          1,
+          10,
+          6,
+          2,
+          11,
+          7,
+          3,
+          12,
+          8,
+          4,
+          0
+        ],
+        "word": "RDDDD",
+        "key": null,
+        "equal": true
+      },
+      {
+        "p": 19,
+        "target": [
+          3,
+          0,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15,
+          17,
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18
+        ],
+        "word": null,
+        "key": "N1",
+        "equal": true
+      },
+      {
+        "p": 19,
+        "target": [
+          0,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15,
+          17,
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18
+        ],
+        "word": null,
+        "key": "N1",
+        "equal": false
+      },
+      {
+        "p": 19,
+        "target": [
+          2,
+          6,
+          10,
+          14,
+          18,
+          3,
+          7,
+          11,
+          15,
+          1,
+          4,
+          8,
+          12,
+          16,
+          0,
+          5,
+          9,
+          13,
+          17
+        ],
+        "word": null,
+        "key": "N2",
+        "equal": true
+      },
+      {
+        "p": 19,
+        "target": [
+          6,
+          2,
+          10,
+          14,
+          18,
+          3,
+          7,
+          11,
+          15,
+          1,
+          4,
+          8,
+          12,
+          16,
+          0,
+          5,
+          9,
+          13,
+          17
+        ],
+        "word": null,
+        "key": "N2",
+        "equal": false
+      },
+      {
+        "p": 19,
+        "target": [
+          6,
+          4,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18,
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15,
+          17,
+          2,
+          0
+        ],
+        "word": null,
+        "key": "N3",
+        "equal": true
+      },
+      {
+        "p": 19,
+        "target": [
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18,
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15,
+          17,
+          2,
+          0
+        ],
+        "word": null,
+        "key": "N3",
+        "equal": false
+      },
+      {
+        "p": 19,
+        "target": [
+          14,
+          2,
+          3,
+          11,
+          1,
+          8,
+          16,
+          5,
+          13,
+          6,
+          10,
+          18,
+          7,
+          15,
+          4,
+          12,
+          0,
+          9,
+          17
+        ],
+        "word": null,
+        "key": "N4",
+        "equal": true
+      },
+      {
+        "p": 19,
+        "target": [
+          2,
+          14,
+          3,
+          11,
+          1,
+          8,
+          16,
+          5,
+          13,
+          6,
+          10,
+          18,
+          7,
+          15,
+          4,
+          12,
+          0,
+          9,
+          17
+        ],
+        "word": null,
+        "key": "N4",
+        "equal": false
+      },
+      {
+        "p": 19,
+        "target": [
+          13,
+          8,
+          10,
+          7,
+          4,
+          1,
+          17,
+          14,
+          11,
+          16,
+          5,
+          0,
+          18,
+          15,
+          12,
+          9,
+          6,
+          3,
+          2
+        ],
+        "word": null,
+        "key": "N5",
+        "equal": true
+      },
+      {
+        "p": 19,
+        "target": [
+          8,
+          13,
+          10,
+          7,
+          4,
+          1,
+          17,
+          14,
+          11,
+          16,
+          5,
+          0,
+          18,
+          15,
+          12,
+          9,
+          6,
+          3,
+          2
+        ],
+        "word": null,
+        "key": "N5",
+        "equal": false
+      }
+    ]
+  },
+  "anchor": "b019f1f42fc9769347b73f0fece2684840bfd01f6e689282b73ea7707079feb6",
+  "journal": [
+    {
+      "index": 0,
+      "previous": null,
+      "state": {
+        "roots": [
+          "SM",
+          "SR",
+          "N5"
+        ],
+        "quarantine": [],
+        "closure": [
+          "MR",
+          "MS",
+          "N1",
+          "N2",
+          "N3",
+          "N4",
+          "N5",
+          "RS",
+          "RSM",
+          "SM",
+          "SR"
+        ]
+      },
+      "reason": "initial",
+      "hash": "5a19d3766591a09735f62e0839e9b86fcf9948b3a25f4a7ef7946211b0c43077"
+    },
+    {
+      "index": 1,
+      "previous": "5a19d3766591a09735f62e0839e9b86fcf9948b3a25f4a7ef7946211b0c43077",
+      "state": {
+        "roots": [
+          "SR",
+          "N5"
+        ],
+        "quarantine": [],
+        "closure": [
+          "MR",
+          "MS",
+          "N1",
+          "N2",
+          "N3",
+          "N4",
+          "N5",
+          "RS",
+          "RSM",
+          "SM",
+          "SR"
+        ]
+      },
+      "reason": "retire SM root",
+      "hash": "93743ef231fcbc9d01304c0ffe0f1c7c6ad5a41bf3576031668e9f70ef7fb094"
+    },
+    {
+      "index": 2,
+      "previous": "93743ef231fcbc9d01304c0ffe0f1c7c6ad5a41bf3576031668e9f70ef7fb094",
+      "state": {
+        "roots": [
+          "SR"
+        ],
+        "quarantine": [
+          "SM"
+        ],
+        "closure": [
+          "SR"
+        ]
+      },
+      "reason": "quarantine:SM",
+      "hash": "22da8736f34032be996b4f6084ac398a656546cb9511381d506bc18d8bb9c01a"
+    }
+  ],
+  "head": "22da8736f34032be996b4f6084ac398a656546cb9511381d506bc18d8bb9c01a"
+}
