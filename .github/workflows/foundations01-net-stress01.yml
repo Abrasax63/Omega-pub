@@ -1,0 +1,23 @@
+name: FOUNDATIONS01 NET STRESS01 nonlinear constraint network
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-net-stress01.yml','research/learning_hub/foundations01/net_stress01.py']
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -u research/learning_hub/foundations01/net_stress01.py /tmp/net-stress01.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: net-stress01-results
+          path: /tmp/net-stress01.json
