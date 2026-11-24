@@ -1,0 +1,124 @@
+name: Omega TRANSFER-05 - single CPU feedback-transfer pilot
+
+# One run on creation of THIS file only. No cron, PR or workflow_dispatch.
+# Model/source/split protocol frozen in branch prior to workflow introduction.
+on:
+  push:
+    branches:
+      - experiment/omega-hybrid-learning-gates-2026-11-23
+    paths:
+      - .github/workflows/omega-hybrid-transfer05-once.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omega-hybrid-transfer05-once
+  cancel-in-progress: false
+
+jobs:
+  prereg-and-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Frozen protocol, exact offline tests, and split digests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s 09_INFRASTRUCTURE_AGENTIQUE/prism/OMEGA_HYBRID_TRANSFER05_PREREG_2026-11-23.md
+          python -m py_compile 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_transfer05.py
+          python -m unittest discover -s 09_INFRASTRUCTURE_AGENTIQUE/prism -p 'test_omega_hybrid_transfer05.py' -v
+          PYTHONPATH=09_INFRASTRUCTURE_AGENTIQUE/prism python - <<'PY'
+          from omega_hybrid_transfer05 import make_manifest
+          from incremental_math_library import canonical
+          from hashlib import sha256
+          model,oracle=make_manifest()
+          assert len(model['cases']) == 8 and len(oracle['answers']) == 8
+          print('FROZEN_MODEL_CASES_SHA256',sha256(canonical(model).encode()).hexdigest())
+          print('FROZEN_ORACLE_KEY_SHA256',sha256(canonical(oracle).encode()).hexdigest())
+          print('NO_LLM_CALLED_YET')
+          PY
+
+  one-shot-qwen-local:
+    needs: prereg-and-offline
+    runs-on: ubuntu-latest
+    timeout-minutes: 32
+    env:
+      LLAMA_URL: https://github.com/ggml-org/llama.cpp/releases/download/b12633/llama-b12633-bin-ubuntu-x64.tar.gz
+      MODEL_URL: https://huggingface.co/bartowski/Qwen2.5-3B-Instruct-GGUF/resolve/main/Qwen2.5-3B-Instruct-Q4_K_M.gguf
+      MODEL_SHA: 9c9f56a391a3abbd5b89d0245bf6106081bcc3173119d4229235dd9d23253f94
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin model identity and no paid inference
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p transfer05_out "$RUNNER_TEMP/transfer05"
+          curl -fLsS --retry 2 --retry-all-errors --max-time 300 "$LLAMA_URL" -o "$RUNNER_TEMP/transfer05/llama.tar.gz"
+          tar -xzf "$RUNNER_TEMP/transfer05/llama.tar.gz" -C "$RUNNER_TEMP/transfer05"
+          BIN="$(find "$RUNNER_TEMP/transfer05" -type f -name llama-server | head -1)"
+          test -n "$BIN"
+          chmod +x "$BIN"
+          echo "LLAMA_SERVER=$BIN" >> "$GITHUB_ENV"
+          curl -fLsS --retry 2 --retry-all-errors --max-time 750 "$MODEL_URL" -o "$RUNNER_TEMP/transfer05/model.gguf"
+          test "$(head -c 4 "$RUNNER_TEMP/transfer05/model.gguf")" = 'GGUF'
+          echo "$MODEL_SHA  $RUNNER_TEMP/transfer05/model.gguf" | sha256sum -c -
+          sha256sum "$RUNNER_TEMP/transfer05/model.gguf" > transfer05_out/model.sha256
+          "$BIN" --version > transfer05_out/llama-version.txt 2>&1 || true
+      - name: Start CPU-only pinned llama.cpp server
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIB="$(dirname "$LLAMA_SERVER")"
+          LD_LIBRARY_PATH="$LIB:${LD_LIBRARY_PATH:-}" "$LLAMA_SERVER" \
+            -m "$RUNNER_TEMP/transfer05/model.gguf" \
+            --host 127.0.0.1 --port 8080 -c 4096 -t 2 -ngl 0 \
+            > transfer05_out/server.log 2>&1 &
+          for i in $(seq 1 100); do
+            if curl -sf --max-time 3 http://127.0.0.1:8080/health >/dev/null; then
+              echo LOCAL_CPU_MODEL_READY
+              exit 0
+            fi
+            sleep 2
+          done
+          tail -n 80 transfer05_out/server.log
+          exit 1
+      - name: Execute exactly one frozen transfer comparison, fail closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 1200 python 09_INFRASTRUCTURE_AGENTIQUE/prism/omega_hybrid_transfer05.py \
+            --output transfer05_out --server http://127.0.0.1:8080 \
+            2>&1 | tee transfer05_out/summary.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('transfer05_out/report.json').read_text())
+          assert r['model_weights_modified'] is False
+          assert r['paid_api_calls']==0 and r['certified_new_competences']==0
+          assert r['train_calls']==2 and r['eval_calls']==24
+          assert r['stage'] in ('POINTWISE_GAIN_OBSERVED',
+                                'PRE_REGISTERED_GAIN_NOT_OBSERVED',
+                                'INDETERMINATE_BUDGETS')
+          print('PREREGISTERED_VERDICT',r['stage'])
+          print('NO_DURABLE_SKILL_OR_WEIGHT_LEARNING_CLAIMED')
+          PY
+      - name: Preserve raw model outputs, scoring and separate manifests even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega-hybrid-transfer05-one-shot
+          path: transfer05_out/
+          retention-days: 7
+          if-no-files-found: warn
