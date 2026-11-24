@@ -1,0 +1,313 @@
+{
+  "results": {
+    "17": {
+      "HH": {
+        "direct": {
+          "ns": 2933730,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "orbit": {
+          "ns": 2974923,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "verified": {
+          "ns": 1964447,
+          "errors": 0,
+          "calls": 16,
+          "hits": 1008,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "adaptive": {
+          "ns": 2523902,
+          "errors": 0,
+          "calls": 144,
+          "hits": 880,
+          "activations": 1,
+          "reversions": 0,
+          "clears": 0
+        }
+      },
+      "LL": {
+        "direct": {
+          "ns": 2650433,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "orbit": {
+          "ns": 2905198,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "verified": {
+          "ns": 4076296,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "adaptive": {
+          "ns": 3407497,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        }
+      },
+      "HL": {
+        "direct": {
+          "ns": 2781972,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "orbit": {
+          "ns": 2808422,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "verified": {
+          "ns": 3094985,
+          "errors": 0,
+          "calls": 520,
+          "hits": 504,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "adaptive": {
+          "ns": 3126271,
+          "errors": 0,
+          "calls": 648,
+          "hits": 376,
+          "activations": 1,
+          "reversions": 1,
+          "clears": 1
+        }
+      },
+      "LH": {
+        "direct": {
+          "ns": 2706478,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "orbit": {
+          "ns": 3008614,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "verified": {
+          "ns": 3176418,
+          "errors": 0,
+          "calls": 520,
+          "hits": 504,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "adaptive": {
+          "ns": 2914222,
+          "errors": 0,
+          "calls": 648,
+          "hits": 376,
+          "activations": 1,
+          "reversions": 0,
+          "clears": 0
+        }
+      }
+    },
+    "29": {
+      "HH": {
+        "direct": {
+          "ns": 3659928,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "orbit": {
+          "ns": 2831427,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "verified": {
+          "ns": 2768842,
+          "errors": 0,
+          "calls": 16,
+          "hits": 1008,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "adaptive": {
+          "ns": 2968413,
+          "errors": 0,
+          "calls": 144,
+          "hits": 880,
+          "activations": 1,
+          "reversions": 0,
+          "clears": 0
+        }
+      },
+      "LL": {
+        "direct": {
+          "ns": 3273795,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "orbit": {
+          "ns": 2668881,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "verified": {
+          "ns": 3911217,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "adaptive": {
+          "ns": 3003987,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        }
+      },
+      "HL": {
+        "direct": {
+          "ns": 3277430,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "orbit": {
+          "ns": 2699177,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "verified": {
+          "ns": 3123788,
+          "errors": 0,
+          "calls": 520,
+          "hits": 504,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "adaptive": {
+          "ns": 3106111,
+          "errors": 0,
+          "calls": 648,
+          "hits": 376,
+          "activations": 1,
+          "reversions": 1,
+          "clears": 1
+        }
+      },
+      "LH": {
+        "direct": {
+          "ns": 3386225,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "orbit": {
+          "ns": 2702451,
+          "errors": 0,
+          "calls": 1024,
+          "hits": 0,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "verified": {
+          "ns": 3293174,
+          "errors": 0,
+          "calls": 520,
+          "hits": 504,
+          "activations": 0,
+          "reversions": 0,
+          "clears": 0
+        },
+        "adaptive": {
+          "ns": 2966881,
+          "errors": 0,
+          "calls": 648,
+          "hits": 376,
+          "activations": 1,
+          "reversions": 0,
+          "clears": 0
+        }
+      }
+    }
+  },
+  "total_ns": 564057961
+}
