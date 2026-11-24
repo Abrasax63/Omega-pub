@@ -1,0 +1,167 @@
+name: FOUNDATIONS01 PAIRLOSS01 matched learning objective
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-pairloss01.yml']
+permissions:
+  contents: read
+concurrency:
+  group: foundations01-pairloss01-single
+  cancel-in-progress: false
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    outputs:
+      train_sha: ${{ steps.freeze.outputs.train_sha }}
+      eval_sha: ${{ steps.freeze.outputs.eval_sha }}
+      questions_sha: ${{ steps.freeze.outputs.questions_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/foundations01-pairloss01.yml 2>/dev/null; then exit 1; fi
+      - uses: actions/checkout@v4
+        with:
+          ref: e68db2c2ca3f14d113fc15f431fac04d5ee7cb30
+          path: sensor-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - env:
+          PYTHONPATH: ${{ github.workspace }}/sensor-source/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest discover -s research/learning_hub/foundations01 -p 'test_*.py' -v
+      - id: freeze
+        run: python -u research/learning_hub/foundations01/pairloss01.py freeze --out /tmp/pairloss-frozen
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pairloss-train
+          path: /tmp/pairloss-frozen/train.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pairloss-questions
+          path: /tmp/pairloss-frozen/questions.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pairloss-labels
+          path: |
+            /tmp/pairloss-frozen/eval.json
+            /tmp/pairloss-frozen/manifest.json
+  train:
+    needs: freeze
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [ce,pair]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: pairloss-train
+          path: /tmp/pairloss-train
+      - run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 safetensors==0.5.3 huggingface_hub==0.30.2
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - env:
+          TRAIN_SHA: ${{ needs.freeze.outputs.train_sha }}
+          ARM: ${{ matrix.arm }}
+        run: python -u research/learning_hub/foundations01/pairloss01.py train --train /tmp/pairloss-train/train.json --sha "$TRAIN_SHA" --arm "$ARM" --out /tmp/pairloss-weights
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pairloss-weights-${{ matrix.arm }}
+          path: /tmp/pairloss-weights
+          if-no-files-found: warn
+  infer:
+    needs: [freeze,train]
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [ce,pair]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: pairloss-weights-${{ matrix.arm }}
+          path: /tmp/pairloss-weights
+      - uses: actions/download-artifact@v4
+        with:
+          name: pairloss-questions
+          path: /tmp/pairloss-questions
+      - run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 safetensors==0.5.3 huggingface_hub==0.30.2
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: omega-train25-smollm2-135m-ee72e5415c002e8fc0566a191a07c0b2b708875a
+      - env:
+          Q_SHA: ${{ needs.freeze.outputs.questions_sha }}
+          ARM: ${{ matrix.arm }}
+        run: python -u research/learning_hub/foundations01/pairloss01_infer.py --questions /tmp/pairloss-questions/questions.json --sha "$Q_SHA" --training /tmp/pairloss-weights --arm "$ARM" --out "/tmp/pairloss-$ARM.jsonl"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pairloss-predictions-${{ matrix.arm }}
+          path: /tmp/pairloss-${{ matrix.arm }}.jsonl
+          if-no-files-found: warn
+  score:
+    needs: [freeze,infer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: pairloss-labels
+          path: /tmp/pairloss-labels
+      - uses: actions/download-artifact@v4
+        with:
+          name: pairloss-predictions-ce
+          path: /tmp/pairloss-ce
+      - uses: actions/download-artifact@v4
+        with:
+          name: pairloss-predictions-pair
+          path: /tmp/pairloss-pair
+      - env:
+          EVAL_SHA: ${{ needs.freeze.outputs.eval_sha }}
+        run: python -u research/learning_hub/foundations01/pairloss01.py score --labels /tmp/pairloss-labels/eval.json --sha "$EVAL_SHA" --ce /tmp/pairloss-ce/pairloss-ce.jsonl --pair /tmp/pairloss-pair/pairloss-pair.jsonl --out /tmp/pairloss-score.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pairloss-score
+          path: /tmp/pairloss-score.json

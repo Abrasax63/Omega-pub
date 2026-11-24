@@ -1,0 +1,25 @@
+name: FOUNDATIONS01 COST SELECT01 profitability learning
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-cost-select01.yml']
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: |
+          python -u research/learning_hub/foundations01/cost_select01.py /tmp/cost-select01.json
+          python -c 'import json; r=json.load(open("/tmp/cost-select01.json")); assert r["exact_cases"]==28 and r["unsafe_choices"]==0'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cost-select01-results
+          path: /tmp/cost-select01.json

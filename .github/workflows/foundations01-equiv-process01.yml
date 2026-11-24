@@ -1,0 +1,59 @@
+name: FOUNDATIONS01 EQUIV PROCESS01 dry run only
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-equiv-process01.yml','research/learning_hub/foundations01/equiv_process01.py']
+permissions:
+  contents: read
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install networkx==3.4.2
+      - run: python -u research/learning_hub/foundations01/equiv_process01.py freeze /tmp/process
+      - uses: actions/upload-artifact@v4
+        with:
+          name: process-train-contract
+          path: |
+            /tmp/process/train.json
+            /tmp/process/dev.json
+            /tmp/process/traces.json
+            /tmp/process/process-manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: process-retention-questions
+          path: /tmp/process/retention-questions.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: process-retention-labels
+          path: /tmp/process/retention-labels.json
+  dryrun:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: process-train-contract
+          path: /tmp/process
+      - run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 huggingface_hub==0.30.2 safetensors==0.5.3
+      - run: python -u research/learning_hub/foundations01/equiv_process01.py dryrun /tmp/process /tmp/process-result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: process-dryrun-results
+          path: /tmp/process-result.json

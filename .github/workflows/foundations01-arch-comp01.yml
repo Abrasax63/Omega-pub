@@ -1,0 +1,23 @@
+name: FOUNDATIONS01 ARCH COMP01 architecture stress
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-arch-comp01.yml']
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -u research/learning_hub/foundations01/arch_comp01.py /tmp/arch-comp01.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arch-comp01-results
+          path: /tmp/arch-comp01.json

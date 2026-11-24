@@ -1,0 +1,1 @@
+First run 45437222959 failed in final aggregation because Counter addition drops zero-valued keys. Fix retains explicit zeros; no changes to teachers, seeds, designs, query budgets, or thresholds. No results used to tune methods.

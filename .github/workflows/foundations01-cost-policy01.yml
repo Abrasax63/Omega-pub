@@ -1,0 +1,21 @@
+name: FOUNDATIONS01 COST POLICY01 regression
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-cost-policy01.yml','research/learning_hub/foundations01/cost_policy01.py','research/learning_hub/foundations01/test_cost_policy01.py']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: |
+          cd research/learning_hub/foundations01
+          python -m unittest -v test_cost_policy01

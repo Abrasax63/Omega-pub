@@ -1,0 +1,84 @@
+name: FOUNDATIONS01 LLM PLAN01 real model
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-llm-plan01.yml']
+permissions:
+  contents: read
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install --quiet huggingface_hub==0.30.2
+      - run: python -u research/learning_hub/foundations01/llm_plan01.py freeze --out /tmp/frozen
+      - uses: actions/upload-artifact@v4
+        with:
+          name: llm-plan-questions
+          path: |
+            /tmp/frozen/questions.json
+            /tmp/frozen/pin.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: llm-plan-gold
+          path: /tmp/frozen/gold.json
+  infer:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: llm-plan-questions
+          path: /tmp/frozen
+      - run: |
+          pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install --quiet transformers==4.49.0 huggingface_hub==0.30.2 safetensors==0.5.3
+      - run: python -u research/learning_hub/foundations01/llm_plan01.py infer --questions /tmp/frozen/questions.json --pin /tmp/frozen/pin.json --out /tmp/llm-pred.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: llm-plan-predictions
+          path: /tmp/llm-pred.json
+  score:
+    needs: [freeze,infer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: llm-plan-questions
+          path: /tmp/frozen
+      - uses: actions/download-artifact@v4
+        with:
+          name: llm-plan-gold
+          path: /tmp/frozen
+      - uses: actions/download-artifact@v4
+        with:
+          name: llm-plan-predictions
+          path: /tmp/pred
+      - run: python -u research/learning_hub/foundations01/llm_plan01.py score --questions /tmp/frozen/questions.json --gold /tmp/frozen/gold.json --pred /tmp/pred/llm-pred.json --out /tmp/llm-plan-results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: llm-plan-results
+          path: /tmp/llm-plan-results.json

@@ -1,0 +1,130 @@
+name: FOUNDATIONS01 CAPACITY01 model and representation screen
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-capacity01.yml']
+permissions:
+  contents: read
+concurrency:
+  group: foundations01-capacity01-single
+  cancel-in-progress: false
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    outputs:
+      labels_sha: ${{ steps.freeze.outputs.labels_sha }}
+      questions_sha: ${{ steps.freeze.outputs.questions_sha }}
+      pins_sha: ${{ steps.freeze.outputs.pins_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require first introduction
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/foundations01-capacity01.yml 2>/dev/null; then exit 1; fi
+      - uses: actions/checkout@v4
+        with:
+          ref: e68db2c2ca3f14d113fc15f431fac04d5ee7cb30
+          path: sensor-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Offline corpus and score tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}/sensor-source/09_INFRASTRUCTURE_AGENTIQUE/prism
+        run: python -m unittest discover -s research/learning_hub/foundations01 -p 'test_*.py' -v
+      - run: python -m pip install --quiet huggingface_hub==0.30.2
+      - name: Freeze corpus and resolve public model revisions
+        id: freeze
+        run: python -u research/learning_hub/foundations01/capacity01.py freeze --out /tmp/capacity-frozen
+      - uses: actions/upload-artifact@v4
+        with:
+          name: capacity-questions-and-pins
+          path: |
+            /tmp/capacity-frozen/questions.json
+            /tmp/capacity-frozen/pins.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: capacity-sealed-labels
+          path: |
+            /tmp/capacity-frozen/labels.json
+            /tmp/capacity-frozen/manifest.json
+            /tmp/capacity-frozen/pins.json
+  infer:
+    needs: freeze
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: ['135m','360m']
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HF_HOME: /home/runner/.cache/huggingface
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: capacity-questions-and-pins
+          path: /tmp/capacity-frozen
+      - run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 peft==0.15.2 accelerate==1.5.2 safetensors==0.5.3 huggingface_hub==0.30.2
+      - uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/huggingface
+          key: capacity01-${{ matrix.arm }}-${{ needs.freeze.outputs.pins_sha }}
+      - name: Generate 64 free predictions
+        env:
+          Q_SHA: ${{ needs.freeze.outputs.questions_sha }}
+          P_SHA: ${{ needs.freeze.outputs.pins_sha }}
+          ARM: ${{ matrix.arm }}
+        run: python -u research/learning_hub/foundations01/capacity01.py infer --questions /tmp/capacity-frozen/questions.json --pins /tmp/capacity-frozen/pins.json --questions-sha "$Q_SHA" --pins-sha "$P_SHA" --arm "$ARM" --out "/tmp/capacity-$ARM.jsonl"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: capacity-predictions-${{ matrix.arm }}
+          path: /tmp/capacity-${{ matrix.arm }}.jsonl
+          if-no-files-found: warn
+  score:
+    needs: [freeze,infer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: capacity-sealed-labels
+          path: /tmp/capacity-labels
+      - uses: actions/download-artifact@v4
+        with:
+          name: capacity-predictions-135m
+          path: /tmp/capacity-135m
+      - uses: actions/download-artifact@v4
+        with:
+          name: capacity-predictions-360m
+          path: /tmp/capacity-360m
+      - name: Score frozen predictions
+        env:
+          L_SHA: ${{ needs.freeze.outputs.labels_sha }}
+          P_SHA: ${{ needs.freeze.outputs.pins_sha }}
+        run: python -u research/learning_hub/foundations01/capacity01.py score --labels /tmp/capacity-labels/labels.json --pins /tmp/capacity-labels/pins.json --labels-sha "$L_SHA" --pins-sha "$P_SHA" --pred135 /tmp/capacity-135m/capacity-135m.jsonl --pred360 /tmp/capacity-360m/capacity-360m.jsonl --out /tmp/capacity-score.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: capacity-score
+          path: /tmp/capacity-score.json

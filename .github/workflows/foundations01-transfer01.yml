@@ -1,0 +1,23 @@
+name: FOUNDATIONS01 TRANSFER01 discovered boundary representation
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-transfer01.yml','research/learning_hub/foundations01/transfer01.py']
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -u research/learning_hub/foundations01/transfer01.py /tmp/transfer01.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: transfer01-results
+          path: /tmp/transfer01.json

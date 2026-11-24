@@ -1,0 +1,43 @@
+name: FOUNDATIONS01 LEARN CONTEXT01 strategy selection
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-learn-context01.yml','research/learning_hub/foundations01/learn_context01.py']
+permissions:
+  contents: read
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -u research/learning_hub/foundations01/learn_context01.py train --out /tmp/context01.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: context01-checkpoint
+          path: /tmp/context01.json
+  evaluate:
+    needs: train
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: context01-checkpoint
+          path: /tmp/context
+      - run: python -u research/learning_hub/foundations01/learn_context01.py evaluate --checkpoint /tmp/context/context01.json --out /tmp/context01-results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: context01-results
+          path: /tmp/context01-results.json

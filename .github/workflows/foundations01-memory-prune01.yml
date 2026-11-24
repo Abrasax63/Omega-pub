@@ -1,0 +1,43 @@
+name: FOUNDATIONS01 MEMORY PRUNE01 reversible library
+on:
+  push:
+    branches: [experiment/omega-foundations-selfplay-2026-11-24]
+    paths: ['.github/workflows/foundations01-memory-prune01.yml','research/learning_hub/foundations01/memory_prune01.py']
+permissions:
+  contents: read
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -u research/learning_hub/foundations01/memory_prune01.py train --out /tmp/prune01.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prune01-checkpoint
+          path: /tmp/prune01.json
+  evaluate:
+    needs: train
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: prune01-checkpoint
+          path: /tmp/prune
+      - run: python -u research/learning_hub/foundations01/memory_prune01.py evaluate --checkpoint /tmp/prune/prune01.json --out /tmp/prune01-results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prune01-results
+          path: /tmp/prune01-results.json
