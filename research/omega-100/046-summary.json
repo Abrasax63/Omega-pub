@@ -1,0 +1,20 @@
+{
+  "reference": {
+    "correct": 6,
+    "false_verdict": 7,
+    "exception": 1,
+    "invalid_stopped_before_call": 0,
+    "unavailable": 0,
+    "solver_calls": 14,
+    "median_ns": 14922.0
+  },
+  "candidate": {
+    "correct": 14,
+    "false_verdict": 0,
+    "exception": 0,
+    "invalid_stopped_before_call": 6,
+    "unavailable": 2,
+    "solver_calls": 8,
+    "median_ns": 15904.0
+  }
+}

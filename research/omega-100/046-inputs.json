@@ -1,0 +1,129 @@
+[
+  {
+    "mapping": [
+      1,
+      2,
+      0
+    ],
+    "start": 1,
+    "horizon": 0,
+    "fault": "ok"
+  },
+  {
+    "mapping": [
+      1,
+      2,
+      0
+    ],
+    "start": 1,
+    "horizon": 5,
+    "fault": "ok"
+  },
+  {
+    "mapping": [
+      1,
+      0,
+      3,
+      2
+    ],
+    "start": 2,
+    "horizon": 9,
+    "fault": "ok"
+  },
+  {
+    "mapping": [
+      0
+    ],
+    "start": 0,
+    "horizon": 100,
+    "fault": "ok"
+  },
+  {
+    "mapping": [
+      1,
+      2,
+      3,
+      3
+    ],
+    "start": 0,
+    "horizon": 3,
+    "fault": "ok"
+  },
+  {
+    "mapping": [
+      2,
+      0,
+      1
+    ],
+    "start": 2,
+    "horizon": 31,
+    "fault": "ok"
+  },
+  {
+    "mapping": [
+      1,
+      9,
+      0
+    ],
+    "start": 0,
+    "horizon": 0,
+    "fault": "ok"
+  },
+  {
+    "mapping": [],
+    "start": 0,
+    "horizon": 0,
+    "fault": "ok"
+  },
+  {
+    "mapping": [
+      1,
+      0
+    ],
+    "start": -1,
+    "horizon": 1,
+    "fault": "ok"
+  },
+  {
+    "mapping": [
+      true,
+      0
+    ],
+    "start": 0,
+    "horizon": 1,
+    "fault": "ok"
+  },
+  {
+    "mapping": [
+      1,
+      0
+    ],
+    "start": 0,
+    "horizon": 101,
+    "fault": "ok"
+  },
+  {
+    "mapping": "10",
+    "start": 0,
+    "horizon": 0,
+    "fault": "ok"
+  },
+  {
+    "mapping": [
+      1,
+      0
+    ],
+    "start": 0,
+    "horizon": 2,
+    "fault": "offline"
+  },
+  {
+    "mapping": [
+      1,
+      0
+    ],
+    "start": 0,
+    "horizon": 3,
+    "fault": "bad_reply"
+  }
+]
