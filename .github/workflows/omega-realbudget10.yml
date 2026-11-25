@@ -1,4 +1,4 @@
-name: REALBUDGET10 actual dev budget
+name: REALBUDGET10 corrected JSON audit and actual dev budget
 on:
   push:
     branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
