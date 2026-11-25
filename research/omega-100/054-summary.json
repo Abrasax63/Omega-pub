@@ -1,0 +1,122 @@
+{
+  "results": {
+    "dense": {
+      "expected": true,
+      "results": [
+        true,
+        true,
+        true
+      ],
+      "median_ns": [
+        3945.27734375,
+        6138.83203125,
+        15767.322265625
+      ]
+    },
+    "alias": {
+      "expected": false,
+      "results": [
+        false,
+        false,
+        true
+      ],
+      "median_ns": [
+        4601.572265625,
+        875.705078125,
+        15917.76171875
+      ]
+    },
+    "offline": {
+      "expected": false,
+      "results": [
+        false,
+        false,
+        false
+      ],
+      "median_ns": [
+        1583.3046875,
+        1465.572265625,
+        15352.248046875
+      ]
+    },
+    "valid95": {
+      "expected": false,
+      "results": [
+        false,
+        false,
+        false
+      ],
+      "median_ns": [
+        3220.50390625,
+        4852.75,
+        15396.474609375
+      ]
+    },
+    "valid96": {
+      "expected": true,
+      "results": [
+        true,
+        true,
+        false
+      ],
+      "median_ns": [
+        3147.033203125,
+        4941.201171875,
+        15575.197265625
+      ]
+    },
+    "keys12_valid119": {
+      "expected": false,
+      "results": [
+        false,
+        false,
+        true
+      ],
+      "median_ns": [
+        3662.236328125,
+        5887.599609375,
+        15746.724609375
+      ]
+    },
+    "keys12_valid120": {
+      "expected": true,
+      "results": [
+        true,
+        true,
+        true
+      ],
+      "median_ns": [
+        3535.7578125,
+        5950.994140625,
+        15918.115234375
+      ]
+    },
+    "sample_offline": {
+      "expected": true,
+      "results": [
+        true,
+        true,
+        false
+      ],
+      "median_ns": [
+        3421.095703125,
+        5146.2734375,
+        15290.84765625
+      ]
+    },
+    "sparse": {
+      "expected": false,
+      "results": [
+        false,
+        false,
+        false
+      ],
+      "median_ns": [
+        4156.8828125,
+        707.640625,
+        16303.8671875
+      ]
+    }
+  },
+  "elapsed_ns": 761896470
+}
