@@ -1,0 +1,66 @@
+{
+  "cases": [
+    {
+      "case": {
+        "id": 138930975697,
+        "attempt": 1,
+        "release": "compatibility (v0.16.0:20)",
+        "started_at": "2026-11-25T02:22:42Z",
+        "completed_at": "2026-11-25T02:28:13Z",
+        "test": "success",
+        "base_build": "success"
+      },
+      "reference": "success",
+      "oracle": "success",
+      "candidate": "success",
+      "records": [
+        14985762491,
+        14985801423
+      ],
+      "sha256": "04fcf5e51127a710ec2eeb740714cb4e77aad8cc434b5eab86e7daabafa6728b",
+      "cp_av": 0
+    },
+    {
+      "case": {
+        "id": 138930975742,
+        "attempt": 1,
+        "release": "compatibility (v0.17.0:20)",
+        "started_at": "2026-11-25T02:22:41Z",
+        "completed_at": "2026-11-25T02:24:46Z",
+        "test": "skipped",
+        "base_build": "failure"
+      },
+      "reference": "success",
+      "oracle": "blocked",
+      "candidate": "blocked",
+      "records": [
+        14984774488
+      ],
+      "sha256": "56ac3a771cb8a2f72f24d8b7158029b5a0fc16c0f275097e94d58f594e407eab",
+      "cp_av": 0
+    },
+    {
+      "case": {
+        "id": 139076163160,
+        "attempt": 2,
+        "release": "compatibility (v0.17.0:20)",
+        "started_at": "2026-11-25T08:29:05Z",
+        "completed_at": "2026-11-25T08:33:44Z",
+        "test": "success",
+        "base_build": "success"
+      },
+      "reference": "success",
+      "oracle": "success",
+      "candidate": "success",
+      "records": [
+        15004253672,
+        15003944407
+      ],
+      "sha256": "8c44faa2991fdf254694c9b288feaf28522c3bfa6b35e4ae0892168b6dbf4db2",
+      "cp_av": 0
+    }
+  ],
+  "controls": 2,
+  "inventory_sha256": "b1237d98254b75da0aa08f7c39abc7d7e62f107cd51e9f045719a7c391ca1abc",
+  "seconds": 0.032522
+}
