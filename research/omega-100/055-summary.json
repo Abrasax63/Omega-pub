@@ -1,0 +1,148 @@
+{
+  "results": {
+    "boundary_31": {
+      "expected": false,
+      "result": [
+        false,
+        false,
+        false
+      ],
+      "ns": [
+        3771.970703125,
+        1563.74609375,
+        1153.9921875
+      ]
+    },
+    "boundary_32": {
+      "expected": false,
+      "result": [
+        false,
+        false,
+        false
+      ],
+      "ns": [
+        3707.087890625,
+        1607.423828125,
+        1171.63671875
+      ]
+    },
+    "boundary_33": {
+      "expected": false,
+      "result": [
+        false,
+        false,
+        false
+      ],
+      "ns": [
+        3697.9140625,
+        1679.42578125,
+        2106.216796875
+      ]
+    },
+    "boundary_63": {
+      "expected": false,
+      "result": [
+        false,
+        false,
+        false
+      ],
+      "ns": [
+        3693.6875,
+        3079.64453125,
+        2113.3359375
+      ]
+    },
+    "boundary_64": {
+      "expected": false,
+      "result": [
+        false,
+        false,
+        false
+      ],
+      "ns": [
+        3699.576171875,
+        3251.130859375,
+        2165.310546875
+      ]
+    },
+    "boundary_65": {
+      "expected": false,
+      "result": [
+        false,
+        false,
+        false
+      ],
+      "ns": [
+        3671.232421875,
+        3182.142578125,
+        3132.244140625
+      ]
+    },
+    "dense_tail_outage": {
+      "expected": true,
+      "result": [
+        true,
+        true,
+        true
+      ],
+      "ns": [
+        3366.55859375,
+        5483.53515625,
+        3863.865234375
+      ]
+    },
+    "dense_interleaved": {
+      "expected": true,
+      "result": [
+        true,
+        true,
+        true
+      ],
+      "ns": [
+        3263.240234375,
+        5191.69140625,
+        3738.658203125
+      ]
+    },
+    "invalid_burst": {
+      "expected": false,
+      "result": [
+        false,
+        false,
+        false
+      ],
+      "ns": [
+        2224.107421875,
+        1900.5390625,
+        2629.185546875
+      ]
+    },
+    "sparse": {
+      "expected": false,
+      "result": [
+        false,
+        false,
+        false
+      ],
+      "ns": [
+        4175.15234375,
+        716.873046875,
+        1228.830078125
+      ]
+    },
+    "sparse_then_offline": {
+      "expected": false,
+      "result": [
+        false,
+        false,
+        false
+      ],
+      "ns": [
+        2438.609375,
+        716.853515625,
+        1236.341796875
+      ]
+    }
+  },
+  "elapsed_ns": 333986828
+}
