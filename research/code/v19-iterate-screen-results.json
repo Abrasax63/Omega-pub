@@ -1,0 +1,77 @@
+{
+  "mixed": {
+    "n": 72,
+    "positives": 72,
+    "generated": [
+      432,
+      407
+    ],
+    "errors": [
+      0,
+      0
+    ],
+    "median_ns": [
+      9104.8,
+      9258.6
+    ]
+  },
+  "no_coalescence": {
+    "n": 1,
+    "positives": 0,
+    "generated": [
+      21,
+      21
+    ],
+    "errors": [
+      0,
+      0
+    ],
+    "median_ns": [
+      26901.7,
+      28274.8
+    ]
+  },
+  "all": {
+    "n": 73,
+    "positives": 72,
+    "generated": [
+      453,
+      428
+    ],
+    "errors": [
+      0,
+      0
+    ],
+    "median_ns": [
+      9200.6,
+      9641.4
+    ]
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.6e-05,
+        5e-06,
+        2.6e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.156241,
+        0.153757,
+        1.110367
+      ]
+    }
+  ],
+  "seconds": 2.0990931860000046
+}
