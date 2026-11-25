@@ -1,0 +1,73 @@
+{
+  "results": {
+    "reject": {
+      "n": 8,
+      "positives": 0,
+      "errors": [
+        0,
+        0,
+        0
+      ],
+      "ns": [
+        22505.864583333332,
+        15267.354166666666,
+        24897.9375
+      ]
+    },
+    "pass_negative": {
+      "n": 8,
+      "positives": 0,
+      "errors": [
+        0,
+        0,
+        0
+      ],
+      "ns": [
+        21806.083333333332,
+        53163.458333333336,
+        26665.864583333332
+      ]
+    },
+    "positive": {
+      "n": 8,
+      "positives": 8,
+      "errors": [
+        0,
+        0,
+        0
+      ],
+      "ns": [
+        99218.80208333333,
+        44375.572916666664,
+        29213.375
+      ]
+    }
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.8e-05,
+        5e-06,
+        3.3e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.134036,
+        0.128565,
+        1.009249
+      ]
+    }
+  ],
+  "elapsed_ns": 1656224334
+}
