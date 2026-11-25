@@ -1,0 +1,47 @@
+name: REALBUDGET10 actual dev budget
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-realbudget10.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: devbase08-labels
+          run-id: 45658613634
+          github-token: ${{ github.token }}
+          path: /tmp/realbudget-labels
+      - uses: actions/download-artifact@v4
+        with:
+          name: devbase08-predictions
+          run-id: 45658613634
+          github-token: ${{ github.token }}
+          path: /tmp/realbudget-predictions
+      - uses: actions/download-artifact@v4
+        with:
+          name: devbase08-results
+          run-id: 45658613634
+          github-token: ${{ github.token }}
+          path: /tmp/realbudget-results
+      - run: python -m pip install --quiet transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2
+      - name: Verify original dev evidence and calculate actual adaptive budget
+        run: |
+          python research/learning_hub/primitive_screen01/realbudget10.py --labels /tmp/realbudget-labels/labels.json --predictions /tmp/realbudget-predictions/devbase-predictions.jsonl --result /tmp/realbudget-results/devbase-result.json --out /tmp/realbudget10.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: realbudget10-results
+          path: /tmp/realbudget10.json
