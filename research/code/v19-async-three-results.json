@@ -1,0 +1,43 @@
+{
+  "results": [
+    {
+      "maps": 238,
+      "coherent": 210,
+      "pairs": 394,
+      "errors": 0,
+      "cores": 0,
+      "one_shared_component": 394,
+      "witness": null,
+      "seconds": 0.016871335000018917,
+      "signed_seconds": 0.0013234199992098183,
+      "oracle_seconds": 0.005103567999924508
+    }
+  ],
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        2e-05,
+        6e-06,
+        3.2e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.149774,
+        0.144885,
+        1.151965
+      ]
+    }
+  ],
+  "seconds": 1.5236182990000202
+}
