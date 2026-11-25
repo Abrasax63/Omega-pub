@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "job_id": 138932025318,
+      "log_sha256": "1a3ecd6c7e55411936af87df57109512cc3272b68bdfb4b6e342682aa3602e0e",
+      "record": [
+        14985519924,
+        "test-reports-run-frontenddockerfile--dockerfile-oci-",
+        "sha256:49e01d1a9c942c45f8e3e2436553b913f2765aeafe90cf5c46bb1b5abdee875f"
+      ],
+      "comparator": "confirmed",
+      "candidate": "confirmed",
+      "cp_av_markers": 0
+    },
+    {
+      "job_id": 138932025165,
+      "log_sha256": "507a3a63801921bfb331df6e35deb7c3021983175d7dc1d2292a378e34a441a8",
+      "record": [
+        14986335519,
+        "test-reports-run-frontenddockerfile--dockerfile-oci-rootless-",
+        "sha256:0f2f22591c6f3e7e52017bc041517a287cfdb96b45be14d7ad47b39d0ab241c0"
+      ],
+      "comparator": "confirmed",
+      "candidate": "confirmed",
+      "cp_av_markers": 0
+    },
+    {
+      "job_id": 138932025316,
+      "log_sha256": "a598a99d1405eddd22fae149c7c2e2dc7efad7155dc52c1575976c7665026f1c",
+      "record": [
+        14984969847,
+        "test-reports-run-frontenddockerfile--dockerfile-containerd-",
+        "sha256:6cef5a126707bc16b9b250fa3183297d1da94df185393ba660aa3093b97ce83d"
+      ],
+      "comparator": "confirmed",
+      "candidate": "confirmed",
+      "cp_av_markers": 0
+    }
+  ],
+  "adverse": {
+    "comparator": "confirmed",
+    "candidate": "rejected"
+  },
+  "inventory_sha256": "384c310df98c7ab6939fe5042d4dc174ff535a641448b5eda57baf73b170bf34",
+  "measured_seconds": 0.04487
+}
