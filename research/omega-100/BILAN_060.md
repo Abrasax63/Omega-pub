@@ -1,0 +1,6 @@
+# Omega100 — Jalon 60
+25 novembre 2026. Les 60 fiches numérotées sont consécutives, les dix nouvelles expériences depuis le [jalon 50](BILAN_050.md) étant documentées de [051](051.md) à [060](060.md).
+
+- **051 à 056.** Le cache de réponses vérifiées peut gagner quand la répétition est très forte. Les pannes provoquaient une activation fallacieuse dans le prototype 052. Le garde 053 corrige le défaut mais manque le seuil de performance. Le compteur exact 055 franchit ses seuils isolément, puis le couplage complet au cache 056 est rejeté pour son coût.
+- **057 à 060.** La réutilisation de la validation de tables immuables, distincte des réponses du solveur, est mesurable en table stable ou alternance de deux identités. À la désérialisation, l'identité ne survit qu'au sein d'un paquet. Séparer la table de la requête permet de réutiliser le texte exact dans un contrat expérimental. Les variations d'espacement annulent cette réutilisation, avec surcoût mesuré.
+- **Suite.** Tester les changements de table sous le même identifiant et les limites de session avant tout raccordement à un flux réel. Les gains sont logiciels et locaux. Les dix fiches ne revendiquent aucune amélioration neuronale ou sémantique.
