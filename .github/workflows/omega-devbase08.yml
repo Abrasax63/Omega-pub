@@ -1,0 +1,95 @@
+name: DEVBASE08 measured development errors
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-devbase08.yml']
+permissions:
+  contents: read
+concurrency:
+  group: omega-devbase08-single
+  cancel-in-progress: false
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify first introduction and offline controls
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/omega-devbase08.yml 2>/dev/null; then exit 1; fi
+          python research/learning_hub/primitive_screen01/devbase08.py selftest
+          python research/learning_hub/primitive_screen01/devbase08.py freeze --root /tmp/devbase-freeze
+      - uses: actions/upload-artifact@v4
+        with:
+          name: devbase08-questions
+          path: |
+            /tmp/devbase-freeze/questions.json
+            /tmp/devbase-freeze/manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: devbase08-labels
+          path: |
+            /tmp/devbase-freeze/labels.json
+            /tmp/devbase-freeze/manifest.json
+  infer:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: devbase08-questions
+          path: /tmp/devbase-questions
+      - name: Install pinned CPU stack
+        run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2
+      - name: 128 unaided development generations
+        run: python -u research/learning_hub/primitive_screen01/devbase08.py infer --root /tmp/devbase-questions --out /tmp/devbase-predictions.jsonl
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devbase08-predictions
+          path: /tmp/devbase-predictions.jsonl
+          if-no-files-found: warn
+  score:
+    needs: [freeze,infer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: devbase08-labels
+          path: /tmp/devbase-labels
+      - uses: actions/download-artifact@v4
+        with:
+          name: devbase08-predictions
+          path: /tmp/devbase-predictions
+      - name: Score frozen predictions
+        run: python research/learning_hub/primitive_screen01/devbase08.py score --root /tmp/devbase-labels --pred /tmp/devbase-predictions/devbase-predictions.jsonl --out /tmp/devbase-result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: devbase08-results
+          path: /tmp/devbase-result.json
