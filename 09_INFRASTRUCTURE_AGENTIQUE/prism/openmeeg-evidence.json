@@ -1,0 +1,37 @@
+{
+  "cases": [
+    {
+      "log_sha256": "36e1098231d9d8db8cbf36c8e92a53845c79fc72efe4a74c970610bc29dc6ce3",
+      "zip_sha256": "e5b201a053238d26891071354fb58b4916c468e808d777bb02c5b2de638ce286",
+      "record_verified": 1,
+      "target_size": 51076488,
+      "renamed_member_sha256": "e824cf9fc22e5949807ce995a32e413a345fb97e63e6d10cfbf41aa86382193c",
+      "copy_markers": 1,
+      "fixed_verdict": "ind\u00e9termin\u00e9",
+      "candidate_verdict": "ind\u00e9termin\u00e9"
+    },
+    {
+      "log_sha256": "56388cc3769c16319e58bc26c14bc39d581f7dc7117cbe80105d2e7584af60d0",
+      "zip_sha256": "8383a96adffb9c1e70b784ca79134e2b1fcde67ead4b460f32d2aede9ec3a5db",
+      "record_verified": 1,
+      "target_size": 51076488,
+      "renamed_member_sha256": "e824cf9fc22e5949807ce995a32e413a345fb97e63e6d10cfbf41aa86382193c",
+      "copy_markers": 1,
+      "fixed_verdict": "ind\u00e9termin\u00e9",
+      "candidate_verdict": "ind\u00e9termin\u00e9"
+    },
+    {
+      "log_sha256": "6ef485dbf424a60d82aff90e41bd56df8469b833fb46f1833c7d5e1e16111f54",
+      "zip_sha256": "9bef8bccf11114d184f0f45788d150065052c324ea74934b060097c02de5f37c",
+      "record_verified": 1,
+      "target_size": 51076488,
+      "renamed_member_sha256": "e824cf9fc22e5949807ce995a32e413a345fb97e63e6d10cfbf41aa86382193c",
+      "copy_markers": 1,
+      "fixed_verdict": "ind\u00e9termin\u00e9",
+      "candidate_verdict": "ind\u00e9termin\u00e9"
+    }
+  ],
+  "second_stage_record_checks": 3,
+  "wrong_digest_controls": 6,
+  "seconds": 1.7214627339999993
+}
