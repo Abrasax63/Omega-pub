@@ -1,0 +1,27 @@
+{
+  "lengths": {
+    "3": {
+      "pairs": 1,
+      "feasible": false,
+      "oracle_correct_on_three": null
+    },
+    "4": {
+      "pairs": 2,
+      "feasible": false,
+      "oracle_correct_on_three": null
+    },
+    "5": {
+      "pairs": 4,
+      "feasible": true,
+      "oracle_correct_on_three": 6
+    },
+    "6": {
+      "pairs": 8,
+      "feasible": true,
+      "oracle_correct_on_three": 6
+    }
+  },
+  "adverse_profile_passed": true,
+  "adverse_swap_passed": false,
+  "seconds": 0.000721
+}
