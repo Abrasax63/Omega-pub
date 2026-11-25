@@ -1,0 +1,14 @@
+{
+  "fixed": {
+    "global_ceiling": 4,
+    "by_split_ceiling": 4,
+    "oracle_correct": 6
+  },
+  "candidate": {
+    "global_ceiling": 3,
+    "by_split_ceiling": 3,
+    "oracle_correct": 6
+  },
+  "oracle_pairs": 3,
+  "seconds": 0.000242
+}
