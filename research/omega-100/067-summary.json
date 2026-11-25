@@ -1,0 +1,38 @@
+{
+  "fixed": {
+    "n": 8,
+    "indistinguishable": [
+      [
+        "first",
+        "letter_a"
+      ],
+      [
+        "last",
+        "letter_b"
+      ]
+    ],
+    "distinct_signatures": 4,
+    "exact": {
+      "truth": 8,
+      "opposite": 0,
+      "letter_a": 4,
+      "letter_b": 4,
+      "first": 4,
+      "last": 4
+    }
+  },
+  "candidate": {
+    "n": 8,
+    "indistinguishable": [],
+    "distinct_signatures": 6,
+    "exact": {
+      "truth": 8,
+      "opposite": 0,
+      "letter_a": 4,
+      "letter_b": 4,
+      "first": 4,
+      "last": 4
+    }
+  },
+  "seconds": 0.000108
+}
