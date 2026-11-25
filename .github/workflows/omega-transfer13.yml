@@ -1,0 +1,20 @@
+name: TRANSFER13 exam fixture controls
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-transfer13.yml']
+permissions:
+  contents: read
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify transfer fixtures, pair controls and split separation
+        run: python research/learning_hub/primitive_screen01/transfer13.py selftest
