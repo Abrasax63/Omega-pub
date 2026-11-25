@@ -1,0 +1,32 @@
+{
+  "results": {
+    "138363770471": {
+      "fixed": true,
+      "candidate": false,
+      "exports": [
+        "exporting to image",
+        "exporting to oci image format"
+      ],
+      "cp_av": 0
+    },
+    "138363770689": {
+      "fixed": true,
+      "candidate": false,
+      "exports": [
+        "exporting to image",
+        "exporting to oci image format"
+      ],
+      "cp_av": 0
+    },
+    "138905530526": {
+      "fixed": true,
+      "candidate": true,
+      "exports": [
+        "exporting to GitHub Actions Cache",
+        "exporting to client directory"
+      ],
+      "cp_av": 0
+    }
+  },
+  "ns": 5780856
+}
