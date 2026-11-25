@@ -1,0 +1,115 @@
+{
+  "results": {
+    "4": {
+      "False": {
+        "False": {
+          "n": 0
+        },
+        "True": {
+          "n": 20,
+          "errors": [
+            0,
+            0
+          ],
+          "calls": [
+            420,
+            118
+          ],
+          "median_ns": [
+            29059.2,
+            10668.3
+          ]
+        }
+      },
+      "True": {
+        "False": {
+          "n": 0
+        },
+        "True": {
+          "n": 20,
+          "errors": [
+            0,
+            0
+          ],
+          "calls": [
+            420,
+            122
+          ],
+          "median_ns": [
+            27891.0,
+            9260.8
+          ]
+        }
+      }
+    },
+    "6": {
+      "False": {
+        "False": {
+          "n": 42,
+          "errors": [
+            0,
+            0
+          ],
+          "calls": [
+            1512,
+            1512
+          ],
+          "median_ns": [
+            45186.9,
+            45337.9
+          ]
+        },
+        "True": {
+          "n": 0
+        }
+      },
+      "True": {
+        "False": {
+          "n": 42,
+          "errors": [
+            0,
+            0
+          ],
+          "calls": [
+            1512,
+            1512
+          ],
+          "median_ns": [
+            44836.8,
+            46847.0
+          ]
+        },
+        "True": {
+          "n": 0
+        }
+      }
+    }
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.7e-05,
+        5e-06,
+        3.2e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.148298,
+        0.155071,
+        1.123311
+      ]
+    }
+  ],
+  "seconds": 4.209481639000018
+}
