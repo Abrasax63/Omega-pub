@@ -1,0 +1,59 @@
+{
+  "results": [
+    {
+      "maps": 254,
+      "coherent": 226,
+      "pairs": 331,
+      "errors": 0,
+      "cores": 0,
+      "without_private": 0,
+      "witness": null,
+      "by_lag": {
+        "4": 331
+      },
+      "seconds": 0.014069446999997126,
+      "signed_seconds": 0.0010409530004835688,
+      "oracle_seconds": 0.0033794809999676545
+    },
+    {
+      "maps": 270,
+      "coherent": 242,
+      "pairs": 0,
+      "errors": 0,
+      "cores": 0,
+      "without_private": 0,
+      "witness": null,
+      "by_lag": {},
+      "seconds": 0.008595560999992813,
+      "signed_seconds": 0.0,
+      "oracle_seconds": 0.0
+    }
+  ],
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.7e-05,
+        5e-06,
+        2.7e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.130216,
+        0.133594,
+        1.039305
+      ]
+    }
+  ],
+  "seconds": 1.4149099019999767
+}
