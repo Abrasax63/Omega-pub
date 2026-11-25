@@ -1,0 +1,91 @@
+{
+  "scores": {
+    "original": {
+      "copy": {
+        "strict": 43,
+        "normalized": 43,
+        "format_valid": 43,
+        "format_only_rescued": 0,
+        "wrong_valid": 0,
+        "invalid": 21
+      },
+      "membership": {
+        "strict": 0,
+        "normalized": 45,
+        "format_valid": 63,
+        "format_only_rescued": 45,
+        "wrong_valid": 18,
+        "invalid": 1,
+        "both_pairs": 14,
+        "yes_correct": 18,
+        "no_correct": 27
+      },
+      "reverse": {
+        "strict": 62,
+        "normalized": 62,
+        "format_valid": 63,
+        "format_only_rescued": 0,
+        "wrong_valid": 1,
+        "invalid": 1
+      },
+      "select": {
+        "strict": 9,
+        "normalized": 9,
+        "format_valid": 37,
+        "format_only_rescued": 0,
+        "wrong_valid": 28,
+        "invalid": 27
+      }
+    },
+    "minimal": {
+      "copy": {
+        "strict": 13,
+        "normalized": 13,
+        "format_valid": 13,
+        "format_only_rescued": 0,
+        "wrong_valid": 0,
+        "invalid": 51
+      },
+      "membership": {
+        "strict": 0,
+        "normalized": 18,
+        "format_valid": 30,
+        "format_only_rescued": 18,
+        "wrong_valid": 12,
+        "invalid": 34,
+        "both_pairs": 0,
+        "yes_correct": 3,
+        "no_correct": 15
+      },
+      "reverse": {
+        "strict": 58,
+        "normalized": 58,
+        "format_valid": 61,
+        "format_only_rescued": 0,
+        "wrong_valid": 3,
+        "invalid": 3
+      },
+      "select": {
+        "strict": 8,
+        "normalized": 8,
+        "format_valid": 36,
+        "format_only_rescued": 0,
+        "wrong_valid": 28,
+        "invalid": 28
+      }
+    }
+  },
+  "generations": 512,
+  "tokens": {
+    "input_tokens": 23105,
+    "output_tokens": 2839
+  },
+  "historical_inference_seconds": 465.0855597320001,
+  "local_seconds": 0.012778835999995408,
+  "archive_sha256": {
+    "rel0.zip": "00631e907c9b29fd3a5469442a83e00d8fdd95a276229155afef88158ee82d92",
+    "rel1.zip": "4dfdeca5f5db509239bdc8cec0dd90f2eb52bedaf9c8d305574e974957f42790",
+    "rel2.zip": "d4c52ddb006df177164c63a8746f919553b167f864e996ccf301283b904e0214",
+    "run2.zip": "47e389a3274953a4fa98a05876c563436fba8668df49e14839cadbf67547d50b"
+  }
+}
