@@ -1,0 +1,115 @@
+{
+  "instruction": {
+    "base": {
+      "V2": {
+        "n": 16,
+        "identical": 0,
+        "literal_collisions": 0,
+        "both_exact": 0,
+        "exact": {
+          "KEEP": 0,
+          "REMOVE": 6,
+          "SELECT": 2
+        }
+      },
+      "V1": {
+        "n": 16,
+        "identical": 0,
+        "literal_collisions": 0,
+        "both_exact": 0,
+        "exact": {
+          "KEEP": 0,
+          "REMOVE": 0,
+          "SELECT": 0
+        }
+      }
+    },
+    "copy": {
+      "V2": {
+        "n": 16,
+        "identical": 0,
+        "literal_collisions": 0,
+        "both_exact": 0,
+        "exact": {
+          "KEEP": 1,
+          "REMOVE": 0,
+          "SELECT": 0
+        }
+      },
+      "V1": {
+        "n": 16,
+        "identical": 0,
+        "literal_collisions": 0,
+        "both_exact": 0,
+        "exact": {
+          "KEEP": 0,
+          "REMOVE": 0,
+          "SELECT": 0
+        }
+      }
+    },
+    "cumulative": {
+      "V2": {
+        "n": 16,
+        "identical": 0,
+        "literal_collisions": 0,
+        "both_exact": 2,
+        "exact": {
+          "KEEP": 3,
+          "REMOVE": 4,
+          "SELECT": 13
+        }
+      },
+      "V1": {
+        "n": 16,
+        "identical": 9,
+        "literal_collisions": 9,
+        "both_exact": 3,
+        "exact": {
+          "KEEP": 16,
+          "REMOVE": 3,
+          "SELECT": 14
+        }
+      }
+    }
+  },
+  "copy_minus_base_collisions": {
+    "V2": 0,
+    "V1": 0
+  },
+  "descriptive_threshold_met": false,
+  "depth": {
+    "scores": {
+      "base": {
+        "indexed": {
+          "short": 8,
+          "early": 5,
+          "late": 11
+        },
+        "spaced": {
+          "short": 1,
+          "early": 2,
+          "late": 0
+        }
+      },
+      "cumulative": {
+        "indexed": {
+          "short": 11,
+          "early": 4,
+          "late": 15
+        },
+        "spaced": {
+          "short": 16,
+          "early": 10,
+          "late": 5
+        }
+      }
+    },
+    "contrasts": {
+      "length_loss": 6,
+      "depth_loss": 5,
+      "indexed_late_gain": 10
+    }
+  },
+  "seconds": 0.00616
+}
