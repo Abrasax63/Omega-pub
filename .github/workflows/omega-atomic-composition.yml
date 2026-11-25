@@ -1,0 +1,30 @@
+name: Omega elementary progressive composition
+on:
+  push:
+    branches: [experiment/omega-mask-equality-diagnostic-2026-11-25]
+    paths: ['.github/workflows/omega-atomic-composition.yml']
+permissions:
+  contents: read
+jobs:
+  composition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check corpus and oracle
+        run: python research/learning_hub/mask_equality_diagnostic/atomic_composition.py --check
+      - name: Install pinned CPU dependencies
+        run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 huggingface_hub==0.30.2 safetensors==0.5.3
+      - name: Measure atomic association and composition
+        run: python -u research/learning_hub/mask_equality_diagnostic/atomic_composition.py --output atomiccomp
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omega-atomic-composition-results
+          path: atomiccomp/
