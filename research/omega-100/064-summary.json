@@ -1,0 +1,27 @@
+{
+  "fixed": {
+    "n": 6,
+    "oracle_correct": 6,
+    "size_only_ceiling": 4,
+    "size_and_split_ceiling": 5,
+    "per_split": [
+      2,
+      1,
+      2
+    ]
+  },
+  "candidate": {
+    "n": 6,
+    "oracle_correct": 6,
+    "size_only_ceiling": 3,
+    "size_and_split_ceiling": 3,
+    "per_split": [
+      1,
+      1,
+      1
+    ]
+  },
+  "eligible_equal": 3,
+  "eligible_different": 4,
+  "seconds": 0.000201
+}
