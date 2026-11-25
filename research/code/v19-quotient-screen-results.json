@@ -1,0 +1,98 @@
+{
+  "all": {
+    "n": 58,
+    "fp": [
+      0,
+      0
+    ],
+    "fn": [
+      0,
+      0
+    ],
+    "wrong_first": [
+      0,
+      0
+    ],
+    "signed_calls": [
+      752,
+      686
+    ],
+    "median_ns_per_card": [
+      17270.6,
+      19024.5
+    ]
+  },
+  "negative": {
+    "n": 14,
+    "fp": [
+      0,
+      0
+    ],
+    "fn": [
+      0,
+      0
+    ],
+    "wrong_first": [
+      0,
+      0
+    ],
+    "signed_calls": [
+      374,
+      308
+    ],
+    "median_ns_per_card": [
+      32505.0,
+      34695.8
+    ]
+  },
+  "positive": {
+    "n": 44,
+    "fp": [
+      0,
+      0
+    ],
+    "fn": [
+      0,
+      0
+    ],
+    "wrong_first": [
+      0,
+      0
+    ],
+    "signed_calls": [
+      378,
+      378
+    ],
+    "median_ns_per_card": [
+      13004.7,
+      14281.3
+    ]
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.6e-05,
+        5e-06,
+        2.7e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.130865,
+        0.127538,
+        0.995491
+      ]
+    }
+  ],
+  "seconds": 2.4353565380000077
+}
