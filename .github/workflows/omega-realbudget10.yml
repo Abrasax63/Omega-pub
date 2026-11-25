@@ -37,7 +37,9 @@ jobs:
           run-id: 45658613634
           github-token: ${{ github.token }}
           path: /tmp/realbudget-results
-      - run: python -m pip install --quiet transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2
+      - run: python -m pip install --quiet transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2 jinja2==3.1.6
+      - name: Verify chat-template dependency
+        run: python -c "import jinja2; assert jinja2.__version__ == '3.1.6'"
       - name: Verify original dev evidence and calculate actual adaptive budget
         run: |
           python research/learning_hub/primitive_screen01/realbudget10.py --labels /tmp/realbudget-labels/labels.json --predictions /tmp/realbudget-predictions/devbase-predictions.jsonl --result /tmp/realbudget-results/devbase-result.json --out /tmp/realbudget10.json
