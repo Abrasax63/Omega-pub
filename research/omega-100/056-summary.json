@@ -1,0 +1,369 @@
+{
+  "results": {
+    "37": {
+      "dense": {
+        "orbit": {
+          "ns": 5393106,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "direct": {
+          "ns": 4339661,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "verified": {
+          "ns": 3348799,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 1013,
+          "clears": 0,
+          "decisions": []
+        },
+        "full": {
+          "ns": 3694475,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 886,
+          "clears": 0,
+          "decisions": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        "chunked": {
+          "ns": 3646795,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 886,
+          "clears": 0,
+          "decisions": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        }
+      },
+      "sparse": {
+        "orbit": {
+          "ns": 5581829,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "direct": {
+          "ns": 4112011,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "verified": {
+          "ns": 6911678,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 7,
+          "decisions": []
+        },
+        "full": {
+          "ns": 5734377,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "chunked": {
+          "ns": 5703781,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      },
+      "switch": {
+        "orbit": {
+          "ns": 4412090,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "direct": {
+          "ns": 3761476,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "verified": {
+          "ns": 3524682,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 629,
+          "clears": 1,
+          "decisions": []
+        },
+        "full": {
+          "ns": 4393802,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 248,
+          "clears": 1,
+          "decisions": [
+            true,
+            true,
+            false,
+            false,
+            true,
+            true,
+            false,
+            true
+          ]
+        },
+        "chunked": {
+          "ns": 4447542,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 248,
+          "clears": 1,
+          "decisions": [
+            true,
+            true,
+            false,
+            false,
+            true,
+            true,
+            false,
+            true
+          ]
+        }
+      }
+    },
+    "41": {
+      "dense": {
+        "orbit": {
+          "ns": 4607100,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "direct": {
+          "ns": 4254134,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "verified": {
+          "ns": 3406225,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 1013,
+          "clears": 0,
+          "decisions": []
+        },
+        "full": {
+          "ns": 3694976,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 886,
+          "clears": 0,
+          "decisions": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        "chunked": {
+          "ns": 3753063,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 886,
+          "clears": 0,
+          "decisions": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        }
+      },
+      "sparse": {
+        "orbit": {
+          "ns": 4639670,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "direct": {
+          "ns": 4274112,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "verified": {
+          "ns": 5993564,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 7,
+          "decisions": []
+        },
+        "full": {
+          "ns": 4847240,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "chunked": {
+          "ns": 4817705,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      },
+      "switch": {
+        "orbit": {
+          "ns": 4058620,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "direct": {
+          "ns": 3778402,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 0,
+          "clears": 0,
+          "decisions": []
+        },
+        "verified": {
+          "ns": 3584241,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 629,
+          "clears": 1,
+          "decisions": []
+        },
+        "full": {
+          "ns": 4261684,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 248,
+          "clears": 1,
+          "decisions": [
+            true,
+            true,
+            false,
+            false,
+            true,
+            true,
+            false,
+            true
+          ]
+        },
+        "chunked": {
+          "ns": 4176187,
+          "errors": 0,
+          "decision_errors": 0,
+          "hits": 248,
+          "clears": 1,
+          "decisions": [
+            true,
+            true,
+            false,
+            false,
+            true,
+            true,
+            false,
+            true
+          ]
+        }
+      }
+    }
+  },
+  "elapsed_ns": 1022082641
+}
