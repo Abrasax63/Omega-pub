@@ -1,0 +1,62 @@
+{
+  "cases": [
+    {
+      "case": {
+        "id": 139128815771,
+        "name": "error",
+        "tolerated": true,
+        "setup": "success",
+        "check": "success"
+      },
+      "oracle": "failure_tolerated",
+      "reference": "success",
+      "candidate": "failure_tolerated",
+      "sha256": "60c355fa478c79637ec018aeb06029239b47ce545c3b7fcb699325805ce18f53",
+      "cp_av": 0
+    },
+    {
+      "case": {
+        "id": 139128816306,
+        "name": "windows-error",
+        "tolerated": true,
+        "setup": "success",
+        "check": "success"
+      },
+      "oracle": "failure_tolerated",
+      "reference": "success",
+      "candidate": "failure_tolerated",
+      "sha256": "b4ae13211b85eccc469dcec619fa130271169bcfbec5bfb60d9feea5753816ce",
+      "cp_av": 0
+    },
+    {
+      "case": {
+        "id": 139128816468,
+        "name": "keep-state-error",
+        "tolerated": true,
+        "setup": "success",
+        "check": "success"
+      },
+      "oracle": "failure_tolerated",
+      "reference": "success",
+      "candidate": "failure_tolerated",
+      "sha256": "90bad5602037080154d8f9fc46dfa94fd316936541c99e2afadcca04125affa6",
+      "cp_av": 0
+    },
+    {
+      "case": {
+        "id": 139128815832,
+        "name": "docker-driver",
+        "tolerated": false,
+        "setup": "success",
+        "check": "success"
+      },
+      "oracle": "success",
+      "reference": "success",
+      "candidate": "success",
+      "sha256": "920779ce09b8920921814452f7f4f6a2b69b8c24cb9f8b47887eabfa5a6e69e0",
+      "cp_av": 0
+    }
+  ],
+  "controls": 2,
+  "seconds": 0.019083
+}
