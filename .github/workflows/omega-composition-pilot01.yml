@@ -1,0 +1,43 @@
+name: Omega exploratory composition pilot A
+on:
+  push:
+    branches: [experiment/omega-mask-equality-diagnostic-2026-11-25]
+    paths: ['.github/workflows/omega-composition-pilot01.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check and freeze disjoint cohorts
+        run: python research/learning_hub/mask_equality_diagnostic/composition_pilot01.py --check
+      - uses: actions/download-artifact@v4
+        with:
+          name: position-cumulative-adapter
+          path: parent
+          run-id: '45564448077'
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: index-restore-adapter
+          path: pilot
+          run-id: '45585837789'
+          github-token: ${{ github.token }}
+      - name: Install pinned CPU dependencies
+        run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 huggingface_hub==0.30.2 safetensors==0.5.3 peft==0.14.0 accelerate==1.3.0
+      - name: Evaluate exploratory cohort A without gradients
+        run: python -u research/learning_hub/mask_equality_diagnostic/composition_pilot01.py --parent parent --pilot pilot --out composition
+      - uses: actions/upload-artifact@v4
+        with:
+          name: composition-pilot01-A-results
+          path: composition/
