@@ -1,0 +1,234 @@
+name: REPR02 forced choice and label inversion diagnostic
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-repr02-choice-diagnostic.yml']
+permissions:
+  contents: read
+concurrency:
+  group: omega-repr02-choice-diagnostic-single
+  cancel-in-progress: false
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require first introduction
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/omega-repr02-choice-diagnostic.yml 2>/dev/null; then exit 1; fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned CPU stack
+        run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2
+      - name: Test fixed-choice readout with inverted mapping (public fixture only)
+        run: |
+          python -u - <<'PY'
+          import argparse, hashlib, itertools, json, random, math
+          from pathlib import Path
+          from collections import Counter
+          VIEWS=('raw','indexed_sham','indexed_query','adjacency')
+          NPAIRS=32
+          MODEL='HuggingFaceTB/SmolLM2-135M-Instruct'
+          REV='ee72e5415c002e8fc0566a191a07c0b2b708875a'
+          def dump(x): return json.dumps(x,sort_keys=True,separators=(',',':'))
+          def sha(b): return hashlib.sha256(b).hexdigest()
+          def canonical(p):
+              ns=p['nodes']; e=[(ns.index(a),ns.index(b)) for a,b in p['edges']]; n=len(ns)
+              return n,min(sum(1<<(n*q[a]+q[b]) for a,b in e) for q in itertools.permutations(range(n)))
+          def oracle(p): return list(p['query']) in p['edges']
+          def render(p,v):
+              if v not in VIEWS: raise ValueError('VIEW')
+              ns=p['nodes']; a,b=p['query']; es=p['edges']
+              if v in ('indexed_sham','indexed_query'):
+                  order=ns if v=='indexed_sham' else [a,b]+[x for x in ns if x not in (a,b)]
+                  mp={x:f'N{i}' for i,x in enumerate(order)}
+                  ns=sorted(mp.values()); a,b=mp[a],mp[b]; es=[[mp[x],mp[y]] for x,y in es]
+              es=sorted(es)
+              if v=='adjacency':
+                  data={'nodes':ns,'outgoing':{x:[y for y in ns if [x,y] in es] for x in ns},'query':[a,b]}
+                  desc='Outgoing lists contain all directed targets of each source.'
+              else:
+                  data={'nodes':ns,'edges':es,'query':[a,b]};desc='Edges are ordered source-target pairs.'
+              return 'Does the directed edge in query exist? Answer exactly Yes or No. '+desc+' '+dump(data)
+          def decode(prompt):
+              d=json.loads(prompt[prompt.index('{'):]); ns=d['nodes'];es=d.get('edges')
+              if es is None: es=[[a,b] for a,bs in d['outgoing'].items() for b in bs]
+              return {'nodes':ns,'edges':es,'query':d['query']}
+          def fixture(seed,forbidden=()):
+              rng=random.Random(seed); used=set(forbidden); rows=[]; pairs=[]
+              for i in range(NPAIRS):
+                  n=5+i%2
+                  for attempt in range(1000):
+                      ns=rng.sample(list('ABCDEFGHJKLMNPQRSTUVWXYZ'),n); a,b=rng.sample(ns,2)
+                      prob=(.2,.4,.6,.8)[(i//2)%4]
+                      es=[[x,y] for x in ns for y in ns if x!=y and (x,y)!=(a,b) and rng.random()<prob]
+                      p={'nodes':ns,'edges':sorted(es),'query':[a,b]};q={**p,'edges':sorted(es+[[a,b]])}
+                      keys={canonical(p),canonical(q)}
+                      if len(keys)==2 and not keys&used:break
+                  else: raise ValueError('GENERATION_EXHAUSTED')
+                  used|=keys; pair=sha(f'{seed}:pair:{i}'.encode())[:24]; ids=[]
+                  for g in (p,q):
+                      id=sha(f'{seed}:{i}:{rng.getrandbits(128)}'.encode())[:24];ids.append(id)
+                      rows.append({'id':id,'pair':pair,'packet':g,'gold':oracle(g)})
+                  pairs.append(ids)
+              rng.shuffle(rows);return rows
+          
+          def validate(rows):
+              if len(rows)!=64 or len({r['id'] for r in rows})!=64:raise ValueError('COUNT')
+              keys=set();groups={}
+              for r in rows:
+                  p=r['packet'];ns=p['nodes'];es=p['edges'];a,b=p['query']
+                  if len(ns) not in (5,6) or len(set(ns))!=len(ns) or a==b or not {a,b}<=set(ns) or any(len(e)!=2 or not set(e)<=set(ns) or e[0]==e[1] for e in es) or len(set(map(tuple,es)))!=len(es):raise ValueError('PACKET')
+                  if type(r['gold']) is not bool or oracle(p)!=r['gold']:raise ValueError('GOLD')
+                  k=canonical(p)
+                  if k in keys:raise ValueError('ISOMORPHIC')
+                  keys.add(k);groups.setdefault(r['pair'],[]).append(r)
+                  for v in VIEWS:
+                      z=decode(render(p,v))
+                      if canonical(z)!=k or oracle(z)!=r['gold']:raise ValueError('REPRESENTATION')
+                      # Check marked-graph identity, not just graph and label.
+                      def marked(t):
+                          ns=t['nodes'];a,b=t['query'];es=set(map(tuple,t['edges']))
+                          return min(tuple(int((x,y) in es) for x in order for y in order) for order in ([a,b]+list(tail) for tail in itertools.permutations(x for x in ns if x not in (a,b))))
+                      if marked(z)!=marked(p):raise ValueError('QUERY_IDENTITY')
+              if len(groups)!=32:raise ValueError('PAIR_COUNT')
+              for rr in groups.values():
+                  if len(rr)!=2 or {r['gold'] for r in rr}!={False,True}:raise ValueError('PAIR_LABELS')
+                  p,q=[r['packet'] for r in sorted(rr,key=lambda r:r['gold'])];a,b=set(map(tuple,p['edges'])),set(map(tuple,q['edges']))
+                  if p['nodes']!=q['nodes'] or p['query']!=q['query'] or b-a!={tuple(p['query'])} or a-b:raise ValueError('PAIR_TOGGLE')
+              return keys
+          
+          def score(rows,records):
+              validate(rows);idx={r['id']:r for r in rows}; hits={}; out={};groups={}
+              for r in rows:groups.setdefault(r['pair'],[]).append(r['id'])
+              for r in records:
+                  k=r['view'],r['id']
+                  if k in hits or r['view'] not in VIEWS or r['id'] not in idx:raise ValueError('PREDICTION_ID')
+                  if r['prompt_sha256']!=sha(render(idx[r['id']]['packet'],r['view']).encode()):raise ValueError('PROMPT_HASH')
+                  raw=r['raw'];
+                  if type(raw) is not str:raise ValueError('RAW')
+                  hits[k]=raw==('Yes' if idx[r['id']]['gold'] else 'No')
+                  out[k]=raw
+              if set(hits)!=set(itertools.product(VIEWS,idx)):raise ValueError('COVERAGE')
+              metrics={}
+              for v in VIEWS:
+                  yes=sum(hits[v,i] for i,r in idx.items() if r['gold']);no=sum(hits[v,i] for i,r in idx.items() if not r['gold'])
+                  both=sum(all(hits[v,i] for i in ids) for ids in groups.values());valid=sum(out[v,i] in ('Yes','No') for i in idx)
+                  metrics[v]={'correct':yes+no,'yes_correct':yes,'no_correct':no,'pairs_both_correct':both,'valid':valid,'screen':yes+no>=48 and min(yes,no)>=20 and both>=20}
+              joint=sum(all(hits[v,i] for v in VIEWS for i in ids) for ids in groups.values())
+              q,s=metrics['indexed_query'],metrics['indexed_sham']; gain=q['correct']-s['correct']
+              return {'views':metrics,'joint_pairs_all_views':joint,'query_minus_sham_correct':gain,'query_minus_sham_pairs':q['pairs_both_correct']-s['pairs_both_correct'],'candidate_representation_signal':q['screen'] and gain>=8 and q['pairs_both_correct']>s['pairs_both_correct'],'stable_all_views_screen':all(v['screen'] for v in metrics.values()) and joint>=20,'promotion_authorized':False,'training_authorized':False}
+          
+          def selftest():
+              rows=fixture(20261124);keys=validate(rows);cases={}
+              def preds(mode):
+                  for r in rows:
+                      for v in VIEWS:
+                          p=render(r['packet'],v);gold=oracle(decode(p)); raw='Yes' if gold else 'No'
+                          if mode=='constant':raw='Yes'
+                          if mode=='query_only' and v!='indexed_query':raw='No'
+                          yield dict(id=r['id'],view=v,prompt_sha256=sha(p.encode()),raw=raw)
+              for mode in ('exact','constant','query_only'):
+                  cases[mode]=score(rows,list(preds(mode)))
+              assert cases['exact']['stable_all_views_screen'] and not cases['exact']['candidate_representation_signal']
+              assert not cases['constant']['stable_all_views_screen'] and not cases['constant']['candidate_representation_signal']
+              assert cases['query_only']['candidate_representation_signal'] and not cases['query_only']['stable_all_views_screen']
+              rs=list(preds('exact'))
+              for bad in (rs[:-1],rs+[rs[0]],[{**rs[0],'prompt_sha256':'bad'}]+rs[1:]):
+                  try:score(rows,bad)
+                  except ValueError:pass
+                  else:raise AssertionError('bad trace admitted')
+              return {'scope':'public development fixture; deterministic oracle and synthetic traces, no LLM','graphs':len(keys),'pairs':32,'lossless_marked_graph_roundtrips':len(rows)*len(VIEWS),'software_controls_passed':6,'controls':cases,'model_executed':False}
+          
+          
+          if __name__=='__main__':
+              import time, torch
+              from transformers import AutoModelForCausalLM, AutoTokenizer
+              from huggingface_hub import snapshot_download
+              rows=fixture(20261124)
+              validate(rows)
+              assert selftest()['software_controls_passed']==6
+              snapshot_download(repo_id=MODEL,revision=REV,allow_patterns=['*.json','*.safetensors','*.txt','*.model','*.jinja'])
+              torch.set_num_threads(2)
+              tok=AutoTokenizer.from_pretrained(MODEL,revision=REV,local_files_only=True,trust_remote_code=False)
+              model=AutoModelForCausalLM.from_pretrained(MODEL,revision=REV,local_files_only=True,trust_remote_code=False).eval()
+              if model.config._commit_hash!=REV: raise ValueError('MODEL_PIN')
+              token_ids={}
+              for symbol in ('Yes','No','A','B'):
+                  ids=tok.encode(symbol,add_special_tokens=False)
+                  if len(ids)!=1 or tok.decode(ids,clean_up_tokenization_spaces=False)!=symbol: raise ValueError('CHOICE_TOKEN:'+symbol)
+                  token_ids[symbol]=ids[0]
+              modes={'yesno':('Yes','No'),'ab_forward':('A','B'),'ab_reverse':('B','A')}
+              views=('raw','adjacency')
+              def make_prompt(row,v,mode):
+                  base=render(row['packet'],v)
+                  if mode=='yesno': return base
+                  positive,negative=modes[mode]
+                  # Order A then B stays fixed; only the mapping of meanings changes.
+                  options={'A':'the queried directed edge exists' if positive=='A' else 'the queried directed edge does not exist','B':'the queried directed edge exists' if positive=='B' else 'the queried directed edge does not exist'}
+                  return base.replace('Answer exactly Yes or No.', 'Answer exactly A or B. A means '+options['A']+'; B means '+options['B']+'.',1)
+              def assess(records):
+                  idx={r['id']:r for r in rows}; groups={}
+                  for r in rows: groups.setdefault(r['pair'],[]).append(r['id'])
+                  lookup={}
+                  for r in records:
+                      key=(r['view'],r['mode'],r['id'])
+                      if key in lookup or r['id'] not in idx or r['view'] not in views or r['mode'] not in modes: raise ValueError('TRACE_ID')
+                      if sha(make_prompt(idx[r['id']],r['view'],r['mode']).encode())!=r['prompt_sha256']: raise ValueError('PROMPT_HASH')
+                      if not all(math.isfinite(r[x]) for x in ('positive_logit','negative_logit')): raise ValueError('NONFINITE')
+                      if r['revision']!=REV or not 0<r['input_tokens']<=376: raise ValueError('TRACE')
+                      delta=r['positive_logit']-r['negative_logit']
+                      lookup[key]=None if delta==0 else delta>0
+                  if set(lookup)!=set(itertools.product(views,modes,idx)): raise ValueError('COVERAGE')
+                  scores={}
+                  for v in views:
+                      scores[v]={}
+                      for mode in modes:
+                          h={i:lookup[v,mode,i]==r['gold'] for i,r in idx.items()}
+                          y=sum(h[i] for i,r in idx.items() if r['gold'])
+                          n=sum(h[i] for i,r in idx.items() if not r['gold'])
+                          pairs=sum(all(h[i] for i in ids) for ids in groups.values())
+                          scores[v][mode]={'correct':y+n,'yes_correct':y,'no_correct':n,'pairs_both_correct':pairs,'ties':sum(lookup[v,mode,i] is None for i in idx),'screen':y+n>=48 and min(y,n)>=20 and pairs>=20}
+                      scores[v]['mapping_joint_correct']=sum(all(lookup[v,m,i]==r['gold'] for m in ('ab_forward','ab_reverse')) for i,r in idx.items())
+                      scores[v]['mapping_joint_pairs']=sum(all(lookup[v,m,i]==idx[i]['gold'] for m in ('ab_forward','ab_reverse') for i in ids) for ids in groups.values())
+                      scores[v]['mapping_agreement']=sum(lookup[v,'ab_forward',i]==lookup[v,'ab_reverse',i] and lookup[v,'ab_forward',i] is not None for i in idx)
+                      scores[v]['candidate_coding_signal']=all(scores[v][m]['screen'] for m in ('ab_forward','ab_reverse')) and scores[v]['mapping_joint_pairs']>=20 and min(scores[v][m]['correct'] for m in ('ab_forward','ab_reverse'))-scores[v]['yesno']['correct']>=8
+                  return scores
+              # Check that a constant literal A fails mapping invariance even if one code is favorable.
+              for v in views:
+                  assert all(modes['ab_forward'][0]!=modes['ab_reverse'][0] for _ in (v,))
+              tasks=[(r,v,m) for r in rows for v in views for m in modes]
+              random.Random(20261125).shuffle(tasks)
+              out=Path('/tmp/repr02-choice');out.mkdir(exist_ok=False)
+              records=[]
+              start=time.monotonic()
+              with (out/'predictions.jsonl').open('x') as f:
+                  for row,v,mode in tasks:
+                      prompt=make_prompt(row,v,mode)
+                      chat=tok.apply_chat_template([{'role':'user','content':prompt}],tokenize=False,add_generation_prompt=True)
+                      x=tok(chat,return_tensors='pt',add_special_tokens=False);n=x['input_ids'].shape[1]
+                      if n+8>384:raise ValueError('CONTEXT')
+                      with torch.inference_mode(): logits=model(**x).logits[0,-1,:]
+                      pos,neg=modes[mode]
+                      rec=dict(id=row['id'],view=v,mode=mode,prompt_sha256=sha(prompt.encode()),revision=REV,input_tokens=n,positive_logit=float(logits[token_ids[pos]]),negative_logit=float(logits[token_ids[neg]]),positive_symbol=pos,negative_symbol=neg)
+                      records.append(rec);f.write(dump(rec)+'\n');f.flush()
+              results=dict(scope='public consumed development diagnostic only; no independent generalization',model=MODEL,revision=REV,token_ids=token_ids,forward_passes=len(records),input_tokens=sum(r['input_tokens'] for r in records),elapsed_seconds=time.monotonic()-start,predictions_sha256=sha((out/'predictions.jsonl').read_bytes()),scores=assess(records),promotion_authorized=False,training_authorized=False)
+              (out/'result.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2))
+          PY
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repr02-choice-public-diagnostic
+          path: /tmp/repr02-choice/
+          if-no-files-found: warn
