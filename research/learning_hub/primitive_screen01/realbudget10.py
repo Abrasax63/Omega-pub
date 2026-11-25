@@ -12,6 +12,15 @@ DEV_PRED_SHA="62ee2a83732c2aa38caeb1dde87be449bfb4032e421162bcbee713c5a96b83eb"
 def need(ok,msg):
     if not ok:raise ValueError(msg)
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def serialized_equal(a,b):
+    # JSON object keys are strings on disk; preserve all numeric values.
+    return json.dumps(a,sort_keys=True,separators=(",",":"),allow_nan=False)==json.dumps(b,sort_keys=True,separators=(",",":"),allow_nan=False)
+def selftest():
+    a={"scores":{"select":{"by_position":{1:0,2:3,3:4,4:5}}}}
+    b=json.loads(json.dumps(a));need(a!=b and serialized_equal(a,b),"JSON_ROUNDTRIP")
+    b["scores"]["select"]["by_position"]["2"]=4;need(not serialized_equal(a,b),"CHANGED_SCORE")
+    del b["scores"]["select"]["by_position"]["3"];need(not serialized_equal(a,b),"MISSING_SCORE")
+    print("REALBUDGET10 JSON serialization controls passed")
 def audit(labels,predictions,result):
     need(sha(labels)==DEV_LABEL_SHA and sha(predictions)==DEV_PRED_SHA,"FROZEN_DEV_HASH")
     rows=json.loads(Path(labels).read_text())
@@ -19,7 +28,7 @@ def audit(labels,predictions,result):
     records=[json.loads(x) for x in Path(predictions).read_text().splitlines()]
     score=d.score(rows,records);old=json.loads(Path(result).read_text())
     need(old["labels_sha"]==DEV_LABEL_SHA and old["predictions_sha"]==DEV_PRED_SHA and old["revision"]==c.REV,"SOURCE_IDENTITY")
-    need(all(score[k]==old[k] for k in score),"RECOMPUTED_SCORE")
+    need(serialized_equal(score,{k:old[k] for k in score}),"RECOMPUTED_SCORE")
     return score
 def preflight(labels,predictions,result,out):
     score=audit(labels,predictions,result)
@@ -38,6 +47,7 @@ def preflight(labels,predictions,result,out):
     obj=dict(status="REAL_DEV_BUDGET_AUDITED",dev_run=45658613634,dev_label_sha=DEV_LABEL_SHA,dev_predictions_sha=DEV_PRED_SHA,dev_scores=score["scores"],dev_pair_errors=score["dev_pair_errors"],budgets=budgets,relative_spread=spread,requested=report["requested"],achieved=report["achieved"],remaining_quota_gap=report["remaining_quota_gap"],reallocated_pairs=delta,nontrivial_allocation=delta>0,plans=plans,training_authorized=False,scope="same-author development fixture; tokenizer-only budget, not measured wall time or learning",remaining_gates=["independently authored sealed exam","full Qwen training runner audit","actual model update and evaluation release"])
     Path(out).write_text(json.dumps(obj,indent=2));print(json.dumps({k:v for k,v in obj.items() if k!="plans"},indent=2))
 if __name__=="__main__":
+    selftest()
     p=argparse.ArgumentParser()
     for a in ("labels","predictions","result","out"):p.add_argument("--"+a,required=True)
     a=p.parse_args();preflight(a.labels,a.predictions,a.result,a.out)
