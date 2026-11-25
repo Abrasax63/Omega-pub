@@ -1,0 +1,67 @@
+{
+  "results": [
+    {
+      "maps": 206,
+      "coherent": 178,
+      "pairs": 1351,
+      "errors": 0,
+      "cores": 0,
+      "without_private": 1086,
+      "witness": null,
+      "seconds": 0.013441014000022733,
+      "signed_seconds": 0.0017411009999932503,
+      "oracle_seconds": 0.002879007000274214
+    },
+    {
+      "maps": 222,
+      "coherent": 194,
+      "pairs": 677,
+      "errors": 0,
+      "cores": 0,
+      "without_private": 390,
+      "witness": null,
+      "seconds": 0.010689542000022811,
+      "signed_seconds": 0.0012037360000931585,
+      "oracle_seconds": 0.0021527709997144484
+    },
+    {
+      "maps": 238,
+      "coherent": 210,
+      "pairs": 371,
+      "errors": 0,
+      "cores": 0,
+      "without_private": 371,
+      "witness": null,
+      "seconds": 0.010390228999995088,
+      "signed_seconds": 0.0009419489992978924,
+      "oracle_seconds": 0.002098711999678926
+    }
+  ],
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.7e-05,
+        5e-06,
+        0.000135
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.142177,
+        0.137569,
+        1.025539
+      ]
+    }
+  ],
+  "seconds": 1.3819172770000705
+}
