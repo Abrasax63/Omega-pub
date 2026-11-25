@@ -1,0 +1,18 @@
+{
+  "rows": [
+    {
+      "case": "original",
+      "fixed": "ind\u00e9termin\u00e9",
+      "trace_present": true
+    },
+    {
+      "case": "cached",
+      "fixed": "ind\u00e9termin\u00e9",
+      "trace_present": false
+    }
+  ],
+  "regular_files": 1,
+  "source_stage_bytes": null,
+  "artifact_sha256": "d773314e5f84a43d4910b0d0e6ca0886f6894bf359b98e8b0f579beb3ddb583a",
+  "seconds": 0.006320691000041734
+}
