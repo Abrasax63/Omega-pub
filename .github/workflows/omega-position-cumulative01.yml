@@ -1,0 +1,90 @@
+name: Omega cumulative elementary position learning
+on:
+  push:
+    branches: [experiment/omega-mask-equality-diagnostic-2026-11-25]
+    paths: ['.github/workflows/omega-position-cumulative01.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python research/learning_hub/mask_equality_diagnostic/position_cumulative01.py freeze --out frozen
+      - uses: actions/upload-artifact@v4
+        with:
+          name: position-cumulative-train
+          path: frozen/train/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: position-cumulative-test
+          path: frozen/test/
+  train:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: position-cumulative-train
+          path: frozen-train
+      - uses: actions/download-artifact@v4
+        with:
+          name: copy-sft01-adapter
+          path: old
+          run-id: '45558296852'
+          github-token: ${{ github.token }}
+      - run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 huggingface_hub==0.30.2 safetensors==0.5.3 peft==0.14.0 accelerate==1.3.0
+      - run: python -u research/learning_hub/mask_equality_diagnostic/position_cumulative01.py train --data frozen-train/data.json --sha "$(cat frozen-train/sha256.txt)" --old old --out trained
+      - uses: actions/upload-artifact@v4
+        with:
+          name: position-cumulative-adapter
+          path: trained/
+  evaluate:
+    needs: [freeze, train]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: position-cumulative-test
+          path: frozen-test
+      - uses: actions/download-artifact@v4
+        with:
+          name: copy-sft01-adapter
+          path: old
+          run-id: '45558296852'
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: position-cumulative-adapter
+          path: trained
+      - run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 huggingface_hub==0.30.2 safetensors==0.5.3 peft==0.14.0 accelerate==1.3.0
+      - run: python -u research/learning_hub/mask_equality_diagnostic/position_cumulative01.py eval --data frozen-test/data.json --sha "$(cat frozen-test/sha256.txt)" --old old --new trained --out evaluated
+      - uses: actions/upload-artifact@v4
+        with:
+          name: position-cumulative-results
+          path: evaluated/
