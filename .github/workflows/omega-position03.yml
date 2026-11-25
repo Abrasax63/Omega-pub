@@ -1,0 +1,92 @@
+name: POSITION03 selection diagnostics
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-position03.yml']
+permissions:
+  contents: read
+concurrency:
+  group: omega-position03-single
+  cancel-in-progress: false
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/omega-position03.yml 2>/dev/null; then exit 1; fi
+          python research/learning_hub/primitive_screen01/position03.py selftest
+          python research/learning_hub/primitive_screen01/position03.py freeze --root /tmp/position-freeze
+      - uses: actions/upload-artifact@v4
+        with:
+          name: position03-questions
+          path: |
+            /tmp/position-freeze/questions.json
+            /tmp/position-freeze/manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: position03-labels
+          path: |
+            /tmp/position-freeze/labels.json
+            /tmp/position-freeze/curator.json
+            /tmp/position-freeze/manifest.json
+  infer:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: position03-questions
+          path: /tmp/position-questions
+      - run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2
+      - run: python -u research/learning_hub/primitive_screen01/position03.py infer --root /tmp/position-questions --out /tmp/position-predictions.jsonl
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: position03-predictions
+          path: /tmp/position-predictions.jsonl
+          if-no-files-found: warn
+  score:
+    needs: [freeze,infer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: position03-labels
+          path: /tmp/position-labels
+      - uses: actions/download-artifact@v4
+        with:
+          name: position03-predictions
+          path: /tmp/position-predictions
+      - run: python research/learning_hub/primitive_screen01/position03.py score --root /tmp/position-labels --pred /tmp/position-predictions/position-predictions.jsonl --out /tmp/position-result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: position03-results
+          path: /tmp/position-result.json
