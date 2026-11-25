@@ -1,0 +1,31 @@
+{
+  "negative": 4,
+  "candidate_controls": 20,
+  "results": {
+    "67": {
+      "fresh": {
+        "median_ns": 4093795,
+        "errors": 0,
+        "scans": 496
+      },
+      "candidate": {
+        "median_ns": 312481,
+        "errors": 0,
+        "scans": 8
+      }
+    },
+    "127": {
+      "fresh": {
+        "median_ns": 7116538,
+        "errors": 0,
+        "scans": 496
+      },
+      "candidate": {
+        "median_ns": 350357,
+        "errors": 0,
+        "scans": 8
+      }
+    }
+  },
+  "elapsed_ns": 282036300
+}

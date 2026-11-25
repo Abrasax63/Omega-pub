@@ -1,0 +1,9 @@
+# 061 — Invalider une table quand son identifiant est réutilisé
+
+Contrat expérimental local à deux opérations : bind remplace une table sous un identifiant, solve retourne une réponse sur la table courante. Toute tentative de remplacement, invalide ou indisponible, rend l'ancienne table inaccessible jusqu'à une réinscription valide. Une panne du solveur produit unavailable sans changer la table. Toute nouvelle exécution démarre avec un registre vide. Aucun stockage durable ni modèle.
+
+Témoins préfixés avant mesure : remplacer A par B sous le même identifiant, puis tenter une table booléenne invalide, simuler une panne à l'inscription, simuler une panne du solveur, reprendre. Témoin négatif : cache naïf qui conserve le premier résultat de validation par identifiant. Référence : même contrat, conserve le texte courant validé et refait le décodage à chaque solve. Candidat : conserve le tuple courant validé à bind. Redémarrage exécuté par nouveau processus Python, vérifié avant et après réinscription. Ajouter un deuxième identifiant pour vérifier l'isolation.
+
+Réserve locale : deux tailles nouvelles 67 et 127, huit changements valides sous le même identifiant, 512 demandes par taille dont pannes programmées. Oracle par élévation binaire, vérité d'entrée construite avant l'exécution. Sept séries alternées, coût d'inscription et de résolution inclus. Succès : reproduire au moins une erreur du cache naïf, zéro réponse périmée et zéro erreur face à la référence sur tous les contrôles, zéro erreur sur la réserve, gain d'au moins 20 % dans les deux tailles. Budget trois processus pour la vérification du redémarrage, aucun workflow déclenché. Si atteint, garder seulement le pilote expérimental.
+
+Avant la seconde exécution : conserver également le contrat 060 sur les paramètres de requête, notamment le rejet d'un départ ou horizon booléen. Ajouter les deux contrôles sans changer les seuils et relancer tous les bras.
