@@ -1,0 +1,8 @@
+# POSITION-CUMULATIVE01 — audit des traces d'entraînement
+25 novembre 2026, 07:03 UTC. Run 45564448077, train job 139035780072 terminé avec succès, évaluation en cours lors de l'audit.
+Téléchargement et lecture effective dans Python des archives 14999960283 (train SHA256 ad0c054ded19a47b08bb0a908dfa85835eb5e2075f2f0a24fffadc35f07ffbf8) et 14999427169 (adapter SHA256 534f0fab8e2d2b6b0421ebec2d427366dd9b935eb85a16488bc798aac4b205a9). Deux empreintes conformes. SHA JSON train et steps.jsonl comparées au manifeste, trois fichiers de l'adaptateur vérifiés; safetensors 7d19cacc6df22836a1a553a1522ab2ad91fcf4ef00cece82e1f8cc3b47b26c40. 128 identifiants train uniques; 256 lignes de mise à jour, exactement deux expositions par identifiant, groupes identiques à la table source. Par époque: 64 copies et 64 positions, 3840 et 4000 tokens totaux respectivement. Loss moyenne/médiane:
+- époque 1 copie 0.00020635852012418354 / 0.00007328198989853263
+- époque 2 copie 0.00006976062270780403 / 0.000037036699723103084
+- époque 1 position 0.823704374554012 / 0.040956633165478706
+- époque 2 position 0.3314187087978553 / 0.0008255219436250627
+La loss moyenne de sélection diminue sur les mêmes 64 exemples, mais évaluée en ligne pendant optimisation, pas sur un corpus indépendant. Les moyennes de tâches diffèrent aussi par longueur de cible; aucune conclusion sur la maîtrise ou la rétention à partir de la loss. Pas de nouveau gradient, pas de nouvelle inférence, pas de promotion. Prochain test décisif: score préenregistré sur 672 générations, contrôler exactitude, paires, transfert et non-régression copie, comparer les trois bras et vérifier les archives. Pas de nouvel entraînement avant verdict.
