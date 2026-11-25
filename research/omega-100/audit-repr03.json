@@ -1,0 +1,46 @@
+{
+  "scores": {
+    "extract_full": {
+      "input_tokens": 7112,
+      "output_tokens": 2048,
+      "valid": 0,
+      "correct": 0,
+      "yes_correct": 0,
+      "no_correct": 0,
+      "wrong_nonabstained": 0,
+      "abstained": 64,
+      "pairs_both_correct": 0,
+      "exact_rows": 0,
+      "exact_pairs": 0
+    },
+    "copy_row": {
+      "input_tokens": 4656,
+      "output_tokens": 2048,
+      "valid": 0,
+      "correct": 0,
+      "yes_correct": 0,
+      "no_correct": 0,
+      "wrong_nonabstained": 0,
+      "abstained": 64,
+      "pairs_both_correct": 0,
+      "exact_rows": 0,
+      "exact_pairs": 0
+    },
+    "member_row": {
+      "input_tokens": 3572,
+      "output_tokens": 128,
+      "valid": 64,
+      "correct": 32,
+      "yes_correct": 32,
+      "no_correct": 0,
+      "wrong_nonabstained": 32,
+      "abstained": 0,
+      "pairs_both_correct": 0
+    }
+  },
+  "generations": 192,
+  "audit_seconds": 0.23496884300004695,
+  "run_seconds": 250.10491506600002,
+  "archive_sha256": "42fcb4d03cb135b4a38aab407d1e09abd5e3a23846cf90e35f57c3d311220a78",
+  "predictions_sha256": "5811a0a5abc5a38c9e420a405c2f49835ed6288ab202bba0d431fc0d701f9ad4"
+}
