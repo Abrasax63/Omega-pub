@@ -1,0 +1,60 @@
+{
+  "scores": {
+    "base": {
+      "exact": {
+        "space": 0,
+        "example": 21,
+        "copy": 1,
+        "select": 8,
+        "colon": 0
+      },
+      "faithful": {
+        "space": 0,
+        "example": 21,
+        "copy": 1,
+        "select": 8,
+        "colon": 0
+      },
+      "pairs": 0,
+      "colon_as_space": 0
+    },
+    "parent": {
+      "exact": {
+        "space": 0,
+        "example": 0,
+        "copy": 24,
+        "select": 21,
+        "colon": 0
+      },
+      "faithful": {
+        "space": 0,
+        "example": 0,
+        "copy": 24,
+        "select": 21,
+        "colon": 0
+      },
+      "pairs": 0,
+      "colon_as_space": 0
+    },
+    "pilot": {
+      "exact": {
+        "space": 23,
+        "example": 23,
+        "copy": 24,
+        "select": 21,
+        "colon": 0
+      },
+      "faithful": {
+        "space": 23,
+        "example": 23,
+        "copy": 24,
+        "select": 21,
+        "colon": 2
+      },
+      "pairs": 0,
+      "colon_as_space": 2
+    }
+  },
+  "gate": false,
+  "seconds": 0.005654
+}
