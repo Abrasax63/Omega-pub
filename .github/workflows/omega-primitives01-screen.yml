@@ -1,0 +1,104 @@
+name: PRIMITIVES01 frozen model elementary skills screen
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-primitives01-screen.yml']
+permissions:
+  contents: read
+concurrency:
+  group: omega-primitives01-one-shot
+  cancel-in-progress: false
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Require first introduction and pass offline controls
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/omega-primitives01-screen.yml 2>/dev/null; then exit 1; fi
+          python research/learning_hub/primitive_screen01/primitive_screen.py selftest
+          python research/learning_hub/primitive_screen01/primitive_screen.py freeze --root /tmp/primitive-freeze
+      - uses: actions/upload-artifact@v4
+        with:
+          name: primitives-questions
+          path: |
+            /tmp/primitive-freeze/questions.json
+            /tmp/primitive-freeze/manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: primitives-sealed-labels
+          path: |
+            /tmp/primitive-freeze/labels.json
+            /tmp/primitive-freeze/manifest.json
+  infer:
+    needs: freeze
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [smol135, qwen500]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      ARM: ${{ matrix.arm }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: primitives-questions
+          path: /tmp/primitive-questions
+      - name: Install pinned CPU stack
+        run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2
+      - name: Generate 256 answers without labels
+        run: python -u research/learning_hub/primitive_screen01/primitive_screen.py infer --root /tmp/primitive-questions --arm "$ARM" --out "/tmp/$ARM.jsonl"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: primitives-predictions-${{ matrix.arm }}
+          path: /tmp/${{ matrix.arm }}.jsonl
+          if-no-files-found: warn
+  score:
+    needs: [freeze,infer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: primitives-sealed-labels
+          path: /tmp/primitive-labels
+      - uses: actions/download-artifact@v4
+        with:
+          name: primitives-predictions-smol135
+          path: /tmp/primitive-predictions
+      - uses: actions/download-artifact@v4
+        with:
+          name: primitives-predictions-qwen500
+          path: /tmp/primitive-predictions
+      - name: Score only after predictions archived
+        run: python research/learning_hub/primitive_screen01/primitive_screen.py score --root /tmp/primitive-labels --paths /tmp/primitive-predictions/smol135.jsonl /tmp/primitive-predictions/qwen500.jsonl --out /tmp/primitives-result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: primitives-results
+          path: /tmp/primitives-result.json
