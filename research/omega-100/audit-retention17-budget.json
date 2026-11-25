@@ -1,0 +1,13 @@
+{
+  "reference_pairs": 64,
+  "candidate_pairs": 64,
+  "removed": 4,
+  "added": 4,
+  "relative_spread": {
+    "actual_input_tokens": 0.005939524838012959,
+    "gold_target_tokens": 0.0106544901065449,
+    "foil_target_tokens": 0.0106544901065449
+  },
+  "archive_sha256": "4ed255ebb09080af1cd50c451a6886089de162b8ae62477b0073a5b1cf691491",
+  "seconds": 0.0014934860000153094
+}
