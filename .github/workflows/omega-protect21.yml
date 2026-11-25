@@ -1,0 +1,20 @@
+name: PROTECT21 offline displacement controls
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-protect21.yml']
+permissions:
+  contents: read
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --quiet numpy==1.26.4
+      - run: python research/learning_hub/primitive_screen01/protect21.py
