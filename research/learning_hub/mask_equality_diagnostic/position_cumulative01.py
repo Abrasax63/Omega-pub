@@ -74,7 +74,11 @@ def freeze(out):
         d=out/k;d.mkdir();(d/"data.json").write_bytes(c.canonical(rows));h=c.sha_file(d/"data.json");(d/"sha256.txt").write_text(h+"\n");print("CUMULATIVE_FROZEN",k,len(rows),h,flush=True)
 def read(path,sha,kind):
     assert c.sha_file(path)==sha
-    rows=json.loads(Path(path).read_text());assert rows==make()[0 if kind=="train" else 1]
+    rows=json.loads(Path(path).read_text())
+    assert len(rows)==(128 if kind=="train" else 224) and len({r["id"] for r in rows})==len(rows)
+    assert all(r["gold"]==(r["seq"].split()[r["p"]-1] if r["p"] else r["seq"]) and r["prompt"]==question(r["seq"],r["p"],r["view"]) for r in rows)
+    if kind=="train":assert Counter(r["group"] for r in rows)=={"position":64,"copy":64}
+    else:assert rows==make()[1]
     return rows
 def load(old):
     import torch
