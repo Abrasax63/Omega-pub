@@ -1,0 +1,288 @@
+{
+  "arms": {
+    "base": {
+      "scores": {
+        "select": {
+          "correct": 4,
+          "both_pairs": 0,
+          "by_template": {
+            "0": 3,
+            "1": 1
+          },
+          "by_length": {
+            "4": 2,
+            "5": 2
+          },
+          "by_position": {
+            "1": 4,
+            "2": 0,
+            "3": 0,
+            "4": 0
+          },
+          "qualified": false
+        },
+        "reverse": {
+          "correct": 15,
+          "both_pairs": 1,
+          "by_template": {
+            "0": 1,
+            "1": 14
+          },
+          "by_length": {
+            "2": 8,
+            "3": 7
+          },
+          "qualified": false
+        },
+        "copy": {
+          "correct": 44,
+          "both_pairs": 17,
+          "by_template": {
+            "0": 24,
+            "1": 20
+          },
+          "by_length": {
+            "2": 25,
+            "3": 19
+          },
+          "qualified": false
+        },
+        "membership": {
+          "correct": 14,
+          "both_pairs": 4,
+          "by_template": {
+            "0": 14,
+            "1": 0
+          },
+          "by_length": {
+            "4": 5,
+            "5": 9
+          },
+          "by_class": {
+            "Yes": 7,
+            "No": 7
+          },
+          "qualified": false
+        }
+      },
+      "optimizer_updates": 0,
+      "transfer_seconds": 236.98854457900003,
+      "train_and_dev_seconds": null
+    },
+    "supervised": {
+      "scores": {
+        "select": {
+          "correct": 1,
+          "both_pairs": 0,
+          "by_template": {
+            "0": 1,
+            "1": 0
+          },
+          "by_length": {
+            "4": 0,
+            "5": 1
+          },
+          "by_position": {
+            "1": 0,
+            "2": 1,
+            "3": 0,
+            "4": 0
+          },
+          "qualified": false
+        },
+        "reverse": {
+          "correct": 0,
+          "both_pairs": 0,
+          "by_template": {
+            "0": 0,
+            "1": 0
+          },
+          "by_length": {
+            "2": 0,
+            "3": 0
+          },
+          "qualified": false
+        },
+        "copy": {
+          "correct": 17,
+          "both_pairs": 2,
+          "by_template": {
+            "0": 9,
+            "1": 8
+          },
+          "by_length": {
+            "2": 9,
+            "3": 8
+          },
+          "qualified": false
+        },
+        "membership": {
+          "correct": 30,
+          "both_pairs": 1,
+          "by_template": {
+            "0": 16,
+            "1": 14
+          },
+          "by_length": {
+            "4": 14,
+            "5": 16
+          },
+          "by_class": {
+            "Yes": 27,
+            "No": 3
+          },
+          "qualified": false
+        }
+      },
+      "optimizer_updates": 128,
+      "transfer_seconds": 285.409330058,
+      "train_and_dev_seconds": 1341.964901435
+    },
+    "contrastive": {
+      "scores": {
+        "select": {
+          "correct": 18,
+          "both_pairs": 6,
+          "by_template": {
+            "0": 13,
+            "1": 5
+          },
+          "by_length": {
+            "4": 9,
+            "5": 9
+          },
+          "by_position": {
+            "1": 10,
+            "2": 0,
+            "3": 3,
+            "4": 5
+          },
+          "qualified": false
+        },
+        "reverse": {
+          "correct": 25,
+          "both_pairs": 4,
+          "by_template": {
+            "0": 10,
+            "1": 15
+          },
+          "by_length": {
+            "2": 18,
+            "3": 7
+          },
+          "qualified": false
+        },
+        "copy": {
+          "correct": 62,
+          "both_pairs": 30,
+          "by_template": {
+            "0": 30,
+            "1": 32
+          },
+          "by_length": {
+            "2": 31,
+            "3": 31
+          },
+          "qualified": true
+        },
+        "membership": {
+          "correct": 44,
+          "both_pairs": 12,
+          "by_template": {
+            "0": 18,
+            "1": 26
+          },
+          "by_length": {
+            "4": 22,
+            "5": 22
+          },
+          "by_class": {
+            "Yes": 30,
+            "No": 14
+          },
+          "qualified": false
+        }
+      },
+      "optimizer_updates": 128,
+      "transfer_seconds": 176.215279561,
+      "train_and_dev_seconds": 1096.407897228
+    },
+    "adaptive": {
+      "scores": {
+        "select": {
+          "correct": 20,
+          "both_pairs": 4,
+          "by_template": {
+            "0": 11,
+            "1": 9
+          },
+          "by_length": {
+            "4": 9,
+            "5": 11
+          },
+          "by_position": {
+            "1": 10,
+            "2": 1,
+            "3": 4,
+            "4": 5
+          },
+          "qualified": false
+        },
+        "reverse": {
+          "correct": 23,
+          "both_pairs": 5,
+          "by_template": {
+            "0": 7,
+            "1": 16
+          },
+          "by_length": {
+            "2": 18,
+            "3": 5
+          },
+          "qualified": false
+        },
+        "copy": {
+          "correct": 63,
+          "both_pairs": 31,
+          "by_template": {
+            "0": 31,
+            "1": 32
+          },
+          "by_length": {
+            "2": 32,
+            "3": 31
+          },
+          "qualified": true
+        },
+        "membership": {
+          "correct": 47,
+          "both_pairs": 15,
+          "by_template": {
+            "0": 26,
+            "1": 21
+          },
+          "by_length": {
+            "4": 23,
+            "5": 24
+          },
+          "by_class": {
+            "Yes": 23,
+            "No": 24
+          },
+          "qualified": false
+        }
+      },
+      "optimizer_updates": 128,
+      "transfer_seconds": 179.49728832300002,
+      "train_and_dev_seconds": 1115.838783873
+    }
+  },
+  "archive_sha256": {
+    "results": "b052cd8ab6f17ce0d508d617358dd38b0a0d83d569bf5e572a7deab976c2e0b8",
+    "adaptive": "11c5d1fbe92f098096acc1fe0d642676fe4d82d393dd0d0db114cc5a340959a9",
+    "contrastive": "6f7f9703065bbeae3d3bca85a9707edb72e141903bcb7c1f625874168bcd6f3a",
+    "supervised": "95ead8fe314b60b604b596596d4c9ad0419c4187722b0d6813a573ff07441d95",
+    "base": "27c982b5bbcee3c62798ec5ad25cd037ea5d0903af03a4d4b492bc91ef24e23a"
+  },
+  "audit_seconds": 0.016694045000008373
+}
