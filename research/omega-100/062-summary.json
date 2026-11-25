@@ -1,0 +1,35 @@
+{
+  "controls": {
+    "naive_stale_values": 1,
+    "candidate_stale_abstentions": 3,
+    "candidate_forced_cases": 4,
+    "capacity": 2
+  },
+  "results": {
+    "direct": {
+      "global": {
+        "median_ns": 2146491,
+        "bind_p95_ns": 15432,
+        "errors": 0
+      },
+      "snapshot": {
+        "median_ns": 2016991,
+        "bind_p95_ns": 15543,
+        "errors": 0
+      }
+    },
+    "wait_1ms": {
+      "global": {
+        "median_ns": 141065230,
+        "bind_p95_ns": 92317,
+        "errors": 0
+      },
+      "snapshot": {
+        "median_ns": 36044208,
+        "bind_p95_ns": 19950,
+        "errors": 0
+      }
+    }
+  },
+  "elapsed_ns": 1320997318
+}
