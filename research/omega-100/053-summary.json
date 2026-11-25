@@ -1,0 +1,121 @@
+{
+  "results": {
+    "offline": {
+      "previous": {
+        "ns": 1158814,
+        "errors": 0,
+        "activations": 1,
+        "unavailable": 512,
+        "invalid": 0,
+        "calls": 0,
+        "hits": 0
+      },
+      "sampled": {
+        "ns": 1152975,
+        "errors": 0,
+        "activations": 0,
+        "unavailable": 512,
+        "invalid": 0,
+        "calls": 0,
+        "hits": 0
+      },
+      "orbit": {
+        "ns": 994107,
+        "errors": 0,
+        "activations": 0,
+        "unavailable": 512,
+        "invalid": 0,
+        "calls": 0,
+        "hits": 0
+      }
+    },
+    "invalid": {
+      "previous": {
+        "ns": 487630,
+        "errors": 0,
+        "activations": 1,
+        "unavailable": 0,
+        "invalid": 512,
+        "calls": 0,
+        "hits": 0
+      },
+      "sampled": {
+        "ns": 609001,
+        "errors": 0,
+        "activations": 0,
+        "unavailable": 0,
+        "invalid": 512,
+        "calls": 0,
+        "hits": 0
+      },
+      "orbit": {
+        "ns": 407630,
+        "errors": 0,
+        "activations": 0,
+        "unavailable": 0,
+        "invalid": 512,
+        "calls": 0,
+        "hits": 0
+      }
+    },
+    "dense": {
+      "previous": {
+        "ns": 1346955,
+        "errors": 0,
+        "activations": 1,
+        "unavailable": 32,
+        "invalid": 0,
+        "calls": 122,
+        "hits": 358
+      },
+      "sampled": {
+        "ns": 1356289,
+        "errors": 0,
+        "activations": 1,
+        "unavailable": 32,
+        "invalid": 0,
+        "calls": 122,
+        "hits": 358
+      },
+      "orbit": {
+        "ns": 1575688,
+        "errors": 0,
+        "activations": 0,
+        "unavailable": 32,
+        "invalid": 0,
+        "calls": 480,
+        "hits": 0
+      }
+    },
+    "sparse": {
+      "previous": {
+        "ns": 1666323,
+        "errors": 0,
+        "activations": 0,
+        "unavailable": 32,
+        "invalid": 0,
+        "calls": 480,
+        "hits": 0
+      },
+      "sampled": {
+        "ns": 1635036,
+        "errors": 0,
+        "activations": 0,
+        "unavailable": 32,
+        "invalid": 0,
+        "calls": 480,
+        "hits": 0
+      },
+      "orbit": {
+        "ns": 1501286,
+        "errors": 0,
+        "activations": 0,
+        "unavailable": 32,
+        "invalid": 0,
+        "calls": 480,
+        "hits": 0
+      }
+    }
+  },
+  "elapsed_ns": 82210412
+}
