@@ -1,0 +1,165 @@
+{
+  "scores": {
+    "base": {
+      "short_copy0": {
+        "exact": 0,
+        "n": 16,
+        "pairs": null
+      },
+      "short_multi0": {
+        "exact": 3,
+        "n": 32,
+        "pairs": 0
+      },
+      "short_single0": {
+        "exact": 12,
+        "n": 32,
+        "pairs": 2
+      },
+      "short_index0": {
+        "exact": 12,
+        "n": 16,
+        "pairs": null
+      },
+      "long_single0": {
+        "exact": 8,
+        "n": 16,
+        "pairs": 0
+      },
+      "long_copy0": {
+        "exact": 3,
+        "n": 8,
+        "pairs": null
+      },
+      "long_multi0": {
+        "exact": 0,
+        "n": 16,
+        "pairs": 0
+      },
+      "short_multi1": {
+        "exact": 4,
+        "n": 32,
+        "pairs": 1
+      },
+      "long_index0": {
+        "exact": 7,
+        "n": 8,
+        "pairs": null
+      },
+      "long_multi1": {
+        "exact": 0,
+        "n": 16,
+        "pairs": 0
+      }
+    },
+    "parent": {
+      "short_copy0": {
+        "exact": 16,
+        "n": 16,
+        "pairs": null
+      },
+      "short_multi0": {
+        "exact": 8,
+        "n": 32,
+        "pairs": 0
+      },
+      "short_single0": {
+        "exact": 32,
+        "n": 32,
+        "pairs": 16
+      },
+      "short_index0": {
+        "exact": 16,
+        "n": 16,
+        "pairs": null
+      },
+      "long_single0": {
+        "exact": 12,
+        "n": 16,
+        "pairs": 4
+      },
+      "long_copy0": {
+        "exact": 8,
+        "n": 8,
+        "pairs": null
+      },
+      "long_multi0": {
+        "exact": 2,
+        "n": 16,
+        "pairs": 0
+      },
+      "short_multi1": {
+        "exact": 19,
+        "n": 32,
+        "pairs": 4
+      },
+      "long_index0": {
+        "exact": 8,
+        "n": 8,
+        "pairs": null
+      },
+      "long_multi1": {
+        "exact": 4,
+        "n": 16,
+        "pairs": 1
+      }
+    },
+    "pilot": {
+      "short_copy0": {
+        "exact": 16,
+        "n": 16,
+        "pairs": null
+      },
+      "short_multi0": {
+        "exact": 27,
+        "n": 32,
+        "pairs": 11
+      },
+      "short_single0": {
+        "exact": 32,
+        "n": 32,
+        "pairs": 16
+      },
+      "short_index0": {
+        "exact": 16,
+        "n": 16,
+        "pairs": null
+      },
+      "long_single0": {
+        "exact": 12,
+        "n": 16,
+        "pairs": 4
+      },
+      "long_copy0": {
+        "exact": 8,
+        "n": 8,
+        "pairs": null
+      },
+      "long_multi0": {
+        "exact": 11,
+        "n": 16,
+        "pairs": 5
+      },
+      "short_multi1": {
+        "exact": 28,
+        "n": 32,
+        "pairs": 12
+      },
+      "long_index0": {
+        "exact": 6,
+        "n": 8,
+        "pairs": null
+      },
+      "long_multi1": {
+        "exact": 8,
+        "n": 16,
+        "pairs": 2
+      }
+    }
+  },
+  "acquisition": false,
+  "retention": false,
+  "long_index_regressions": 2,
+  "whitespace_only": 0,
+  "seconds": 0.007861
+}
