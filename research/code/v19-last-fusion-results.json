@@ -1,0 +1,53 @@
+{
+  "strata": {
+    "unmerged": {
+      "pairs": 660,
+      "cores": 80
+    },
+    "early": {
+      "pairs": 120,
+      "cores": 0
+    },
+    "time4": {
+      "singleton_empty": 4,
+      "pairs": 4,
+      "cores": 0
+    }
+  },
+  "cards": 28,
+  "errors": [
+    0,
+    0
+  ],
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.6e-05,
+        5e-06,
+        2.6e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.138508,
+        0.130058,
+        1.019722
+      ]
+    }
+  ],
+  "median_ns_per_pair": [
+    1213.1647321428572,
+    1222.895025510204
+  ],
+  "seconds": 1.9628430909999963
+}
