@@ -1,0 +1,109 @@
+{
+  "results": {
+    "control": {
+      "old": {
+        "copy": {
+          "correct": 64,
+          "both_pairs": 32
+        },
+        "membership": {
+          "correct": 50,
+          "both_pairs": 18
+        },
+        "reverse": {
+          "correct": 24,
+          "both_pairs": 7
+        },
+        "select": {
+          "correct": 17,
+          "both_pairs": 2
+        }
+      },
+      "new": {
+        "correct": 2,
+        "both_pairs": 0
+      }
+    },
+    "ordinary": {
+      "old": {
+        "copy": {
+          "correct": 62,
+          "both_pairs": 30
+        },
+        "membership": {
+          "correct": 53,
+          "both_pairs": 21
+        },
+        "reverse": {
+          "correct": 25,
+          "both_pairs": 8
+        },
+        "select": {
+          "correct": 19,
+          "both_pairs": 3
+        }
+      },
+      "new": {
+        "correct": 18,
+        "both_pairs": 5
+      }
+    },
+    "protected": {
+      "old": {
+        "copy": {
+          "correct": 64,
+          "both_pairs": 32
+        },
+        "membership": {
+          "correct": 51,
+          "both_pairs": 19
+        },
+        "reverse": {
+          "correct": 26,
+          "both_pairs": 8
+        },
+        "select": {
+          "correct": 20,
+          "both_pairs": 3
+        }
+      },
+      "new": {
+        "correct": 18,
+        "both_pairs": 5
+      }
+    }
+  },
+  "deltas": {
+    "ordinary": {
+      "correct": {
+        "copy": -2,
+        "membership": 3,
+        "reverse": 1,
+        "select": 2
+      },
+      "both_pairs": {
+        "copy": -2,
+        "membership": 3,
+        "reverse": 1,
+        "select": 1
+      }
+    },
+    "protected": {
+      "correct": {
+        "copy": 0,
+        "membership": 1,
+        "reverse": 2,
+        "select": 3
+      },
+      "both_pairs": {
+        "copy": 0,
+        "membership": 1,
+        "reverse": 1,
+        "select": 1
+      }
+    }
+  },
+  "archive_sha256": "6b7180c7933fe35e908e2236bed046b1bd6ce9f01a53eb98e3f957cb75ffa7a9",
+  "reported_run_seconds": 3381.528553247,
+  "audit_seconds": 0.008161642000004576
+}
