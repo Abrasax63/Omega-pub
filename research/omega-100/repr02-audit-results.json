@@ -1,0 +1,79 @@
+{
+  "scores": {
+    "adjacency": {
+      "changes": 64,
+      "preferred_tokens": {
+        "A": 128
+      },
+      "quarter_screen": true,
+      "official": {
+        "yesno": {
+          "correct": 32,
+          "yes_correct": 32,
+          "no_correct": 0,
+          "pairs_both_correct": 0,
+          "ties": 0,
+          "screen": false
+        },
+        "ab_forward": {
+          "correct": 32,
+          "yes_correct": 32,
+          "no_correct": 0,
+          "pairs_both_correct": 0,
+          "ties": 0,
+          "screen": false
+        },
+        "ab_reverse": {
+          "correct": 32,
+          "yes_correct": 0,
+          "no_correct": 32,
+          "pairs_both_correct": 0,
+          "ties": 0,
+          "screen": false
+        },
+        "mapping_joint_correct": 0,
+        "mapping_joint_pairs": 0,
+        "mapping_agreement": 0,
+        "candidate_coding_signal": false
+      }
+    },
+    "raw": {
+      "changes": 64,
+      "preferred_tokens": {
+        "A": 128
+      },
+      "quarter_screen": true,
+      "official": {
+        "yesno": {
+          "correct": 33,
+          "yes_correct": 32,
+          "no_correct": 1,
+          "pairs_both_correct": 1,
+          "ties": 0,
+          "screen": false
+        },
+        "ab_forward": {
+          "correct": 32,
+          "yes_correct": 32,
+          "no_correct": 0,
+          "pairs_both_correct": 0,
+          "ties": 0,
+          "screen": false
+        },
+        "ab_reverse": {
+          "correct": 32,
+          "yes_correct": 0,
+          "no_correct": 32,
+          "pairs_both_correct": 0,
+          "ties": 0,
+          "screen": false
+        },
+        "mapping_joint_correct": 0,
+        "mapping_joint_pairs": 0,
+        "mapping_agreement": 0,
+        "candidate_coding_signal": false
+      }
+    }
+  },
+  "seconds": 0.005768
+}
