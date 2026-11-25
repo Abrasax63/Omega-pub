@@ -1,0 +1,67 @@
+{
+  "results": {
+    "6": {
+      "maps": 16,
+      "raw_rejections": 73,
+      "n": 688,
+      "positive": 0,
+      "errors": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "median_ns_per_pair": [
+        2768.0,
+        1668.5,
+        2803.3,
+        2912.3
+      ]
+    },
+    "7": {
+      "maps": 16,
+      "raw_rejections": 26,
+      "n": 848,
+      "positive": 0,
+      "errors": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "median_ns_per_pair": [
+        2917.2,
+        1778.5,
+        2986.7,
+        3454.0
+      ]
+    }
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.6e-05,
+        5e-06,
+        2.6e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.125253,
+        0.12154,
+        0.964593
+      ]
+    }
+  ],
+  "seconds": 8.214183700000035
+}
