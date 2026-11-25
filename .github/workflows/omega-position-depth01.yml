@@ -1,0 +1,43 @@
+name: Omega position depth diagnostic
+on:
+  push:
+    branches: [experiment/omega-mask-equality-diagnostic-2026-11-25]
+    paths: ['.github/workflows/omega-position-depth01.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify disjoint matched corpus and balanced targets
+        run: python research/learning_hub/mask_equality_diagnostic/position_depth01.py --check
+      - uses: actions/download-artifact@v4
+        with:
+          name: copy-sft01-adapter
+          path: old
+          run-id: '45558296852'
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: position-cumulative-adapter
+          path: new
+          run-id: '45564448077'
+          github-token: ${{ github.token }}
+      - name: Install pinned CPU dependencies
+        run: |
+          pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install transformers==4.49.0 huggingface_hub==0.30.2 safetensors==0.5.3 peft==0.14.0 accelerate==1.3.0
+      - name: Compare frozen models on matched depth and representation
+        run: python -u research/learning_hub/mask_equality_diagnostic/position_depth01.py --old old --new new --out depth
+      - uses: actions/upload-artifact@v4
+        with:
+          name: position-depth01-results
+          path: depth/
