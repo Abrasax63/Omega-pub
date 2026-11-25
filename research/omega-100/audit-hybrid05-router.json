@@ -1,0 +1,53 @@
+{
+  "confusion": {
+    "reverse": {
+      "unknown": 32
+    },
+    "copy": {
+      "unknown": 32
+    },
+    "select": {
+      "unknown": 32
+    },
+    "unknown": {
+      "unknown": 32
+    },
+    "membership": {
+      "unknown": 32
+    }
+  },
+  "counts": {
+    "rule_correct": 160,
+    "neural_correct": 32,
+    "rule_abstentions_unknown": 32
+  },
+  "exact": {
+    "reverse": 32,
+    "copy": 32,
+    "select": 32,
+    "membership": 32
+  },
+  "cost": {
+    "router": {
+      "input_tokens": 12200,
+      "output_tokens": 320,
+      "seconds": 73.16565222299971
+    },
+    "direct": {
+      "input_tokens": 4948,
+      "output_tokens": 1452,
+      "seconds": 157.41344593799977
+    },
+    "adapted": {
+      "input_tokens": 6977,
+      "output_tokens": 652,
+      "seconds": 87.48252612800003
+    }
+  },
+  "archive_sha256": {
+    "arm0.zip": "688a4597ee2943f76f257bf06b993d63e5264e08d64577b2d37fbd74811ff178",
+    "hybrid-labels.zip": "e59081b0b8855498588d606e37b5aea5500ce6a9d365fd0def325c54023abcb4",
+    "hybrid-predictions.zip": "c996350809c07401ba64f328569a3131663630bfe7e88b48d5fcad0c91d2e4a1"
+  },
+  "audit_seconds": 0.008402719999992314
+}
