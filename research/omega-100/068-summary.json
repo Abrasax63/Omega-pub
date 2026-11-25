@@ -1,0 +1,27 @@
+{
+  "plans": {
+    "2": {
+      "balanced": 4,
+      "best_minimum_distance": 0,
+      "zero_collisions": 0
+    },
+    "4": {
+      "balanced": 8,
+      "best_minimum_distance": 2,
+      "zero_collisions": 0
+    },
+    "6": {
+      "balanced": 4,
+      "best_minimum_distance": 2,
+      "zero_collisions": 0
+    },
+    "8": {
+      "balanced": 1,
+      "best_minimum_distance": 4,
+      "zero_collisions": 1
+    }
+  },
+  "reference_collision_words": 18,
+  "candidate_collision_words": 0,
+  "seconds": 0.000554
+}
