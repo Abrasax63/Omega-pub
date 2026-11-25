@@ -1,0 +1,7 @@
+# PILOT14 — secondary membership-format diagnostic
+Baseline artifact 15045861860 from run 45662119374. Archive SHA256 27c982b5bbcee3c62798ec5ad25cd037ea5d0903af03a4d4b492bc91ef24e23a, internal prediction SHA256 18dcdff1ee2a986d0645645cdd849ac14a19702bdc01576c41b5378b16cc8177 checked locally. 64 unique membership IDs; labels recovered from the pinned TRANSFER13 generator's pair suffix (0 absent/No, 1 present/Yes). This limited diagnostic does not independently regenerate prompt hashes.
+Strict: 14/64, Yes 7/32, No 7/32; 4/32 complete pairs.
+Secondary diagnostic: remove at most one terminal ASCII period after strip, no extraction or explanation acceptance. 37/64, Yes 13/32, No 24/32; 8/32 complete pairs.
+Raw distribution: No. 32, Yes. 11, Yes 10, No 9, two longer explanations.
+This is a post-hoc format diagnostic, not a revised qualification score. Apply identically to every arm once available. Even with the narrow relaxation, 24/32 pairs fail, so formatting alone cannot explain all failures. No new training authorized on this basis.
+RETENTION17 solver optimum: 4 balanced replay pairs of 64 (6.25%), relative input/target spreads 0.59395%/1.06545%, within current fixed corpus and prefix. This is not a pedagogical optimum. If PILOT14 produces a qualifying exploratory candidate, compare a budget-matched low-replay arm and a larger-replay arm under explicitly separate fixed-compute estimand rather than silently relaxing the original 2% gate. Do not expand experiments until trained-arm results available.
