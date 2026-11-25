@@ -1,0 +1,55 @@
+{
+  "cases": [
+    {
+      "case": {
+        "id": 138515939801,
+        "started_at": "2026-11-24T14:27:07Z",
+        "completed_at": "2026-11-24T14:38:21Z",
+        "test": "success",
+        "build": "success"
+      },
+      "reference": "success",
+      "candidate": "success",
+      "artifact_ids": [
+        14930933189
+      ],
+      "sha256": "4c330bafaf5da35d9f7f379f831f1c8911e0c1d860d95c2f022b9dcabfcda9ad",
+      "cp_av": 0
+    },
+    {
+      "case": {
+        "id": 138515939828,
+        "started_at": "2026-11-24T14:27:07Z",
+        "completed_at": "2026-11-24T14:38:07Z",
+        "test": "success",
+        "build": "success"
+      },
+      "reference": "success",
+      "candidate": "success",
+      "artifact_ids": [
+        14931082183
+      ],
+      "sha256": "152efbfc021faada5a0a81d4a6d57598a47aa4c3ca35f6125a560f49844ee5bd",
+      "cp_av": 0
+    },
+    {
+      "case": {
+        "id": 138515940148,
+        "started_at": "2026-11-24T14:27:08Z",
+        "completed_at": "2026-11-24T14:36:20Z",
+        "test": "failure",
+        "build": "success"
+      },
+      "reference": "success",
+      "candidate": "failure",
+      "artifact_ids": [
+        14931617684
+      ],
+      "sha256": "cad676f5062a170b08ed8d2e476010eb24df7062e0c6559963f99913b59e968a",
+      "cp_av": 0
+    }
+  ],
+  "inventory_sha256": "2933564ee796842fe59bacef626287e652d298dcdbced0ee069bfa88d3808d28",
+  "controls": 2,
+  "seconds": 0.205632
+}
