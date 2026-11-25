@@ -1,0 +1,27 @@
+name: RETENTION16 replay budget audit
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-retention16.yml']
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Offline scheduling controls
+        run: python research/learning_hub/primitive_screen01/retention16.py selftest
+      - run: python -m pip install --quiet transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2 jinja2==3.1.6
+      - name: Audit real tokenizer budgets before any second block
+        run: python research/learning_hub/primitive_screen01/retention16.py preflight --out /tmp/retention16.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: retention16-budget
+          path: /tmp/retention16.json
