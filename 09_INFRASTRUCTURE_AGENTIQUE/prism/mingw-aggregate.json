@@ -1,0 +1,35 @@
+{
+  "evidence": [
+    {
+      "run": 45648645238,
+      "job": 139326604089,
+      "artifact": 15038013841,
+      "log_sha256": "026930107b92177caf0cff1e321aa2a67d223d770c854f2651cc4e0de53c2d4e",
+      "zip_sha256": "4c2b4fb39faee3012e369cab1689562c2932afb330357e3a8ad4b578cab08560",
+      "file_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "run": 45626954314,
+      "job": 139249569021,
+      "artifact": 15029161097,
+      "log_sha256": "e3895d2a566109dc2f0467b3f6f1252a7160bf60218715facb5b16f19901fd9f",
+      "zip_sha256": "c68c2071f8160621976b18983ad2dfcc122e63686d7f4d1d45785e0f25650e39",
+      "file_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "run": 45624074460,
+      "job": 139239547843,
+      "artifact": 15026642853,
+      "log_sha256": "32c7227077600998b11302ff454d8d962eed3d6ea17d3c171fc21f75db0f3281",
+      "zip_sha256": "7e9175c7c0ba2ee8c2d6a1b5c5d9f4c6e36e3798af1abfc532870b4481f0f64e",
+      "file_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "reserve": {
+    "reference_confirmations": 0,
+    "candidate_confirmations": 2,
+    "fixed_same_evidence_confirmations": 2,
+    "adverse_abstentions": 6
+  },
+  "seconds": 0.03408331400004272
+}
