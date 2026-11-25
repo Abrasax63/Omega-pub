@@ -1,0 +1,61 @@
+name: PROTECT22 real Qwen reversible displacement probes
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-protect22.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: omega-protect22-single
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: One attempt
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/omega-protect22.yml 2>/dev/null; then exit 1; fi
+      - uses: actions/download-artifact@v4
+        with:
+          name: realbudget10-results
+          run-id: 45660422812
+          github-token: ${{ github.token }}
+          path: /tmp/p22-budget
+      - uses: actions/download-artifact@v4
+        with:
+          name: pilot14-adaptive
+          run-id: 45662119374
+          github-token: ${{ github.token }}
+          path: /tmp/p22-original
+      - uses: actions/download-artifact@v4
+        with:
+          name: pilot14-results
+          run-id: 45662119374
+          github-token: ${{ github.token }}
+          path: /tmp/p22-results
+      - name: Pinned CPU stack
+        run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2 peft==0.14.0 jinja2==3.1.6 numpy==1.26.4
+      - name: Exact reproduction and four reversible probes
+        run: python -u research/learning_hub/primitive_screen01/protect22.py --budget /tmp/p22-budget/realbudget10.json --original /tmp/p22-original --result /tmp/p22-results/pilot14-result.json --out /tmp/p22
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: protect22-probes
+          path: /tmp/p22/*.json
+          if-no-files-found: warn
