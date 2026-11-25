@@ -1,0 +1,27 @@
+{
+  "lengths": {
+    "2": {
+      "equal": 1,
+      "different": 1,
+      "feasible": false
+    },
+    "3": {
+      "equal": 2,
+      "different": 3,
+      "feasible": false
+    },
+    "4": {
+      "equal": 5,
+      "different": 10,
+      "feasible": true
+    },
+    "5": {
+      "equal": 15,
+      "different": 37,
+      "feasible": true
+    }
+  },
+  "literal_adverse_passes": true,
+  "structural_adverse_passes": false,
+  "seconds": 0.002875
+}
