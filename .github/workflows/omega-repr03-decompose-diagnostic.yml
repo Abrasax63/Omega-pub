@@ -1,0 +1,251 @@
+name: REPR03 decomposed reading diagnostic
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-repr03-decompose-diagnostic.yml']
+permissions:
+  contents: read
+concurrency:
+  group: omega-repr03-decompose-diagnostic-single
+  cancel-in-progress: false
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require first introduction
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/omega-repr03-decompose-diagnostic.yml 2>/dev/null; then exit 1; fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned CPU stack
+        run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2
+      - name: Separate row retrieval from local membership and copying
+        run: |
+          python -u - <<'PY'
+          import argparse, hashlib, itertools, json, random, math
+          from pathlib import Path
+          from collections import Counter
+          VIEWS=('raw','indexed_sham','indexed_query','adjacency')
+          NPAIRS=32
+          MODEL='HuggingFaceTB/SmolLM2-135M-Instruct'
+          REV='ee72e5415c002e8fc0566a191a07c0b2b708875a'
+          def dump(x): return json.dumps(x,sort_keys=True,separators=(',',':'))
+          def sha(b): return hashlib.sha256(b).hexdigest()
+          def canonical(p):
+              ns=p['nodes']; e=[(ns.index(a),ns.index(b)) for a,b in p['edges']]; n=len(ns)
+              return n,min(sum(1<<(n*q[a]+q[b]) for a,b in e) for q in itertools.permutations(range(n)))
+          def oracle(p): return list(p['query']) in p['edges']
+          def render(p,v):
+              if v not in VIEWS: raise ValueError('VIEW')
+              ns=p['nodes']; a,b=p['query']; es=p['edges']
+              if v in ('indexed_sham','indexed_query'):
+                  order=ns if v=='indexed_sham' else [a,b]+[x for x in ns if x not in (a,b)]
+                  mp={x:f'N{i}' for i,x in enumerate(order)}
+                  ns=sorted(mp.values()); a,b=mp[a],mp[b]; es=[[mp[x],mp[y]] for x,y in es]
+              es=sorted(es)
+              if v=='adjacency':
+                  data={'nodes':ns,'outgoing':{x:[y for y in ns if [x,y] in es] for x in ns},'query':[a,b]}
+                  desc='Outgoing lists contain all directed targets of each source.'
+              else:
+                  data={'nodes':ns,'edges':es,'query':[a,b]};desc='Edges are ordered source-target pairs.'
+              return 'Does the directed edge in query exist? Answer exactly Yes or No. '+desc+' '+dump(data)
+          def decode(prompt):
+              d=json.loads(prompt[prompt.index('{'):]); ns=d['nodes'];es=d.get('edges')
+              if es is None: es=[[a,b] for a,bs in d['outgoing'].items() for b in bs]
+              return {'nodes':ns,'edges':es,'query':d['query']}
+          def fixture(seed,forbidden=()):
+              rng=random.Random(seed); used=set(forbidden); rows=[]; pairs=[]
+              for i in range(NPAIRS):
+                  n=5+i%2
+                  for attempt in range(1000):
+                      ns=rng.sample(list('ABCDEFGHJKLMNPQRSTUVWXYZ'),n); a,b=rng.sample(ns,2)
+                      prob=(.2,.4,.6,.8)[(i//2)%4]
+                      es=[[x,y] for x in ns for y in ns if x!=y and (x,y)!=(a,b) and rng.random()<prob]
+                      p={'nodes':ns,'edges':sorted(es),'query':[a,b]};q={**p,'edges':sorted(es+[[a,b]])}
+                      keys={canonical(p),canonical(q)}
+                      if len(keys)==2 and not keys&used:break
+                  else: raise ValueError('GENERATION_EXHAUSTED')
+                  used|=keys; pair=sha(f'{seed}:pair:{i}'.encode())[:24]; ids=[]
+                  for g in (p,q):
+                      id=sha(f'{seed}:{i}:{rng.getrandbits(128)}'.encode())[:24];ids.append(id)
+                      rows.append({'id':id,'pair':pair,'packet':g,'gold':oracle(g)})
+                  pairs.append(ids)
+              rng.shuffle(rows);return rows
+          
+          def validate(rows):
+              if len(rows)!=64 or len({r['id'] for r in rows})!=64:raise ValueError('COUNT')
+              keys=set();groups={}
+              for r in rows:
+                  p=r['packet'];ns=p['nodes'];es=p['edges'];a,b=p['query']
+                  if len(ns) not in (5,6) or len(set(ns))!=len(ns) or a==b or not {a,b}<=set(ns) or any(len(e)!=2 or not set(e)<=set(ns) or e[0]==e[1] for e in es) or len(set(map(tuple,es)))!=len(es):raise ValueError('PACKET')
+                  if type(r['gold']) is not bool or oracle(p)!=r['gold']:raise ValueError('GOLD')
+                  k=canonical(p)
+                  if k in keys:raise ValueError('ISOMORPHIC')
+                  keys.add(k);groups.setdefault(r['pair'],[]).append(r)
+                  for v in VIEWS:
+                      z=decode(render(p,v))
+                      if canonical(z)!=k or oracle(z)!=r['gold']:raise ValueError('REPRESENTATION')
+                      # Check marked-graph identity, not just graph and label.
+                      def marked(t):
+                          ns=t['nodes'];a,b=t['query'];es=set(map(tuple,t['edges']))
+                          return min(tuple(int((x,y) in es) for x in order for y in order) for order in ([a,b]+list(tail) for tail in itertools.permutations(x for x in ns if x not in (a,b))))
+                      if marked(z)!=marked(p):raise ValueError('QUERY_IDENTITY')
+              if len(groups)!=32:raise ValueError('PAIR_COUNT')
+              for rr in groups.values():
+                  if len(rr)!=2 or {r['gold'] for r in rr}!={False,True}:raise ValueError('PAIR_LABELS')
+                  p,q=[r['packet'] for r in sorted(rr,key=lambda r:r['gold'])];a,b=set(map(tuple,p['edges'])),set(map(tuple,q['edges']))
+                  if p['nodes']!=q['nodes'] or p['query']!=q['query'] or b-a!={tuple(p['query'])} or a-b:raise ValueError('PAIR_TOGGLE')
+              return keys
+          
+          def score(rows,records):
+              validate(rows);idx={r['id']:r for r in rows}; hits={}; out={};groups={}
+              for r in rows:groups.setdefault(r['pair'],[]).append(r['id'])
+              for r in records:
+                  k=r['view'],r['id']
+                  if k in hits or r['view'] not in VIEWS or r['id'] not in idx:raise ValueError('PREDICTION_ID')
+                  if r['prompt_sha256']!=sha(render(idx[r['id']]['packet'],r['view']).encode()):raise ValueError('PROMPT_HASH')
+                  raw=r['raw'];
+                  if type(raw) is not str:raise ValueError('RAW')
+                  hits[k]=raw==('Yes' if idx[r['id']]['gold'] else 'No')
+                  out[k]=raw
+              if set(hits)!=set(itertools.product(VIEWS,idx)):raise ValueError('COVERAGE')
+              metrics={}
+              for v in VIEWS:
+                  yes=sum(hits[v,i] for i,r in idx.items() if r['gold']);no=sum(hits[v,i] for i,r in idx.items() if not r['gold'])
+                  both=sum(all(hits[v,i] for i in ids) for ids in groups.values());valid=sum(out[v,i] in ('Yes','No') for i in idx)
+                  metrics[v]={'correct':yes+no,'yes_correct':yes,'no_correct':no,'pairs_both_correct':both,'valid':valid,'screen':yes+no>=48 and min(yes,no)>=20 and both>=20}
+              joint=sum(all(hits[v,i] for v in VIEWS for i in ids) for ids in groups.values())
+              q,s=metrics['indexed_query'],metrics['indexed_sham']; gain=q['correct']-s['correct']
+              return {'views':metrics,'joint_pairs_all_views':joint,'query_minus_sham_correct':gain,'query_minus_sham_pairs':q['pairs_both_correct']-s['pairs_both_correct'],'candidate_representation_signal':q['screen'] and gain>=8 and q['pairs_both_correct']>s['pairs_both_correct'],'stable_all_views_screen':all(v['screen'] for v in metrics.values()) and joint>=20,'promotion_authorized':False,'training_authorized':False}
+          
+          def selftest():
+              rows=fixture(20261124);keys=validate(rows);cases={}
+              def preds(mode):
+                  for r in rows:
+                      for v in VIEWS:
+                          p=render(r['packet'],v);gold=oracle(decode(p)); raw='Yes' if gold else 'No'
+                          if mode=='constant':raw='Yes'
+                          if mode=='query_only' and v!='indexed_query':raw='No'
+                          yield dict(id=r['id'],view=v,prompt_sha256=sha(p.encode()),raw=raw)
+              for mode in ('exact','constant','query_only'):
+                  cases[mode]=score(rows,list(preds(mode)))
+              assert cases['exact']['stable_all_views_screen'] and not cases['exact']['candidate_representation_signal']
+              assert not cases['constant']['stable_all_views_screen'] and not cases['constant']['candidate_representation_signal']
+              assert cases['query_only']['candidate_representation_signal'] and not cases['query_only']['stable_all_views_screen']
+              rs=list(preds('exact'))
+              for bad in (rs[:-1],rs+[rs[0]],[{**rs[0],'prompt_sha256':'bad'}]+rs[1:]):
+                  try:score(rows,bad)
+                  except ValueError:pass
+                  else:raise AssertionError('bad trace admitted')
+              return {'scope':'public development fixture; deterministic oracle and synthetic traces, no LLM','graphs':len(keys),'pairs':32,'lossless_marked_graph_roundtrips':len(rows)*len(VIEWS),'software_controls_passed':6,'controls':cases,'model_executed':False}
+          
+          
+          if __name__=='__main__':
+              import time, torch
+              from transformers import AutoModelForCausalLM, AutoTokenizer
+              from huggingface_hub import snapshot_download
+              rows=fixture(20261124)
+              validate(rows)
+              assert selftest()['software_controls_passed']==6
+              modes=('extract_full','copy_row','member_row')
+              def outgoing(p):
+                  return sorted(y for x,y in p['edges'] if x==p['query'][0])
+              def make_prompt(row,mode):
+                  p=row['packet'];a,b=p['query'];ns=p['nodes']
+                  if mode=='extract_full':
+                      data={'source':a,'outgoing':{x:sorted(y for u,y in p['edges'] if u==x) for x in ns}}
+                      return 'Find the outgoing list for source. Copy exactly that list as a JSON array of node names. Output only the array. '+dump(data)
+                  if mode=='copy_row':
+                      data={'source':a,'outgoing':{a:outgoing(p)}}
+                      return 'Find the outgoing list for source. Copy exactly that list as a JSON array of node names. Output only the array. '+dump(data)
+                  return 'Is target in the list? Answer exactly Yes or No. '+dump({'target':b,'list':outgoing(p)})
+              def parse(raw,ns):
+                  try: a=json.loads(raw)
+                  except (ValueError,TypeError): return None
+                  if type(a) is not list or any(type(x) is not str or x not in ns for x in a) or len(set(a))!=len(a):return None
+                  return set(a)
+              assert parse('["A","A"]',['A','B']) is None
+              assert parse('["C"]',['A','B']) is None
+              assert parse('[]',['A','B'])==set()
+              assert parse('["B","A"]',['A','B'])=={'A','B'}
+              assert parse('answer: ["A"]',['A','B']) is None
+              for row in rows:
+                  p=row['packet'];assert (p['query'][1] in outgoing(p))==row['gold']
+                  assert 'query' not in json.loads(make_prompt(row,'extract_full').split('Output only the array. ',1)[1])
+              snapshot_download(repo_id=MODEL,revision=REV,allow_patterns=['*.json','*.safetensors','*.txt','*.model','*.jinja'])
+              torch.set_num_threads(2);torch.manual_seed(20261125)
+              tok=AutoTokenizer.from_pretrained(MODEL,revision=REV,local_files_only=True,trust_remote_code=False)
+              model=AutoModelForCausalLM.from_pretrained(MODEL,revision=REV,local_files_only=True,trust_remote_code=False).eval()
+              if model.config._commit_hash!=REV:raise ValueError('MODEL_PIN')
+              tasks=[(row,mode) for row in rows for mode in modes]
+              random.Random(20261125).shuffle(tasks)
+              prepared=[]
+              for row,mode in tasks:
+                  prompt=make_prompt(row,mode)
+                  chat=tok.apply_chat_template([{'role':'user','content':prompt}],tokenize=False,add_generation_prompt=True)
+                  x=tok(chat,return_tensors='pt',add_special_tokens=False);n=x['input_ids'].shape[1]
+                  if n+32>384:raise ValueError('CONTEXT')
+                  prepared.append((row,mode,prompt,x,n))
+              out=Path('/tmp/repr03-decompose');out.mkdir(exist_ok=False);records=[]
+              start=time.monotonic()
+              with (out/'predictions.jsonl').open('x') as f:
+                  for row,mode,prompt,x,n in prepared:
+                      limit=8 if mode=='member_row' else 32
+                      with torch.inference_mode():ids=model.generate(**x,do_sample=False,max_new_tokens=limit,pad_token_id=tok.eos_token_id)[0,n:].tolist()
+                      rec=dict(id=row['id'],mode=mode,prompt_sha256=sha(prompt.encode()),revision=REV,input_tokens=n,output_tokens=len(ids),raw=tok.decode(ids,skip_special_tokens=True,clean_up_tokenization_spaces=False))
+                      records.append(rec);f.write(dump(rec)+'\n');f.flush()
+              idx={r['id']:r for r in rows};groups={}
+              for r in rows:groups.setdefault(r['pair'],[]).append(r['id'])
+              seen={}
+              for rec in records:
+                  k=rec['mode'],rec['id']
+                  if k in seen or rec['mode'] not in modes or rec['id'] not in idx:raise ValueError('ID')
+                  row=idx[rec['id']]
+                  if rec['prompt_sha256']!=sha(make_prompt(row,rec['mode']).encode()):raise ValueError('PROMPT_HASH')
+                  if rec['revision']!=REV or not 0<rec['input_tokens']<=352 or not 0<=rec['output_tokens']<=(8 if rec['mode']=='member_row' else 32):raise ValueError('TRACE')
+                  seen[k]=rec['raw']
+              if set(seen)!=set(itertools.product(modes,idx)):raise ValueError('COVERAGE')
+              scores={}
+              for mode in modes:
+                  valid={};exact={};hit={};wrong={};pred={}
+                  for rid,row in idx.items():
+                      raw=seen[mode,rid];p=row['packet']
+                      if mode=='member_row':
+                          a=raw if raw in ('Yes','No') else None
+                          valid[rid]=a is not None
+                          pred[rid]=None if a is None else a=='Yes'
+                      else:
+                          a=parse(raw,p['nodes'])
+                          valid[rid]=a is not None
+                          exact[rid]=a==set(outgoing(p))
+                          pred[rid]=None if a is None else p['query'][1] in a
+                      hit[rid]=pred[rid]==row['gold']
+                      wrong[rid]=valid[rid] and not hit[rid]
+                  y=sum(hit[rid] for rid,r in idx.items() if r['gold']);n=sum(hit[rid] for rid,r in idx.items() if not r['gold'])
+                  pairs=sum(all(hit[rid] for rid in ids) for ids in groups.values())
+                  score=dict(valid=sum(valid.values()),correct=y+n,yes_correct=y,no_correct=n,pairs_both_correct=pairs,wrong_nonabstained=sum(wrong.values()),abstained=64-sum(valid.values()),membership_screen=y+n>=48 and min(y,n)>=20 and pairs>=20)
+                  if mode!='member_row':
+                      score.update(exact_rows=sum(exact.values()),exact_pairs=sum(all(exact[rid] for rid in ids) for ids in groups.values()),accidental_correct=sum(hit[rid] and not exact[rid] for rid in idx))
+                      score['candidate_extraction_signal']=score['exact_rows']>=48 and score['exact_pairs']>=20 and score['membership_screen']
+                  scores[mode]=score
+              result=dict(scope='public consumed development diagnostic; no independent holdout',model=MODEL,revision=REV,oracle_baseline_correct=64,oracle_baseline_pairs=32,generations=len(records),input_tokens=sum(r['input_tokens'] for r in records),output_tokens=sum(r['output_tokens'] for r in records),elapsed_seconds=time.monotonic()-start,predictions_sha256=sha((out/'predictions.jsonl').read_bytes()),scores=scores,promotion_authorized=False,training_authorized=False)
+              (out/'result.json').write_text(json.dumps(result,indent=2));print(json.dumps(result,indent=2))
+          PY
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repr03-decomposed-public-diagnostic
+          path: /tmp/repr03-decompose/
+          if-no-files-found: warn
