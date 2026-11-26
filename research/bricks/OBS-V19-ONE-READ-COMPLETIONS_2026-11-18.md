@@ -1,0 +1,13 @@
+# V19 — ambiguïté observable après une lecture
+
+18 novembre 2026, 00 h 32 (Paris). Branche `work/omega-math-brick-pilot-2026-11-14`, base `c240368939929e878c15da787b25d0475223b36d`. [Cycle précédent](OBS-V19-TWO-UNKNOWN_2026-11-17.md), [définition et sources épinglées](OBS-V19-LPLUS1-AUDIT_2026-11-14.md). Dernier cycle de provenance : [53e17b5](https://github.com/Abrasax63/Omega-pub/commit/53e17b507955d778dc829338a9308949741254f6).
+
+Question : un autre certificat pourrait-il toujours conclure après une lecture lorsque les deux images terminales sont inconnues ? Protocole fixé avant le calcul : reprendre les 66 cas, fixer la première lecture et toutes les transitions sauf celle de l’autre terminal, énumérer ses images dans X, filtrer par cohérence du graphe forcé et comparer les ombres par énumération exhaustive des colorations globales. Critère de réfutation : un cas où chacun des deux premiers choix laisse deux complétions compatibles d’ombres distinctes. Coût d’acquisition de référence : deux transitions en un aller-retour. Le test est un diagnostic hors ligne et son accès à T complet est réservé à la construction des contre-exemples.
+
+**RÉFUTÉ.** Six cas restent ambigus pour les deux premiers choix. Deux sont ambigus après lecture du côté droit seulement dans cette exploration. Dans les 58 autres, la variation d’une seule image n’exhibe pas d’ambiguïté. Ces nombres sont des bornes de détection : une ombre unique dans cette exploration ne certifie pas l’unicité parmi toutes les complétions compatibles. Aucun gain de lecture ni modification du vérificateur.
+
+Témoin exact : B=(0,1,2,3), L=2, paire (8,9), T=(1,2,3,0,4,5,4,5,6,7). Les préfixes communs sont (8,6,4) et (9,7,5). En gardant T(4)=4, les valeurs T(5)=0 et 5 donnent respectivement 16 et 0 masques. En gardant T(5)=5, les valeurs T(4)=0 et 4 donnent respectivement 16 et 0 masques. Chaque complétion a des contraintes forcées cohérentes. Cela prouve sur cette entrée qu’aucune politique exacte à une seule lecture terminale ne peut conclure quelle que soit la complétion, même en choisissant le côté à lire. Originalité bibliographique non évaluée.
+
+Depuis research/code : `python3 audit_v19_one_read_completions.py`, `python3 audit_v19_two_unknown.py`, `python3 audit_v19_single_read.py`, `python3 audit_v19_adaptive_prefix.py`. Les quatre passent. Durée locale du nouveau calcul : 4,724 s. SHA-256 du harnais `b67a8855d8fe5a559e87876ec94eac5cb08f9b76c98dfd865ea8bb8bf934a8ad`.
+
+Prochain test mathématique : énumérer toutes les complétions de petites observations après une lecture, en autorisant aussi la variation des transitions non observées hors du terminal. Prochain cycle de l’alternance : provenance.

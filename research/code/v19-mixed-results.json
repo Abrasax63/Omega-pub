@@ -1,0 +1,60 @@
+{
+  "guards": {
+    "five_states": {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.8e-05,
+        6e-06,
+        3.2e-05
+      ]
+    },
+    "c5_family": {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.140377,
+        0.131147,
+        1.065174
+      ]
+    }
+  },
+  "queries": 156,
+  "survivors": 32,
+  "positives": 8,
+  "errors": [
+    0,
+    0
+  ],
+  "projection_calls": [
+    160,
+    0,
+    780
+  ],
+  "samples_ns": [
+    [
+      20382352,
+      17352167,
+      18056881,
+      17221847,
+      21153135
+    ],
+    [
+      478235,
+      449279,
+      414356,
+      592307,
+      514779
+    ]
+  ],
+  "median_ns": [
+    18056881,
+    478235
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "results": {
+    "all": {
+      "n": 39,
+      "errors": [
+        0,
+        0
+      ],
+      "calls": [
+        302,
+        302
+      ],
+      "ns_per_card": [
+        10273.3,
+        14203.1
+      ]
+    },
+    "positive": {
+      "n": 36,
+      "errors": [
+        0,
+        0
+      ],
+      "calls": [
+        239,
+        239
+      ],
+      "ns_per_card": [
+        8933.9,
+        12871.0
+      ]
+    },
+    "negative": {
+      "n": 3,
+      "errors": [
+        0,
+        0
+      ],
+      "calls": [
+        63,
+        63
+      ],
+      "ns_per_card": [
+        24841.0,
+        28539.1
+      ]
+    }
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.6e-05,
+        5e-06,
+        3.2e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.13288,
+        0.13074,
+        0.989573
+      ]
+    }
+  ],
+  "seconds": 1.8123895350000794
+}

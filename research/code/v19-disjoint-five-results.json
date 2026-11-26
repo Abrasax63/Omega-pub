@@ -1,0 +1,24 @@
+{
+  "results": [
+    {
+      "maps": 7,
+      "tested": 21,
+      "cores": 0,
+      "privateFailures": 0,
+      "disagreements": 0,
+      "fixedMs": 3,
+      "oracleMs": 384
+    },
+    {
+      "maps": 14,
+      "tested": 18,
+      "cores": 0,
+      "privateFailures": 0,
+      "disagreements": 0,
+      "fixedMs": 0,
+      "oracleMs": 748
+    }
+  ],
+  "guards": 13,
+  "elapsedMs": 1144
+}

@@ -1,0 +1,124 @@
+{
+  "results": {
+    "4": {
+      "raw_reject": {
+        "n": 12,
+        "positive": 0,
+        "errors": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "median_ns_per_pair": [
+          4169.9,
+          1747.5,
+          2465.0,
+          371.9
+        ]
+      },
+      "quotient_reject": {
+        "n": 12,
+        "positive": 0,
+        "errors": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "median_ns_per_pair": [
+          2655.9,
+          1635.9,
+          2683.7,
+          3148.0
+        ]
+      },
+      "survivor_negative": {
+        "n": 12,
+        "positive": 0,
+        "errors": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "median_ns_per_pair": [
+          2554.8,
+          6090.2,
+          2670.3,
+          3184.4
+        ]
+      },
+      "positive": {
+        "n": 12,
+        "positive": 12,
+        "errors": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "median_ns_per_pair": [
+          10826.6,
+          14696.3,
+          3070.0,
+          3552.7
+        ]
+      }
+    },
+    "5": {
+      "raw_reject": {
+        "n": 0
+      },
+      "quotient_reject": {
+        "n": 12,
+        "positive": 0,
+        "errors": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "median_ns_per_pair": [
+          2415.9,
+          1639.9,
+          2741.8,
+          3143.1
+        ]
+      },
+      "survivor_negative": {
+        "n": 0
+      },
+      "positive": {
+        "n": 0
+      }
+    }
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.5e-05,
+        5e-06,
+        2.6e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.147256,
+        0.139023,
+        1.077071
+      ]
+    }
+  ],
+  "seconds": 1.916985054
+}

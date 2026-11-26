@@ -1,0 +1,119 @@
+{
+  "results": {
+    "8": {
+      "high": {
+        "ns": [
+          267155.0833333333,
+          258474.41666666666,
+          296750.625
+        ],
+        "errors": [
+          0,
+          0,
+          0
+        ],
+        "positives": 20,
+        "selected": "fixed"
+      },
+      "low": {
+        "ns": [
+          130860.35416666667,
+          82656.79166666667,
+          93359.45833333333
+        ],
+        "errors": [
+          0,
+          0,
+          0
+        ],
+        "positives": 0,
+        "selected": "candidate"
+      },
+      "misleading": {
+        "ns": [
+          239808.5625,
+          230034.5625,
+          242772.58333333334
+        ],
+        "errors": [
+          0,
+          0,
+          0
+        ],
+        "positives": 16,
+        "selected": "candidate"
+      }
+    },
+    "9": {
+      "high": {
+        "ns": [
+          276796.6041666667,
+          264324.1875,
+          307035.7916666667
+        ],
+        "errors": [
+          0,
+          0,
+          0
+        ],
+        "positives": 19,
+        "selected": "fixed"
+      },
+      "low": {
+        "ns": [
+          137649.89583333334,
+          78922.4375,
+          92452.6875
+        ],
+        "errors": [
+          0,
+          0,
+          0
+        ],
+        "positives": 0,
+        "selected": "candidate"
+      },
+      "misleading": {
+        "ns": [
+          247582.27083333334,
+          231243.875,
+          246708.89583333334
+        ],
+        "errors": [
+          0,
+          0,
+          0
+        ],
+        "positives": 16,
+        "selected": "candidate"
+      }
+    }
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.6e-05,
+        5e-06,
+        3.1e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.125049,
+        0.121739,
+        0.926556
+      ]
+    }
+  ],
+  "elapsed_ns": 2609788209
+}

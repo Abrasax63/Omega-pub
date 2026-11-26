@@ -1,0 +1,11 @@
+# V19 — Quatre événements avec deux bras inégaux
+
+24 novembre 2026, 23 h 53 CET. Branche work/omega-math-brick-pilot-2026-11-14, départ a5b98ea63da7781b29d2eab69242e7d3b586ebc1 et dernier cycle OBS-V19-FUSED. Statut VÉRIFIÉ, calcul exact fini pour les verdicts. Protocole v19-unequal-protocol.md, SHA-256 c50cab4070a2314423e9902a6658e400016bcc2142f81f001a2b5fe947586168.
+
+Sources lues : OBS-V19-LPLUS1-AUDIT_2026-11-14.md (blob 6caf1578029ec9b87974a8357f99e5816b217f27), [index #2](https://github.com/Abrasax63/Omega-pub/blob/2f71a6b8ed03914c0b5d308520d30e0133d9e9ad/research/bricks/INDEX_BRIQUES.md), [PR #5](https://github.com/Abrasax63/Omega-pub/blob/639dc01ca3ea58c61b075adb9a6d860bf41db7bc/research/code/audit_v19_c5_independent_2026-11-04.py) et [PR #18](https://github.com/Abrasax63/Omega-pub/blob/763d77f0aa735d90bb558b2c7fac056298d5313c/research/code/test_v19_locality_l_plus_1.py). L'ombre globale exige une extension sur tout l'espace. Le garde corrige 2/2 erreurs du projecteur ancré sur le témoin à cinq états, puis 276 erreurs sur 4 536 projections de la famille distincte, zéro désaccord résiduel avec le projecteur exhaustif.
+
+`PYTHONPATH=research/code python3 research/code/v19_unequal.py` depuis la racine. Le témoin négatif pur C4 est rejeté par les trois voies. Sur 360 requêtes réservées, oracle exhaustif, vérificateur fixe par cohérence complète et raccourci existant trouvent chacun 6 positifs et 354 négatifs, zéro FP, FN ou abstention. À neuf répétitions alternées, médianes des lots 0,995 ms et 0,648 ms, soit 34,8 % de temps en moins. Coût total avec l'oracle et le garde : 2,41 s. Critère de 10 % atteint sur cette réserve. Le raccourci existant est conservé comme candidat expérimental. Les verdicts de ce lot sont exhaustifs. L'extension de l'avantage de coût à d'autres familles et l'originalité bibliographique restent indéterminées.
+
+Prochain test : comparer les deux voies sur des familles riches en candidats passant le filtre de quotient, avec les mêmes critères et en mesurant le seuil où son avantage disparaît.
+
+Registre lu oui, SHA vérifié oui (184d8d9868ffb90a97c6f171693f3f54f5785d83). existing_math_pilot considéré, pertinent et exécuté par calcul exact. Aucun nouveau composant routeur utilisé, aucun appel payant.

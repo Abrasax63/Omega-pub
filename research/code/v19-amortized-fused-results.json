@@ -1,0 +1,93 @@
+{
+  "results": {
+    "fixed_point": {
+      "cards": 20,
+      "full": {
+        "n": 720,
+        "positive": 80,
+        "errors": [
+          0,
+          0,
+          0
+        ],
+        "ns": [
+          1312.8,
+          1588.3,
+          1376.7
+        ]
+      },
+      "sparse": {
+        "n": 120,
+        "positive": 10,
+        "errors": [
+          0,
+          0,
+          0
+        ],
+        "ns": [
+          1487.0,
+          1685.1,
+          1446.8
+        ]
+      }
+    },
+    "transposition": {
+      "cards": 24,
+      "full": {
+        "n": 1080,
+        "positive": 88,
+        "errors": [
+          0,
+          0,
+          0
+        ],
+        "ns": [
+          1340.0,
+          1682.9,
+          1324.2
+        ]
+      },
+      "sparse": {
+        "n": 144,
+        "positive": 5,
+        "errors": [
+          0,
+          0,
+          0
+        ],
+        "ns": [
+          1433.7,
+          1750.6,
+          1496.0
+        ]
+      }
+    }
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.7e-05,
+        6e-06,
+        3.2e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.134817,
+        0.135963,
+        1.05873
+      ]
+    }
+  ],
+  "seconds": 5.590354294999997
+}

@@ -1,0 +1,42 @@
+{
+  "cases": 260,
+  "positives": 12,
+  "groups": 8,
+  "errors": [
+    0,
+    0,
+    0
+  ],
+  "ns": [
+    737479.2,
+    530264.25,
+    258340.725
+  ],
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.7e-05,
+        5e-06,
+        3.1e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.12774,
+        0.12253,
+        0.962558
+      ]
+    }
+  ],
+  "elapsed_ns": 2075540613
+}

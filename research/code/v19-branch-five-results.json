@@ -1,0 +1,51 @@
+{
+  "a": {
+    "maps": 213,
+    "pairs": 813,
+    "cores": 0,
+    "errors": 0,
+    "exterior_pairs": 807,
+    "first_witness": null,
+    "seconds": 0.01938513700000044,
+    "signed_seconds": 0.0020412380000038866,
+    "oracle_seconds": 0.0073839390001069205
+  },
+  "b": {
+    "maps": 185,
+    "pairs": 667,
+    "cores": 0,
+    "errors": 0,
+    "exterior_pairs": 649,
+    "first_witness": null,
+    "seconds": 0.01949895600000673,
+    "signed_seconds": 0.002327232999903117,
+    "oracle_seconds": 0.007653124000114531
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        2.1e-05,
+        5e-06,
+        3e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.198058,
+        0.204494,
+        1.555696
+      ]
+    }
+  ],
+  "seconds": 2.079362847999988
+}

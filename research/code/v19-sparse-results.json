@@ -1,0 +1,100 @@
+{
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.7e-05,
+        5e-06,
+        3.1e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.136007,
+        0.13181,
+        0.978423
+      ]
+    }
+  ],
+  "families": {
+    "4": {
+      "queries": 396,
+      "survivors": 44,
+      "positives": 8,
+      "errors": [
+        0,
+        0
+      ],
+      "projections": [
+        220,
+        0,
+        1980
+      ],
+      "oracle_ns": 857938115,
+      "timing_ns": [
+        [
+          93333601,
+          95938108,
+          97456696,
+          93607052,
+          94173070
+        ],
+        [
+          1128954,
+          940661,
+          1074031,
+          898548,
+          1012969
+        ]
+      ],
+      "median_ns": [
+        94173070,
+        1012969
+      ]
+    },
+    "6": {
+      "queries": 715,
+      "survivors": 0,
+      "positives": 0,
+      "errors": [
+        0,
+        0
+      ],
+      "projections": [
+        0,
+        0,
+        3575
+      ],
+      "oracle_ns": 6069996811,
+      "timing_ns": [
+        [
+          1087021,
+          1031437,
+          1044477,
+          1059449,
+          1155373
+        ],
+        [
+          1413491,
+          1315854,
+          1321061,
+          1443015,
+          1449174
+        ]
+      ],
+      "median_ns": [
+        1059449,
+        1413491
+      ]
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "results": {
+    "transposition": {
+      "maps": 28,
+      "n": 1260,
+      "positive": 80,
+      "merged": 148,
+      "errors": [
+        0,
+        0,
+        0
+      ],
+      "median_ns": [
+        3152.0,
+        3269.9,
+        2965.9
+      ]
+    },
+    "fixed_point": {
+      "maps": 24,
+      "n": 864,
+      "positive": 72,
+      "merged": 128,
+      "errors": [
+        0,
+        0,
+        0
+      ],
+      "median_ns": [
+        2822.4,
+        2874.6,
+        2595.4
+      ]
+    }
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.7e-05,
+        5e-06,
+        3.1e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.143033,
+        0.138522,
+        1.067013
+      ]
+    }
+  ],
+  "seconds": 6.897007639999998
+}

@@ -1,0 +1,51 @@
+{
+  "family_a": {
+    "maps": 59049,
+    "eligible_maps": 480,
+    "pairs": 960,
+    "cores": 0,
+    "errors": 0,
+    "first_witness": null,
+    "signed_seconds": 0.0030223150000949772,
+    "exact_seconds": 1.0385113010003693,
+    "total_seconds": 1.2860683929999936
+  },
+  "family_b": {
+    "maps": 121,
+    "eligible_maps": 93,
+    "pairs": 228,
+    "cores": 0,
+    "errors": 0,
+    "first_witness": null,
+    "signed_seconds": 0.0010793679998641892,
+    "exact_seconds": 1.0892129080000075,
+    "total_seconds": 1.0958437129999936
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.000266,
+        6e-06,
+        3e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.140276,
+        0.130925,
+        1.031722
+      ]
+    }
+  ],
+  "seconds": 3.725374434999992
+}
