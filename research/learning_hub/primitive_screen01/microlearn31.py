@@ -66,6 +66,16 @@ def gate(before,after):
         correct_gain=after['correct']-before['correct'],pair_gain=after['pairs']-before['pairs'],
         previously_correct_retention_lost=lost)
 
+
+def format_diagnostic(rows,pred):
+    idx={r['id']:r for r in rows};out={k:dict(total=0,in_contract=0,strict_correct=0) for k in q.c.KINDS}
+    for z in pred:
+        row=idx[z['id']];raw=z['raw'].strip();words=raw.split();k=row['kind']
+        valid=(raw in row['items'] if k=='select' else raw in ('Yes','No') if k=='membership'
+            else len(words)==len(row['items']) and sorted(words)==sorted(row['items']))
+        out[k]['total']+=1;out[k]['in_contract']+=int(valid);out[k]['strict_correct']+=int(raw==oracle(row))
+    return out
+
 def matched_pools(tok,train):
     enc=q.t.prepare(tok,train);groups=q.c.groups(train);pool={p:collections.defaultdict(list) for p in range(1,5)}
     for pair,rows in groups.items():
@@ -103,6 +113,7 @@ def seal(root,checkpoint,controller,data):
         accepted_updates=controller['accepted_updates'],promotion_authorized=False))
 
 class BudgetStop(Exception):pass
+class ProtocolStop(Exception):pass
 
 def run():
     import torch
@@ -150,11 +161,18 @@ def run():
                     raw=tok.decode(ids,skip_special_tokens=True,clean_up_tokenization_spaces=False),
                     input_tokens=n,output_tokens=len(ids)))
                 report['generations']+=1;write(public/(label+'-predictions.json'),pred)
+            report.setdefault('format_diagnostics',{})[label]=format_diagnostic(rows,pred)
             return score(rows,pred)
         finally:model.train(mode);flush()
     lr=CONFIG['initial_lr'];strategy='adaptive';stalls=0;current=None
     try:
         current=evaluate(dev,'initial-dev');report['initial_dev']=current;report['current_dev']=current;flush()
+        # Added after the first pilot exposed an uninformative baseline.
+        # This is a prospective guard, not a changed verdict for that pilot.
+        if current['old_correct']==0:
+            raise ProtocolStop('EMPTY_RETENTION_BASELINE_DIAGNOSE_OUTPUT_CONTRACT_FIRST')
+        if report['format_diagnostics']['initial-dev']['select']['in_contract']==0:
+            raise ProtocolStop('NO_VALID_SELECTION_OUTPUT_DIAGNOSE_CONTRACT_FIRST')
         for round_index in range(CONFIG['max_rounds']):
             if current['correct']==8 and current['pairs']==4:
                 report['stop_reason']='DEV_CEILING';break
@@ -171,6 +189,8 @@ def run():
                 for pos in positions[arm]:
                     available=[p for p in pools[pos] if p not in chosen] or pools[pos]
                     chosen.append(rng.choice(available))
+                round_info['arms'][arm]=dict(status='TRAINING',train_pairs=chosen,positions=positions[arm],steps=steps)
+                flush()
                 for pair in chosen:
                     budget();q.need(report['optimizer_updates']<CONFIG['max_optimizer_updates'],'UPDATE_CAP')
                     batch=q.t.collate(tok,enc,[r['id'] for r in groups[pair]])
@@ -216,6 +236,8 @@ def run():
         report['status']='BOUNDED_MICROLEARNING_COMPLETE'
     except BudgetStop as error:
         report['status']='BUDGET_STOP';report['stop_reason']=str(error)
+    except ProtocolStop as error:
+        report['status']='BLOCKED_BASELINE';report['stop_reason']=str(error)
     except Exception as error:
         report['status']='TECHNICAL_FAILURE';report['error']=str(error);report['traceback']=traceback.format_exc()
     finally:
@@ -233,6 +255,8 @@ def selftest():
     perfect=score(dev,predictions(dev));q.need(perfect['correct']==8 and perfect['pairs']==4 and perfect['old_correct']==12,'PERFECT')
     constant=score(dev,predictions(dev,lambda r:'Yes'))
     q.need(constant['correct']==0 and constant['pairs']==0,'CONSTANT_REJECTED')
+    diagnostic=format_diagnostic(dev,predictions(dev,lambda r:'The answer is '+r['gold']))
+    q.need(diagnostic['select']['in_contract']==0 and diagnostic['select']['strict_correct']==0,'VERBOSE_OUTPUT_FLAGGED')
     before=dict(perfect,correct=4,pairs=2)
     q.need(gate(before,perfect)['accepted'],'POSITIVE_GATE')
     regressed=dict(perfect,old_correct_ids=perfect['old_correct_ids'][1:])
