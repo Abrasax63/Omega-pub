@@ -3,8 +3,10 @@ The caller owns a durable private directory; no checkpoint upload is performed.
 """
 import copy
 import hashlib
+import importlib.metadata
 import json
 import os
+import platform
 import random
 import shutil
 import stat
@@ -59,6 +61,34 @@ def validate_context(context):
     need(all(isinstance(v, str) and v for v in context.values()), 'CONTEXT_VALUES')
 
 
+def runtime_fingerprint(model):
+    """Record observed numerical controls; this is not a determinism proof."""
+    import torch
+    packages = {}
+    for name in ('torch', 'numpy', 'transformers', 'peft', 'accelerate', 'tokenizers', 'safetensors'):
+        try:
+            packages[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            packages[name] = None
+    cpu = {}
+    cpuinfo = Path('/proc/cpuinfo')
+    if cpuinfo.is_file():
+        for line in cpuinfo.read_text().splitlines():
+            if ':' in line:
+                key, value = map(str.strip, line.split(':', 1))
+                if key in ('vendor_id', 'model name', 'flags') and key not in cpu:
+                    cpu[key] = value
+    config = getattr(model, 'config', None)
+    return dict(python=platform.python_version(), machine=platform.machine(), cpu=cpu,
+                packages=packages, cpu_capability=torch.backends.cpu.get_cpu_capability(),
+                torch_build_sha=hashlib.sha256(torch.__config__.show().encode()).hexdigest(),
+                threads=torch.get_num_threads(), interop_threads=torch.get_num_interop_threads(),
+                mkldnn_enabled=torch.backends.mkldnn.enabled,
+                deterministic_algorithms=torch.are_deterministic_algorithms_enabled(),
+                matmul_precision=torch.get_float32_matmul_precision(),
+                attention_implementation=getattr(config, '_attn_implementation', None))
+
+
 def save(model, optimizer, destination, context, next_step):
     import torch
     validate_context(context)
@@ -78,7 +108,8 @@ def save(model, optimizer, destination, context, next_step):
         statefile = temp/'state.pt'
         torch.save(payload, statefile)
         statefile.chmod(0o600)
-        manifest = dict(schema=1, context=context, next_step=next_step,
+        manifest = dict(schema=2, context=context, next_step=next_step,
+                        runtime=runtime_fingerprint(model),
                         optimizer_class=type(optimizer).__module__+'.'+type(optimizer).__name__,
                         parameter_names=[n for n,p in named],
                         frozen_sha=tensor_hash(tensors(model, False)),
@@ -99,7 +130,9 @@ def load(model, optimizer, source, context):
     need(source.is_dir() and not source.is_symlink(), 'SOURCE')
     need(stat.S_IMODE(source.stat().st_mode) & 0o077 == 0, 'PRIVATE_SOURCE_REQUIRED')
     m = json.loads((source/'manifest.json').read_text())
-    need(m['schema'] == 1 and m['context'] == context, 'CONTEXT_MISMATCH')
+    need(m.get('schema') == 2 and 'runtime' in m, 'RUNTIME_UNATTESTED_OR_UNSUPPORTED_SCHEMA')
+    need(m['context'] == context, 'CONTEXT_MISMATCH')
+    need(m['runtime'] == runtime_fingerprint(model), 'RUNTIME_MISMATCH')
     need(type(m['next_step']) is int and m['next_step'] >= 0, 'CURSOR')
     need(m['optimizer_class'] == type(optimizer).__module__+'.'+type(optimizer).__name__, 'OPTIMIZER_CLASS')
     named = tensors(model, True)
@@ -186,6 +219,34 @@ def selftest():
             except ValueError: pass
             else: raise AssertionError('WRONG_CONTEXT_ACCEPTED')
             assert tensor_hash(tensors(other,True))==reference
+        # Refuse an actual thread change and a recorded CPU capability mismatch
+        # before mutating parameters, optimizer or random state.
+        before_opt = copy.deepcopy(otheropt.state_dict())
+        before_rng = rng()
+        torch.set_num_threads(2)
+        try:
+            try: load(other,otheropt,path,context)
+            except ValueError as error: assert str(error)=='RUNTIME_MISMATCH'
+            else: raise AssertionError('THREAD_CHANGE_ACCEPTED')
+        finally:
+            torch.set_num_threads(1)
+        manifestfile = path/'manifest.json'
+        valid_manifest = json.loads(manifestfile.read_text())
+        for legacy in (False, True):
+            invalid = copy.deepcopy(valid_manifest)
+            if legacy:
+                invalid['schema']=1;invalid.pop('runtime')
+                expected_error='RUNTIME_UNATTESTED_OR_UNSUPPORTED_SCHEMA'
+            else:
+                invalid['runtime']['cpu_capability']='different CPU dispatch'
+                expected_error='RUNTIME_MISMATCH'
+            manifestfile.write_text(json.dumps(invalid))
+            try: load(other,otheropt,path,context)
+            except ValueError as error: assert str(error)==expected_error
+            else: raise AssertionError('UNATTESTED_RUNTIME_ACCEPTED')
+            assert tensor_hash(tensors(other,True))==reference
+            assert equal(otheropt.state_dict(),before_opt) and equal(rng(),before_rng)
+        manifestfile.write_text(json.dumps(valid_manifest))
         statefile=path/'state.pt'
         data=bytearray(statefile.read_bytes());data[-1]^=1;statefile.write_bytes(data)
         try: load(other,otheropt,path,context)
@@ -196,6 +257,8 @@ def selftest():
                          same_updated_parameters=True,same_optimizer_state=True,
                          dropout_and_python_numpy_torch_rng_restored=True,
                          wrong_revision_and_data_rejected=True,corrupt_state_rejected=True,
+                         changed_threads_and_cpu_rejected=True,legacy_unattested_state_rejected=True,
+                         runtime_rejection_without_mutation=True,
                          pretrained_updates=0,private_durable_backend_connected=False)))
 
 
