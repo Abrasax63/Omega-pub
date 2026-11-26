@@ -1,0 +1,39 @@
+{
+  "counts": {
+    "periodic": 88608,
+    "periodic_nonempty": 47286,
+    "transient": 7332,
+    "transient_nonempty": 360
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        1.8e-05,
+        6e-06,
+        3.3e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.134904,
+        0.131922,
+        1.019875
+      ]
+    }
+  ],
+  "compare_seconds": {
+    "parity": 0.28858528300085595,
+    "oracle": 0.05221328299842298
+  },
+  "seconds": 2.187016476999986
+}
