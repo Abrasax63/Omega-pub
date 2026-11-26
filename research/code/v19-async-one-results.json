@@ -1,0 +1,44 @@
+{
+  "totals": {
+    "maps": 618,
+    "coherent": 324,
+    "pairs": 2922,
+    "cores": 0,
+    "errors": 0
+  },
+  "lag": {
+    "4": 538,
+    "3": 660,
+    "2": 798,
+    "1": 926
+  },
+  "guards": [
+    {
+      "projections": 2,
+      "empty": 2,
+      "old_errors": 2,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        2e-05,
+        6e-06,
+        2.9e-05
+      ]
+    },
+    {
+      "projections": 4536,
+      "empty": 456,
+      "old_errors": 276,
+      "new_errors": 0,
+      "locality_errors": 0,
+      "seconds": [
+        0.14303,
+        0.137333,
+        1.070729
+      ]
+    }
+  ],
+  "signed_seconds": 0.005517907000083255,
+  "exact_seconds": 0.01984527200004038,
+  "seconds": 1.471491235000002
+}
