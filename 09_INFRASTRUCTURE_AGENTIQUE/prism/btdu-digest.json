@@ -1,0 +1,24 @@
+{
+  "evidence": [
+    {
+      "log_sha256": "b9f88dbc148251dc9d213cafe32d9ed6f3daf1a0627ef51f63e1d14032f6642c",
+      "zip_sha256": "767b9e371d9ad7a8671ec7009484b3f2494d13f21b8f650ef291f7c742186d72",
+      "member_sha256": "6f05e0396b64ca74cf081b26b0ef9861f005c3ca93fb110737030c84834443d7"
+    },
+    {
+      "log_sha256": "3ed2abd73d58dbd25d5aa9e132fbcf53bd00cbabd2d44255cd62a29988808d2e",
+      "zip_sha256": "2d7daae39c6faea82a619c7542a27ba8a28e4b5bc2f2a9a6884ee444e014e56d",
+      "member_sha256": "6f05e0396b64ca74cf081b26b0ef9861f005c3ca93fb110737030c84834443d7"
+    },
+    {
+      "log_sha256": "7a56477720e0702930d731e2738e7a06542bf0b0779846b846d21e39b158476d",
+      "zip_sha256": "f647206166472437bdd2ace03ef1d0c0c87b63774195894d50175865820fc0a1",
+      "member_sha256": "6a97d278218ca06d9cf906fa2bd87d3bbe6ee794903d17ae455a94a7bef4e066"
+    }
+  ],
+  "candidate_confirmations": 3,
+  "fixed_confirmations": 3,
+  "wrong_path_abstentions": 3,
+  "old_copy_abstentions": 3,
+  "seconds": 0.10038134999996373
+}

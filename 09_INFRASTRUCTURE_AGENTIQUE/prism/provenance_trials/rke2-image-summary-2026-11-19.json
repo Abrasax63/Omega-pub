@@ -1,0 +1,32 @@
+{
+  "archive_sha256": "46be77b612b549bbdc918193b9238d2b013b0c010a135253fef80cc59d142e48",
+  "artifact": 14485312791,
+  "expanded_total": 888958185,
+  "image_execution": false,
+  "images": [
+    {
+      "expanded_declared_bytes": 564036126,
+      "label": "test image",
+      "layers": 8,
+      "license_candidates": 121,
+      "nested_bundles": [],
+      "rke2_path_matches": [],
+      "seconds": 2.55499758499991,
+      "source_digest_matches": []
+    },
+    {
+      "expanded_declared_bytes": 324922059,
+      "label": "runtime images",
+      "layers": 1,
+      "license_candidates": 0,
+      "nested_bundles": [],
+      "rke2_path_matches": [],
+      "seconds": 1.4568178499998794,
+      "source_digest_matches": []
+    }
+  ],
+  "run": 44427352224,
+  "search_scope": "regular license-named files under 100000 bytes in archived layers; no final filesystem reconstruction",
+  "source_license_bytes": 10174,
+  "source_license_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+}

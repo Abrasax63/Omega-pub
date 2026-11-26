@@ -1,0 +1,12 @@
+{
+  "image": {
+    "present": true,
+    "complete": false,
+    "verified": 1,
+    "missing": 14,
+    "mismatch": 0,
+    "invalid": 0
+  },
+  "record_blobs": 12,
+  "controls_passed": 3
+}

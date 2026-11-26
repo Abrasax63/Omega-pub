@@ -1,0 +1,1 @@
+[{"job":112741191101,"name":"Artifact-A-ubuntu-latest","log_names":["Artifact-A-ubuntu-latest"],"step_success":true},{"job":112741190677,"name":"Artifact-A-windows-latest","log_names":["Artifact-A-windows-latest"],"step_success":true},{"job":112741190979,"name":"report.html","log_names":["test-report","report.html"],"step_success":true}]

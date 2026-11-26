@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "job_id": 136797847517,
+      "log_sha256": "263fa00350181e79377d8dbf657e6ce5ae2e2c47dc9ef3bbf465d66cf6b1428e",
+      "record": [
+        14700667592,
+        "test-reports-test-unit--ubuntu-26.04",
+        "sha256:891b50e92dc9d35334b51a9f238b80adc50d13a8eca9a6787d476e435680b4c4"
+      ],
+      "comparator": "confirmed",
+      "candidate": "confirmed",
+      "cp_av_markers": 0
+    },
+    {
+      "job_id": 136797847537,
+      "log_sha256": "b60e98aa7a0e58466f6f41690753fbc65583d9f62440414b951222f02f520e1e",
+      "record": [
+        14701365175,
+        "test-reports-test-unit--macos-26",
+        "sha256:782fb2ae181c4958268a34045b675a0d68dc2aaf7083aab2dc1cea6234f0dbf5"
+      ],
+      "comparator": "confirmed",
+      "candidate": "confirmed",
+      "cp_av_markers": 0
+    }
+  ],
+  "adverse": {
+    "comparator": "confirmed",
+    "candidate": "rejected"
+  },
+  "inventory_sha256": "b9e2099bee2bf398b8fdc59312e070df3530e7364f91e647ee7ef35bbecb238d",
+  "measured_seconds": 0.02736
+}

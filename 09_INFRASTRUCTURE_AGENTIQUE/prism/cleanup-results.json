@@ -1,0 +1,47 @@
+{
+  "cases": [
+    {
+      "job": 112741191101,
+      "name": "Artifact-A-ubuntu-latest",
+      "truth": "absent",
+      "upload_id": 11475046496,
+      "receipt_digest": "4275728491ca7e5fe915ecf9aa70dd4e83a898cf84540ac774119418c65ac226",
+      "deletion_receipts": 1,
+      "fixed": "present",
+      "positive_join": "abstention",
+      "candidate": "deleted",
+      "log_sha256": "3e484f426075147a86614e074e420362359a857aa3d4f4c40938dbfa26993e75",
+      "cp_av_markers": 0
+    },
+    {
+      "job": 112741190677,
+      "name": "Artifact-A-windows-latest",
+      "truth": "absent",
+      "upload_id": 11475241041,
+      "receipt_digest": "d9b4281da180a6431ee01884d52bf403ec491d7828b891bd88f54cf1c96fd1c4",
+      "deletion_receipts": 1,
+      "fixed": "present",
+      "positive_join": "abstention",
+      "candidate": "deleted",
+      "log_sha256": "09425c3724475ef574f206cb4ec41c4bb746127f90a70e312411f0f339d37b7e",
+      "cp_av_markers": 0
+    },
+    {
+      "job": 112741190979,
+      "name": "report.html",
+      "truth": "present",
+      "upload_id": 11475405383,
+      "receipt_digest": "e85418a28846f798a84420d207865c21502f2abe042637a00584c12f50f3a04b",
+      "deletion_receipts": 0,
+      "fixed": "present",
+      "positive_join": "present",
+      "candidate": "present",
+      "log_sha256": "31ba9850ea93b1ee8cc39dc56ce35d8ef5fe68414a900cee8efda822d882cefa",
+      "cp_av_markers": 0
+    }
+  ],
+  "cleanup_sha256": "d36eade83111ded05ef3c91446154f4b09b03612302b131ca193315e93c1c1f1",
+  "inventory_sha256": "e3bfdd1d29ad4e495e10dd6af7f888b789765e4cc1c077c8a9ea7552ccd327c8",
+  "cleanup_cp_av_markers": 0,
+  "seconds": 0.01362
+}

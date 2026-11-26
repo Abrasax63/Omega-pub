@@ -1,0 +1,22 @@
+{
+  "archive_sha256": "db060b97d065f70308fb0d43450b4427d534c8e9fa9d2a16369cc285bd574df9",
+  "history_cached": 48,
+  "history_completed": true,
+  "history_completed_steps": 135,
+  "history_total": 135,
+  "image_references": 34,
+  "log_bytes": 147408,
+  "log_frames": 2,
+  "log_media_type": "application/vnd.buildkit.status.v0",
+  "media_types": [
+    "application/vnd.buildkit.otlp.json.v0",
+    "application/vnd.buildkit.status.v0",
+    "application/vnd.in-toto+json",
+    "application/json"
+  ],
+  "missing_image_references": 34,
+  "regular_members": 8,
+  "source_context": "https://github.com/moby/buildkit.git#f9fb55d56731aad70d6cf9ab4a8b02e4f2db16b5",
+  "target": "integration-tests",
+  "verified_blob_digests": 6
+}

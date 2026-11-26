@@ -1,0 +1,5 @@
+# Admission Dockerfile COPY sur le workflow .test-bake
+
+24 novembre 2026. Avant ouverture des journaux des jobs 138324867120 et 138324866877 du run 45359188668. Entraînement réservé au témoin synthétique du cycle Builder. Prélèvement externe limité à deux journaux existants, un ZIP bake-output 14904265810, et les sources épinglées du workflow. Aucun lancement de CI.
+
+Hypothèse : le job BuildKit et une attestation de sortie indépendante lient, chacun avec son identité de cible et de plateforme, un COPY --from=base au fichier exporté. Référence fixe d'admission : exiger une instruction COPY, un résultat de pas terminé, le Dockerfile de la cible et une attestation reliant le sujet vérifié par SHA-256 à un membre du ZIP. Un simple inventaire des noms et des tailles est le témoin adverse. Le candidat d'admission ne peut passer si un lien manque ou si un sujet permuté entre plateformes est accepté. Une preuve d'admission seule ne vaut pas un gain externe. Le raccord validé a pour cible cp -av et abstient hors contrat. Seul l'équivalent couvert par le raccord est admissible à check, après propose et fixation du manifeste réservé.

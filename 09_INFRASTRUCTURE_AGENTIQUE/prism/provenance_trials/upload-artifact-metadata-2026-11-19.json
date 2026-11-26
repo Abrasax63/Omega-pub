@@ -1,0 +1,17 @@
+{
+  "decoded_log_sha256": "3e484f426075147a86614e074e420362359a857aa3d4f4c40938dbfa26993e75",
+  "normalization": "trailing whitespace removed then one LF by local materialization",
+  "bytes": 656476,
+  "source_sha256": "43af36e8eb9d1fd95060d25ea5a21d34f6bb9b995fcaa241617a2f07f881a1dc",
+  "target_artifact_id": 11474467914,
+  "run": 37604537230,
+  "job": 112741191101,
+  "selected_log_lines": [
+    "2026-10-07T10:13:35.5237922Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}",
+    "2026-10-07T10:13:36.1733339Z Artifact Artifact-A-ubuntu-latest successfully finalized. Artifact ID 11474467914",
+    "2026-10-07T10:13:38.4199078Z ##[debug]Found named artifact 'Artifact-A-ubuntu-latest' (ID: 11474467914, Size: 161)",
+    "2026-10-07T10:13:47.1499488Z Artifact Artifact-A-ubuntu-latest successfully finalized. Artifact ID 11475046496",
+    "2026-10-07T10:13:47.4009072Z ##[debug]Found named artifact 'Artifact-A-ubuntu-latest' (ID: 11475046496, Size: 156)",
+    "2026-10-07T10:13:48.3589425Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}"
+  ]
+}

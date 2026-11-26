@@ -1,0 +1,79 @@
+{
+  "cases": [
+    {
+      "case": {
+        "job": 112740048559,
+        "name": "file-土-ubuntu-latest.txt",
+        "path": "path/to/cjk-artifacts/file-土-ubuntu-latest.txt",
+        "direct": true
+      },
+      "receipt": [
+        "artifact",
+        11474452521,
+        "4280385fcd93337af096d2157ea271c15e530335c2dd1faa3c8d18c9ab277036",
+        true
+      ],
+      "reference": null,
+      "candidate": "file-土-ubuntu-latest.txt",
+      "sha256": "719c1c1d40efdac65f687e0619f9aafddb312b407cecf8171ebc0b5534603705",
+      "cp_av_markers": 0
+    },
+    {
+      "case": {
+        "job": 112740048888,
+        "name": "file-テスト-macos-latest.txt",
+        "path": "path/to/cjk-artifacts/file-テスト-macos-latest.txt",
+        "direct": true
+      },
+      "receipt": [
+        "artifact",
+        11475295284,
+        "5c8f8ad4881956a26db696eab8dc58f429fce11a6baae1a13235434d6b7218c4",
+        true
+      ],
+      "reference": null,
+      "candidate": "file-テスト-macos-latest.txt",
+      "sha256": "57318bfb51254d160abcc247197f9237a925f881190f988ef082517178c42d6b",
+      "cp_av_markers": 0
+    },
+    {
+      "case": {
+        "job": 112740048933,
+        "name": "file-서울시-windows-latest.txt",
+        "path": "path/to/cjk-artifacts/file-서울시-windows-latest.txt",
+        "direct": true
+      },
+      "receipt": [
+        "artifact",
+        11474094885,
+        "5f7c7c35ee94b1119c0248340f1e08baa7424a88337adf8eaf762e447b03daf8",
+        true
+      ],
+      "reference": null,
+      "candidate": "file-서울시-windows-latest.txt",
+      "sha256": "63a49d1ed4da03422e2c13fc166025afba23082cbe05ea784c85347196158f0f",
+      "cp_av_markers": 0
+    },
+    {
+      "case": {
+        "job": 112740048933,
+        "name": "Artifact-A-windows-latest",
+        "path": "path/to/artifact-A",
+        "direct": false
+      },
+      "receipt": [
+        "Artifact-A-windows-latest",
+        11474109937,
+        null,
+        false
+      ],
+      "reference": null,
+      "candidate": null,
+      "sha256": "63a49d1ed4da03422e2c13fc166025afba23082cbe05ea784c85347196158f0f",
+      "cp_av_markers": 0
+    }
+  ],
+  "contradictory_controls": 6,
+  "inventory_sha256": "a1b57e95876dbb1b22c73b1da7b503f221c9e80c9d0acc32174780c68e8e9d18",
+  "seconds": 0.02941
+}

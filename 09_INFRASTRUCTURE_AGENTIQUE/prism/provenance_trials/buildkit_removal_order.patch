@@ -1,0 +1,13 @@
+--- a/09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_xtrace.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_xtrace.py
+@@ -79,7 +79,9 @@
+         if detail.startswith("+ "):
+             removal = re.fullmatch(r"\+ rm -f (?:-- )?([\w./-]+)", detail)
+             if removal and removal[1].removeprefix("./") == output:
+-                return {"complete": False, "output": output, "writers": []}
++                if pending or writers:
++                    return {"complete": False, "output": output, "writers": []}
++                continue
+             if not detail.startswith("+ cp -av "):
+                 continue
+             match = re.fullmatch(r"cp -av ([\w./-]+) ([\w./-]+/)", detail[2:])

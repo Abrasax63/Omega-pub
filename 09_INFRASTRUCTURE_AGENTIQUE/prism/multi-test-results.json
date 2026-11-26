@@ -1,0 +1,19 @@
+{
+  "result": {
+    "oci": {
+      "verified_test": true,
+      "baseline": false,
+      "candidate": false,
+      "expected_test_occurrences": 4,
+      "cp_av": 0
+    },
+    "containerd": {
+      "verified_test": true,
+      "baseline": false,
+      "candidate": false,
+      "expected_test_occurrences": 4,
+      "cp_av": 0
+    }
+  },
+  "elapsed_ns": 65614795
+}

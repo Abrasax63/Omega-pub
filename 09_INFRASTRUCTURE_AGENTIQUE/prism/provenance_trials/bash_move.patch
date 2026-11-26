@@ -1,0 +1,18 @@
+--- a/09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_xtrace.py
++++ b/09_INFRASTRUCTURE_AGENTIQUE/prism/provenance_xtrace.py
+@@ -38,6 +38,15 @@
+             continue
+         if not argv:
+             continue
++        if argv[0] == "mv":
++            operands = argv[2:] if argv[1:2] == ["--"] else argv[1:]
++            if (
++                len(operands) == 2
++                and all(value and not value.startswith("-") for value in operands)
++                and any(value.removeprefix("./") == output.removeprefix("./")
++                        for value in operands)
++            ):
++                unparsed = True
+         copy_destination = (
+             copy_output(argv) if recognize_install or argv[0] != "install" else None
+         )

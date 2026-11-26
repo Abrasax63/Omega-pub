@@ -1,0 +1,1 @@
+[{"id":139128815771,"name":"error","tolerated":true,"setup":"success","check":"success"},{"id":139128816306,"name":"windows-error","tolerated":true,"setup":"success","check":"success"},{"id":139128816468,"name":"keep-state-error","tolerated":true,"setup":"success","check":"success"},{"id":139128815832,"name":"docker-driver","tolerated":false,"setup":"success","check":"success"}]

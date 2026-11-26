@@ -1,0 +1,105 @@
+{
+  "cases": [
+    {
+      "case": {
+        "repo": "dawidd6/action-download-artifact",
+        "run": 43510637817,
+        "job": 132179655663,
+        "path": "raw-artifact",
+        "name": "raw-artifact"
+      },
+      "sha256": "e9727ef6e26e0f92af5f05f70a2f1fb885b1d8edd567b5ce16592a8fba9db002",
+      "truth": [
+        "dawidd6/action-download-artifact",
+        43510637817,
+        14077728463,
+        "raw-artifact"
+      ],
+      "digest_match_count": 1,
+      "fixed": [
+        "dawidd6/action-download-artifact",
+        43510637817,
+        14077728463,
+        "raw-artifact"
+      ],
+      "forced_first": [
+        "dawidd6/action-download-artifact",
+        43510637817,
+        14077728463,
+        "raw-artifact"
+      ],
+      "candidate": [
+        "dawidd6/action-download-artifact",
+        43510637817,
+        14077728463,
+        "raw-artifact"
+      ],
+      "cp_av_markers": 0
+    },
+    {
+      "case": {
+        "repo": "actions/download-artifact",
+        "run": 37604548891,
+        "job": 112736735902,
+        "path": "path/to/cjk-artifacts/file-土-windows-latest.txt",
+        "name": "file-土-windows-latest.txt"
+      },
+      "sha256": "9ad3a1172289424f8b86b6e6332cd6b7d25166bbdb8bd741509865d0fe23e1c3",
+      "truth": [
+        "actions/download-artifact",
+        37604548891,
+        11474830329,
+        "file-土-windows-latest.txt"
+      ],
+      "digest_match_count": 6,
+      "fixed": null,
+      "forced_first": [
+        "actions/download-artifact",
+        37597240894,
+        11470889347,
+        "file-土-ubuntu-latest.txt"
+      ],
+      "candidate": [
+        "actions/download-artifact",
+        37604548891,
+        11474830329,
+        "file-土-windows-latest.txt"
+      ],
+      "cp_av_markers": 0
+    },
+    {
+      "case": {
+        "repo": "actions/download-artifact",
+        "run": 37597240894,
+        "job": 112712752494,
+        "path": "path/to/cjk-artifacts/file-土-macos-latest.txt",
+        "name": "file-土-macos-latest.txt"
+      },
+      "sha256": "1fb064848cb7f8ca6e6602206fe294147813558f6c3e0d6ef972c3af1161a24c",
+      "truth": [
+        "actions/download-artifact",
+        37597240894,
+        11471041895,
+        "file-土-macos-latest.txt"
+      ],
+      "digest_match_count": 6,
+      "fixed": null,
+      "forced_first": [
+        "actions/download-artifact",
+        37597240894,
+        11470889347,
+        "file-土-ubuntu-latest.txt"
+      ],
+      "candidate": [
+        "actions/download-artifact",
+        37597240894,
+        11471041895,
+        "file-土-macos-latest.txt"
+      ],
+      "cp_av_markers": 0
+    }
+  ],
+  "contradictory_controls": 4,
+  "inventory_sha256": "cd8d456357015a2b097595b17435d75f3bd9c9ed7b62de236bfb05dccdb911a1",
+  "seconds": 0.02089
+}

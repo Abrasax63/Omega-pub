@@ -1,0 +1,8 @@
+{
+  "archive_sha256": "0603a24d2df95a0bab709c1397d8f0e173648cc170096d886cbaaff7e000764b",
+  "source_sha256": "32a038c57b4f96a232f1dcc953c4c44ecb6e578b812d82b152e58a88eea229a0",
+  "binary_size": 68296864,
+  "destination_exact": null,
+  "matched_receipts": 2,
+  "controls_passed": 3
+}

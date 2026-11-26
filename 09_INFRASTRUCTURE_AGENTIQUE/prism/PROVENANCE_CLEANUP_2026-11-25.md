@@ -1,0 +1,19 @@
+# Distinguer l'upload d'un artefact et sa présence après nettoyage
+
+25 novembre 2026. Branche `work/omega-provenance-lab`, SHA initial `af779c2f73b3ebed83084140d22bd81cd42b554d`. [Workflow public inédit](https://github.com/actions/upload-artifact/actions/runs/37604537230) et [source](https://github.com/actions/upload-artifact/blob/cf430e030ddbb5b0abf93d22962f4752f3646cd9/.github/workflows/test.yml). Hypothèse réfutable : une étape d'upload verte suffit pour affirmer que son artefact est encore disponible dans l'inventaire final. Protocole initial `098c25b39675f9be9f72116571e16c08849bcea4f46a6c8f2b3121ac854c1b4c`. Précision sur le dernier reçu après écrasement et sur le nom du rapport direct établie avant les deux journaux réservés, empreinte `efe882f15901dc2bd8444addd7db87258e2f224c515c095bdce1c051ea337a6d`.
+
+Collecte autorisée en lecture seule, quatre journaux publics, inventaire indépendant complet 1/1 au moment de la collecte. Le reçu de développement Ubuntu 11475046496 et la [suppression ultérieure](https://github.com/actions/upload-artifact/actions/runs/37604537230/job/112741911709) ont le même nom. En réserve, le dernier reçu Windows 11475241041 est suivi d'une suppression native du même nom, absent de l’inventaire. Le reçu du rapport 11475405383 concorde en nom stocké, ID et digest avec l’inventaire. Le journal de suppression identifie le nom, et l’inventaire établit indépendamment l’état final. Le contrôle ne prétend pas identifier par le seul message de suppression un objet dont le nom a été réutilisé. Le candidat s’abstient sur la réapparition synthétique du nom sous un autre ID et sur un message de suppression échouée sans identité dans l’inventaire.
+
+| Bras | VP réserve | VN réserve | FP réserve | FN réserve | Abstentions réserve |
+|---|---:|---:|---:|---:|---:|
+| Étape verte | 1 | 0 | 1 | 0 | 0 |
+| Jointure positive seule | 1 | 0 | 0 | 0 | 1 |
+| Ajout de l'événement de suppression | 1 | 1 | 0 | 0 | 0 |
+
+**VÉRIFIÉ**, hypothèse fixe réfutée. Un faux positif réel supprimé en réserve, 1 abstention résolue face à la jointure positive, aucun nouveau faux positif. Les deux jobs réservés partagent un même run ; ce résultat motive la réutilisation du prototype dédié dans le journal, sans généraliser à d'autres formats ni intégrer au vérificateur global. Prochain test : répliquer sur un workflow indépendant avec suppression suivie d'une réapparition réelle et comparer par ID.
+
+`timeout 30s python3 audit_upload_cleanup.py` depuis un dossier avec les logs nommés par ID, cleanup.log, cases.json et inventory.json. Scanner 13,62 ms. SHA-256 code `c85b39b8e1f2442a4fec51a3d2423a1317bd283fbdca55cdf0bdc0069fd069c1`, agrégats `74225ed20b5aa0544419ad8a3ae5d98e2b533b7e50db0b8d35ac4d67d47bffa1`. Empreintes de l'inventaire et des logs dans les agrégats. Aucune copie des logs réservés publiée.
+
+Raccord hors ligne en copie temporaire : ZIP vérifié `c44e59eee9ba17160c0eaf36e6b883e330b65dcb7f95d1b39094411eacc50ffd`, patch `b89e1a0422fe10dcadf8b4020f916569321e40e06815f8a686d7830ec104bbf3` après `git apply --check`. `provenance_offline.py propose baseline.json training.json proposal.json` avant collecte (référence `37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570`, entraînement `b85bdf7775ffeabb96b79a5a0ce6cb7ad6d30b9486539ab7dc443ebce65a5174`, log d'entraînement `7538d8fde6dc4a1eac6c217ce67f1bc7ab933116731115a1f8043515dc3d5670`, proposition `42d58489a45bda6b9006335a1b4cce03b1bd86a62f4472334b3d419f7b5f9a53`). Quatre logs, aucun marqueur cp -av. `check` bloqué faute de réserve admissible. Métriques hors ligne non mesurées, référence conservée. 72 tests existants en 0,032 s, PASS.
+
+Registre #239 lu au SHA vérifié `184d8d9868ffb90a97c6f171693f3f54f5785d83`. `existing_provenance_lab` examiné, pertinent et exécuté pour le raccord et les tests. Le prototype dédié fournit la différence mesurée sur l'inventaire. Aucun nouveau composant du routeur ni coût payant.

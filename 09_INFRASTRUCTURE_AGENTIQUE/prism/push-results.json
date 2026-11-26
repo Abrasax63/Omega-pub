@@ -1,0 +1,15 @@
+{
+  "archive_blobs": 5,
+  "layer_types": [
+    "application/vnd.buildkit.otlp.json.v0",
+    "application/vnd.buildkit.status.v0",
+    "application/vnd.in-toto+json"
+  ],
+  "direct_file_member": false,
+  "external_comparison": [
+    "exported",
+    "unknown"
+  ],
+  "cp_av": 0,
+  "elapsed_ns": 7386104
+}

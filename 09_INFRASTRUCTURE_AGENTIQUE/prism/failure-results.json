@@ -1,0 +1,20 @@
+{
+  "results": {
+    "138366782749": {
+      "fixed": false,
+      "candidate": false,
+      "cp_av": 0
+    },
+    "138366782684": {
+      "fixed": true,
+      "candidate": true,
+      "cp_av": 0
+    },
+    "138366782449": {
+      "fixed": true,
+      "candidate": true,
+      "cp_av": 0
+    }
+  },
+  "elapsed_ns": 13971062
+}

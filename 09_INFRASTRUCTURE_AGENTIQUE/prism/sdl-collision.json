@@ -1,0 +1,26 @@
+{
+  "logs": [
+    {
+      "log_sha256": "10103b24b31f1bf681fb2f2ead7805f538bdd455d0dc178b569c8644e81120ac",
+      "first_count": 9,
+      "second_count": 14,
+      "collisions": 9
+    },
+    {
+      "log_sha256": "f20c8956d32295e1075c5ae982d0f5d31ef7425e10a0e2f5eab1b2194b20d084",
+      "first_count": 9,
+      "second_count": 14,
+      "collisions": 9
+    },
+    {
+      "log_sha256": "3346ae701942d93dddee39eac7572e2285142a3dcafb4555d8508cfaf1bdccd1",
+      "first_count": 9,
+      "second_count": 14,
+      "collisions": 9
+    }
+  ],
+  "equal_to_fixed": 3,
+  "adverse_passed": 6,
+  "provenance_verdict": "ind\u00e9termin\u00e9",
+  "seconds": 0.0659336819999794
+}

@@ -1,0 +1,15 @@
+{
+  "admitted": [
+    false,
+    true,
+    false,
+    false
+  ],
+  "naive_report": "export_success",
+  "source_anchored": "expected_export_failure",
+  "console_markers": 3,
+  "source_error_in_console": 0,
+  "local_export_in_console": 0,
+  "cp_av": 0,
+  "elapsed_ns": 7855940
+}

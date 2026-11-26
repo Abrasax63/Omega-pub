@@ -1,0 +1,13 @@
+{
+  "decoded_normalized_log_sha256": "94189c14c46ad25c04574e78862b02551151068dc4e357aa82bc67b0d0c765c5",
+  "bytes": 624592,
+  "executed_cp_vf_license_records": [
+    "2026-11-19T00:20:06.6621853Z + cp -vf LICENSE dist/bundle/share/rke2/LICENSE.txt",
+    "2026-11-19T00:20:12.5906430Z + cp -vf LICENSE dist/bundle/share/rke2/LICENSE.txt",
+    "2026-11-19T00:23:13.9773582Z + cp -vf LICENSE dist/bundle/share/rke2/LICENSE.txt",
+    "2026-11-19T00:23:19.9033061Z + cp -vf LICENSE dist/bundle/share/rke2/LICENSE.txt"
+  ],
+  "recognized_writers": 0,
+  "complete": false,
+  "fixed": "indéterminé"
+}

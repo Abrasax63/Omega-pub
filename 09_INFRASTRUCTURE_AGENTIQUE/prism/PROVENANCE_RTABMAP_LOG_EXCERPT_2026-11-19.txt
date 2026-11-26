@@ -1,0 +1,4 @@
+2026-11-17T18:35:17.4821750Z + cp -R build/Build/Products/Release-iphoneos/RTABMapApp.app Payload/
+2026-11-17T18:35:17.5541190Z + zip -q -r RTABMapApp-unsigned.ipa Payload
+2026-11-17T18:35:23.7156250Z Artifact RTABMapApp-ios-unsigned.zip successfully finalized. Artifact ID 14358271702
+2026-11-17T18:35:23.7169560Z Artifact RTABMapApp-ios-unsigned has been successfully uploaded! Final size is 9260041 bytes. Artifact ID is 14358271702
