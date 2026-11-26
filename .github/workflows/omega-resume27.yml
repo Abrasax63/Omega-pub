@@ -1,0 +1,84 @@
+name: RESUME27 one-time private Qwen checkpoint
+on:
+  push:
+    branches: ['experiment/omega-repr01-cpu-diagnostic-2026-11-25']
+    paths: ['.github/workflows/omega-resume27.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: omega-resume27-single
+  cancel-in-progress: false
+jobs:
+  checkpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      OMEGA_CHECKPOINT_ROOT: /tmp/resume27
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_PROGRESS_BARS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: One bounded reconstruction
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/omega-resume27.yml 2>/dev/null; then exit 1; fi
+          mkdir -m 700 /tmp/resume27
+      - uses: actions/download-artifact@v4
+        with:
+          name: realbudget10-results
+          run-id: 45660422812
+          github-token: ${{ github.token }}
+          path: /tmp/resume27/budget
+      - uses: actions/download-artifact@v4
+        with:
+          name: pilot14-adaptive
+          run-id: 45662119374
+          github-token: ${{ github.token }}
+          path: /tmp/resume27/original
+      - uses: actions/download-artifact@v4
+        with:
+          name: pilot14-results
+          run-id: 45662119374
+          github-token: ${{ github.token }}
+          path: /tmp/resume27/results
+      - name: Fixed CPU stack and small continuation test
+        run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          printf '%s\n' 'torch==2.5.1+cpu' 'accelerate==1.3.0' > /tmp/resume27/constraints.txt
+          python -m pip install --quiet -c /tmp/resume27/constraints.txt transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2 peft==0.14.0 accelerate==1.3.0 jinja2==3.1.6 numpy==1.26.4 cryptography==44.0.1
+          python -c "import torch; assert torch.version.cuda is None"
+          python research/learning_hub/primitive_screen01/resume25.py
+      - name: First sixteen reconstruction steps
+        run: python -u research/learning_hub/primitive_screen01/private_checkpoint27.py bootstrap --stop-after 16
+      - name: Encrypt first recovery point
+        run: python research/learning_hub/primitive_screen01/private_checkpoint27.py encrypt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: resume27-partial-encrypted
+          path: /tmp/resume27/encrypted/*
+          if-no-files-found: error
+      - name: Continue from sixteen to the historical checkpoint
+        run: python -u research/learning_hub/primitive_screen01/private_checkpoint27.py bootstrap --stop-after 128
+      - name: Exact continuation after a new process
+        run: python -u research/learning_hub/primitive_screen01/private_checkpoint27.py verify
+      - name: Encrypt latest recovery point
+        if: always()
+        run: |
+          if test -f /tmp/resume27/omega_qwen_resume26_private_checkpoint.zip; then
+            python research/learning_hub/primitive_screen01/private_checkpoint27.py encrypt
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: resume27-latest-encrypted
+          path: /tmp/resume27/encrypted/*
+          if-no-files-found: warn
