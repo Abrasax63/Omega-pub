@@ -1,0 +1,47 @@
+name: EQ03 one-time matched equality comparison
+on:
+  push:
+    branches: ['experiment/qwen-equality-contrast-eq03-2026-11-27']
+    paths: ['.github/workflows/qwen-equality-eq03.yml']
+permissions:
+  contents: read
+concurrency:
+  group: qwen-equality-eq03-once
+  cancel-in-progress: false
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_PROGRESS_BARS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Refuse repeated execution
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          if git cat-file -e HEAD^:.github/workflows/qwen-equality-eq03.yml 2>/dev/null; then exit 1; fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check independent exam and sign controls
+        run: python research/qwen_eq03/compare.py --fixture
+      - name: Install same CPU stack as EQ02
+        run: |
+          python -m pip install --quiet torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          printf '%s\n' 'torch==2.5.1+cpu' > /tmp/eq03-constraints.txt
+          python -m pip install --quiet -c /tmp/eq03-constraints.txt transformers==4.49.0 safetensors==0.5.3 huggingface_hub==0.30.2 jinja2==3.1.6 numpy==1.26.4
+      - name: Compare three direct-weight learning objectives
+        run: python -u research/qwen_eq03/compare.py --out eq03-results
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eq03-synthetic-traces
+          path: eq03-results/
+          if-no-files-found: warn
+          retention-days: 7
